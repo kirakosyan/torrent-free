@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- App Title -->
+  <data name="AppTitle" xml:space="preserve">
+    <value>Torrent Free</value>
+  </data>
+
+  <!-- Main Page -->
+  <data name="AddTorrentPlaceholder" xml:space="preserve">
+    <value>Ingrese el enlace magnet aquí...</value>
+  </data>
+  <data name="AddButton" xml:space="preserve">
+    <value>Descargar</value>
+  </data>
+  <data name="StartButton" xml:space="preserve">
+    <value>Iniciar</value>
+  </data>
+  <data name="PauseButton" xml:space="preserve">
+    <value>Pausar</value>
+  </data>
+  <data name="StopButton" xml:space="preserve">
+    <value>Detener</value>
+  </data>
+  <data name="RemoveButton" xml:space="preserve">
+    <value>Eliminar</value>
+  </data>
+  <data name="DownloadsTitle" xml:space="preserve">
+    <value>Descargas</value>
+  </data>
+  <data name="NoDownloads" xml:space="preserve">
+    <value>No hay descargas todavía. ¡Agregue un enlace magnet para comenzar!</value>
+  </data>
+
+  <!-- Status -->
+  <data name="StatusQueued" xml:space="preserve">
+    <value>En cola</value>
+  </data>
+  <data name="StatusDownloading" xml:space="preserve">
+    <value>Descargando</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>Pausado</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>Completado</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>Fallido</value>
+  </data>
+  <data name="StatusStopped" xml:space="preserve">
+    <value>Detenido</value>
+  </data>
+
+  <!-- Labels -->
+  <data name="Seeders" xml:space="preserve">
+    <value>Semillas</value>
+  </data>
+  <data name="Leechers" xml:space="preserve">
+    <value>Descargadores</value>
+  </data>
+  <data name="DownloadSpeed" xml:space="preserve">
+    <value>Descarga</value>
+  </data>
+  <data name="UploadSpeed" xml:space="preserve">
+    <value>Subida</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Tamaño</value>
+  </data>
+
+  <!-- Errors -->
+  <data name="InvalidMagnetLink" xml:space="preserve">
+    <value>Enlace magnet inválido. Por favor ingrese una URL magnet:? válida.</value>
+  </data>
+</root>
