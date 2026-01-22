@@ -407,6 +407,7 @@ public class TorrentService : ITorrentService
         _saveTimer.Dispose();
 
         // Cancel and dispose all active download tokens
+        // Note: Using synchronous Cancel() here as Dispose should be synchronous
         foreach (var kvp in _downloadTokens)
         {
             try
