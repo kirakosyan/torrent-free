@@ -33,6 +33,7 @@ public class StorageService : IStorageService
     private readonly string _dataPath;
     private readonly JsonSerializerOptions _jsonOptions;
     private readonly SemaphoreSlim _saveLock = new(1, 1);
+    private string? _cachedDownloadPath;
 
     public StorageService()
     {
@@ -58,9 +59,22 @@ public class StorageService : IStorageService
             var data = JsonSerializer.Deserialize<TorrentStorageData>(json, _jsonOptions);
             return data?.Torrents ?? [];
         }
+        catch (JsonException ex)
+        {
+            // Log JSON parsing errors - indicates corrupted data
+            System.Diagnostics.Debug.WriteLine($"Error parsing torrents data (file may be corrupted): {ex.Message}");
+            return [];
+        }
+        catch (IOException ex)
+        {
+            // Log I/O errors - disk/permission issues
+            System.Diagnostics.Debug.WriteLine($"Error reading torrents file (I/O error): {ex.Message}");
+            return [];
+        }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Error loading torrents: {ex.Message}");
+            // Log unexpected errors
+            System.Diagnostics.Debug.WriteLine($"Unexpected error loading torrents: {ex.Message}");
             return [];
         }
     }
@@ -89,6 +103,12 @@ public class StorageService : IStorageService
 
             await File.WriteAllTextAsync(_dataPath, json);
         }
+        catch (IOException ex)
+        {
+            // Log I/O errors - disk full, permissions, etc.
+            System.Diagnostics.Debug.WriteLine($"Error saving torrents (I/O error): {ex.Message}");
+            // TODO: Consider notifying user about save failure in a future update
+        }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error saving torrents: {ex.Message}");
@@ -102,6 +122,12 @@ public class StorageService : IStorageService
     /// <inheritdoc />
     public string GetDefaultDownloadPath()
     {
+        // Return cached path if available and directory still exists
+        if (_cachedDownloadPath != null && Directory.Exists(_cachedDownloadPath))
+        {
+            return _cachedDownloadPath;
+        }
+
         // Use the app's cache directory for downloads on mobile, or Documents on desktop
         var basePath = DeviceInfo.Platform == DevicePlatform.Android || DeviceInfo.Platform == DevicePlatform.iOS
             ? FileSystem.CacheDirectory
@@ -114,6 +140,7 @@ public class StorageService : IStorageService
             Directory.CreateDirectory(downloadPath);
         }
 
+        _cachedDownloadPath = downloadPath;
         return downloadPath;
     }
 }

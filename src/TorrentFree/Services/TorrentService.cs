@@ -1,4 +1,6 @@
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 using TorrentFree.Models;
 
 namespace TorrentFree.Services;
@@ -6,7 +8,7 @@ namespace TorrentFree.Services;
 /// <summary>
 /// Interface for torrent management operations.
 /// </summary>
-public interface ITorrentService
+public interface ITorrentService : IDisposable
 {
     /// <summary>
     /// Collection of all torrent items.
@@ -55,14 +57,19 @@ public interface ITorrentService
 public class TorrentService : ITorrentService
 {
     private readonly IStorageService _storageService;
-    private readonly Dictionary<string, CancellationTokenSource> _downloadTokens = [];
-    private readonly Random _random = new(); // For demo simulation
+    private readonly ConcurrentDictionary<string, CancellationTokenSource> _downloadTokens = new();
+    private readonly object _torrentsLock = new();
+    private readonly Timer _saveTimer;
+    private bool _pendingSave;
+    private bool _disposed;
 
     public ObservableCollection<TorrentItem> Torrents { get; } = [];
 
     public TorrentService(IStorageService storageService)
     {
         _storageService = storageService;
+        // Debounced save timer - saves at most every 5 seconds
+        _saveTimer = new Timer(async _ => await SaveIfPendingAsync(), null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
     }
 
     /// <inheritdoc />
@@ -88,15 +95,15 @@ public class TorrentService : ITorrentService
             return null;
         }
 
-        // Parse torrent name from magnet link
-        var name = ParseTorrentName(magnetLink);
+        // Parse torrent name from magnet link and sanitize it
+        var name = SanitizeFileName(ParseTorrentName(magnetLink));
 
         var torrent = new TorrentItem
         {
             MagnetLink = magnetLink,
             Name = name,
             Status = DownloadStatus.Queued,
-            TotalSize = _random.NextInt64(100_000_000, 5_000_000_000), // Demo: random size
+            TotalSize = Random.Shared.NextInt64(100_000_000, 5_000_000_000), // Demo: random size
             SavePath = _storageService.GetDefaultDownloadPath()
         };
 
@@ -118,7 +125,7 @@ public class TorrentService : ITorrentService
         await SaveAsync();
 
         // Cancel any existing download for this torrent
-        if (_downloadTokens.TryGetValue(torrent.Id, out var existingCts))
+        if (_downloadTokens.TryRemove(torrent.Id, out var existingCts))
         {
             await existingCts.CancelAsync();
             existingCts.Dispose();
@@ -140,11 +147,10 @@ public class TorrentService : ITorrentService
         }
 
         // Cancel the download
-        if (_downloadTokens.TryGetValue(torrent.Id, out var cts))
+        if (_downloadTokens.TryRemove(torrent.Id, out var cts))
         {
             await cts.CancelAsync();
             cts.Dispose();
-            _downloadTokens.Remove(torrent.Id);
         }
 
         torrent.Status = DownloadStatus.Paused;
@@ -162,11 +168,10 @@ public class TorrentService : ITorrentService
         }
 
         // Cancel the download
-        if (_downloadTokens.TryGetValue(torrent.Id, out var cts))
+        if (_downloadTokens.TryRemove(torrent.Id, out var cts))
         {
             await cts.CancelAsync();
             cts.Dispose();
-            _downloadTokens.Remove(torrent.Id);
         }
 
         torrent.Status = DownloadStatus.Stopped;
@@ -181,29 +186,40 @@ public class TorrentService : ITorrentService
     public async Task RemoveTorrentAsync(TorrentItem torrent, bool deleteFiles = false)
     {
         // Cancel any active download
-        if (_downloadTokens.TryGetValue(torrent.Id, out var cts))
+        if (_downloadTokens.TryRemove(torrent.Id, out var cts))
         {
             await cts.CancelAsync();
             cts.Dispose();
-            _downloadTokens.Remove(torrent.Id);
         }
 
         Torrents.Remove(torrent);
         await SaveAsync();
 
         // Optionally delete downloaded files
-        if (deleteFiles && !string.IsNullOrEmpty(torrent.SavePath))
+        if (deleteFiles && !string.IsNullOrEmpty(torrent.SavePath) && !string.IsNullOrEmpty(torrent.Name))
         {
             try
             {
-                var filePath = Path.Combine(torrent.SavePath, torrent.Name);
-                if (File.Exists(filePath))
+                // Sanitize the name again to ensure safe file path
+                var safeName = SanitizeFileName(torrent.Name);
+                var filePath = Path.Combine(torrent.SavePath, safeName);
+                
+                // Verify the path is within the expected directory (prevent path traversal)
+                var fullPath = Path.GetFullPath(filePath);
+                var basePath = Path.GetFullPath(torrent.SavePath);
+                if (!fullPath.StartsWith(basePath, StringComparison.OrdinalIgnoreCase))
                 {
-                    File.Delete(filePath);
+                    System.Diagnostics.Debug.WriteLine("Attempted path traversal detected, skipping file deletion");
+                    return;
                 }
-                else if (Directory.Exists(filePath))
+                
+                if (File.Exists(fullPath))
                 {
-                    Directory.Delete(filePath, true);
+                    File.Delete(fullPath);
+                }
+                else if (Directory.Exists(fullPath))
+                {
+                    Directory.Delete(fullPath, true);
                 }
             }
             catch (Exception ex)
@@ -221,17 +237,55 @@ public class TorrentService : ITorrentService
             return false;
         }
 
-        // Basic magnet link validation
-        return link.StartsWith("magnet:?", StringComparison.OrdinalIgnoreCase);
+        // Validate magnet link format: must start with magnet:? and contain an info hash (xt parameter)
+        if (!link.StartsWith("magnet:?", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        // Check for presence of xt parameter (required for BitTorrent magnet links)
+        return link.Contains("xt=", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
+    /// Sanitizes a file name by removing or replacing invalid characters.
+    /// </summary>
+    private static string SanitizeFileName(string fileName)
+    {
+        if (string.IsNullOrEmpty(fileName))
+        {
+            return "unnamed_torrent";
+        }
+
+        // Remove path separators and other dangerous characters
+        var invalidChars = Path.GetInvalidFileNameChars();
+        var sanitized = string.Concat(fileName.Where(c => !invalidChars.Contains(c)));
+        
+        // Also remove directory traversal patterns
+        sanitized = sanitized.Replace("..", "");
+        
+        // Ensure we have a valid name
+        if (string.IsNullOrWhiteSpace(sanitized))
+        {
+            return "unnamed_torrent";
+        }
+
+        // Limit length
+        if (sanitized.Length > 200)
+        {
+            sanitized = sanitized[..200];
+        }
+
+        return sanitized.Trim();
     }
 
     private static string ParseTorrentName(string magnetLink)
     {
         // Try to extract name from magnet link
-        var dnMatch = System.Text.RegularExpressions.Regex.Match(
+        var dnMatch = Regex.Match(
             magnetLink,
             @"dn=([^&]+)",
-            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            RegexOptions.IgnoreCase);
 
         if (dnMatch.Success)
         {
@@ -239,10 +293,10 @@ public class TorrentService : ITorrentService
         }
 
         // Fallback to a hash-based name
-        var hashMatch = System.Text.RegularExpressions.Regex.Match(
+        var hashMatch = Regex.Match(
             magnetLink,
             @"btih:([a-fA-F0-9]{40})",
-            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            RegexOptions.IgnoreCase);
 
         if (hashMatch.Success)
         {
@@ -268,34 +322,38 @@ public class TorrentService : ITorrentService
                     break;
                 }
 
-                // Simulate progress
-                var increment = _random.NextDouble() * 2.0; // 0-2% per tick
-                torrent.Progress = Math.Min(100, torrent.Progress + increment);
-                torrent.DownloadedSize = (long)(torrent.TotalSize * torrent.Progress / 100);
-                
-                // Simulate speeds
-                torrent.DownloadSpeed = _random.NextInt64(100_000, 10_000_000); // 100KB/s - 10MB/s
-                torrent.UploadSpeed = _random.NextInt64(10_000, 1_000_000); // 10KB/s - 1MB/s
-                
-                // Simulate peers
-                torrent.Seeders = _random.Next(1, 100);
-                torrent.Leechers = _random.Next(0, 50);
-
-                // Periodic save
-                if (_random.Next(10) == 0)
+                // Update properties on UI thread to avoid cross-thread issues
+                await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    await SaveAsync();
-                }
+                    // Simulate progress
+                    var increment = Random.Shared.NextDouble() * 2.0; // 0-2% per tick
+                    torrent.Progress = Math.Min(100, torrent.Progress + increment);
+                    torrent.DownloadedSize = (long)(torrent.TotalSize * torrent.Progress / 100);
+                    
+                    // Simulate speeds
+                    torrent.DownloadSpeed = Random.Shared.NextInt64(100_000, 10_000_000); // 100KB/s - 10MB/s
+                    torrent.UploadSpeed = Random.Shared.NextInt64(10_000, 1_000_000); // 10KB/s - 1MB/s
+                    
+                    // Simulate peers
+                    torrent.Seeders = Random.Shared.Next(1, 100);
+                    torrent.Leechers = Random.Shared.Next(0, 50);
+                });
+
+                // Mark save as pending (debounced)
+                _pendingSave = true;
             }
 
             if (torrent.Progress >= 100 && torrent.Status == DownloadStatus.Downloading)
             {
-                torrent.Status = DownloadStatus.Completed;
-                torrent.DateCompleted = DateTime.Now;
-                torrent.DownloadSpeed = 0;
-                torrent.UploadSpeed = 0;
-                torrent.Progress = 100;
-                torrent.DownloadedSize = torrent.TotalSize;
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    torrent.Status = DownloadStatus.Completed;
+                    torrent.DateCompleted = DateTime.Now;
+                    torrent.DownloadSpeed = 0;
+                    torrent.UploadSpeed = 0;
+                    torrent.Progress = 100;
+                    torrent.DownloadedSize = torrent.TotalSize;
+                });
                 await SaveAsync();
             }
         }
@@ -306,13 +364,63 @@ public class TorrentService : ITorrentService
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Download error: {ex.Message}");
-            torrent.Status = DownloadStatus.Failed;
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                torrent.Status = DownloadStatus.Failed;
+            });
+            await SaveAsync();
+        }
+        finally
+        {
+            // Clean up the token from the dictionary
+            _downloadTokens.TryRemove(torrent.Id, out _);
+        }
+    }
+
+    private async Task SaveIfPendingAsync()
+    {
+        if (_pendingSave)
+        {
+            _pendingSave = false;
             await SaveAsync();
         }
     }
 
     private Task SaveAsync()
     {
-        return _storageService.SaveTorrentsAsync(Torrents);
+        List<TorrentItem> snapshot;
+        lock (_torrentsLock)
+        {
+            snapshot = [.. Torrents];
+        }
+        return _storageService.SaveTorrentsAsync(snapshot);
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        _saveTimer.Dispose();
+
+        // Cancel and dispose all active download tokens
+        foreach (var kvp in _downloadTokens)
+        {
+            try
+            {
+                kvp.Value.Cancel();
+                kvp.Value.Dispose();
+            }
+            catch
+            {
+                // Ignore disposal errors
+            }
+        }
+        _downloadTokens.Clear();
+
+        GC.SuppressFinalize(this);
     }
 }

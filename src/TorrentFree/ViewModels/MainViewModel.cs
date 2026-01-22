@@ -9,9 +9,10 @@ namespace TorrentFree.ViewModels;
 /// <summary>
 /// Main view model for the torrent client.
 /// </summary>
-public partial class MainViewModel : ObservableObject
+public partial class MainViewModel : ObservableObject, IDisposable
 {
     private readonly ITorrentService _torrentService;
+    private bool _disposed;
 
     /// <summary>
     /// Collection of all torrent items.
@@ -55,7 +56,12 @@ public partial class MainViewModel : ObservableObject
     public MainViewModel(ITorrentService torrentService)
     {
         _torrentService = torrentService;
-        Torrents.CollectionChanged += (_, _) => OnPropertyChanged(nameof(IsEmpty));
+        Torrents.CollectionChanged += OnTorrentsCollectionChanged;
+    }
+
+    private void OnTorrentsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        OnPropertyChanged(nameof(IsEmpty));
     }
 
     /// <summary>
@@ -71,7 +77,8 @@ public partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to initialize: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"Initialization error: {ex}");
+            ErrorMessage = "Failed to load your downloads. Please restart the app.";
         }
         finally
         {
@@ -98,12 +105,13 @@ public partial class MainViewModel : ObservableObject
             }
             else
             {
-                ErrorMessage = "Invalid magnet link. Please enter a valid magnet:? URL.";
+                ErrorMessage = "Invalid magnet link. Please ensure your link starts with 'magnet:?' and contains an info hash (xt= parameter).";
             }
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to add torrent: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"Add torrent error: {ex}");
+            ErrorMessage = "Failed to add torrent. Please try again.";
         }
         finally
         {
@@ -132,7 +140,8 @@ public partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to start torrent: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"Start torrent error: {ex}");
+            ErrorMessage = "Failed to start torrent. Please try again.";
         }
         finally
         {
@@ -157,7 +166,8 @@ public partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to pause torrent: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"Pause torrent error: {ex}");
+            ErrorMessage = "Failed to pause torrent. Please try again.";
         }
         finally
         {
@@ -182,7 +192,8 @@ public partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to stop torrent: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"Stop torrent error: {ex}");
+            ErrorMessage = "Failed to stop torrent. Please try again.";
         }
         finally
         {
@@ -209,7 +220,8 @@ public partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to remove torrent: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"Remove torrent error: {ex}");
+            ErrorMessage = "Failed to remove torrent. Please try again.";
         }
         finally
         {
@@ -233,7 +245,8 @@ public partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to start torrent: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"Start specific torrent error: {ex}");
+            ErrorMessage = "Failed to start torrent. Please try again.";
         }
     }
 
@@ -251,7 +264,8 @@ public partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to pause torrent: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"Pause specific torrent error: {ex}");
+            ErrorMessage = "Failed to pause torrent. Please try again.";
         }
     }
 
@@ -269,7 +283,8 @@ public partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to stop torrent: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"Stop specific torrent error: {ex}");
+            ErrorMessage = "Failed to stop torrent. Please try again.";
         }
     }
 
@@ -291,7 +306,20 @@ public partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to remove torrent: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"Remove specific torrent error: {ex}");
+            ErrorMessage = "Failed to remove torrent. Please try again.";
         }
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        Torrents.CollectionChanged -= OnTorrentsCollectionChanged;
+        GC.SuppressFinalize(this);
     }
 }

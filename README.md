@@ -1,6 +1,8 @@
 # Torrent Free 🔥
 
-A free, cross-platform torrent client built with .NET MAUI. Download files using magnet links with a beautiful, professional interface.
+A free, cross-platform torrent client UI built with .NET MAUI. Features a beautiful, professional interface for managing magnet link downloads.
+
+> **⚠️ Demo Version**: This is a UI demonstration with simulated download progress. Real BitTorrent protocol integration would require a library like [MonoTorrent](https://github.com/alanmcgovern/monotorrent). The current implementation showcases the UI, architecture, and user experience.
 
 ![.NET MAUI](https://img.shields.io/badge/.NET-MAUI-purple)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20|%20Android%20|%20iOS-blue)
@@ -9,7 +11,7 @@ A free, cross-platform torrent client built with .NET MAUI. Download files using
 ## ✨ Features
 
 - **📥 Easy Downloads**: Simply paste a magnet link and click download
-- **📊 Progress Tracking**: Real-time progress bars showing download status
+- **📊 Progress Tracking**: Real-time progress bars showing download status (simulated)
 - **⏯️ Download Control**: Start, pause, stop, and resume downloads at any time
 - **📜 Download History**: Keep track of all your downloads in one place
 - **🌍 Multilanguage Support**: Available in English, French, Spanish, and Russian

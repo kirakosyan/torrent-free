@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:TorrentFree.ViewModels"
              xmlns:models="clr-namespace:TorrentFree.Models"
+             xmlns:converters="clr-namespace:TorrentFree.Converters"
              x:Class="TorrentFree.MainPage"
              x:DataType="viewmodels:MainViewModel"
              BackgroundColor="{StaticResource PageBackgroundColor}"
@@ -10,6 +11,12 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
+            <!-- Converters (defined locally to ensure availability) -->
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
+            <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
+            <converters:ProgressConverter x:Key="ProgressConverter"/>
+            <converters:StatusColorConverter x:Key="StatusColorConverter"/>
+            
             <!-- Status Colors -->
             <Color x:Key="StatusQueued">#FFA726</Color>
             <Color x:Key="StatusDownloading">#42A5F5</Color>
@@ -86,7 +93,8 @@
                        ReturnCommand="{Binding AddTorrentCommand}"
                        FontSize="14"
                        ClearButtonVisibility="WhileEditing"
-                       Keyboard="Url"/>
+                       Keyboard="Url"
+                       MaxLength="4000"/>
                 
                 <Button Grid.Column="1"
                         Text="⬇️ Download"

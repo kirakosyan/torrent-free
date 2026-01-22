@@ -50,8 +50,10 @@ public class LocalizationService : ILocalizationService
         {
             return _resourceManager.GetString(key, _currentCulture) ?? key;
         }
-        catch
+        catch (Exception ex)
         {
+            // Log the error for debugging - helps identify missing or corrupted resources
+            System.Diagnostics.Debug.WriteLine($"Localization error for key '{key}': {ex.Message}");
             return key;
         }
     }
