@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:TorrentFree.ViewModels"
+             xmlns:models="clr-namespace:TorrentFree.Models"
+             x:Class="TorrentFree.MainPage"
+             x:DataType="viewmodels:MainViewModel"
+             BackgroundColor="{StaticResource PageBackgroundColor}"
+             Title="Torrent Free">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Status Colors -->
+            <Color x:Key="StatusQueued">#FFA726</Color>
+            <Color x:Key="StatusDownloading">#42A5F5</Color>
+            <Color x:Key="StatusPaused">#BDBDBD</Color>
+            <Color x:Key="StatusCompleted">#66BB6A</Color>
+            <Color x:Key="StatusFailed">#EF5350</Color>
+            <Color x:Key="StatusStopped">#9E9E9E</Color>
+            
+            <!-- Card Style -->
+            <Color x:Key="CardBackground">#FFFFFF</Color>
+            <Color x:Key="CardBackgroundDark">#2D2D30</Color>
+            <Color x:Key="PageBackgroundColor">#F5F5F5</Color>
+            <Color x:Key="AccentColor">#6200EE</Color>
+            <Color x:Key="AccentColorLight">#BB86FC</Color>
+            
+            <!-- Button Styles -->
+            <Style x:Key="ActionButton" TargetType="Button">
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="Padding" Value="8,4"/>
+                <Setter Property="CornerRadius" Value="4"/>
+                <Setter Property="HeightRequest" Value="32"/>
+                <Setter Property="MinimumWidthRequest" Value="60"/>
+            </Style>
+            
+            <Style x:Key="StartButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="#4CAF50"/>
+                <Setter Property="TextColor" Value="White"/>
+            </Style>
+            
+            <Style x:Key="PauseButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="#FF9800"/>
+                <Setter Property="TextColor" Value="White"/>
+            </Style>
+            
+            <Style x:Key="StopButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="#F44336"/>
+                <Setter Property="TextColor" Value="White"/>
+            </Style>
+            
+            <Style x:Key="RemoveButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="#9E9E9E"/>
+                <Setter Property="TextColor" Value="White"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,Auto,*" Padding="16">
+        
+        <!-- Header Section -->
+        <VerticalStackLayout Grid.Row="0" Spacing="8">
+            <Label Text="🔥 Torrent Free" 
+                   FontSize="28" 
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource AccentColor}"
+                   HorizontalOptions="Center"/>
+            <Label Text="Fast &amp; Free Torrent Downloads"
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+        
+        <!-- Input Section -->
+        <Frame Grid.Row="1" 
+               Margin="0,16,0,16" 
+               Padding="16"
+               CornerRadius="12"
+               BorderColor="Transparent"
+               BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+               HasShadow="True">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <Entry Grid.Column="0"
+                       Placeholder="Enter magnet link here..."
+                       Text="{Binding MagnetLinkInput}"
+                       ReturnCommand="{Binding AddTorrentCommand}"
+                       FontSize="14"
+                       ClearButtonVisibility="WhileEditing"
+                       Keyboard="Url"/>
+                
+                <Button Grid.Column="1"
+                        Text="⬇️ Download"
+                        Command="{Binding AddTorrentCommand}"
+                        BackgroundColor="{StaticResource AccentColor}"
+                        TextColor="White"
+                        FontSize="14"
+                        FontAttributes="Bold"
+                        CornerRadius="8"
+                        Padding="16,8"
+                        HeightRequest="44"/>
+            </Grid>
+        </Frame>
+        
+        <!-- Error Message -->
+        <Label Grid.Row="1"
+               Text="{Binding ErrorMessage}"
+               TextColor="{StaticResource StatusFailed}"
+               IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+               FontSize="12"
+               Margin="0,80,0,0"
+               HorizontalOptions="Center"/>
+        
+        <!-- Downloads Section -->
+        <Grid Grid.Row="2" RowDefinitions="Auto,*">
+            <Label Grid.Row="0"
+                   Text="📥 Downloads"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   Margin="0,0,0,12"/>
+            
+            <!-- Empty State -->
+            <VerticalStackLayout Grid.Row="1"
+                                 IsVisible="{Binding IsEmpty}"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 Spacing="16">
+                <Label Text="📭"
+                       FontSize="64"
+                       HorizontalOptions="Center"/>
+                <Label Text="No downloads yet"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"/>
+                <Label Text="Add a magnet link to get started!"
+                       FontSize="14"
+                       TextColor="Gray"
+                       HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+            
+            <!-- Downloads List -->
+            <CollectionView Grid.Row="1"
+                            ItemsSource="{Binding Torrents}"
+                            SelectionMode="Single"
+                            SelectedItem="{Binding SelectedTorrent}"
+                            IsVisible="{Binding IsEmpty, Converter={StaticResource InverseBoolConverter}}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:TorrentItem">
+                        <Frame Margin="0,0,0,12"
+                               Padding="16"
+                               CornerRadius="12"
+                               BorderColor="Transparent"
+                               BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                               HasShadow="True">
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8">
+                                
+                                <!-- Row 0: Name and Status -->
+                                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                    <Label Grid.Column="0"
+                                           Text="{Binding Name}"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           LineBreakMode="TailTruncation"
+                                           MaxLines="2"/>
+                                    <Frame Grid.Column="1"
+                                           Padding="8,4"
+                                           CornerRadius="12"
+                                           BorderColor="Transparent"
+                                           BackgroundColor="{Binding Status, Converter={StaticResource StatusColorConverter}}">
+                                        <Label Text="{Binding StatusText}"
+                                               FontSize="11"
+                                               TextColor="White"
+                                               FontAttributes="Bold"/>
+                                    </Frame>
+                                </Grid>
+                                
+                                <!-- Row 1: Progress Bar -->
+                                <ProgressBar Grid.Row="1"
+                                             Progress="{Binding Progress, Converter={StaticResource ProgressConverter}}"
+                                             ProgressColor="{StaticResource AccentColor}"
+                                             HeightRequest="8"/>
+                                
+                                <!-- Row 2: Stats -->
+                                <Grid Grid.Row="2" ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="Size" FontSize="10" TextColor="Gray"/>
+                                        <Label Text="{Binding FormattedTotalSize}" FontSize="12" FontAttributes="Bold"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                        <Label Text="⬇️ Speed" FontSize="10" TextColor="Gray"/>
+                                        <Label Text="{Binding FormattedDownloadSpeed}" FontSize="12" FontAttributes="Bold"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="2" Spacing="2">
+                                        <Label Text="🌱 Seeds" FontSize="10" TextColor="Gray"/>
+                                        <Label Text="{Binding Seeders}" FontSize="12" FontAttributes="Bold"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="3" Spacing="2">
+                                        <Label Text="👥 Peers" FontSize="10" TextColor="Gray"/>
+                                        <Label Text="{Binding Leechers}" FontSize="12" FontAttributes="Bold"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                                
+                                <!-- Row 3: Action Buttons -->
+                                <HorizontalStackLayout Grid.Row="3" 
+                                                       Spacing="8" 
+                                                       HorizontalOptions="End"
+                                                       Margin="0,8,0,0">
+                                    <Button Text="▶️"
+                                            Style="{StaticResource StartButton}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=StartSpecificTorrentCommand}"
+                                            CommandParameter="{Binding .}"
+                                            IsVisible="{Binding CanStart}"/>
+                                    <Button Text="⏸️"
+                                            Style="{StaticResource PauseButton}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=PauseSpecificTorrentCommand}"
+                                            CommandParameter="{Binding .}"
+                                            IsVisible="{Binding CanPause}"/>
+                                    <Button Text="⏹️"
+                                            Style="{StaticResource StopButton}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=StopSpecificTorrentCommand}"
+                                            CommandParameter="{Binding .}"
+                                            IsVisible="{Binding CanStop}"/>
+                                    <Button Text="🗑️"
+                                            Style="{StaticResource RemoveButton}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=RemoveSpecificTorrentCommand}"
+                                            CommandParameter="{Binding .}"/>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+        
+        <!-- Loading Indicator -->
+        <ActivityIndicator Grid.RowSpan="3"
+                           IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           Color="{StaticResource AccentColor}"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center"/>
+    </Grid>
+
+</ContentPage>
