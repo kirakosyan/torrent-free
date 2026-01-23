@@ -16,8 +16,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly ITorrentFilePicker _torrentFilePicker;
     private readonly ITorrentFileParser _torrentFileParser;
     private readonly IStorageService _storageService;
+    private readonly IFileAssociationService _fileAssociationService;
     private bool _disposed;
     private bool _isLoadingSettings;
+    private bool _processedCommandLine;
 
     /// <summary>
     /// Collection of all torrent items.
@@ -105,12 +107,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// </summary>
     public bool IsEmpty => Torrents.Count == 0;
 
-    public MainViewModel(ITorrentService torrentService, ITorrentFilePicker torrentFilePicker, ITorrentFileParser torrentFileParser, IStorageService storageService)
+    public MainViewModel(ITorrentService torrentService, ITorrentFilePicker torrentFilePicker, ITorrentFileParser torrentFileParser, IStorageService storageService, IFileAssociationService fileAssociationService)
     {
         _torrentService = torrentService;
         _torrentFilePicker = torrentFilePicker;
         _torrentFileParser = torrentFileParser;
         _storageService = storageService;
+        _fileAssociationService = fileAssociationService;
         Torrents.CollectionChanged += OnTorrentsCollectionChanged;
 
         ApplyGlobalSettings();
@@ -408,6 +411,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
             ApplyGlobalSettings();
             await _torrentService.InitializeAsync();
+
+            await PromptFileAssociationAsync();
+            await ProcessCommandLineArgumentsAsync();
         }
         catch (Exception ex)
         {
@@ -418,6 +424,101 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             _isLoadingSettings = false;
             IsBusy = false;
+        }
+    }
+
+    private async Task ProcessCommandLineArgumentsAsync()
+    {
+        if (_processedCommandLine)
+        {
+            return;
+        }
+
+        _processedCommandLine = true;
+
+        var args = Environment.GetCommandLineArgs();
+        if (args.Length <= 1)
+        {
+            return;
+        }
+
+        foreach (var arg in args.Skip(1))
+        {
+            if (!arg.EndsWith(".torrent", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (!File.Exists(arg))
+            {
+                continue;
+            }
+
+            try
+            {
+                var content = await File.ReadAllBytesAsync(arg);
+                var metadata = _torrentFileParser.Parse(content);
+                TorrentItem? torrent = null;
+                try
+                {
+                    torrent = await _torrentService.AddTorrentFileAsync(metadata);
+                }
+                catch (DuplicateTorrentException)
+                {
+                    continue;
+                }
+
+                if (torrent is null)
+                {
+                    continue;
+                }
+
+                torrent.TorrentFilePath = arg;
+                var folder = Path.GetDirectoryName(arg);
+                if (!string.IsNullOrWhiteSpace(folder) && Directory.Exists(folder))
+                {
+                    torrent.SavePath = folder;
+                }
+
+                await _torrentService.StartTorrentAsync(torrent);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Command line torrent add error: {ex}");
+                ErrorMessage = "Failed to import .torrent file. Please try again.";
+            }
+        }
+    }
+
+    private async Task PromptFileAssociationAsync()
+    {
+        if (!_fileAssociationService.IsSupported)
+        {
+            return;
+        }
+
+        const string promptKey = "torrent.association.prompted";
+        if (Preferences.Default.Get(promptKey, false))
+        {
+            return;
+        }
+
+        Preferences.Default.Set(promptKey, true);
+
+        if (Shell.Current is null)
+        {
+            return;
+        }
+
+        var shouldAssociate = await Shell.Current.DisplayAlert(
+            "Associate .torrent files",
+            "Do you want to open .torrent files with Torrent Free by default?",
+            "Yes",
+            "No");
+
+        if (shouldAssociate)
+        {
+            await _fileAssociationService.AssociateAsync();
         }
     }
 

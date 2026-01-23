@@ -12,8 +12,10 @@ public partial class SettingsViewModel : ObservableObject
 {
     private readonly IStorageService _storageService;
     private readonly ITorrentService _torrentService;
+    private readonly IFileAssociationService _fileAssociationService;
     private bool _isLoadingSettings;
     private bool _isNormalizing;
+    private bool _isUpdatingAssociation;
 
     private const int MaxKbpsLimit = 1_000_000;
     private const int MaxActiveLimit = 200;
@@ -62,10 +64,24 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private string? validationMessage;
 
-    public SettingsViewModel(IStorageService storageService, ITorrentService torrentService)
+    /// <summary>
+    /// Indicates if file association is supported on this platform.
+    /// </summary>
+    [ObservableProperty]
+    private bool isFileAssociationSupported;
+
+    /// <summary>
+    /// Indicates if .torrent files are associated with the app.
+    /// </summary>
+    [ObservableProperty]
+    private bool isTorrentAssociated;
+
+    public SettingsViewModel(IStorageService storageService, ITorrentService torrentService, IFileAssociationService fileAssociationService)
     {
         _storageService = storageService;
         _torrentService = torrentService;
+        _fileAssociationService = fileAssociationService;
+        IsFileAssociationSupported = _fileAssociationService.IsSupported;
     }
 
     [RelayCommand]
@@ -82,6 +98,7 @@ public partial class SettingsViewModel : ObservableObject
         GlobalMaxSeedMinutes = settings.GlobalMaxSeedMinutes;
 
         _isLoadingSettings = false;
+        await RefreshFileAssociationAsync();
         NormalizeAllSettings();
         ApplySettingsToService();
         _ = PersistSettingsAsync();
@@ -159,6 +176,16 @@ public partial class SettingsViewModel : ObservableObject
         _ = PersistSettingsAsync();
     }
 
+    partial void OnIsTorrentAssociatedChanged(bool value)
+    {
+        if (_isLoadingSettings || _isUpdatingAssociation || !IsFileAssociationSupported)
+        {
+            return;
+        }
+
+        _ = ToggleFileAssociationAsync(value);
+    }
+
     private void ApplySettingsToService()
     {
         ApplySpeedLimits();
@@ -199,6 +226,39 @@ public partial class SettingsViewModel : ObservableObject
         };
 
         await _storageService.SaveSettingsAsync(settings);
+    }
+
+    private async Task RefreshFileAssociationAsync()
+    {
+        if (!IsFileAssociationSupported)
+        {
+            return;
+        }
+
+        _isUpdatingAssociation = true;
+        IsTorrentAssociated = await _fileAssociationService.IsAssociatedAsync();
+        _isUpdatingAssociation = false;
+    }
+
+    private async Task ToggleFileAssociationAsync(bool enable)
+    {
+        if (!IsFileAssociationSupported)
+        {
+            return;
+        }
+
+        _isUpdatingAssociation = true;
+        var result = enable
+            ? await _fileAssociationService.AssociateAsync()
+            : await _fileAssociationService.RemoveAssociationAsync();
+        _isUpdatingAssociation = false;
+
+        if (!result)
+        {
+            ValidationMessage = "Unable to update file association.";
+        }
+
+        await RefreshFileAssociationAsync();
     }
 
     private void NormalizeAllSettings()
