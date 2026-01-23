@@ -186,11 +186,21 @@
         <!-- Downloads Section -->
         <Grid Grid.Row="2"
               RowDefinitions="Auto,Auto,*">
-            <Label Grid.Row="0"
-                   Text="📥 Downloads"
-                   FontSize="20"
-                   FontAttributes="Bold"
-                   Margin="0,0,0,12"/>
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="*,Auto"
+                  Margin="0,0,0,12">
+                <Label Grid.Column="0"
+                       Text="📥 Downloads"
+                       FontSize="20"
+                       FontAttributes="Bold"/>
+                <Button Grid.Column="1"
+                        Text="🪟"
+                        Style="{StaticResource IconButton}"
+                        BackgroundColor="{StaticResource AccentColorLight}"
+                        TextColor="White"
+                        Command="{Binding ToggleSelectedTorrentDetailsCommand}"
+                        IsEnabled="{Binding SelectedTorrent, Converter={StaticResource ObjectNotNullConverter}}"/>
+            </Grid>
 
             <Frame Grid.Row="1"
                    Padding="12"
@@ -198,7 +208,7 @@
                    BorderColor="Transparent"
                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
                    HasShadow="True"
-                   IsVisible="{Binding SelectedTorrent, Converter={StaticResource ObjectNotNullConverter}}">
+                   IsVisible="{Binding CanShowSelectedTorrentDetails}">
                 <Grid RowDefinitions="Auto,Auto,Auto"
                       ColumnDefinitions="*,*"
                       ColumnSpacing="12"
@@ -340,58 +350,58 @@
                                       ColumnDefinitions="*,*,*,*,*,*"
                                       ColumnSpacing="8">
                                     <VerticalStackLayout Grid.Column="0"
-                                            Spacing="2">
+                                                         Spacing="2">
                                         <Label Text="Size"
-                                                FontSize="10"
-                                                TextColor="Gray"/>
+                                               FontSize="10"
+                                               TextColor="Gray"/>
                                         <Label Text="{Binding FormattedTotalSize}"
-                                                FontSize="12"
-                                                FontAttributes="Bold"/>
+                                               FontSize="12"
+                                               FontAttributes="Bold"/>
                                     </VerticalStackLayout>
                                     <VerticalStackLayout Grid.Column="1"
-                                            Spacing="2">
+                                                         Spacing="2">
                                         <Label Text="⬇️ Speed"
-                                                FontSize="10"
-                                                TextColor="Gray"/>
+                                               FontSize="10"
+                                               TextColor="Gray"/>
                                         <Label Text="{Binding FormattedDownloadSpeed}"
-                                                FontSize="12"
-                                                FontAttributes="Bold"/>
+                                               FontSize="12"
+                                               FontAttributes="Bold"/>
                                     </VerticalStackLayout>
                                     <VerticalStackLayout Grid.Column="2"
-                                            Spacing="2">
+                                                         Spacing="2">
                                         <Label Text="⬆️ Speed"
-                                                FontSize="10"
-                                                TextColor="Gray"/>
+                                               FontSize="10"
+                                               TextColor="Gray"/>
                                         <Label Text="{Binding FormattedUploadSpeed}"
-                                                FontSize="12"
-                                                FontAttributes="Bold"/>
+                                               FontSize="12"
+                                               FontAttributes="Bold"/>
                                     </VerticalStackLayout>
                                     <VerticalStackLayout Grid.Column="3"
-                                            Spacing="2">
+                                                         Spacing="2">
                                         <Label Text="🌱 Seeds"
-                                                FontSize="10"
-                                                TextColor="Gray"/>
+                                               FontSize="10"
+                                               TextColor="Gray"/>
                                         <Label Text="{Binding Seeders}"
-                                                FontSize="12"
-                                                FontAttributes="Bold"/>
+                                               FontSize="12"
+                                               FontAttributes="Bold"/>
                                     </VerticalStackLayout>
                                     <VerticalStackLayout Grid.Column="4"
-                                            Spacing="2">
+                                                         Spacing="2">
                                         <Label Text="👥 Peers"
-                                                FontSize="10"
-                                                TextColor="Gray"/>
+                                               FontSize="10"
+                                               TextColor="Gray"/>
                                         <Label Text="{Binding Leechers}"
-                                                FontSize="12"
-                                                FontAttributes="Bold"/>
+                                               FontSize="12"
+                                               FontAttributes="Bold"/>
                                     </VerticalStackLayout>
                                     <VerticalStackLayout Grid.Column="5"
-                                            Spacing="2">
+                                                         Spacing="2">
                                         <Label Text="⏳ ETA"
-                                                FontSize="10"
-                                                TextColor="Gray"/>
+                                               FontSize="10"
+                                               TextColor="Gray"/>
                                         <Label Text="{Binding FormattedEstimatedTime}"
-                                                FontSize="12"
-                                                FontAttributes="Bold"/>
+                                               FontSize="12"
+                                               FontAttributes="Bold"/>
                                     </VerticalStackLayout>
                                 </Grid>
 

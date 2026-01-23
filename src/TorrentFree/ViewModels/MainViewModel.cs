@@ -90,6 +90,17 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private int globalMaxSeedMinutes;
 
     /// <summary>
+    /// Controls visibility of selected torrent details.
+    /// </summary>
+    [ObservableProperty]
+    private bool showSelectedTorrentDetails;
+
+    /// <summary>
+    /// Indicates if selected torrent details should be shown.
+    /// </summary>
+    public bool CanShowSelectedTorrentDetails => ShowSelectedTorrentDetails && SelectedTorrent != null;
+
+    /// <summary>
     /// Indicates if there are no torrents in the list.
     /// </summary>
     public bool IsEmpty => Torrents.Count == 0;
@@ -141,6 +152,17 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _ = PersistSettingsAsync();
     }
 
+    partial void OnShowSelectedTorrentDetailsChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CanShowSelectedTorrentDetails));
+    }
+
+    partial void OnSelectedTorrentChanged(TorrentItem? value)
+    {
+        ShowSelectedTorrentDetails = false;
+        OnPropertyChanged(nameof(CanShowSelectedTorrentDetails));
+    }
+
     private void ApplyGlobalSettings()
     {
         ApplyGlobalSpeedLimits();
@@ -172,6 +194,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
 
         await Shell.Current.GoToAsync("SettingsPage");
+    }
+
+    [RelayCommand]
+    private void ToggleSelectedTorrentDetails()
+    {
+        ShowSelectedTorrentDetails = !ShowSelectedTorrentDetails;
     }
 
     private async Task PersistSettingsAsync()

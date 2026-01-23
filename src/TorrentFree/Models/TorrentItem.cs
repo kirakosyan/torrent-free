@@ -166,7 +166,10 @@ public partial class TorrentItem : ObservableObject
     {
         get
         {
-            if (Status is not (DownloadStatus.Completed or DownloadStatus.Seeding))
+            var isComplete = Status is DownloadStatus.Completed or DownloadStatus.Seeding
+                             || (Status is DownloadStatus.Paused or DownloadStatus.Stopped && (Progress >= 100 || DateCompleted is not null));
+
+            if (!isComplete)
             {
                 return false;
             }
