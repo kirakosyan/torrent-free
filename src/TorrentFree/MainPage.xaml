@@ -41,23 +41,38 @@
                 <Setter Property="MinimumWidthRequest" Value="60"/>
             </Style>
             
-            <Style x:Key="StartButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <!-- Icon Button Style - square buttons with larger icons -->
+            <Style x:Key="IconButton" TargetType="Button">
+                <Setter Property="FontSize" Value="18"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="CornerRadius" Value="8"/>
+                <Setter Property="HeightRequest" Value="40"/>
+                <Setter Property="WidthRequest" Value="40"/>
+                <Setter Property="MinimumWidthRequest" Value="40"/>
+            </Style>
+            
+            <Style x:Key="StartButton" TargetType="Button" BasedOn="{StaticResource IconButton}">
                 <Setter Property="BackgroundColor" Value="#4CAF50"/>
                 <Setter Property="TextColor" Value="White"/>
             </Style>
             
-            <Style x:Key="PauseButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <Style x:Key="PauseButton" TargetType="Button" BasedOn="{StaticResource IconButton}">
                 <Setter Property="BackgroundColor" Value="#FF9800"/>
                 <Setter Property="TextColor" Value="White"/>
             </Style>
             
-            <Style x:Key="StopButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <Style x:Key="StopButton" TargetType="Button" BasedOn="{StaticResource IconButton}">
                 <Setter Property="BackgroundColor" Value="#F44336"/>
                 <Setter Property="TextColor" Value="White"/>
             </Style>
             
-            <Style x:Key="RemoveButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <Style x:Key="RemoveButton" TargetType="Button" BasedOn="{StaticResource IconButton}">
                 <Setter Property="BackgroundColor" Value="#9E9E9E"/>
+                <Setter Property="TextColor" Value="White"/>
+            </Style>
+            
+            <Style x:Key="FolderButton" TargetType="Button" BasedOn="{StaticResource IconButton}">
+                <Setter Property="BackgroundColor" Value="#03A9F4"/>
                 <Setter Property="TextColor" Value="White"/>
             </Style>
         </ResourceDictionary>
@@ -170,14 +185,12 @@
                                            LineBreakMode="TailTruncation"
                                            MaxLines="2"/>
                                      <Button Grid.Column="1"
-                                             Text="📂"
-                                             Style="{StaticResource ActionButton}"
-                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=ShowInFolderCommand}"
-                                             CommandParameter="{Binding .}"
-                                             IsEnabled="{Binding CanOpenDownloadedFile}"
-                                             BackgroundColor="#03A9F4"
-                                             TextColor="White"
-                                             Opacity="0.6">
+                                              Text="📂"
+                                              Style="{StaticResource FolderButton}"
+                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=ShowInFolderCommand}"
+                                              CommandParameter="{Binding .}"
+                                              IsEnabled="{Binding CanOpenDownloadedFile}"
+                                              Opacity="0.5">
                                          <Button.Triggers>
                                              <DataTrigger TargetType="Button" Binding="{Binding CanOpenDownloadedFile}" Value="True">
                                                  <Setter Property="Opacity" Value="1" />
