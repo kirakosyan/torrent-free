@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Linq;
 using MonoTorrent;
@@ -57,6 +58,21 @@ public interface ITorrentService : IDisposable
     /// Validates if a string is a valid magnet link.
     /// </summary>
     bool IsValidMagnetLink(string link);
+
+    /// <summary>
+    /// Update global speed limits (KB/s). 0 = unlimited.
+    /// </summary>
+    void UpdateGlobalSpeedLimits(int downloadLimitKbps, int uploadLimitKbps);
+
+    /// <summary>
+    /// Update queue limits. 0 = unlimited.
+    /// </summary>
+    void UpdateQueueLimits(int maxActiveDownloads, int maxActiveSeeds);
+
+    /// <summary>
+    /// Update global seeding limits. 0 = unlimited.
+    /// </summary>
+    void UpdateSeedingLimits(double maxSeedRatio, int maxSeedMinutes);
 }
 
 /// <summary>
@@ -70,8 +86,16 @@ public class TorrentService : ITorrentService
     private readonly object _torrentsLock = new();
     private readonly Timer _saveTimer;
     private ClientEngine? _engine;
+    private bool _initialized;
     private bool _pendingSave;
     private bool _disposed;
+
+    private int _maxActiveDownloads = 2;
+    private int _maxActiveSeeds = 2;
+    private long _globalDownloadLimitBytesPerSec;
+    private long _globalUploadLimitBytesPerSec;
+    private double _globalMaxSeedRatio;
+    private int _globalMaxSeedMinutes;
 
     public ObservableCollection<TorrentItem> Torrents { get; } = [];
 
@@ -85,15 +109,31 @@ public class TorrentService : ITorrentService
     /// <inheritdoc />
     public async Task InitializeAsync()
     {
-        var savedTorrents = await _storageService.LoadTorrentsAsync();
-        foreach (var torrent in savedTorrents)
+        if (_initialized)
         {
-            // Reset downloading status to paused on startup
-            if (torrent.Status == DownloadStatus.Downloading)
+            return;
+        }
+
+        _initialized = true;
+
+        try
+        {
+            var savedTorrents = await _storageService.LoadTorrentsAsync();
+            foreach (var torrent in savedTorrents)
             {
-                torrent.Status = DownloadStatus.Paused;
+                // Reset downloading status to paused on startup
+                if (torrent.Status == DownloadStatus.Downloading)
+                {
+                    torrent.Status = DownloadStatus.Paused;
+                }
+                AttachTorrentSettingsHandlers(torrent);
+                Torrents.Add(torrent);
             }
-            Torrents.Add(torrent);
+        }
+        catch
+        {
+            _initialized = false;
+            throw;
         }
     }
 
@@ -137,6 +177,7 @@ public class TorrentService : ITorrentService
             SavePath = _storageService.GetDefaultDownloadPath()
         };
 
+        AttachTorrentSettingsHandlers(torrent);
         Torrents.Add(torrent);
         await SaveAsync();
 
@@ -205,10 +246,18 @@ public class TorrentService : ITorrentService
             return;
         }
 
+        if (!CanStartAnotherDownload())
+        {
+            torrent.Status = DownloadStatus.Queued;
+            await SaveAsync();
+            return;
+        }
+
         torrent.Status = DownloadStatus.Downloading;
         await SaveAsync();
 
         var manager = await GetOrCreateManagerAsync(torrent);
+        ApplySpeedLimitsToManager(manager, torrent);
 
         // Cancel any existing download for this torrent
         if (_downloadTokens.TryRemove(torrent.Id, out var existingCts))
@@ -250,6 +299,8 @@ public class TorrentService : ITorrentService
         torrent.DownloadSpeed = 0;
         torrent.UploadSpeed = 0;
         await SaveAsync();
+
+        await TryStartQueuedTorrentsAsync();
     }
 
     /// <inheritdoc />
@@ -278,6 +329,8 @@ public class TorrentService : ITorrentService
         torrent.Progress = 0;
         torrent.DownloadedSize = 0;
         await SaveAsync();
+
+        await TryStartQueuedTorrentsAsync();
     }
 
     /// <inheritdoc />
@@ -302,8 +355,11 @@ public class TorrentService : ITorrentService
             }
         }
 
+        DetachTorrentSettingsHandlers(torrent);
         Torrents.Remove(torrent);
         await SaveAsync();
+
+        await TryStartQueuedTorrentsAsync();
 
         // Optionally delete downloaded files
         if (deleteFiles && !string.IsNullOrEmpty(torrent.SavePath) && !string.IsNullOrEmpty(torrent.Name))
@@ -313,7 +369,7 @@ public class TorrentService : ITorrentService
                 // Sanitize the name again to ensure safe file path
                 var safeName = SanitizeFileName(torrent.Name);
                 var filePath = Path.Combine(torrent.SavePath, safeName);
-                
+
                 // Verify the path is within the expected directory (prevent path traversal)
                 var fullPath = Path.GetFullPath(filePath);
                 var basePath = Path.GetFullPath(torrent.SavePath);
@@ -322,7 +378,7 @@ public class TorrentService : ITorrentService
                     System.Diagnostics.Debug.WriteLine("Attempted path traversal detected, skipping file deletion");
                     return;
                 }
-                
+
                 if (File.Exists(fullPath))
                 {
                     File.Delete(fullPath);
@@ -358,6 +414,61 @@ public class TorrentService : ITorrentService
         }
     }
 
+    /// <inheritdoc />
+    public void UpdateGlobalSpeedLimits(int downloadLimitKbps, int uploadLimitKbps)
+    {
+        _globalDownloadLimitBytesPerSec = KbpsToBytes(downloadLimitKbps);
+        _globalUploadLimitBytesPerSec = KbpsToBytes(uploadLimitKbps);
+
+        if (_engine is not null)
+        {
+            ApplySpeedLimitsToEngine(_engine, _globalDownloadLimitBytesPerSec, _globalUploadLimitBytesPerSec);
+        }
+
+        foreach (var kvp in _managers)
+        {
+            if (TryGetTorrentById(kvp.Key, out var torrent) && torrent is not null)
+            {
+                ApplySpeedLimitsToManager(kvp.Value, torrent);
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    public void UpdateQueueLimits(int maxActiveDownloads, int maxActiveSeeds)
+    {
+        _maxActiveDownloads = Math.Max(0, maxActiveDownloads);
+        _maxActiveSeeds = Math.Max(0, maxActiveSeeds);
+
+        _ = TryStartQueuedTorrentsAsync();
+
+        if (_maxActiveSeeds > 0)
+        {
+            foreach (var kvp in _managers)
+            {
+                if (TryGetTorrentById(kvp.Key, out var torrent) && torrent is not null && torrent.Status == DownloadStatus.Seeding)
+                {
+                    _ = EnforceSeedingLimitsAsync(torrent, kvp.Value);
+                }
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    public void UpdateSeedingLimits(double maxSeedRatio, int maxSeedMinutes)
+    {
+        _globalMaxSeedRatio = Math.Max(0, maxSeedRatio);
+        _globalMaxSeedMinutes = Math.Max(0, maxSeedMinutes);
+
+        foreach (var kvp in _managers)
+        {
+            if (TryGetTorrentById(kvp.Key, out var torrent) && torrent is not null && torrent.Status == DownloadStatus.Seeding)
+            {
+                _ = EnforceSeedingLimitsAsync(torrent, kvp.Value);
+            }
+        }
+    }
+
     /// <summary>
     /// Sanitizes a file name by removing or replacing invalid characters.
     /// </summary>
@@ -371,10 +482,10 @@ public class TorrentService : ITorrentService
         // Remove path separators and other dangerous characters
         var invalidChars = Path.GetInvalidFileNameChars();
         var sanitized = string.Concat(fileName.Where(c => !invalidChars.Contains(c)));
-        
+
         // Also remove directory traversal patterns
         sanitized = sanitized.Replace("..", "");
-        
+
         // Ensure we have a valid name
         if (string.IsNullOrWhiteSpace(sanitized))
         {
@@ -417,6 +528,233 @@ public class TorrentService : ITorrentService
         return $"Torrent_{DateTime.Now:yyyyMMddHHmmss}";
     }
 
+    private static long KbpsToBytes(int kbps) => kbps <= 0 ? 0 : kbps * 1024L;
+
+    private bool TryGetTorrentById(string id, out TorrentItem? torrent)
+    {
+        torrent = Torrents.FirstOrDefault(t => t.Id == id);
+        return torrent is not null;
+    }
+
+    private void AttachTorrentSettingsHandlers(TorrentItem torrent)
+    {
+        torrent.PropertyChanged -= OnTorrentPropertyChanged;
+        torrent.PropertyChanged += OnTorrentPropertyChanged;
+    }
+
+    private void DetachTorrentSettingsHandlers(TorrentItem torrent)
+    {
+        torrent.PropertyChanged -= OnTorrentPropertyChanged;
+    }
+
+    private void OnTorrentPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is not TorrentItem torrent)
+        {
+            return;
+        }
+
+        if (e.PropertyName is nameof(TorrentItem.DownloadLimitKbps) or nameof(TorrentItem.UploadLimitKbps))
+        {
+            _ = UpdateTorrentManagerSettingsAsync(torrent);
+        }
+    }
+
+    private async Task UpdateTorrentManagerSettingsAsync(TorrentItem torrent)
+    {
+        if (_managers.TryGetValue(torrent.Id, out var manager))
+        {
+            try
+            {
+                ApplySpeedLimitsToManager(manager, torrent);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Update settings error: {ex.Message}");
+            }
+        }
+    }
+
+    private bool CanStartAnotherDownload()
+    {
+        if (_maxActiveDownloads <= 0)
+        {
+            return true;
+        }
+
+        var activeDownloads = Torrents.Count(t => t.Status == DownloadStatus.Downloading);
+        return activeDownloads < _maxActiveDownloads;
+    }
+
+    private bool CanStartAnotherSeed()
+    {
+        if (_maxActiveSeeds <= 0)
+        {
+            return true;
+        }
+
+        var activeSeeds = Torrents.Count(t => t.Status == DownloadStatus.Seeding);
+        return activeSeeds < _maxActiveSeeds;
+    }
+
+    private async Task TryStartQueuedTorrentsAsync()
+    {
+        var availableSlots = _maxActiveDownloads <= 0
+            ? int.MaxValue
+            : Math.Max(0, _maxActiveDownloads - Torrents.Count(t => t.Status == DownloadStatus.Downloading));
+
+        if (availableSlots <= 0)
+        {
+            return;
+        }
+
+        var queued = Torrents
+            .Where(t => t.Status == DownloadStatus.Queued)
+            .OrderBy(t => t.DateAdded)
+            .Take(availableSlots)
+            .ToList();
+
+        foreach (var torrent in queued)
+        {
+            await StartTorrentAsync(torrent);
+        }
+    }
+
+    private async Task EnforceSeedingLimitsAsync(TorrentItem torrent, TorrentManager manager)
+    {
+        if (torrent.Status != DownloadStatus.Seeding)
+        {
+            return;
+        }
+
+        if (_maxActiveSeeds > 0)
+        {
+            var activeSeeds = Torrents.Count(t => t.Status == DownloadStatus.Seeding);
+            if (activeSeeds > _maxActiveSeeds)
+            {
+                await PauseTorrentAsync(torrent);
+                return;
+            }
+        }
+
+        var maxRatio = torrent.MaxSeedRatio > 0 ? torrent.MaxSeedRatio : _globalMaxSeedRatio;
+        var maxMinutes = torrent.MaxSeedMinutes > 0 ? torrent.MaxSeedMinutes : _globalMaxSeedMinutes;
+
+        if (maxRatio > 0 && torrent.TotalSize > 0)
+        {
+            var uploadedBytes = manager.Monitor.DataBytesSent;
+            var ratio = uploadedBytes / (double)torrent.TotalSize;
+            if (ratio >= maxRatio)
+            {
+                await PauseTorrentAsync(torrent);
+                return;
+            }
+        }
+
+        if (maxMinutes > 0 && torrent.DateSeedingStarted.HasValue)
+        {
+            var elapsed = DateTime.Now - torrent.DateSeedingStarted.Value;
+            if (elapsed.TotalMinutes >= maxMinutes)
+            {
+                await PauseTorrentAsync(torrent);
+            }
+        }
+    }
+
+    private void ApplySpeedLimitsToEngine(ClientEngine engine, long downloadLimitBytesPerSec, long uploadLimitBytesPerSec)
+    {
+        _ = TryApplySpeedLimitsToSettings(engine.Settings, downloadLimitBytesPerSec, uploadLimitBytesPerSec);
+    }
+
+    private void ApplySpeedLimitsToManager(TorrentManager manager, TorrentItem torrent)
+    {
+        var downloadLimit = torrent.DownloadLimitKbps > 0
+            ? KbpsToBytes(torrent.DownloadLimitKbps)
+            : _globalDownloadLimitBytesPerSec;
+
+        var uploadLimit = torrent.UploadLimitKbps > 0
+            ? KbpsToBytes(torrent.UploadLimitKbps)
+            : _globalUploadLimitBytesPerSec;
+
+        _ = TryApplySpeedLimitsToSettings(manager.Settings, downloadLimit, uploadLimit);
+    }
+
+    private static object? TryApplySpeedLimitsToSettings(object settings, long downloadLimitBytesPerSec, long uploadLimitBytesPerSec)
+    {
+        var working = settings;
+
+        var downloadNames = new[] { "MaximumDownloadSpeed", "MaximumDownloadRate", "DownloadRateLimit", "DownloadSpeedLimit" };
+        var uploadNames = new[] { "MaximumUploadSpeed", "MaximumUploadRate", "UploadRateLimit", "UploadSpeedLimit" };
+
+        working = TryApplySetting(working, downloadNames, downloadLimitBytesPerSec) ?? working;
+        working = TryApplySetting(working, uploadNames, uploadLimitBytesPerSec) ?? working;
+
+        return working;
+    }
+
+    private static object? TryApplySetting(object settings, string[] names, long value)
+    {
+        foreach (var name in names)
+        {
+            if (TrySetNumericProperty(settings, name, value))
+            {
+                return settings;
+            }
+
+            var updated = TryInvokeWithNumeric(settings, name, value);
+            if (updated is not null)
+            {
+                return updated;
+            }
+        }
+
+        return null;
+    }
+
+    private static bool TrySetNumericProperty(object target, string propertyName, long value)
+    {
+        var prop = target.GetType().GetProperty(propertyName);
+        if (prop is null || !prop.CanWrite)
+        {
+            return false;
+        }
+
+        try
+        {
+            var converted = Convert.ChangeType(value, prop.PropertyType);
+            prop.SetValue(target, converted);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static object? TryInvokeWithNumeric(object target, string baseName, long value)
+    {
+        var methodName = $"With{baseName}";
+        var method = target.GetType().GetMethod(methodName, new[] { typeof(int) })
+                     ?? target.GetType().GetMethod(methodName, new[] { typeof(long) });
+
+        if (method is null)
+        {
+            return null;
+        }
+
+        try
+        {
+            var parameter = method.GetParameters()[0].ParameterType == typeof(int)
+                ? (object)Math.Clamp(value, int.MinValue, int.MaxValue)
+                : value;
+            return method.Invoke(target, new[] { parameter });
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     private async Task MonitorTorrentAsync(TorrentItem torrent, TorrentManager manager, CancellationToken cancellationToken)
     {
         try
@@ -427,6 +765,8 @@ public class TorrentService : ITorrentService
 
                 var metadataSize = manager.Torrent?.Size;
                 var progress = manager.Progress;
+                var previousStatus = torrent.Status;
+                var currentStatus = previousStatus;
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
@@ -501,17 +841,28 @@ public class TorrentService : ITorrentService
                     torrent.Status = manager.State switch
                     {
                         TorrentState.Paused => DownloadStatus.Paused,
-                        TorrentState.Seeding => DownloadStatus.Completed,
+                        TorrentState.Seeding => DownloadStatus.Seeding,
                         TorrentState.Stopped when progress >= 100 => DownloadStatus.Completed,
                         TorrentState.Stopped => DownloadStatus.Stopped,
                         TorrentState.Downloading => DownloadStatus.Downloading,
                         _ => torrent.Status
                     };
 
-                    if (torrent.Status == DownloadStatus.Completed)
+                    if (torrent.Status == DownloadStatus.Seeding)
                     {
-                        torrent.DateCompleted = DateTime.Now;
+                        torrent.DateSeedingStarted ??= DateTime.Now;
                     }
+                    else
+                    {
+                        torrent.DateSeedingStarted = null;
+                    }
+
+                    if (torrent.Status is DownloadStatus.Completed or DownloadStatus.Seeding)
+                    {
+                        torrent.DateCompleted ??= DateTime.Now;
+                    }
+
+                    currentStatus = torrent.Status;
                 });
 
                 if (manager.HasMetadata && manager.Torrent != null)
@@ -524,6 +875,16 @@ public class TorrentService : ITorrentService
                 }
 
                 _pendingSave = true;
+
+                if (previousStatus == DownloadStatus.Downloading && currentStatus != DownloadStatus.Downloading)
+                {
+                    await TryStartQueuedTorrentsAsync();
+                }
+
+                if (currentStatus == DownloadStatus.Seeding)
+                {
+                    await EnforceSeedingLimitsAsync(torrent, manager);
+                }
 
                 if (manager.State == TorrentState.Stopped && progress >= 100)
                 {
@@ -594,6 +955,8 @@ public class TorrentService : ITorrentService
 
         _engine = new ClientEngine(engineSettings);
 
+        ApplySpeedLimitsToEngine(_engine, _globalDownloadLimitBytesPerSec, _globalUploadLimitBytesPerSec);
+
         return _engine;
     }
 
@@ -618,6 +981,8 @@ public class TorrentService : ITorrentService
         }.ToSettings();
 
         var manager = await engine.AddAsync(magnet, downloadPath, torrentSettings);
+
+        ApplySpeedLimitsToManager(manager, torrent);
 
         _managers[torrent.Id] = manager;
         return manager;

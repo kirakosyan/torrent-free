@@ -68,6 +68,18 @@ public partial class TorrentItem : ObservableObject
     private long uploadSpeed;
 
     /// <summary>
+    /// Per-torrent download limit in KB/s (0 = unlimited).
+    /// </summary>
+    [ObservableProperty]
+    private int downloadLimitKbps;
+
+    /// <summary>
+    /// Per-torrent upload limit in KB/s (0 = unlimited).
+    /// </summary>
+    [ObservableProperty]
+    private int uploadLimitKbps;
+
+    /// <summary>
     /// Number of seeders connected.
     /// </summary>
     [ObservableProperty]
@@ -89,7 +101,7 @@ public partial class TorrentItem : ObservableObject
     /// Formatted ETA string for UI.
     /// </summary>
     public string FormattedEstimatedTime => EstimatedSecondsRemaining <= 0
-        ? "—"
+        ? "ï¿½"
         : TimeSpan.FromSeconds(EstimatedSecondsRemaining).ToString(EstimatedSecondsRemaining >= 3600 ? "hh\\:mm\\:ss" : "mm\\:ss");
 
     /// <summary>
@@ -103,6 +115,24 @@ public partial class TorrentItem : ObservableObject
     /// </summary>
     [ObservableProperty]
     private DateTime? dateCompleted;
+
+    /// <summary>
+    /// Date and time when seeding started.
+    /// </summary>
+    [ObservableProperty]
+    private DateTime? dateSeedingStarted;
+
+    /// <summary>
+    /// Per-torrent max seed ratio (0 = unlimited).
+    /// </summary>
+    [ObservableProperty]
+    private double maxSeedRatio;
+
+    /// <summary>
+    /// Per-torrent max seed time in minutes (0 = unlimited).
+    /// </summary>
+    [ObservableProperty]
+    private int maxSeedMinutes;
 
     /// <summary>
     /// Local file path where the download is saved.
@@ -136,7 +166,7 @@ public partial class TorrentItem : ObservableObject
     {
         get
         {
-            if (Status != DownloadStatus.Completed)
+            if (Status is not (DownloadStatus.Completed or DownloadStatus.Seeding))
             {
                 return false;
             }
@@ -175,6 +205,7 @@ public partial class TorrentItem : ObservableObject
         DownloadStatus.Downloading => $"Downloading - {Progress:F1}%",
         DownloadStatus.Paused => "Paused",
         DownloadStatus.Completed => "Completed",
+        DownloadStatus.Seeding => "Seeding",
         DownloadStatus.Failed => "Failed",
         DownloadStatus.Stopped => "Stopped",
         _ => "Unknown"
@@ -188,7 +219,7 @@ public partial class TorrentItem : ObservableObject
     /// <summary>
     /// Indicates whether the download can be paused.
     /// </summary>
-    public bool CanPause => Status == DownloadStatus.Downloading;
+    public bool CanPause => Status is DownloadStatus.Downloading or DownloadStatus.Seeding;
 
     /// <summary>
     /// Indicates whether the download can be stopped.

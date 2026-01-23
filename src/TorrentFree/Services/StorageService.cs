@@ -19,6 +19,16 @@ public interface IStorageService
     Task SaveTorrentsAsync(IEnumerable<TorrentItem> torrents);
 
     /// <summary>
+    /// Loads app settings from storage.
+    /// </summary>
+    Task<AppSettings> LoadSettingsAsync();
+
+    /// <summary>
+    /// Saves app settings to storage.
+    /// </summary>
+    Task SaveSettingsAsync(AppSettings settings);
+
+    /// <summary>
     /// Gets the default download path.
     /// </summary>
     string GetDefaultDownloadPath();
@@ -34,6 +44,7 @@ public class StorageService : IStorageService
     private readonly JsonSerializerOptions _jsonOptions;
     private readonly SemaphoreSlim _saveLock = new(1, 1);
     private string? _cachedDownloadPath;
+    private AppSettings _cachedSettings = new();
 
     public StorageService()
     {
@@ -50,14 +61,9 @@ public class StorageService : IStorageService
     {
         try
         {
-            if (!File.Exists(_dataPath))
-            {
-                return [];
-            }
-
-            var json = await File.ReadAllTextAsync(_dataPath);
-            var data = JsonSerializer.Deserialize<TorrentStorageData>(json, _jsonOptions);
-            return data?.Torrents ?? [];
+            var data = await LoadDataAsync();
+            _cachedSettings = data.Settings ?? new AppSettings();
+            return data.Torrents ?? [];
         }
         catch (JsonException ex)
         {
@@ -89,11 +95,12 @@ public class StorageService : IStorageService
             {
                 Version = "1.0",
                 LastUpdated = DateTime.UtcNow,
-                Torrents = torrents.ToList()
+                Torrents = torrents.ToList(),
+                Settings = _cachedSettings
             };
 
             var json = JsonSerializer.Serialize(data, _jsonOptions);
-            
+
             // Ensure directory exists
             var directory = Path.GetDirectoryName(_dataPath);
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
@@ -120,6 +127,61 @@ public class StorageService : IStorageService
     }
 
     /// <inheritdoc />
+    public async Task<AppSettings> LoadSettingsAsync()
+    {
+        try
+        {
+            var data = await LoadDataAsync();
+            _cachedSettings = data.Settings ?? new AppSettings();
+            return _cachedSettings;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading settings: {ex.Message}");
+            _cachedSettings = new AppSettings();
+            return _cachedSettings;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task SaveSettingsAsync(AppSettings settings)
+    {
+        await _saveLock.WaitAsync();
+        try
+        {
+            var data = await LoadDataAsync();
+            data.Settings = settings;
+            data.Torrents ??= [];
+            data.Version = "1.0";
+            data.LastUpdated = DateTime.UtcNow;
+
+            _cachedSettings = settings;
+
+            var json = JsonSerializer.Serialize(data, _jsonOptions);
+
+            var directory = Path.GetDirectoryName(_dataPath);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            await File.WriteAllTextAsync(_dataPath, json);
+        }
+        catch (IOException ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error saving settings (I/O error): {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error saving settings: {ex.Message}");
+        }
+        finally
+        {
+            _saveLock.Release();
+        }
+    }
+
+    /// <inheritdoc />
     public string GetDefaultDownloadPath()
     {
         // Return cached path if available and directory still exists
@@ -134,7 +196,7 @@ public class StorageService : IStorageService
             : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
         var downloadPath = Path.Combine(basePath, "TorrentFree", "Downloads");
-        
+
         if (!Directory.Exists(downloadPath))
         {
             Directory.CreateDirectory(downloadPath);
@@ -142,6 +204,18 @@ public class StorageService : IStorageService
 
         _cachedDownloadPath = downloadPath;
         return downloadPath;
+    }
+
+    private async Task<TorrentStorageData> LoadDataAsync()
+    {
+        if (!File.Exists(_dataPath))
+        {
+            return new TorrentStorageData { Settings = new AppSettings() };
+        }
+
+        var json = await File.ReadAllTextAsync(_dataPath);
+        var data = JsonSerializer.Deserialize<TorrentStorageData>(json, _jsonOptions);
+        return data ?? new TorrentStorageData { Settings = new AppSettings() };
     }
 }
 
@@ -153,4 +227,5 @@ internal class TorrentStorageData
     public string Version { get; set; } = "1.0";
     public DateTime LastUpdated { get; set; }
     public List<TorrentItem> Torrents { get; set; } = [];
+    public AppSettings? Settings { get; set; }
 }

@@ -15,7 +15,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly ITorrentService _torrentService;
     private readonly ITorrentFilePicker _torrentFilePicker;
     private readonly ITorrentFileParser _torrentFileParser;
+    private readonly IStorageService _storageService;
     private bool _disposed;
+    private bool _isLoadingSettings;
 
     /// <summary>
     /// Collection of all torrent items.
@@ -52,16 +54,144 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private string? errorMessage;
 
     /// <summary>
+    /// Global download limit in KB/s (0 = unlimited).
+    /// </summary>
+    [ObservableProperty]
+    private int globalDownloadLimitKbps;
+
+    /// <summary>
+    /// Global upload limit in KB/s (0 = unlimited).
+    /// </summary>
+    [ObservableProperty]
+    private int globalUploadLimitKbps;
+
+    /// <summary>
+    /// Max concurrent active downloads (0 = unlimited).
+    /// </summary>
+    [ObservableProperty]
+    private int maxActiveDownloads = 2;
+
+    /// <summary>
+    /// Max concurrent active seeds (0 = unlimited).
+    /// </summary>
+    [ObservableProperty]
+    private int maxActiveSeeds = 2;
+
+    /// <summary>
+    /// Global max seed ratio (0 = unlimited).
+    /// </summary>
+    [ObservableProperty]
+    private double globalMaxSeedRatio;
+
+    /// <summary>
+    /// Global max seed time in minutes (0 = unlimited).
+    /// </summary>
+    [ObservableProperty]
+    private int globalMaxSeedMinutes;
+
+    /// <summary>
     /// Indicates if there are no torrents in the list.
     /// </summary>
     public bool IsEmpty => Torrents.Count == 0;
 
-    public MainViewModel(ITorrentService torrentService, ITorrentFilePicker torrentFilePicker, ITorrentFileParser torrentFileParser)
+    public MainViewModel(ITorrentService torrentService, ITorrentFilePicker torrentFilePicker, ITorrentFileParser torrentFileParser, IStorageService storageService)
     {
         _torrentService = torrentService;
         _torrentFilePicker = torrentFilePicker;
         _torrentFileParser = torrentFileParser;
+        _storageService = storageService;
         Torrents.CollectionChanged += OnTorrentsCollectionChanged;
+
+        ApplyGlobalSettings();
+    }
+
+    partial void OnGlobalDownloadLimitKbpsChanged(int value)
+    {
+        ApplyGlobalSpeedLimits();
+        _ = PersistSettingsAsync();
+    }
+
+    partial void OnGlobalUploadLimitKbpsChanged(int value)
+    {
+        ApplyGlobalSpeedLimits();
+        _ = PersistSettingsAsync();
+    }
+
+    partial void OnMaxActiveDownloadsChanged(int value)
+    {
+        ApplyQueueLimits();
+        _ = PersistSettingsAsync();
+    }
+
+    partial void OnMaxActiveSeedsChanged(int value)
+    {
+        ApplyQueueLimits();
+        _ = PersistSettingsAsync();
+    }
+
+    partial void OnGlobalMaxSeedRatioChanged(double value)
+    {
+        ApplySeedingLimits();
+        _ = PersistSettingsAsync();
+    }
+
+    partial void OnGlobalMaxSeedMinutesChanged(int value)
+    {
+        ApplySeedingLimits();
+        _ = PersistSettingsAsync();
+    }
+
+    private void ApplyGlobalSettings()
+    {
+        ApplyGlobalSpeedLimits();
+        ApplyQueueLimits();
+        ApplySeedingLimits();
+    }
+
+    private void ApplyGlobalSpeedLimits()
+    {
+        _torrentService.UpdateGlobalSpeedLimits(GlobalDownloadLimitKbps, GlobalUploadLimitKbps);
+    }
+
+    private void ApplyQueueLimits()
+    {
+        _torrentService.UpdateQueueLimits(MaxActiveDownloads, MaxActiveSeeds);
+    }
+
+    private void ApplySeedingLimits()
+    {
+        _torrentService.UpdateSeedingLimits(GlobalMaxSeedRatio, GlobalMaxSeedMinutes);
+    }
+
+    [RelayCommand]
+    private async Task OpenSettingsAsync()
+    {
+        if (Shell.Current is null)
+        {
+            return;
+        }
+
+        await Shell.Current.GoToAsync("SettingsPage");
+    }
+
+    private async Task PersistSettingsAsync()
+    {
+        if (_isLoadingSettings)
+        {
+            return;
+        }
+
+        var settings = new AppSettings
+        {
+            GlobalDownloadLimitKbps = GlobalDownloadLimitKbps,
+            GlobalUploadLimitKbps = GlobalUploadLimitKbps,
+            MaxActiveDownloads = MaxActiveDownloads,
+            MaxActiveSeeds = MaxActiveSeeds,
+            GlobalMaxSeedRatio = GlobalMaxSeedRatio,
+            GlobalMaxSeedMinutes = GlobalMaxSeedMinutes
+        };
+
+        await _storageService.SaveSettingsAsync(settings);
     }
 
     [RelayCommand]
@@ -76,12 +206,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             var downloadPath = torrent.DownloadedFilePath;
             var isDirectory = Directory.Exists(downloadPath);
-            
+
             // For directories, we want to open the folder itself
             // For files, we want to open the containing folder and select the file
             var targetPath = isDirectory ? downloadPath : downloadPath;
             var folderPath = isDirectory ? downloadPath : Path.GetDirectoryName(downloadPath);
-            
+
             if (string.IsNullOrWhiteSpace(folderPath))
             {
                 return;
@@ -234,6 +364,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
         IsBusy = true;
         try
         {
+            _isLoadingSettings = true;
+            var settings = await _storageService.LoadSettingsAsync();
+            GlobalDownloadLimitKbps = settings.GlobalDownloadLimitKbps;
+            GlobalUploadLimitKbps = settings.GlobalUploadLimitKbps;
+            MaxActiveDownloads = settings.MaxActiveDownloads;
+            MaxActiveSeeds = settings.MaxActiveSeeds;
+            GlobalMaxSeedRatio = settings.GlobalMaxSeedRatio;
+            GlobalMaxSeedMinutes = settings.GlobalMaxSeedMinutes;
+
+            ApplyGlobalSettings();
             await _torrentService.InitializeAsync();
         }
         catch (Exception ex)
@@ -243,6 +383,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         finally
         {
+            _isLoadingSettings = false;
             IsBusy = false;
         }
     }

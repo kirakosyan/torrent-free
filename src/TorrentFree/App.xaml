@@ -7,10 +7,17 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
-                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            
+
+            <!-- Shared App Colors -->
+            <Color x:Key="CardBackground">#FFFFFF</Color>
+            <Color x:Key="CardBackgroundDark">#2D2D30</Color>
+            <Color x:Key="PageBackgroundColor">#F5F5F5</Color>
+            <Color x:Key="AccentColor">#6200EE</Color>
+            <Color x:Key="AccentColorLight">#BB86FC</Color>
+
             <!-- Global Converters -->
             <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
             <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>

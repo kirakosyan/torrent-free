@@ -26,9 +26,11 @@ public static class MauiProgram
 
         // Register ViewModels
         builder.Services.AddSingleton<MainViewModel>();
+        builder.Services.AddSingleton<SettingsViewModel>();
 
         // Register Pages
         builder.Services.AddSingleton<MainPage>();
+        builder.Services.AddSingleton<SettingsPage>();
         builder.Services.AddSingleton<AppShell>();
 
 #if DEBUG

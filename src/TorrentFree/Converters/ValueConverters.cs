@@ -44,6 +44,22 @@ public class StringNotEmptyConverter : IValueConverter
 }
 
 /// <summary>
+/// Converts a reference to a boolean indicating if it's not null.
+/// </summary>
+public class ObjectNotNullConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        return value is not null;
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+/// <summary>
 /// Converts download progress (0-100) to ProgressBar progress (0-1).
 /// </summary>
 public class ProgressConverter : IValueConverter
@@ -82,6 +98,7 @@ public class StatusColorConverter : IValueConverter
                 DownloadStatus.Downloading => Color.FromArgb("#42A5F5"),
                 DownloadStatus.Paused => Color.FromArgb("#BDBDBD"),
                 DownloadStatus.Completed => Color.FromArgb("#66BB6A"),
+                DownloadStatus.Seeding => Color.FromArgb("#26A69A"),
                 DownloadStatus.Failed => Color.FromArgb("#EF5350"),
                 DownloadStatus.Stopped => Color.FromArgb("#9E9E9E"),
                 _ => Color.FromArgb("#9E9E9E")

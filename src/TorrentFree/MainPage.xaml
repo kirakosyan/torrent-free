@@ -14,135 +14,249 @@
             <!-- Converters (defined locally to ensure availability) -->
             <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
             <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
+            <converters:ObjectNotNullConverter x:Key="ObjectNotNullConverter"/>
             <converters:ProgressConverter x:Key="ProgressConverter"/>
             <converters:StatusColorConverter x:Key="StatusColorConverter"/>
-            
+
             <!-- Status Colors -->
             <Color x:Key="StatusQueued">#FFA726</Color>
             <Color x:Key="StatusDownloading">#42A5F5</Color>
             <Color x:Key="StatusPaused">#BDBDBD</Color>
             <Color x:Key="StatusCompleted">#66BB6A</Color>
+            <Color x:Key="StatusSeeding">#26A69A</Color>
             <Color x:Key="StatusFailed">#EF5350</Color>
             <Color x:Key="StatusStopped">#9E9E9E</Color>
-            
+
             <!-- Card Style -->
             <Color x:Key="CardBackground">#FFFFFF</Color>
             <Color x:Key="CardBackgroundDark">#2D2D30</Color>
             <Color x:Key="PageBackgroundColor">#F5F5F5</Color>
             <Color x:Key="AccentColor">#6200EE</Color>
             <Color x:Key="AccentColorLight">#BB86FC</Color>
-            
+
             <!-- Button Styles -->
-            <Style x:Key="ActionButton" TargetType="Button">
-                <Setter Property="FontSize" Value="12"/>
-                <Setter Property="Padding" Value="8,4"/>
-                <Setter Property="CornerRadius" Value="4"/>
-                <Setter Property="HeightRequest" Value="32"/>
-                <Setter Property="MinimumWidthRequest" Value="60"/>
+            <Style x:Key="ActionButton"
+                   TargetType="Button">
+                <Setter Property="FontSize"
+                        Value="12"/>
+                <Setter Property="Padding"
+                        Value="8,4"/>
+                <Setter Property="CornerRadius"
+                        Value="4"/>
+                <Setter Property="HeightRequest"
+                        Value="32"/>
+                <Setter Property="MinimumWidthRequest"
+                        Value="60"/>
             </Style>
-            
+
             <!-- Icon Button Style - square buttons with larger icons -->
-            <Style x:Key="IconButton" TargetType="Button">
-                <Setter Property="FontSize" Value="18"/>
-                <Setter Property="Padding" Value="0"/>
-                <Setter Property="CornerRadius" Value="8"/>
-                <Setter Property="HeightRequest" Value="40"/>
-                <Setter Property="WidthRequest" Value="40"/>
-                <Setter Property="MinimumWidthRequest" Value="40"/>
+            <Style x:Key="IconButton"
+                   TargetType="Button">
+                <Setter Property="FontSize"
+                        Value="18"/>
+                <Setter Property="Padding"
+                        Value="0"/>
+                <Setter Property="CornerRadius"
+                        Value="8"/>
+                <Setter Property="HeightRequest"
+                        Value="40"/>
+                <Setter Property="WidthRequest"
+                        Value="40"/>
+                <Setter Property="MinimumWidthRequest"
+                        Value="40"/>
             </Style>
-            
-            <Style x:Key="StartButton" TargetType="Button" BasedOn="{StaticResource IconButton}">
-                <Setter Property="BackgroundColor" Value="#4CAF50"/>
-                <Setter Property="TextColor" Value="White"/>
+
+            <Style x:Key="StartButton"
+                   TargetType="Button"
+                   BasedOn="{StaticResource IconButton}">
+                <Setter Property="BackgroundColor"
+                        Value="#4CAF50"/>
+                <Setter Property="TextColor"
+                        Value="White"/>
             </Style>
-            
-            <Style x:Key="PauseButton" TargetType="Button" BasedOn="{StaticResource IconButton}">
-                <Setter Property="BackgroundColor" Value="#FF9800"/>
-                <Setter Property="TextColor" Value="White"/>
+
+            <Style x:Key="PauseButton"
+                   TargetType="Button"
+                   BasedOn="{StaticResource IconButton}">
+                <Setter Property="BackgroundColor"
+                        Value="#FF9800"/>
+                <Setter Property="TextColor"
+                        Value="White"/>
             </Style>
-            
-            <Style x:Key="StopButton" TargetType="Button" BasedOn="{StaticResource IconButton}">
-                <Setter Property="BackgroundColor" Value="#F44336"/>
-                <Setter Property="TextColor" Value="White"/>
+
+            <Style x:Key="StopButton"
+                   TargetType="Button"
+                   BasedOn="{StaticResource IconButton}">
+                <Setter Property="BackgroundColor"
+                        Value="#F44336"/>
+                <Setter Property="TextColor"
+                        Value="White"/>
             </Style>
-            
-            <Style x:Key="RemoveButton" TargetType="Button" BasedOn="{StaticResource IconButton}">
-                <Setter Property="BackgroundColor" Value="#9E9E9E"/>
-                <Setter Property="TextColor" Value="White"/>
+
+            <Style x:Key="RemoveButton"
+                   TargetType="Button"
+                   BasedOn="{StaticResource IconButton}">
+                <Setter Property="BackgroundColor"
+                        Value="#9E9E9E"/>
+                <Setter Property="TextColor"
+                        Value="White"/>
             </Style>
-            
-            <Style x:Key="FolderButton" TargetType="Button" BasedOn="{StaticResource IconButton}">
-                <Setter Property="BackgroundColor" Value="#03A9F4"/>
-                <Setter Property="TextColor" Value="White"/>
+
+            <Style x:Key="FolderButton"
+                   TargetType="Button"
+                   BasedOn="{StaticResource IconButton}">
+                <Setter Property="BackgroundColor"
+                        Value="#03A9F4"/>
+                <Setter Property="TextColor"
+                        Value="White"/>
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto,Auto,*" Padding="16">
-        
+    <Grid RowDefinitions="Auto,Auto,*"
+          Padding="16">
+
         <!-- Header Section -->
-        <VerticalStackLayout Grid.Row="0" Spacing="8">
-            <Label Text="🔥 Torrent Free" 
-                   FontSize="28" 
+        <Grid Grid.Row="0"
+              ColumnDefinitions="*,Auto"
+              RowDefinitions="Auto,Auto">
+            <Label Grid.Row="0"
+                   Grid.Column="0"
+                   Text="🔥 Torrent Free"
+                   FontSize="28"
                    FontAttributes="Bold"
                    TextColor="{StaticResource AccentColor}"
-                   HorizontalOptions="Center"/>
-            <Label Text="Fast &amp; Free Torrent Downloads"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"/>
+            <Button Grid.Row="0"
+                    Grid.Column="1"
+                    Text="⚙️"
+                    Style="{StaticResource IconButton}"
+                    BackgroundColor="{StaticResource AccentColorLight}"
+                    TextColor="White"
+                    Command="{Binding OpenSettingsCommand}"/>
+            <Label Grid.Row="1"
+                   Grid.ColumnSpan="2"
+                   Text="Fast &amp; Free Torrent Downloads"
                    FontSize="14"
                    TextColor="Gray"
                    HorizontalOptions="Center"/>
-        </VerticalStackLayout>
-        
-        <!-- Input Section -->
-        <Frame Grid.Row="1" 
-               Margin="0,16,0,16" 
-               Padding="16"
-               CornerRadius="12"
-               BorderColor="Transparent"
-               BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-               HasShadow="True">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                <Entry Grid.Column="0"
-                       Placeholder="Enter magnet link here..."
-                       Text="{Binding MagnetLinkInput}"
-                       ReturnCommand="{Binding AddTorrentCommand}"
-                       FontSize="14"
-                       ClearButtonVisibility="WhileEditing"
-                       Keyboard="Url"
-                       MaxLength="4000"/>
+        </Grid>
 
-                <Button Grid.Column="1"
-                        Text="📁 Browse"
-                        Command="{Binding BrowseTorrentFileCommand}"
-                        BackgroundColor="#607D8B"
-                        TextColor="White"
-                        FontSize="14"
-                        FontAttributes="Bold"
-                        CornerRadius="8"
-                        Padding="16,8"
-                        HeightRequest="44"/>
-            </Grid>
-        </Frame>
-        
-        <!-- Error Message -->
-        <Label Grid.Row="1"
-               Text="{Binding ErrorMessage}"
-               TextColor="{StaticResource StatusFailed}"
-               IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
-               FontSize="12"
-               Margin="0,80,0,0"
-               HorizontalOptions="Center"/>
-        
+        <!-- Input Section -->
+        <VerticalStackLayout Grid.Row="1"
+                             Spacing="8"
+                             Margin="0,16,0,16">
+            <Frame Padding="16"
+                   CornerRadius="12"
+                   BorderColor="Transparent"
+                   BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                   HasShadow="True">
+                <Grid ColumnDefinitions="*,Auto"
+                      ColumnSpacing="12">
+                    <Entry Grid.Column="0"
+                           Placeholder="Enter magnet link here..."
+                           Text="{Binding MagnetLinkInput}"
+                           ReturnCommand="{Binding AddTorrentCommand}"
+                           FontSize="14"
+                           ClearButtonVisibility="WhileEditing"
+                           Keyboard="Url"
+                           MaxLength="4000"/>
+
+                    <Button Grid.Column="1"
+                            Text="📁 Browse"
+                            Command="{Binding BrowseTorrentFileCommand}"
+                            BackgroundColor="#607D8B"
+                            TextColor="White"
+                            FontSize="14"
+                            FontAttributes="Bold"
+                            CornerRadius="8"
+                            Padding="16,8"
+                            HeightRequest="44"/>
+                </Grid>
+            </Frame>
+
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="{StaticResource StatusFailed}"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                   FontSize="12"
+                   HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+
         <!-- Downloads Section -->
-        <Grid Grid.Row="2" RowDefinitions="Auto,*">
+        <Grid Grid.Row="2"
+              RowDefinitions="Auto,Auto,*">
             <Label Grid.Row="0"
                    Text="📥 Downloads"
                    FontSize="20"
                    FontAttributes="Bold"
                    Margin="0,0,0,12"/>
-            
+
+            <Frame Grid.Row="1"
+                   Padding="12"
+                   CornerRadius="12"
+                   BorderColor="Transparent"
+                   BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                   HasShadow="True"
+                   IsVisible="{Binding SelectedTorrent, Converter={StaticResource ObjectNotNullConverter}}">
+                <Grid RowDefinitions="Auto,Auto,Auto"
+                      ColumnDefinitions="*,*"
+                      ColumnSpacing="12"
+                      RowSpacing="8">
+                    <Label Grid.Row="0"
+                           Grid.ColumnSpan="2"
+                           Text="🎯 Selected Torrent Limits"
+                           FontSize="13"
+                           FontAttributes="Bold"/>
+
+                    <VerticalStackLayout Grid.Row="1"
+                                         Grid.Column="0"
+                                         Spacing="4">
+                        <Label Text="⬇️ Download KB/s"
+                               FontSize="10"
+                               TextColor="Gray"/>
+                        <Entry Text="{Binding SelectedTorrent.DownloadLimitKbps}"
+                               Keyboard="Numeric"
+                               Placeholder="0 = global"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Row="1"
+                                         Grid.Column="1"
+                                         Spacing="4">
+                        <Label Text="⬆️ Upload KB/s"
+                               FontSize="10"
+                               TextColor="Gray"/>
+                        <Entry Text="{Binding SelectedTorrent.UploadLimitKbps}"
+                               Keyboard="Numeric"
+                               Placeholder="0 = global"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Row="2"
+                                         Grid.Column="0"
+                                         Spacing="4">
+                        <Label Text="📊 Max Seed Ratio"
+                               FontSize="10"
+                               TextColor="Gray"/>
+                        <Entry Text="{Binding SelectedTorrent.MaxSeedRatio}"
+                               Keyboard="Numeric"
+                               Placeholder="0 = global"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Row="2"
+                                         Grid.Column="1"
+                                         Spacing="4">
+                        <Label Text="⏱️ Max Seed Minutes"
+                               FontSize="10"
+                               TextColor="Gray"/>
+                        <Entry Text="{Binding SelectedTorrent.MaxSeedMinutes}"
+                               Keyboard="Numeric"
+                               Placeholder="0 = global"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
             <!-- Empty State -->
-            <VerticalStackLayout Grid.Row="1"
+            <VerticalStackLayout Grid.Row="2"
                                  IsVisible="{Binding IsEmpty}"
                                  VerticalOptions="Center"
                                  HorizontalOptions="Center"
@@ -159,9 +273,9 @@
                        TextColor="Gray"
                        HorizontalOptions="Center"/>
             </VerticalStackLayout>
-            
+
             <!-- Downloads List -->
-            <CollectionView Grid.Row="1"
+            <CollectionView Grid.Row="2"
                             ItemsSource="{Binding Torrents}"
                             SelectionMode="Single"
                             SelectedItem="{Binding SelectedTorrent}"
@@ -174,30 +288,36 @@
                                BorderColor="Transparent"
                                BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
                                HasShadow="True">
-                            <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8">
-                                
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                                  RowSpacing="8">
+
                                 <!-- Row 0: Name and Status -->
-                                 <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                                <Grid Grid.Row="0"
+                                      ColumnDefinitions="*,Auto,Auto"
+                                      ColumnSpacing="8">
                                     <Label Grid.Column="0"
                                            Text="{Binding Name}"
                                            FontSize="16"
                                            FontAttributes="Bold"
                                            LineBreakMode="TailTruncation"
                                            MaxLines="2"/>
-                                     <Button Grid.Column="1"
-                                              Text="📂"
-                                              Style="{StaticResource FolderButton}"
-                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=ShowInFolderCommand}"
-                                              CommandParameter="{Binding .}"
-                                              IsEnabled="{Binding CanOpenDownloadedFile}"
-                                              Opacity="0.5">
-                                         <Button.Triggers>
-                                             <DataTrigger TargetType="Button" Binding="{Binding CanOpenDownloadedFile}" Value="True">
-                                                 <Setter Property="Opacity" Value="1" />
-                                             </DataTrigger>
-                                         </Button.Triggers>
-                                     </Button>
-                                     <Frame Grid.Column="2"
+                                    <Button Grid.Column="1"
+                                            Text="📂"
+                                            Style="{StaticResource FolderButton}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=ShowInFolderCommand}"
+                                            CommandParameter="{Binding .}"
+                                            IsEnabled="{Binding CanOpenDownloadedFile}"
+                                            Opacity="0.5">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button"
+                                                         Binding="{Binding CanOpenDownloadedFile}"
+                                                         Value="True">
+                                                <Setter Property="Opacity"
+                                                        Value="1"/>
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                    <Frame Grid.Column="2"
                                            Padding="8,4"
                                            CornerRadius="12"
                                            BorderColor="Transparent"
@@ -208,44 +328,76 @@
                                                FontAttributes="Bold"/>
                                     </Frame>
                                 </Grid>
-                                
+
                                 <!-- Row 1: Progress Bar -->
                                 <ProgressBar Grid.Row="1"
                                              Progress="{Binding Progress, Converter={StaticResource ProgressConverter}}"
                                              ProgressColor="{StaticResource AccentColor}"
                                              HeightRequest="8"/>
-                                
+
                                 <!-- Row 2: Stats -->
-                                <Grid Grid.Row="2" ColumnDefinitions="*,*,*,*,*,*" ColumnSpacing="8">
-                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                        <Label Text="Size" FontSize="10" TextColor="Gray"/>
-                                        <Label Text="{Binding FormattedTotalSize}" FontSize="12" FontAttributes="Bold"/>
+                                <Grid Grid.Row="2"
+                                      ColumnDefinitions="*,*,*,*,*,*"
+                                      ColumnSpacing="8">
+                                    <VerticalStackLayout Grid.Column="0"
+                                            Spacing="2">
+                                        <Label Text="Size"
+                                                FontSize="10"
+                                                TextColor="Gray"/>
+                                        <Label Text="{Binding FormattedTotalSize}"
+                                                FontSize="12"
+                                                FontAttributes="Bold"/>
                                     </VerticalStackLayout>
-                                    <VerticalStackLayout Grid.Column="1" Spacing="2">
-                                        <Label Text="⬇️ Speed" FontSize="10" TextColor="Gray"/>
-                                        <Label Text="{Binding FormattedDownloadSpeed}" FontSize="12" FontAttributes="Bold"/>
+                                    <VerticalStackLayout Grid.Column="1"
+                                            Spacing="2">
+                                        <Label Text="⬇️ Speed"
+                                                FontSize="10"
+                                                TextColor="Gray"/>
+                                        <Label Text="{Binding FormattedDownloadSpeed}"
+                                                FontSize="12"
+                                                FontAttributes="Bold"/>
                                     </VerticalStackLayout>
-                                    <VerticalStackLayout Grid.Column="2" Spacing="2">
-                                        <Label Text="⬆️ Speed" FontSize="10" TextColor="Gray"/>
-                                        <Label Text="{Binding FormattedUploadSpeed}" FontSize="12" FontAttributes="Bold"/>
+                                    <VerticalStackLayout Grid.Column="2"
+                                            Spacing="2">
+                                        <Label Text="⬆️ Speed"
+                                                FontSize="10"
+                                                TextColor="Gray"/>
+                                        <Label Text="{Binding FormattedUploadSpeed}"
+                                                FontSize="12"
+                                                FontAttributes="Bold"/>
                                     </VerticalStackLayout>
-                                    <VerticalStackLayout Grid.Column="3" Spacing="2">
-                                        <Label Text="🌱 Seeds" FontSize="10" TextColor="Gray"/>
-                                        <Label Text="{Binding Seeders}" FontSize="12" FontAttributes="Bold"/>
+                                    <VerticalStackLayout Grid.Column="3"
+                                            Spacing="2">
+                                        <Label Text="🌱 Seeds"
+                                                FontSize="10"
+                                                TextColor="Gray"/>
+                                        <Label Text="{Binding Seeders}"
+                                                FontSize="12"
+                                                FontAttributes="Bold"/>
                                     </VerticalStackLayout>
-                                    <VerticalStackLayout Grid.Column="4" Spacing="2">
-                                        <Label Text="👥 Peers" FontSize="10" TextColor="Gray"/>
-                                        <Label Text="{Binding Leechers}" FontSize="12" FontAttributes="Bold"/>
+                                    <VerticalStackLayout Grid.Column="4"
+                                            Spacing="2">
+                                        <Label Text="👥 Peers"
+                                                FontSize="10"
+                                                TextColor="Gray"/>
+                                        <Label Text="{Binding Leechers}"
+                                                FontSize="12"
+                                                FontAttributes="Bold"/>
                                     </VerticalStackLayout>
-                                    <VerticalStackLayout Grid.Column="5" Spacing="2">
-                                        <Label Text="⏳ ETA" FontSize="10" TextColor="Gray"/>
-                                        <Label Text="{Binding FormattedEstimatedTime}" FontSize="12" FontAttributes="Bold"/>
+                                    <VerticalStackLayout Grid.Column="5"
+                                            Spacing="2">
+                                        <Label Text="⏳ ETA"
+                                                FontSize="10"
+                                                TextColor="Gray"/>
+                                        <Label Text="{Binding FormattedEstimatedTime}"
+                                                FontSize="12"
+                                                FontAttributes="Bold"/>
                                     </VerticalStackLayout>
                                 </Grid>
-                                
+
                                 <!-- Row 3: Action Buttons -->
-                                <HorizontalStackLayout Grid.Row="3" 
-                                                       Spacing="8" 
+                                <HorizontalStackLayout Grid.Row="3"
+                                                       Spacing="8"
                                                        HorizontalOptions="End"
                                                        Margin="0,8,0,0">
                                     <Button Text="▶️"
@@ -274,7 +426,7 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
         </Grid>
-        
+
         <!-- Loading Indicator -->
         <ActivityIndicator Grid.RowSpan="3"
                            IsRunning="{Binding IsBusy}"

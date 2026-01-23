@@ -26,6 +26,11 @@ public enum DownloadStatus
     Completed,
 
     /// <summary>
+    /// Download is complete and the client is seeding (uploading).
+    /// </summary>
+    Seeding,
+
+    /// <summary>
     /// Download has failed.
     /// </summary>
     Failed,
