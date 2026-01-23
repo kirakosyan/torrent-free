@@ -1,8 +1,6 @@
-# Torrent Free 🔥
+# Torrent Free (.NET MAUI)
 
-A free, cross-platform torrent client UI built with .NET MAUI. Features a beautiful, professional interface for managing magnet link downloads.
-
-> **⚠️ Demo Version**: This is a UI demonstration with simulated download progress. Real BitTorrent protocol integration would require a library like [MonoTorrent](https://github.com/alanmcgovern/monotorrent). The current implementation showcases the UI, architecture, and user experience.
+Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real engine, not simulated). Supports importing `.torrent` files and magnet links, shows live stats, and stores downloads next to the picked `.torrent` when possible.
 
 ![.NET MAUI](https://img.shields.io/badge/.NET-MAUI-purple)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20|%20Android%20|%20iOS-blue)
@@ -10,31 +8,31 @@ A free, cross-platform torrent client UI built with .NET MAUI. Features a beauti
 
 ## ✨ Features
 
-- **📥 Easy Downloads**: Simply paste a magnet link and click download
-- **📊 Progress Tracking**: Real-time progress bars showing download status (simulated)
-- **⏯️ Download Control**: Start, pause, stop, and resume downloads at any time
-- **📜 Download History**: Keep track of all your downloads in one place
-- **🌍 Multilanguage Support**: Available in English, French, Spanish, and Russian
-- **💾 Persistent Storage**: Your downloads are saved and restored when you reopen the app
-- **🎨 Professional UI**: Modern, clean interface with intuitive controls
+- **Import `.torrent` files** via native file picker (magnet links supported internally)
+- **Real torrent engine (MonoTorrent)** for downloads
+- **Start / Pause / Stop / Remove** controls
+- **Live stats**: progress, download/upload speed, seeds, peers, ETA
+- **Duplicate protection** by info-hash and magnet link
+- **Save path** prefers the picked `.torrent` folder (if available) otherwise the default path
+- **Persistent storage** of torrent list
 
 ## 📱 Supported Platforms
 
 | Platform | Status |
 |----------|--------|
-| Windows | ✅ Supported |
+| Windows | ✅ Supported (WinUI) |
 | Android | ✅ Supported |
-| iOS | ✅ Supported |
-| macOS | ✅ Supported (via Mac Catalyst) |
+| iOS | ✅ Supported (requires macOS) |
+| macOS | ✅ Supported (Mac Catalyst) |
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) or later
-- For Android: Android SDK (API 21 or higher)
-- For iOS/macOS: Xcode 15+ (macOS only)
-- For Windows: Windows 10 version 1809 or higher
+- .NET 8/10 SDK with .NET MAUI workload installed
+- Android SDK/Emulator for Android builds
+- Windows App SDK (WinUI) for Windows builds
+- Xcode 15+ (on macOS) for iOS/macOS
 
 ### Building the Project
 
@@ -57,8 +55,9 @@ A free, cross-platform torrent client UI built with .NET MAUI. Features a beauti
    # Windows (from Windows)
    dotnet build src/TorrentFree/TorrentFree.csproj -f net10.0-windows10.0.19041.0
    
-   # iOS (from macOS)
+   # iOS/MacCatalyst (from macOS)
    dotnet build src/TorrentFree/TorrentFree.csproj -f net10.0-ios
+   dotnet build src/TorrentFree/TorrentFree.csproj -f net10.0-maccatalyst
    ```
 
 ### Running the App
@@ -75,9 +74,8 @@ dotnet run --project src/TorrentFree/TorrentFree.csproj -f net10.0-windows10.0.1
 
 ### Adding a Torrent
 
-1. **Copy a magnet link** from your torrent source
-2. **Paste the link** into the input field at the top of the app
-3. **Click the "Download" button** - the torrent will be added to your download list and start automatically
+1. Tap **Browse** and pick a `.torrent` file (magnet links are parsed internally)
+2. The torrent is added and starts automatically (unless a duplicate is detected)
 
 ### Managing Downloads
 
@@ -103,28 +101,20 @@ Each download in the list has action buttons:
 
 ## 🏗️ Architecture
 
-The app follows the **MVVM (Model-View-ViewModel)** pattern:
+The app follows **MVVM**:
 
 ```
 src/TorrentFree/
-├── Models/              # Data models (TorrentItem, DownloadStatus)
-├── ViewModels/          # View models with business logic
-├── Views/               # XAML pages and views
-├── Services/            # Business services
-│   ├── TorrentService   # Torrent download management
-│   ├── StorageService   # JSON persistence
-│   └── LocalizationService # Multi-language support
+├── Models/              # TorrentItem, DownloadStatus
+├── ViewModels/          # MainViewModel
+├── Services/            # TorrentService (MonoTorrent), StorageService, LocalizationService
 ├── Converters/          # XAML value converters
-└── Resources/
-    └── Strings/         # Localization resource files
+└── Resources/           # Styles, strings, assets
 ```
 
 ### Data Persistence
 
-Downloads are stored in a JSON file in the app's data directory:
-- **Android**: `/data/data/com.torrentfree.app/files/torrents.json`
-- **Windows**: `%LOCALAPPDATA%\TorrentFree\torrents.json`
-- **iOS/macOS**: `~/Library/Containers/com.torrentfree.app/Data/Documents/torrents.json`
+Downloads are stored in a JSON file in the app's data directory. Actual payload files are downloaded by MonoTorrent to the designated save path.
 
 ## 🌐 Localization
 
@@ -141,9 +131,10 @@ The app automatically uses the system language. To add more languages, create a 
 
 ## 🔧 Technologies Used
 
-- **.NET 10 MAUI** - Cross-platform UI framework
-- **CommunityToolkit.Mvvm** - MVVM infrastructure and source generators
-- **System.Text.Json** - JSON serialization for data persistence
+- .NET MAUI
+- MonoTorrent
+- CommunityToolkit.Mvvm
+- System.Text.Json
 
 ## 📄 License
 

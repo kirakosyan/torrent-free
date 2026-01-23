@@ -1,6 +1,9 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
+using System.Linq;
+using MonoTorrent;
+using MonoTorrent.Client;
 using TorrentFree.Models;
 
 namespace TorrentFree.Services;
@@ -24,6 +27,11 @@ public interface ITorrentService : IDisposable
     /// Adds a new torrent from a magnet link.
     /// </summary>
     Task<TorrentItem?> AddTorrentAsync(string magnetLink);
+
+    /// <summary>
+    /// Adds a new torrent from a parsed torrent file.
+    /// </summary>
+    Task<TorrentItem?> AddTorrentFileAsync(TorrentMetadata metadata);
 
     /// <summary>
     /// Starts or resumes downloading a torrent.
@@ -58,8 +66,10 @@ public class TorrentService : ITorrentService
 {
     private readonly IStorageService _storageService;
     private readonly ConcurrentDictionary<string, CancellationTokenSource> _downloadTokens = new();
+    private readonly ConcurrentDictionary<string, TorrentManager> _managers = new();
     private readonly object _torrentsLock = new();
     private readonly Timer _saveTimer;
+    private ClientEngine? _engine;
     private bool _pendingSave;
     private bool _disposed;
 
@@ -95,15 +105,35 @@ public class TorrentService : ITorrentService
             return null;
         }
 
-        // Parse torrent name from magnet link and sanitize it
-        var name = SanitizeFileName(ParseTorrentName(magnetLink));
+        MagnetLink magnet;
+        try
+        {
+            magnet = MagnetLink.Parse(magnetLink);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Magnet parse failed: {ex.Message}");
+            return null;
+        }
+
+        var infoHash = magnet.InfoHashes.V1?.ToHex() ?? magnet.InfoHashes.V2?.ToHex() ?? string.Empty;
+
+        if (IsDuplicate(infoHash, magnetLink))
+        {
+            throw new DuplicateTorrentException("This torrent is already added.");
+        }
+
+        var name = !string.IsNullOrWhiteSpace(magnet.Name)
+            ? SanitizeFileName(magnet.Name)
+            : SanitizeFileName(ParseTorrentName(magnetLink));
 
         var torrent = new TorrentItem
         {
             MagnetLink = magnetLink,
+            InfoHash = infoHash,
             Name = name,
             Status = DownloadStatus.Queued,
-            TotalSize = Random.Shared.NextInt64(100_000_000, 5_000_000_000), // Demo: random size
+            TotalSize = 0,
             SavePath = _storageService.GetDefaultDownloadPath()
         };
 
@@ -111,6 +141,60 @@ public class TorrentService : ITorrentService
         await SaveAsync();
 
         return torrent;
+    }
+
+    /// <inheritdoc />
+    public async Task<TorrentItem?> AddTorrentFileAsync(TorrentMetadata metadata)
+    {
+        ArgumentNullException.ThrowIfNull(metadata);
+
+        if (string.IsNullOrWhiteSpace(metadata.InfoHashHex))
+        {
+            return null;
+        }
+
+        var magnet = BuildMagnetLink(metadata.InfoHashHex, metadata.Name, metadata.Trackers);
+        return await AddTorrentAsync(magnet);
+    }
+
+    private static string BuildMagnetLink(string infoHashHex, string? displayName, IEnumerable<string> trackers)
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.Append("magnet:?");
+        sb.Append("xt=urn:btih:");
+        sb.Append(infoHashHex.ToLowerInvariant());
+
+        if (!string.IsNullOrWhiteSpace(displayName))
+        {
+            sb.Append("&dn=");
+            sb.Append(Uri.EscapeDataString(displayName));
+        }
+
+        foreach (var tr in trackers.Where(static t => !string.IsNullOrWhiteSpace(t)))
+        {
+            sb.Append("&tr=");
+            sb.Append(Uri.EscapeDataString(tr));
+        }
+
+        return sb.ToString();
+    }
+
+    private bool IsDuplicate(string infoHash, string magnetLink)
+    {
+        foreach (var existing in Torrents)
+        {
+            if (!string.IsNullOrWhiteSpace(infoHash) && infoHash.Equals(existing.InfoHash, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            if (magnetLink.Equals(existing.MagnetLink, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <inheritdoc />
@@ -124,6 +208,8 @@ public class TorrentService : ITorrentService
         torrent.Status = DownloadStatus.Downloading;
         await SaveAsync();
 
+        var manager = await GetOrCreateManagerAsync(torrent);
+
         // Cancel any existing download for this torrent
         if (_downloadTokens.TryRemove(torrent.Id, out var existingCts))
         {
@@ -134,8 +220,10 @@ public class TorrentService : ITorrentService
         var cts = new CancellationTokenSource();
         _downloadTokens[torrent.Id] = cts;
 
-        // Start simulated download in background
-        _ = SimulateDownloadAsync(torrent, cts.Token);
+        // Start real download
+        await manager.StartAsync();
+
+        _ = MonitorTorrentAsync(torrent, manager, cts.Token);
     }
 
     /// <inheritdoc />
@@ -151,6 +239,11 @@ public class TorrentService : ITorrentService
         {
             await cts.CancelAsync();
             cts.Dispose();
+        }
+
+        if (_managers.TryGetValue(torrent.Id, out var manager))
+        {
+            await manager.PauseAsync();
         }
 
         torrent.Status = DownloadStatus.Paused;
@@ -174,6 +267,11 @@ public class TorrentService : ITorrentService
             cts.Dispose();
         }
 
+        if (_managers.TryGetValue(torrent.Id, out var manager))
+        {
+            await manager.StopAsync();
+        }
+
         torrent.Status = DownloadStatus.Stopped;
         torrent.DownloadSpeed = 0;
         torrent.UploadSpeed = 0;
@@ -190,6 +288,18 @@ public class TorrentService : ITorrentService
         {
             await cts.CancelAsync();
             cts.Dispose();
+        }
+
+        if (_managers.TryRemove(torrent.Id, out var manager))
+        {
+            try
+            {
+                await manager.StopAsync();
+            }
+            catch
+            {
+                // ignore stop errors on remove
+            }
         }
 
         Torrents.Remove(torrent);
@@ -237,14 +347,15 @@ public class TorrentService : ITorrentService
             return false;
         }
 
-        // Validate magnet link format: must start with magnet:? and contain an info hash (xt parameter)
-        if (!link.StartsWith("magnet:?", StringComparison.OrdinalIgnoreCase))
+        try
+        {
+            _ = MagnetLink.Parse(link);
+            return true;
+        }
+        catch
         {
             return false;
         }
-
-        // Check for presence of xt parameter (required for BitTorrent magnet links)
-        return link.Contains("xt=", StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -306,74 +417,133 @@ public class TorrentService : ITorrentService
         return $"Torrent_{DateTime.Now:yyyyMMddHHmmss}";
     }
 
-    private async Task SimulateDownloadAsync(TorrentItem torrent, CancellationToken cancellationToken)
+    private async Task MonitorTorrentAsync(TorrentItem torrent, TorrentManager manager, CancellationToken cancellationToken)
     {
-        // This is a simulation of download progress for demonstration purposes
-        // In a real implementation, this would interface with a BitTorrent library
-
         try
         {
-            while (!cancellationToken.IsCancellationRequested && torrent.Progress < 100)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                await Task.Delay(500, cancellationToken);
+                await Task.Delay(1000, cancellationToken);
 
-                if (torrent.Status != DownloadStatus.Downloading)
+                var metadataSize = manager.Torrent?.Size;
+                var progress = manager.Progress;
+
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    if (metadataSize.HasValue && metadataSize.Value > 0)
+                    {
+                        torrent.TotalSize = metadataSize.Value;
+                    }
+
+                    var downloadedBytes = manager.Monitor.DataBytesDownloaded;
+                    if (downloadedBytes > 0)
+                    {
+                        torrent.DownloadedSize = downloadedBytes;
+                        if (torrent.TotalSize > 0)
+                        {
+                            progress = (double)downloadedBytes / torrent.TotalSize * 100;
+                        }
+                    }
+
+                    torrent.Progress = progress;
+                    torrent.DownloadSpeed = manager.Monitor.DownloadSpeed;
+                    torrent.UploadSpeed = manager.Monitor.UploadSpeed;
+                    var peers = manager.Peers;
+                    var seedsProp = peers.GetType().GetProperty("Seeds") ?? peers.GetType().GetProperty("Seeding");
+                    var leechProp = peers.GetType().GetProperty("Leeches") ?? peers.GetType().GetProperty("Leeching");
+                    var connectedProp = peers.GetType().GetProperty("ConnectedPeers")
+                                        ?? peers.GetType().GetProperty("ActivePeers")
+                                        ?? peers.GetType().GetProperty("AvailablePeers");
+
+                    var seeds = seedsProp?.GetValue(peers) as int? ?? 0;
+                    var leeches = leechProp?.GetValue(peers) as int? ?? 0;
+
+                    // Fallback: infer from connected peers collection if direct counts unavailable
+                    if ((seeds == 0 || leeches == 0) && connectedProp?.GetValue(peers) is System.Collections.IEnumerable peerList)
+                    {
+                        int seedCount = 0;
+                        int leechCount = 0;
+                        foreach (var peer in peerList)
+                        {
+                            var isSeederProp = peer?.GetType().GetProperty("IsSeeder") ?? peer?.GetType().GetProperty("AmSeeder");
+                            var isSeeder = (bool?)(isSeederProp?.GetValue(peer)) == true;
+                            if (isSeeder)
+                            {
+                                seedCount++;
+                            }
+                            else
+                            {
+                                leechCount++;
+                            }
+                        }
+
+                        if (seedCount > 0 || leechCount > 0)
+                        {
+                            seeds = seedCount;
+                            leeches = leechCount;
+                        }
+                    }
+
+                    torrent.Seeders = seeds;
+                    torrent.Leechers = leeches;
+
+                    if (torrent.DownloadSpeed > 0 && torrent.TotalSize > 0)
+                    {
+                        var remainingBytes = Math.Max(0, torrent.TotalSize - torrent.DownloadedSize);
+                        torrent.EstimatedSecondsRemaining = remainingBytes / Math.Max(1, torrent.DownloadSpeed);
+                    }
+                    else
+                    {
+                        torrent.EstimatedSecondsRemaining = 0;
+                    }
+
+                    // Map state
+                    torrent.Status = manager.State switch
+                    {
+                        TorrentState.Paused => DownloadStatus.Paused,
+                        TorrentState.Seeding => DownloadStatus.Completed,
+                        TorrentState.Stopped when progress >= 100 => DownloadStatus.Completed,
+                        TorrentState.Stopped => DownloadStatus.Stopped,
+                        TorrentState.Downloading => DownloadStatus.Downloading,
+                        _ => torrent.Status
+                    };
+
+                    if (torrent.Status == DownloadStatus.Completed)
+                    {
+                        torrent.DateCompleted = DateTime.Now;
+                    }
+                });
+
+                if (manager.HasMetadata && manager.Torrent != null)
+                {
+                    await MainThread.InvokeOnMainThreadAsync(() =>
+                    {
+                        torrent.TotalSize = manager.Torrent.Size;
+                        torrent.Name = manager.Torrent.Name;
+                    });
+                }
+
+                _pendingSave = true;
+
+                if (manager.State == TorrentState.Stopped && progress >= 100)
                 {
                     break;
                 }
-
-                // Update properties on UI thread to avoid cross-thread issues
-                await MainThread.InvokeOnMainThreadAsync(() =>
-                {
-                    // Simulate progress
-                    var increment = Random.Shared.NextDouble() * 2.0; // 0-2% per tick
-                    torrent.Progress = Math.Min(100, torrent.Progress + increment);
-                    torrent.DownloadedSize = (long)(torrent.TotalSize * torrent.Progress / 100);
-                    
-                    // Simulate speeds
-                    torrent.DownloadSpeed = Random.Shared.NextInt64(100_000, 10_000_000); // 100KB/s - 10MB/s
-                    torrent.UploadSpeed = Random.Shared.NextInt64(10_000, 1_000_000); // 10KB/s - 1MB/s
-                    
-                    // Simulate peers
-                    torrent.Seeders = Random.Shared.Next(1, 100);
-                    torrent.Leechers = Random.Shared.Next(0, 50);
-                });
-
-                // Mark save as pending (debounced)
-                _pendingSave = true;
-            }
-
-            if (torrent.Progress >= 100 && torrent.Status == DownloadStatus.Downloading)
-            {
-                await MainThread.InvokeOnMainThreadAsync(() =>
-                {
-                    torrent.Status = DownloadStatus.Completed;
-                    torrent.DateCompleted = DateTime.Now;
-                    torrent.DownloadSpeed = 0;
-                    torrent.UploadSpeed = 0;
-                    torrent.Progress = 100;
-                    torrent.DownloadedSize = torrent.TotalSize;
-                });
-                await SaveAsync();
             }
         }
         catch (OperationCanceledException)
         {
-            // Download was cancelled, this is expected
+            // expected on stop/pause
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Download error: {ex.Message}");
-            await MainThread.InvokeOnMainThreadAsync(() =>
-            {
-                torrent.Status = DownloadStatus.Failed;
-            });
-            await SaveAsync();
+            System.Diagnostics.Debug.WriteLine($"Monitor error: {ex.Message}");
+            await MainThread.InvokeOnMainThreadAsync(() => torrent.Status = DownloadStatus.Failed);
         }
         finally
         {
-            // Clean up the token from the dictionary
             _downloadTokens.TryRemove(torrent.Id, out _);
+            _pendingSave = true;
         }
     }
 
@@ -394,6 +564,42 @@ public class TorrentService : ITorrentService
             snapshot = [.. Torrents];
         }
         return _storageService.SaveTorrentsAsync(snapshot);
+    }
+
+    private async Task<ClientEngine> EnsureEngineAsync()
+    {
+        if (_engine is not null)
+        {
+            return _engine;
+        }
+
+        var engineSettings = new EngineSettingsBuilder
+        {
+            CacheDirectory = _storageService.GetDefaultDownloadPath(),
+            AllowPortForwarding = false,
+        }.ToSettings();
+
+        _engine = new ClientEngine(engineSettings);
+        return _engine;
+    }
+
+    private async Task<TorrentManager> GetOrCreateManagerAsync(TorrentItem torrent)
+    {
+        if (_managers.TryGetValue(torrent.Id, out var existing))
+        {
+            return existing;
+        }
+
+        var engine = await EnsureEngineAsync();
+        var downloadPath = string.IsNullOrWhiteSpace(torrent.SavePath) ? _storageService.GetDefaultDownloadPath() : torrent.SavePath;
+        var magnet = MagnetLink.Parse(torrent.MagnetLink);
+
+        var torrentSettings = new TorrentSettingsBuilder().ToSettings();
+
+        var manager = await engine.AddAsync(magnet, downloadPath, torrentSettings);
+
+        _managers[torrent.Id] = manager;
+        return manager;
     }
 
     public void Dispose()

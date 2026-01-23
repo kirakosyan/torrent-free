@@ -26,6 +26,12 @@ public partial class TorrentItem : ObservableObject
     private string magnetLink = string.Empty;
 
     /// <summary>
+    /// InfoHash (hex) if known, used for duplicate detection.
+    /// </summary>
+    [ObservableProperty]
+    private string infoHash = string.Empty;
+
+    /// <summary>
     /// Total size of the download in bytes.
     /// </summary>
     [ObservableProperty]
@@ -74,6 +80,19 @@ public partial class TorrentItem : ObservableObject
     private int leechers;
 
     /// <summary>
+    /// Estimated seconds remaining to finish download.
+    /// </summary>
+    [ObservableProperty]
+    private long estimatedSecondsRemaining;
+
+    /// <summary>
+    /// Formatted ETA string for UI.
+    /// </summary>
+    public string FormattedEstimatedTime => EstimatedSecondsRemaining <= 0
+        ? "—"
+        : TimeSpan.FromSeconds(EstimatedSecondsRemaining).ToString(EstimatedSecondsRemaining >= 3600 ? "hh\\:mm\\:ss" : "mm\\:ss");
+
+    /// <summary>
     /// Date and time when the torrent was added.
     /// </summary>
     [ObservableProperty]
@@ -90,6 +109,35 @@ public partial class TorrentItem : ObservableObject
     /// </summary>
     [ObservableProperty]
     private string savePath = string.Empty;
+
+    /// <summary>
+    /// Gets the full path to the downloaded file.
+    /// </summary>
+    public string DownloadedFilePath
+    {
+        get
+        {
+            var basePath = SavePath ?? string.Empty;
+            var safeName = string.IsNullOrWhiteSpace(Name) ? "unnamed_torrent" : Name;
+            safeName = string.Concat(safeName.Where(c => !Path.GetInvalidFileNameChars().Contains(c))).Trim();
+            if (string.IsNullOrWhiteSpace(safeName))
+            {
+                safeName = "unnamed_torrent";
+            }
+
+            var path = Path.Combine(basePath, safeName);
+            if (string.IsNullOrEmpty(Path.GetExtension(path)))
+            {
+                path += ".bin";
+            }
+            return path;
+        }
+    }
+
+    /// <summary>
+    /// Indicates whether the downloaded file can be opened from the UI.
+    /// </summary>
+    public bool CanOpenDownloadedFile => Status == DownloadStatus.Completed && File.Exists(DownloadedFilePath);
 
     /// <summary>
     /// Gets the formatted download speed string.
@@ -164,11 +212,25 @@ public partial class TorrentItem : ObservableObject
         OnPropertyChanged(nameof(CanStart));
         OnPropertyChanged(nameof(CanPause));
         OnPropertyChanged(nameof(CanStop));
+        OnPropertyChanged(nameof(CanOpenDownloadedFile));
+    }
+
+    partial void OnSavePathChanged(string value)
+    {
+        OnPropertyChanged(nameof(DownloadedFilePath));
+        OnPropertyChanged(nameof(CanOpenDownloadedFile));
+    }
+
+    partial void OnNameChanged(string value)
+    {
+        OnPropertyChanged(nameof(DownloadedFilePath));
+        OnPropertyChanged(nameof(CanOpenDownloadedFile));
     }
 
     partial void OnDownloadSpeedChanged(long value)
     {
         OnPropertyChanged(nameof(FormattedDownloadSpeed));
+        OnPropertyChanged(nameof(FormattedEstimatedTime));
     }
 
     partial void OnUploadSpeedChanged(long value)
@@ -179,10 +241,17 @@ public partial class TorrentItem : ObservableObject
     partial void OnTotalSizeChanged(long value)
     {
         OnPropertyChanged(nameof(FormattedTotalSize));
+        OnPropertyChanged(nameof(FormattedEstimatedTime));
     }
 
     partial void OnDownloadedSizeChanged(long value)
     {
         OnPropertyChanged(nameof(FormattedDownloadedSize));
+        OnPropertyChanged(nameof(FormattedEstimatedTime));
+    }
+
+    partial void OnEstimatedSecondsRemainingChanged(long value)
+    {
+        OnPropertyChanged(nameof(FormattedEstimatedTime));
     }
 }

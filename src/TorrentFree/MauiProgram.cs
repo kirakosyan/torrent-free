@@ -21,6 +21,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<IStorageService, StorageService>();
         builder.Services.AddSingleton<ITorrentService, TorrentService>();
         builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
+        builder.Services.AddSingleton<ITorrentFilePicker, MauiTorrentFilePicker>();
+        builder.Services.AddSingleton<ITorrentFileParser, TorrentFileParser>();
 
         // Register ViewModels
         builder.Services.AddSingleton<MainViewModel>();

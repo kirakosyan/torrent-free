@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TorrentFree.Models;
@@ -12,6 +13,8 @@ namespace TorrentFree.ViewModels;
 public partial class MainViewModel : ObservableObject, IDisposable
 {
     private readonly ITorrentService _torrentService;
+    private readonly ITorrentFilePicker _torrentFilePicker;
+    private readonly ITorrentFileParser _torrentFileParser;
     private bool _disposed;
 
     /// <summary>
@@ -53,10 +56,133 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// </summary>
     public bool IsEmpty => Torrents.Count == 0;
 
-    public MainViewModel(ITorrentService torrentService)
+    public MainViewModel(ITorrentService torrentService, ITorrentFilePicker torrentFilePicker, ITorrentFileParser torrentFileParser)
     {
         _torrentService = torrentService;
+        _torrentFilePicker = torrentFilePicker;
+        _torrentFileParser = torrentFileParser;
         Torrents.CollectionChanged += OnTorrentsCollectionChanged;
+    }
+
+    [RelayCommand]
+    private async Task ShowInFolderAsync(TorrentItem torrent)
+    {
+        if (torrent is null || !torrent.CanOpenDownloadedFile)
+        {
+            return;
+        }
+
+        try
+        {
+            var filePath = torrent.DownloadedFilePath;
+            var folderPath = Path.GetDirectoryName(filePath);
+            if (string.IsNullOrWhiteSpace(folderPath))
+            {
+                return;
+            }
+
+            if (DeviceInfo.Platform == DevicePlatform.WinUI)
+            {
+                // Windows: open File Explorer and select the file
+                try
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "explorer.exe",
+                        Arguments = $"/select,\"{filePath}\"",
+                        UseShellExecute = true
+                    });
+                    return;
+                }
+                catch
+                {
+                    // Fallback below
+                }
+            }
+            else if (DeviceInfo.Platform == DevicePlatform.MacCatalyst)
+            {
+                // macOS: reveal file in Finder
+                try
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "open",
+                        Arguments = $"-R \"{filePath}\"",
+                        UseShellExecute = false
+                    });
+                    return;
+                }
+                catch
+                {
+                    // Fallback below
+                }
+            }
+
+            // Best-effort fallback: open the containing folder (or the file if folder cannot be opened)
+            var target = Directory.Exists(folderPath) ? new Uri(folderPath) : new Uri(filePath);
+            await Launcher.Default.OpenAsync(target);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Show in folder error: {ex}");
+            ErrorMessage = "Failed to open folder for the download.";
+        }
+    }
+
+    /// <summary>
+    /// Lets the user pick a local .torrent file, converts it to a magnet link, and starts the download.
+    /// </summary>
+    [RelayCommand]
+    private async Task BrowseTorrentFileAsync()
+    {
+        IsBusy = true;
+        ErrorMessage = null;
+
+        try
+        {
+            var picked = await _torrentFilePicker.PickTorrentFileAsync();
+            if (picked is null)
+            {
+                return;
+            }
+
+            var metadata = _torrentFileParser.Parse(picked.Content);
+            TorrentItem? torrent = null;
+            try
+            {
+                torrent = await _torrentService.AddTorrentFileAsync(metadata);
+                if (torrent is null)
+                {
+                    ErrorMessage = "Invalid .torrent file. Unable to extract an info hash.";
+                    return;
+                }
+            }
+            catch (DuplicateTorrentException)
+            {
+                ErrorMessage = "This torrent is already in your list.";
+                return;
+            }
+
+            var folder = !string.IsNullOrWhiteSpace(picked.FullPath)
+                ? Path.GetDirectoryName(picked.FullPath)
+                : null;
+
+            if (!string.IsNullOrWhiteSpace(folder) && Directory.Exists(folder))
+            {
+                torrent.SavePath = folder;
+            }
+
+            await _torrentService.StartTorrentAsync(torrent);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Browse torrent file error: {ex}");
+            ErrorMessage = "Failed to import .torrent file. Please try again.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private void OnTorrentsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

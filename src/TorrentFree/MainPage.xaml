@@ -95,11 +95,11 @@
                        ClearButtonVisibility="WhileEditing"
                        Keyboard="Url"
                        MaxLength="4000"/>
-                
+
                 <Button Grid.Column="1"
-                        Text="⬇️ Download"
-                        Command="{Binding AddTorrentCommand}"
-                        BackgroundColor="{StaticResource AccentColor}"
+                        Text="📁 Browse"
+                        Command="{Binding BrowseTorrentFileCommand}"
+                        BackgroundColor="#607D8B"
                         TextColor="White"
                         FontSize="14"
                         FontAttributes="Bold"
@@ -162,14 +162,29 @@
                             <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8">
                                 
                                 <!-- Row 0: Name and Status -->
-                                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                 <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
                                     <Label Grid.Column="0"
                                            Text="{Binding Name}"
                                            FontSize="16"
                                            FontAttributes="Bold"
                                            LineBreakMode="TailTruncation"
                                            MaxLines="2"/>
-                                    <Frame Grid.Column="1"
+                                     <Button Grid.Column="1"
+                                             Text="📂"
+                                             Style="{StaticResource ActionButton}"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=ShowInFolderCommand}"
+                                             CommandParameter="{Binding .}"
+                                             IsEnabled="{Binding CanOpenDownloadedFile}"
+                                             BackgroundColor="#03A9F4"
+                                             TextColor="White"
+                                             Opacity="0.6">
+                                         <Button.Triggers>
+                                             <DataTrigger TargetType="Button" Binding="{Binding CanOpenDownloadedFile}" Value="True">
+                                                 <Setter Property="Opacity" Value="1" />
+                                             </DataTrigger>
+                                         </Button.Triggers>
+                                     </Button>
+                                     <Frame Grid.Column="2"
                                            Padding="8,4"
                                            CornerRadius="12"
                                            BorderColor="Transparent"
@@ -188,7 +203,7 @@
                                              HeightRequest="8"/>
                                 
                                 <!-- Row 2: Stats -->
-                                <Grid Grid.Row="2" ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+                                <Grid Grid.Row="2" ColumnDefinitions="*,*,*,*,*" ColumnSpacing="8">
                                     <VerticalStackLayout Grid.Column="0" Spacing="2">
                                         <Label Text="Size" FontSize="10" TextColor="Gray"/>
                                         <Label Text="{Binding FormattedTotalSize}" FontSize="12" FontAttributes="Bold"/>
@@ -204,6 +219,10 @@
                                     <VerticalStackLayout Grid.Column="3" Spacing="2">
                                         <Label Text="👥 Peers" FontSize="10" TextColor="Gray"/>
                                         <Label Text="{Binding Leechers}" FontSize="12" FontAttributes="Bold"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="4" Spacing="2">
+                                        <Label Text="⏳ ETA" FontSize="10" TextColor="Gray"/>
+                                        <Label Text="{Binding FormattedEstimatedTime}" FontSize="12" FontAttributes="Bold"/>
                                     </VerticalStackLayout>
                                 </Grid>
                                 
