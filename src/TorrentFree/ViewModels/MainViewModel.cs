@@ -74,8 +74,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         try
         {
-            var filePath = torrent.DownloadedFilePath;
-            var folderPath = Path.GetDirectoryName(filePath);
+            var downloadPath = torrent.DownloadedFilePath;
+            var isDirectory = Directory.Exists(downloadPath);
+            
+            // For directories, we want to open the folder itself
+            // For files, we want to open the containing folder and select the file
+            var targetPath = isDirectory ? downloadPath : downloadPath;
+            var folderPath = isDirectory ? downloadPath : Path.GetDirectoryName(downloadPath);
+            
             if (string.IsNullOrWhiteSpace(folderPath))
             {
                 return;
@@ -83,15 +89,28 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
             if (DeviceInfo.Platform == DevicePlatform.WinUI)
             {
-                // Windows: open File Explorer and select the file
                 try
                 {
-                    Process.Start(new ProcessStartInfo
+                    if (isDirectory)
                     {
-                        FileName = "explorer.exe",
-                        Arguments = $"/select,\"{filePath}\"",
-                        UseShellExecute = true
-                    });
+                        // For directories, just open the folder
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = "explorer.exe",
+                            Arguments = $"\"{downloadPath}\"",
+                            UseShellExecute = true
+                        });
+                    }
+                    else
+                    {
+                        // For files, open File Explorer and select the file
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = "explorer.exe",
+                            Arguments = $"/select,\"{downloadPath}\"",
+                            UseShellExecute = true
+                        });
+                    }
                     return;
                 }
                 catch
@@ -101,15 +120,28 @@ public partial class MainViewModel : ObservableObject, IDisposable
             }
             else if (DeviceInfo.Platform == DevicePlatform.MacCatalyst)
             {
-                // macOS: reveal file in Finder
                 try
                 {
-                    Process.Start(new ProcessStartInfo
+                    if (isDirectory)
                     {
-                        FileName = "open",
-                        Arguments = $"-R \"{filePath}\"",
-                        UseShellExecute = false
-                    });
+                        // For directories, just open the folder
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = "open",
+                            Arguments = $"\"{downloadPath}\"",
+                            UseShellExecute = false
+                        });
+                    }
+                    else
+                    {
+                        // For files, reveal in Finder
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = "open",
+                            Arguments = $"-R \"{downloadPath}\"",
+                            UseShellExecute = false
+                        });
+                    }
                     return;
                 }
                 catch
@@ -118,9 +150,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 }
             }
 
-            // Best-effort fallback: open the containing folder (or the file if folder cannot be opened)
-            var target = Directory.Exists(folderPath) ? new Uri(folderPath) : new Uri(filePath);
-            await Launcher.Default.OpenAsync(target);
+            // Best-effort fallback: open the folder (for directories, open directly; for files, open containing folder)
+            var targetFolder = isDirectory ? downloadPath : folderPath;
+            if (Directory.Exists(targetFolder))
+            {
+                await Launcher.Default.OpenAsync(new Uri(targetFolder));
+            }
         }
         catch (Exception ex)
         {

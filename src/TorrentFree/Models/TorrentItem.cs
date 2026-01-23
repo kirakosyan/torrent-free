@@ -111,7 +111,7 @@ public partial class TorrentItem : ObservableObject
     private string savePath = string.Empty;
 
     /// <summary>
-    /// Gets the full path to the downloaded file.
+    /// Gets the full path to the downloaded file or folder.
     /// </summary>
     public string DownloadedFilePath
     {
@@ -125,19 +125,26 @@ public partial class TorrentItem : ObservableObject
                 safeName = "unnamed_torrent";
             }
 
-            var path = Path.Combine(basePath, safeName);
-            if (string.IsNullOrEmpty(Path.GetExtension(path)))
-            {
-                path += ".bin";
-            }
-            return path;
+            return Path.Combine(basePath, safeName);
         }
     }
 
     /// <summary>
-    /// Indicates whether the downloaded file can be opened from the UI.
+    /// Indicates whether the downloaded file or folder can be opened from the UI.
     /// </summary>
-    public bool CanOpenDownloadedFile => Status == DownloadStatus.Completed && File.Exists(DownloadedFilePath);
+    public bool CanOpenDownloadedFile
+    {
+        get
+        {
+            if (Status != DownloadStatus.Completed)
+            {
+                return false;
+            }
+
+            var path = DownloadedFilePath;
+            return File.Exists(path) || Directory.Exists(path);
+        }
+    }
 
     /// <summary>
     /// Gets the formatted download speed string.
