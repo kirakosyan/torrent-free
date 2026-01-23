@@ -576,12 +576,27 @@ public class TorrentService : ITorrentService
         var engineSettings = new EngineSettingsBuilder
         {
             CacheDirectory = _storageService.GetDefaultDownloadPath(),
-            AllowPortForwarding = false,
+            // Enable UPnP/NAT-PMP port forwarding so peers can connect to us
+            AllowPortForwarding = true,
+            // Enable DHT for peer discovery (critical for finding more peers)
+            DhtEndPoint = new System.Net.IPEndPoint(System.Net.IPAddress.Any, 0),
+            // Enable Local Peer Discovery to find peers on the same network
+            AllowLocalPeerDiscovery = true,
+            // Increase maximum connections for better download speeds
+            MaximumConnections = 200,
+            MaximumHalfOpenConnections = 50,
+            // Set a listen endpoint to accept incoming connections
+            ListenEndPoints = new Dictionary<string, System.Net.IPEndPoint>
+            {
+                { "ipv4", new System.Net.IPEndPoint(System.Net.IPAddress.Any, 0) }
+            }
         }.ToSettings();
 
         _engine = new ClientEngine(engineSettings);
+
         return _engine;
     }
+
 
     private async Task<TorrentManager> GetOrCreateManagerAsync(TorrentItem torrent)
     {
@@ -594,7 +609,13 @@ public class TorrentService : ITorrentService
         var downloadPath = string.IsNullOrWhiteSpace(torrent.SavePath) ? _storageService.GetDefaultDownloadPath() : torrent.SavePath;
         var magnet = MagnetLink.Parse(torrent.MagnetLink);
 
-        var torrentSettings = new TorrentSettingsBuilder().ToSettings();
+        var torrentSettings = new TorrentSettingsBuilder
+        {
+            // Increase maximum connections per torrent
+            MaximumConnections = 100,
+            // Limit upload slots to prioritize downloads
+            UploadSlots = 4,
+        }.ToSettings();
 
         var manager = await engine.AddAsync(magnet, downloadPath, torrentSettings);
 
