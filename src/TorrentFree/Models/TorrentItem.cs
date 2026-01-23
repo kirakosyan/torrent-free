@@ -101,7 +101,7 @@ public partial class TorrentItem : ObservableObject
     /// Formatted ETA string for UI.
     /// </summary>
     public string FormattedEstimatedTime => EstimatedSecondsRemaining <= 0
-        ? "�"
+        ? "—"
         : TimeSpan.FromSeconds(EstimatedSecondsRemaining).ToString(EstimatedSecondsRemaining >= 3600 ? "hh\\:mm\\:ss" : "mm\\:ss");
 
     /// <summary>
@@ -139,6 +139,12 @@ public partial class TorrentItem : ObservableObject
     /// </summary>
     [ObservableProperty]
     private string savePath = string.Empty;
+
+    /// <summary>
+    /// Local .torrent file path when imported from disk.
+    /// </summary>
+    [ObservableProperty]
+    private string? torrentFilePath;
 
     /// <summary>
     /// Gets the full path to the downloaded file or folder.

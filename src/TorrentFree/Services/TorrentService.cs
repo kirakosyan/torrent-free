@@ -52,7 +52,7 @@ public interface ITorrentService : IDisposable
     /// <summary>
     /// Removes a torrent from the list.
     /// </summary>
-    Task RemoveTorrentAsync(TorrentItem torrent, bool deleteFiles = false);
+    Task RemoveTorrentAsync(TorrentItem torrent, bool deleteTorrentFile = false, bool deleteFiles = false);
 
     /// <summary>
     /// Validates if a string is a valid magnet link.
@@ -334,7 +334,7 @@ public class TorrentService : ITorrentService
     }
 
     /// <inheritdoc />
-    public async Task RemoveTorrentAsync(TorrentItem torrent, bool deleteFiles = false)
+    public async Task RemoveTorrentAsync(TorrentItem torrent, bool deleteTorrentFile = false, bool deleteFiles = false)
     {
         // Cancel any active download
         if (_downloadTokens.TryRemove(torrent.Id, out var cts))
@@ -359,6 +359,11 @@ public class TorrentService : ITorrentService
         Torrents.Remove(torrent);
         await SaveAsync();
 
+        if (deleteTorrentFile)
+        {
+            TryDeleteTorrentFile(torrent);
+        }
+
         await TryStartQueuedTorrentsAsync();
 
         // Optionally delete downloaded files
@@ -379,19 +384,84 @@ public class TorrentService : ITorrentService
                     return;
                 }
 
+                var torrentFilePath = string.IsNullOrWhiteSpace(torrent.TorrentFilePath)
+                    ? null
+                    : Path.GetFullPath(torrent.TorrentFilePath);
+
                 if (File.Exists(fullPath))
                 {
+                    if (!deleteTorrentFile && (string.Equals(fullPath, torrentFilePath, StringComparison.OrdinalIgnoreCase)
+                        || fullPath.EndsWith(".torrent", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        return;
+                    }
+
                     File.Delete(fullPath);
                 }
                 else if (Directory.Exists(fullPath))
                 {
-                    Directory.Delete(fullPath, true);
+                    if (!deleteTorrentFile)
+                    {
+                        DeleteDirectoryPreserveTorrentFiles(fullPath);
+                    }
+                    else
+                    {
+                        Directory.Delete(fullPath, true);
+                    }
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error deleting files: {ex.Message}");
             }
+        }
+    }
+
+    private static void DeleteDirectoryPreserveTorrentFiles(string directoryPath)
+    {
+        foreach (var file in Directory.GetFiles(directoryPath))
+        {
+            if (file.EndsWith(".torrent", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            File.Delete(file);
+        }
+
+        foreach (var dir in Directory.GetDirectories(directoryPath))
+        {
+            DeleteDirectoryPreserveTorrentFiles(dir);
+            if (!Directory.EnumerateFileSystemEntries(dir).Any())
+            {
+                Directory.Delete(dir);
+            }
+        }
+    }
+
+    private static void TryDeleteTorrentFile(TorrentItem torrent)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(torrent.TorrentFilePath))
+            {
+                return;
+            }
+
+            var fullPath = Path.GetFullPath(torrent.TorrentFilePath);
+            if (!fullPath.EndsWith(".torrent", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if (File.Exists(fullPath))
+            {
+                File.Delete(fullPath);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error deleting .torrent file: {ex.Message}");
         }
     }
 

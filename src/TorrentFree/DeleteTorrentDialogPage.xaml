@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TorrentFree.DeleteTorrentDialogPage"
+             BackgroundColor="#80000000"
+             Padding="24">
+
+    <Grid RowDefinitions="*"
+          ColumnDefinitions="*">
+        <Frame Padding="20"
+               CornerRadius="12"
+               BackgroundColor="{AppThemeBinding Light=White, Dark=#2D2D30}"
+               HasShadow="True"
+               VerticalOptions="Center"
+               HorizontalOptions="Center"
+               MaximumWidthRequest="420">
+            <VerticalStackLayout Spacing="16">
+                <Label Text="Delete torrent"
+                       FontSize="18"
+                       FontAttributes="Bold"/>
+                <Label Text="Choose what to delete:"
+                       FontSize="12"
+                       TextColor="Gray"/>
+                <Label Text="{Binding TorrentName}"
+                       FontSize="14"
+                       FontAttributes="Bold"/>
+
+                <HorizontalStackLayout Spacing="8">
+                    <CheckBox IsChecked="{Binding DeleteTorrentFile}"/>
+                    <Label Text="Delete .torrent file from disk"
+                           VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Spacing="8">
+                    <CheckBox IsChecked="{Binding DeleteDownloadedFiles}"/>
+                    <Label Text="Delete downloaded files"
+                           VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Spacing="12"
+                                       HorizontalOptions="End">
+                    <Button Text="Cancel"
+                            BackgroundColor="#BDBDBD"
+                            TextColor="White"
+                            Clicked="OnCancelClicked"/>
+                    <Button Text="Delete"
+                            BackgroundColor="#E53935"
+                            TextColor="White"
+                            IsEnabled="{Binding CanDelete}"
+                            Clicked="OnDeleteClicked"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
+</ContentPage>

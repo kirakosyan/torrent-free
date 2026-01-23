@@ -13,6 +13,12 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IStorageService _storageService;
     private readonly ITorrentService _torrentService;
     private bool _isLoadingSettings;
+    private bool _isNormalizing;
+
+    private const int MaxKbpsLimit = 1_000_000;
+    private const int MaxActiveLimit = 200;
+    private const double MaxSeedRatioLimit = 100;
+    private const int MaxSeedMinutesLimit = 525_600;
 
     /// <summary>
     /// Global download limit in KB/s (0 = unlimited).
@@ -50,6 +56,12 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private int globalMaxSeedMinutes;
 
+    /// <summary>
+    /// Validation message shown to the user.
+    /// </summary>
+    [ObservableProperty]
+    private string? validationMessage;
+
     public SettingsViewModel(IStorageService storageService, ITorrentService torrentService)
     {
         _storageService = storageService;
@@ -70,41 +82,79 @@ public partial class SettingsViewModel : ObservableObject
         GlobalMaxSeedMinutes = settings.GlobalMaxSeedMinutes;
 
         _isLoadingSettings = false;
+        NormalizeAllSettings();
         ApplySettingsToService();
+        _ = PersistSettingsAsync();
     }
 
     partial void OnGlobalDownloadLimitKbpsChanged(int value)
     {
+        if (TryNormalizeInt(nameof(GlobalDownloadLimitKbps), value, 0, MaxKbpsLimit, "Download limit", " KB/s", out var normalized))
+        {
+            GlobalDownloadLimitKbps = normalized;
+            return;
+        }
+
         ApplySpeedLimits();
         _ = PersistSettingsAsync();
     }
 
     partial void OnGlobalUploadLimitKbpsChanged(int value)
     {
+        if (TryNormalizeInt(nameof(GlobalUploadLimitKbps), value, 0, MaxKbpsLimit, "Upload limit", " KB/s", out var normalized))
+        {
+            GlobalUploadLimitKbps = normalized;
+            return;
+        }
+
         ApplySpeedLimits();
         _ = PersistSettingsAsync();
     }
 
     partial void OnMaxActiveDownloadsChanged(int value)
     {
+        if (TryNormalizeInt(nameof(MaxActiveDownloads), value, 0, MaxActiveLimit, "Max active downloads", "", out var normalized))
+        {
+            MaxActiveDownloads = normalized;
+            return;
+        }
+
         ApplyQueueLimits();
         _ = PersistSettingsAsync();
     }
 
     partial void OnMaxActiveSeedsChanged(int value)
     {
+        if (TryNormalizeInt(nameof(MaxActiveSeeds), value, 0, MaxActiveLimit, "Max active seeds", "", out var normalized))
+        {
+            MaxActiveSeeds = normalized;
+            return;
+        }
+
         ApplyQueueLimits();
         _ = PersistSettingsAsync();
     }
 
     partial void OnGlobalMaxSeedRatioChanged(double value)
     {
+        if (TryNormalizeSeedRatio(value, out var normalized))
+        {
+            GlobalMaxSeedRatio = normalized;
+            return;
+        }
+
         ApplySeedingLimits();
         _ = PersistSettingsAsync();
     }
 
     partial void OnGlobalMaxSeedMinutesChanged(int value)
     {
+        if (TryNormalizeInt(nameof(GlobalMaxSeedMinutes), value, 0, MaxSeedMinutesLimit, "Max seed minutes", " min", out var normalized))
+        {
+            GlobalMaxSeedMinutes = normalized;
+            return;
+        }
+
         ApplySeedingLimits();
         _ = PersistSettingsAsync();
     }
@@ -133,7 +183,7 @@ public partial class SettingsViewModel : ObservableObject
 
     private async Task PersistSettingsAsync()
     {
-        if (_isLoadingSettings)
+        if (_isLoadingSettings || _isNormalizing)
         {
             return;
         }
@@ -149,5 +199,116 @@ public partial class SettingsViewModel : ObservableObject
         };
 
         await _storageService.SaveSettingsAsync(settings);
+    }
+
+    private void NormalizeAllSettings()
+    {
+        _isNormalizing = true;
+
+        var adjusted = false;
+
+        var downloadLimit = NormalizeInt(GlobalDownloadLimitKbps, 0, MaxKbpsLimit);
+        adjusted |= downloadLimit != GlobalDownloadLimitKbps;
+        GlobalDownloadLimitKbps = downloadLimit;
+
+        var uploadLimit = NormalizeInt(GlobalUploadLimitKbps, 0, MaxKbpsLimit);
+        adjusted |= uploadLimit != GlobalUploadLimitKbps;
+        GlobalUploadLimitKbps = uploadLimit;
+
+        var maxDownloads = NormalizeInt(MaxActiveDownloads, 0, MaxActiveLimit);
+        adjusted |= maxDownloads != MaxActiveDownloads;
+        MaxActiveDownloads = maxDownloads;
+
+        var maxSeeds = NormalizeInt(MaxActiveSeeds, 0, MaxActiveLimit);
+        adjusted |= maxSeeds != MaxActiveSeeds;
+        MaxActiveSeeds = maxSeeds;
+
+        var seedRatio = NormalizeSeedRatio(GlobalMaxSeedRatio);
+        adjusted |= Math.Abs(seedRatio - GlobalMaxSeedRatio) > double.Epsilon;
+        GlobalMaxSeedRatio = seedRatio;
+
+        var seedMinutes = NormalizeInt(GlobalMaxSeedMinutes, 0, MaxSeedMinutesLimit);
+        adjusted |= seedMinutes != GlobalMaxSeedMinutes;
+        GlobalMaxSeedMinutes = seedMinutes;
+
+        ValidationMessage = adjusted ? "Some settings were adjusted to safe limits." : null;
+
+        _isNormalizing = false;
+    }
+
+    private bool TryNormalizeInt(string propertyName, int value, int min, int max, string label, string unit, out int normalized)
+    {
+        normalized = NormalizeInt(value, min, max);
+
+        if (_isLoadingSettings || _isNormalizing)
+        {
+            return false;
+        }
+
+        if (normalized != value)
+        {
+            _isNormalizing = true;
+            ValidationMessage = value < min
+                ? $"{label} cannot be negative. Set to {min}{unit}."
+                : $"{label} is too high. Capped at {max}{unit}.";
+            _isNormalizing = false;
+            return true;
+        }
+
+        ValidationMessage = null;
+        return false;
+    }
+
+    private bool TryNormalizeSeedRatio(double value, out double normalized)
+    {
+        normalized = NormalizeSeedRatio(value);
+
+        if (_isLoadingSettings || _isNormalizing)
+        {
+            return false;
+        }
+
+        if (Math.Abs(normalized - value) > double.Epsilon)
+        {
+            _isNormalizing = true;
+            ValidationMessage = double.IsNaN(value) || double.IsInfinity(value) || value < 0
+                ? "Seed ratio must be a valid non-negative number. Reset to 0."
+                : $"Seed ratio is too high. Capped at {MaxSeedRatioLimit}.";
+            _isNormalizing = false;
+            return true;
+        }
+
+        ValidationMessage = null;
+        return false;
+    }
+
+    private static int NormalizeInt(int value, int min, int max)
+    {
+        if (value < min)
+        {
+            return min;
+        }
+
+        if (value > max)
+        {
+            return max;
+        }
+
+        return value;
+    }
+
+    private static double NormalizeSeedRatio(double value)
+    {
+        if (double.IsNaN(value) || double.IsInfinity(value) || value < 0)
+        {
+            return 0;
+        }
+
+        if (value > MaxSeedRatioLimit)
+        {
+            return MaxSeedRatioLimit;
+        }
+
+        return value;
     }
 }

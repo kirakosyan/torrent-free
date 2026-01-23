@@ -9,7 +9,7 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="16"
-                Spacing="16">
+                             Spacing="16">
             <Label Text="⚙️ Settings"
                    FontSize="22"
                    FontAttributes="Bold"/>
@@ -34,25 +34,27 @@
                            FontAttributes="Bold"/>
 
                     <VerticalStackLayout Grid.Row="1"
-                            Grid.Column="0"
-                            Spacing="4">
+                                         Grid.Column="0"
+                                         Spacing="4">
                         <Label Text="⬇️ Download KB/s"
-                                FontSize="11"
-                                TextColor="Gray"/>
+                               FontSize="11"
+                               TextColor="Gray"/>
                         <Entry Text="{Binding GlobalDownloadLimitKbps}"
                                Keyboard="Numeric"
-                               Placeholder="0 = unlimited"/>
+                               Placeholder="0 = unlimited"
+                               TextChanged="OnNumericTextChanged"/>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="1"
-                            Grid.Column="1"
-                            Spacing="4">
+                                         Grid.Column="1"
+                                         Spacing="4">
                         <Label Text="⬆️ Upload KB/s"
-                                FontSize="11"
-                                TextColor="Gray"/>
+                               FontSize="11"
+                               TextColor="Gray"/>
                         <Entry Text="{Binding GlobalUploadLimitKbps}"
                                Keyboard="Numeric"
-                               Placeholder="0 = unlimited"/>
+                               Placeholder="0 = unlimited"
+                               TextChanged="OnNumericTextChanged"/>
                     </VerticalStackLayout>
                 </Grid>
             </Frame>
@@ -73,25 +75,27 @@
                            FontAttributes="Bold"/>
 
                     <VerticalStackLayout Grid.Row="1"
-                            Grid.Column="0"
-                            Spacing="4">
+                                         Grid.Column="0"
+                                         Spacing="4">
                         <Label Text="⬇️ Max Active Downloads"
-                                FontSize="11"
-                                TextColor="Gray"/>
+                               FontSize="11"
+                               TextColor="Gray"/>
                         <Entry Text="{Binding MaxActiveDownloads}"
                                Keyboard="Numeric"
-                               Placeholder="0 = unlimited"/>
+                               Placeholder="0 = unlimited"
+                               TextChanged="OnNumericTextChanged"/>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="1"
-                            Grid.Column="1"
-                            Spacing="4">
+                                         Grid.Column="1"
+                                         Spacing="4">
                         <Label Text="🌱 Max Active Seeds"
-                                FontSize="11"
-                                TextColor="Gray"/>
+                               FontSize="11"
+                               TextColor="Gray"/>
                         <Entry Text="{Binding MaxActiveSeeds}"
                                Keyboard="Numeric"
-                               Placeholder="0 = unlimited"/>
+                               Placeholder="0 = unlimited"
+                               TextChanged="OnNumericTextChanged"/>
                     </VerticalStackLayout>
                 </Grid>
             </Frame>
@@ -112,28 +116,35 @@
                            FontAttributes="Bold"/>
 
                     <VerticalStackLayout Grid.Row="1"
-                            Grid.Column="0"
-                            Spacing="4">
+                                         Grid.Column="0"
+                                         Spacing="4">
                         <Label Text="📊 Max Seed Ratio"
-                                FontSize="11"
-                                TextColor="Gray"/>
+                               FontSize="11"
+                               TextColor="Gray"/>
                         <Entry Text="{Binding GlobalMaxSeedRatio}"
                                Keyboard="Numeric"
-                               Placeholder="0 = unlimited"/>
+                               Placeholder="0 = unlimited"
+                               TextChanged="OnDecimalTextChanged"/>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="1"
-                            Grid.Column="1"
-                            Spacing="4">
+                                         Grid.Column="1"
+                                         Spacing="4">
                         <Label Text="⏱️ Max Seed Minutes"
-                                FontSize="11"
-                                TextColor="Gray"/>
+                               FontSize="11"
+                               TextColor="Gray"/>
                         <Entry Text="{Binding GlobalMaxSeedMinutes}"
                                Keyboard="Numeric"
-                               Placeholder="0 = unlimited"/>
+                               Placeholder="0 = unlimited"
+                               TextChanged="OnNumericTextChanged"/>
                     </VerticalStackLayout>
                 </Grid>
             </Frame>
+
+            <Label Text="{Binding ValidationMessage}"
+                   TextColor="{StaticResource StatusFailed}"
+                   IsVisible="{Binding ValidationMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                   FontSize="12"/>
         </VerticalStackLayout>
     </ScrollView>
 

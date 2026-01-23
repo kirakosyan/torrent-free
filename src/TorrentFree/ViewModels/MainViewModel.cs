@@ -365,6 +365,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 torrent.SavePath = folder;
             }
 
+            if (!string.IsNullOrWhiteSpace(picked.FullPath) && File.Exists(picked.FullPath))
+            {
+                torrent.TorrentFilePath = picked.FullPath;
+            }
+
             await _torrentService.StartTorrentAsync(torrent);
         }
         catch (Exception ex)
@@ -545,8 +550,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
         try
         {
             var torrentToRemove = SelectedTorrent;
+            var result = await ShowDeleteDialogAsync(torrentToRemove);
+            if (result is null)
+            {
+                return;
+            }
+
             SelectedTorrent = null;
-            await _torrentService.RemoveTorrentAsync(torrentToRemove);
+            await _torrentService.RemoveTorrentAsync(torrentToRemove, result.DeleteTorrentFile, result.DeleteDownloadedFiles);
         }
         catch (Exception ex)
         {
@@ -632,13 +643,31 @@ public partial class MainViewModel : ObservableObject, IDisposable
             {
                 SelectedTorrent = null;
             }
-            await _torrentService.RemoveTorrentAsync(torrent);
+            var result = await ShowDeleteDialogAsync(torrent);
+            if (result is null)
+            {
+                return;
+            }
+
+            await _torrentService.RemoveTorrentAsync(torrent, result.DeleteTorrentFile, result.DeleteDownloadedFiles);
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Remove specific torrent error: {ex}");
             ErrorMessage = "Failed to remove torrent. Please try again.";
         }
+    }
+
+    private static async Task<DeleteTorrentDialogResult?> ShowDeleteDialogAsync(TorrentItem torrent)
+    {
+        if (Shell.Current?.Navigation is null)
+        {
+            return null;
+        }
+
+        var dialog = new DeleteTorrentDialogPage(torrent.Name);
+        await Shell.Current.Navigation.PushModalAsync(dialog);
+        return await dialog.Result;
     }
 
     public void Dispose()

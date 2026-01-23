@@ -97,7 +97,11 @@
                    TargetType="Button"
                    BasedOn="{StaticResource IconButton}">
                 <Setter Property="BackgroundColor"
-                        Value="#9E9E9E"/>
+                        Value="#E53935"/>
+                <Setter Property="BorderColor"
+                        Value="#C62828"/>
+                <Setter Property="BorderWidth"
+                        Value="1"/>
                 <Setter Property="TextColor"
                         Value="White"/>
             </Style>
