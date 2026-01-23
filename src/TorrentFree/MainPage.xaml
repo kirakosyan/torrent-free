@@ -203,7 +203,7 @@
                                              HeightRequest="8"/>
                                 
                                 <!-- Row 2: Stats -->
-                                <Grid Grid.Row="2" ColumnDefinitions="*,*,*,*,*" ColumnSpacing="8">
+                                <Grid Grid.Row="2" ColumnDefinitions="*,*,*,*,*,*" ColumnSpacing="8">
                                     <VerticalStackLayout Grid.Column="0" Spacing="2">
                                         <Label Text="Size" FontSize="10" TextColor="Gray"/>
                                         <Label Text="{Binding FormattedTotalSize}" FontSize="12" FontAttributes="Bold"/>
@@ -213,14 +213,18 @@
                                         <Label Text="{Binding FormattedDownloadSpeed}" FontSize="12" FontAttributes="Bold"/>
                                     </VerticalStackLayout>
                                     <VerticalStackLayout Grid.Column="2" Spacing="2">
+                                        <Label Text="⬆️ Speed" FontSize="10" TextColor="Gray"/>
+                                        <Label Text="{Binding FormattedUploadSpeed}" FontSize="12" FontAttributes="Bold"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="3" Spacing="2">
                                         <Label Text="🌱 Seeds" FontSize="10" TextColor="Gray"/>
                                         <Label Text="{Binding Seeders}" FontSize="12" FontAttributes="Bold"/>
                                     </VerticalStackLayout>
-                                    <VerticalStackLayout Grid.Column="3" Spacing="2">
+                                    <VerticalStackLayout Grid.Column="4" Spacing="2">
                                         <Label Text="👥 Peers" FontSize="10" TextColor="Gray"/>
                                         <Label Text="{Binding Leechers}" FontSize="12" FontAttributes="Bold"/>
                                     </VerticalStackLayout>
-                                    <VerticalStackLayout Grid.Column="4" Spacing="2">
+                                    <VerticalStackLayout Grid.Column="5" Spacing="2">
                                         <Label Text="⏳ ETA" FontSize="10" TextColor="Gray"/>
                                         <Label Text="{Binding FormattedEstimatedTime}" FontSize="12" FontAttributes="Bold"/>
                                     </VerticalStackLayout>

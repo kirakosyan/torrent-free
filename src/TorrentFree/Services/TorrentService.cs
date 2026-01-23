@@ -435,7 +435,7 @@ public class TorrentService : ITorrentService
                         torrent.TotalSize = metadataSize.Value;
                     }
 
-                    var downloadedBytes = manager.Monitor.DataBytesDownloaded;
+                    var downloadedBytes = manager.Monitor.DataBytesReceived;
                     if (downloadedBytes > 0)
                     {
                         torrent.DownloadedSize = downloadedBytes;
@@ -446,8 +446,8 @@ public class TorrentService : ITorrentService
                     }
 
                     torrent.Progress = progress;
-                    torrent.DownloadSpeed = manager.Monitor.DownloadSpeed;
-                    torrent.UploadSpeed = manager.Monitor.UploadSpeed;
+                    torrent.DownloadSpeed = manager.Monitor.DownloadRate;
+                    torrent.UploadSpeed = manager.Monitor.UploadRate;
                     var peers = manager.Peers;
                     var seedsProp = peers.GetType().GetProperty("Seeds") ?? peers.GetType().GetProperty("Seeding");
                     var leechProp = peers.GetType().GetProperty("Leeches") ?? peers.GetType().GetProperty("Leeching");
