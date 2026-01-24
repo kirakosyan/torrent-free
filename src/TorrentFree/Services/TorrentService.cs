@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
@@ -443,20 +444,46 @@ public class TorrentService : ITorrentService
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(torrent.TorrentFilePath))
+            var candidates = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(torrent.TorrentFilePath))
             {
-                return;
+                candidates.Add(torrent.TorrentFilePath);
             }
 
-            var fullPath = Path.GetFullPath(torrent.TorrentFilePath);
-            if (!fullPath.EndsWith(".torrent", StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(torrent.TorrentFileName) && !string.IsNullOrWhiteSpace(torrent.SavePath))
             {
-                return;
+                candidates.Add(Path.Combine(torrent.SavePath, torrent.TorrentFileName));
             }
 
-            if (File.Exists(fullPath))
+            foreach (var candidate in candidates)
             {
+                var path = candidate.Trim();
+
+                if (Uri.TryCreate(path, UriKind.Absolute, out var uri) && uri.IsFile)
+                {
+                    path = uri.LocalPath;
+                }
+
+                var fullPath = Path.GetFullPath(path);
+                if (!fullPath.EndsWith(".torrent", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                if (!File.Exists(fullPath))
+                {
+                    continue;
+                }
+
+                var attributes = File.GetAttributes(fullPath);
+                if (attributes.HasFlag(FileAttributes.ReadOnly))
+                {
+                    File.SetAttributes(fullPath, attributes & ~FileAttributes.ReadOnly);
+                }
+
                 File.Delete(fullPath);
+                break;
             }
         }
         catch (Exception ex)

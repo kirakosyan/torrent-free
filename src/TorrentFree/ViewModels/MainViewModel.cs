@@ -373,6 +373,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 torrent.TorrentFilePath = picked.FullPath;
             }
 
+            if (!string.IsNullOrWhiteSpace(picked.FileName))
+            {
+                torrent.TorrentFileName = picked.FileName;
+            }
+
             await _torrentService.StartTorrentAsync(torrent);
         }
         catch (Exception ex)
@@ -474,6 +479,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 }
 
                 torrent.TorrentFilePath = arg;
+                torrent.TorrentFileName = Path.GetFileName(arg);
                 var folder = Path.GetDirectoryName(arg);
                 if (!string.IsNullOrWhiteSpace(folder) && Directory.Exists(folder))
                 {

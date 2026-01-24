@@ -147,6 +147,12 @@ public partial class TorrentItem : ObservableObject
     private string? torrentFilePath;
 
     /// <summary>
+    /// Original .torrent file name when imported from disk.
+    /// </summary>
+    [ObservableProperty]
+    private string? torrentFileName;
+
+    /// <summary>
     /// Gets the full path to the downloaded file or folder.
     /// </summary>
     public string DownloadedFilePath

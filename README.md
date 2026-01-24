@@ -105,6 +105,33 @@ Each download in the list has action buttons:
 | Failed | 🔴 Red | Download encountered an error |
 | Stopped | ⚪ Gray | Download stopped by user |
 
+### Settings
+
+Open the **Settings** page from the app shell. Changes are saved automatically and applied immediately.
+
+**Speed Limits**
+
+- **Download KB/s**: Global download speed cap in KB/s. Use `0` for unlimited.
+- **Upload KB/s**: Global upload speed cap in KB/s. Use `0` for unlimited.
+
+**Queue Limits**
+
+- **Max Active Downloads**: Maximum number of torrents downloading at the same time. Use `0` for unlimited.
+- **Max Active Seeds**: Maximum number of torrents seeding at the same time. Use `0` for unlimited.
+
+**Seeding Limits**
+
+- **Max Seed Ratio**: Stop seeding after the uploaded data reaches this ratio relative to the download (e.g., `1.0` means upload equals download). Use `0` for unlimited.
+- **Max Seed Minutes**: Stop seeding after this many minutes. Use `0` for unlimited.
+
+**File Associations** (Windows only)
+
+- **Associate .torrent files**: Toggle whether `.torrent` files open with Torrent Free by default on supported platforms.
+
+**Validation**
+
+Values are normalized to safe ranges (e.g., non-negative, capped to maximums). If a value is out of range, the app adjusts it and shows a short warning message.
+
 ## 🏗️ Architecture
 
 The app follows **MVVM**:
