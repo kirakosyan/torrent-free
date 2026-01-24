@@ -924,6 +924,13 @@ public class TorrentService : ITorrentService
                     torrent.Seeders = seeds;
                     torrent.Leechers = leeches;
 
+                    var availabilityInfo = GetAvailabilityInfo(manager, seeds, leeches);
+                    torrent.AvailabilityPercent = availabilityInfo.Percent;
+                    torrent.AvailabilityLabel = availabilityInfo.Label;
+                    torrent.HealthScore = ComputeHealthScore(seeds, leeches, availabilityInfo.Percent);
+
+                    torrent.AddSpeedSample(torrent.DownloadSpeed, torrent.UploadSpeed);
+
                     if (torrent.DownloadSpeed > 0 && torrent.TotalSize > 0)
                     {
                         var remainingBytes = Math.Max(0, torrent.TotalSize - torrent.DownloadedSize);
@@ -1002,6 +1009,207 @@ public class TorrentService : ITorrentService
         {
             _downloadTokens.TryRemove(torrent.Id, out _);
             _pendingSave = true;
+        }
+    }
+
+    private readonly record struct AvailabilityInfo(double Percent, string Label);
+
+    private static AvailabilityInfo GetAvailabilityInfo(TorrentManager manager, int seeds, int leeches)
+    {
+        if (TryComputePieceAvailability(manager, out var percent))
+        {
+            return new AvailabilityInfo(percent, $"{percent:0}%");
+        }
+
+        if (TryGetAvailabilityCopies(manager, out var copies))
+        {
+            var meterPercent = Math.Clamp(copies / 2d, 0, 1) * 100;
+            return new AvailabilityInfo(meterPercent, $"{copies:0.0}x");
+        }
+
+        if (seeds + leeches > 0)
+        {
+            var swarmPercent = Math.Clamp((seeds + leeches) / 20d, 0, 1) * 100;
+            return new AvailabilityInfo(swarmPercent, $"{seeds}S/{leeches}L");
+        }
+
+        return new AvailabilityInfo(0, "—");
+    }
+
+    private static int ComputeHealthScore(int seeds, int leeches, double availabilityPercent)
+    {
+        var availabilityScore = Math.Clamp(availabilityPercent, 0, 100) * 0.5; // up to 50 points
+        var seedScore = Math.Min(1, seeds / 10d) * 30; // up to 30 points
+        var peerScore = Math.Min(1, (seeds + leeches) / 20d) * 20; // up to 20 points
+        return (int)Math.Round(availabilityScore + seedScore + peerScore, MidpointRounding.AwayFromZero);
+    }
+
+    private static bool TryGetAvailabilityCopies(TorrentManager manager, out double copies)
+    {
+        copies = 0;
+
+        if (TryGetNumericProperty(manager, "Availability", out copies))
+        {
+            return true;
+        }
+
+        if (manager.Peers is not null && TryGetNumericProperty(manager.Peers, "Availability", out copies))
+        {
+            return true;
+        }
+
+        if (manager.Peers is not null && TryGetNumericProperty(manager.Peers, "Available", out copies))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool TryGetNumericProperty(object target, string propertyName, out double value)
+    {
+        value = 0;
+        var prop = target.GetType().GetProperty(propertyName);
+        if (prop is null)
+        {
+            return false;
+        }
+
+        var raw = prop.GetValue(target);
+        if (raw is null)
+        {
+            return false;
+        }
+
+        try
+        {
+            value = Convert.ToDouble(raw);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static bool TryComputePieceAvailability(TorrentManager manager, out double percent)
+    {
+        percent = 0;
+
+        if (manager.Torrent is null)
+        {
+            return false;
+        }
+
+        var pieceCount = TryGetPieceCount(manager.Torrent);
+        if (pieceCount <= 0)
+        {
+            return false;
+        }
+
+        var sampleStep = pieceCount > 2000 ? (int)Math.Ceiling(pieceCount / 2000d) : 1;
+        var sampleCount = (int)Math.Ceiling(pieceCount / (double)sampleStep);
+        var availableSamples = new bool[sampleCount];
+
+        MarkAvailablePieces(manager, availableSamples, sampleStep, pieceCount);
+
+        if (manager.Peers is not null)
+        {
+            foreach (var peer in GetConnectedPeers(manager.Peers))
+            {
+                MarkAvailablePieces(peer, availableSamples, sampleStep, pieceCount);
+            }
+        }
+
+        var availableCount = availableSamples.Count(static x => x);
+        if (availableCount == 0)
+        {
+            return false;
+        }
+
+        percent = availableCount / (double)sampleCount * 100d;
+        return true;
+    }
+
+    private static void MarkAvailablePieces(object? source, bool[] availableSamples, int sampleStep, int pieceCount)
+    {
+        if (source is null)
+        {
+            return;
+        }
+
+        var bitfield = source.GetType().GetProperty("BitField")?.GetValue(source)
+                       ?? source.GetType().GetProperty("Bitfield")?.GetValue(source);
+
+        if (bitfield is null)
+        {
+            return;
+        }
+
+        var indexer = bitfield.GetType().GetProperty("Item");
+        if (indexer is null)
+        {
+            return;
+        }
+
+        var sampleIndex = 0;
+        for (var i = 0; i < pieceCount; i += sampleStep)
+        {
+            if (!availableSamples[sampleIndex])
+            {
+                var hasPiece = (bool?)(indexer.GetValue(bitfield, new object[] { i })) == true;
+                if (hasPiece)
+                {
+                    availableSamples[sampleIndex] = true;
+                }
+            }
+            sampleIndex++;
+            if (sampleIndex >= availableSamples.Length)
+            {
+                break;
+            }
+        }
+    }
+
+    private static int TryGetPieceCount(object torrent)
+    {
+        var pieceCountProp = torrent.GetType().GetProperty("PieceCount");
+        if (pieceCountProp?.GetValue(torrent) is int count && count > 0)
+        {
+            return count;
+        }
+
+        var piecesProp = torrent.GetType().GetProperty("Pieces") ?? torrent.GetType().GetProperty("PieceHashes");
+        var pieces = piecesProp?.GetValue(torrent);
+        if (pieces is null)
+        {
+            return 0;
+        }
+
+        var countProp = pieces.GetType().GetProperty("Count");
+        if (countProp?.GetValue(pieces) is int piecesCount)
+        {
+            return piecesCount;
+        }
+
+        return 0;
+    }
+
+    private static IEnumerable<object> GetConnectedPeers(object peers)
+    {
+        var connectedProp = peers.GetType().GetProperty("ConnectedPeers")
+                             ?? peers.GetType().GetProperty("ActivePeers")
+                             ?? peers.GetType().GetProperty("AvailablePeers");
+
+        if (connectedProp?.GetValue(peers) is System.Collections.IEnumerable peerList)
+        {
+            foreach (var peer in peerList)
+            {
+                if (peer is not null)
+                {
+                    yield return peer;
+                }
+            }
         }
     }
 

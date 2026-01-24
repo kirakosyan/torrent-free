@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace TorrentFree.Models;
@@ -7,6 +8,7 @@ namespace TorrentFree.Models;
 /// </summary>
 public partial class TorrentItem : ObservableObject
 {
+    private const int MaxSpeedSamples = 60;
     /// <summary>
     /// Unique identifier for the torrent item.
     /// </summary>
@@ -151,6 +153,34 @@ public partial class TorrentItem : ObservableObject
     /// </summary>
     [ObservableProperty]
     private string? torrentFileName;
+
+    /// <summary>
+    /// Health score of the torrent (0-100).
+    /// </summary>
+    [ObservableProperty]
+    private int healthScore;
+
+    /// <summary>
+    /// Availability percentage (0-100).
+    /// </summary>
+    [ObservableProperty]
+    private double availabilityPercent;
+
+    /// <summary>
+    /// Availability label (e.g., 1.2x or 75%).
+    /// </summary>
+    [ObservableProperty]
+    private string availabilityLabel = "—";
+
+    /// <summary>
+    /// Download speed history in KB/s.
+    /// </summary>
+    public ObservableCollection<double> DownloadSpeedHistory { get; } = [];
+
+    /// <summary>
+    /// Upload speed history in KB/s.
+    /// </summary>
+    public ObservableCollection<double> UploadSpeedHistory { get; } = [];
 
     /// <summary>
     /// Gets the full path to the downloaded file or folder.
@@ -306,5 +336,22 @@ public partial class TorrentItem : ObservableObject
     partial void OnEstimatedSecondsRemainingChanged(long value)
     {
         OnPropertyChanged(nameof(FormattedEstimatedTime));
+    }
+
+    public void AddSpeedSample(long downloadBytesPerSecond, long uploadBytesPerSecond)
+    {
+        AppendSample(DownloadSpeedHistory, BytesToKbps(downloadBytesPerSecond));
+        AppendSample(UploadSpeedHistory, BytesToKbps(uploadBytesPerSecond));
+    }
+
+    private static double BytesToKbps(long bytesPerSecond) => bytesPerSecond / 1024d;
+
+    private static void AppendSample(ObservableCollection<double> samples, double value)
+    {
+        samples.Add(Math.Max(0, value));
+        while (samples.Count > MaxSpeedSamples)
+        {
+            samples.RemoveAt(0);
+        }
     }
 }

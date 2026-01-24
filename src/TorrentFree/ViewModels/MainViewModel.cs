@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TorrentFree.Models;
@@ -12,6 +14,7 @@ namespace TorrentFree.ViewModels;
 /// </summary>
 public partial class MainViewModel : ObservableObject, IDisposable
 {
+    private const int MaxChartPoints = 60;
     private readonly ITorrentService _torrentService;
     private readonly ITorrentFilePicker _torrentFilePicker;
     private readonly ITorrentFileParser _torrentFileParser;
@@ -20,11 +23,24 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private bool _disposed;
     private bool _isLoadingSettings;
     private bool _processedCommandLine;
+    private PeriodicTimer? _statsTimer;
+    private CancellationTokenSource? _statsTimerCts;
+    private bool _statsTimerStarted;
 
     /// <summary>
     /// Collection of all torrent items.
     /// </summary>
     public ObservableCollection<TorrentItem> Torrents => _torrentService.Torrents;
+
+    /// <summary>
+    /// Global download speed history in KB/s.
+    /// </summary>
+    public ObservableCollection<double> GlobalDownloadHistory { get; } = [];
+
+    /// <summary>
+    /// Global upload speed history in KB/s.
+    /// </summary>
+    public ObservableCollection<double> GlobalUploadHistory { get; } = [];
 
     /// <summary>
     /// The magnet link input by the user.
@@ -419,6 +435,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
             await PromptFileAssociationAsync();
             await ProcessCommandLineArgumentsAsync();
+            StartStatsTimer();
         }
         catch (Exception ex)
         {
@@ -777,6 +794,59 @@ public partial class MainViewModel : ObservableObject, IDisposable
         return await dialog.Result;
     }
 
+    private void StartStatsTimer()
+    {
+        if (_statsTimerStarted)
+        {
+            return;
+        }
+
+        _statsTimerStarted = true;
+        _statsTimerCts = new CancellationTokenSource();
+        _statsTimer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                while (_statsTimer is not null && await _statsTimer.WaitForNextTickAsync(_statsTimerCts.Token))
+                {
+                    var totalDownload = Torrents.Sum(t => t.DownloadSpeed);
+                    var totalUpload = Torrents.Sum(t => t.UploadSpeed);
+
+                    await MainThread.InvokeOnMainThreadAsync(() =>
+                    {
+                        AppendSample(GlobalDownloadHistory, totalDownload / 1024d);
+                        AppendSample(GlobalUploadHistory, totalUpload / 1024d);
+                    });
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // timer canceled
+            }
+        });
+    }
+
+    private void StopStatsTimer()
+    {
+        _statsTimerCts?.Cancel();
+        _statsTimerCts?.Dispose();
+        _statsTimerCts = null;
+
+        _statsTimer?.Dispose();
+        _statsTimer = null;
+    }
+
+    private static void AppendSample(ObservableCollection<double> samples, double value)
+    {
+        samples.Add(Math.Max(0, value));
+        while (samples.Count > MaxChartPoints)
+        {
+            samples.RemoveAt(0);
+        }
+    }
+
     public void Dispose()
     {
         if (_disposed)
@@ -785,6 +855,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
 
         _disposed = true;
+        StopStatsTimer();
         Torrents.CollectionChanged -= OnTorrentsCollectionChanged;
         GC.SuppressFinalize(this);
     }
