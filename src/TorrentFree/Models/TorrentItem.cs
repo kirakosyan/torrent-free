@@ -13,91 +13,91 @@ public partial class TorrentItem : ObservableObject
     /// Unique identifier for the torrent item.
     /// </summary>
     [ObservableProperty]
-    private string id = Guid.NewGuid().ToString();
+    public partial string Id { get; set; } = Guid.NewGuid().ToString();
 
     /// <summary>
     /// Name of the torrent/file being downloaded.
     /// </summary>
     [ObservableProperty]
-    private string name = string.Empty;
+    public partial string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// The magnet link or torrent URL.
     /// </summary>
     [ObservableProperty]
-    private string magnetLink = string.Empty;
+    public partial string MagnetLink { get; set; } = string.Empty;
 
     /// <summary>
     /// InfoHash (hex) if known, used for duplicate detection.
     /// </summary>
     [ObservableProperty]
-    private string infoHash = string.Empty;
+    public partial string InfoHash { get; set; } = string.Empty;
 
     /// <summary>
     /// Total size of the download in bytes.
     /// </summary>
     [ObservableProperty]
-    private long totalSize;
+    public partial long TotalSize { get; set; }
 
     /// <summary>
     /// Downloaded size in bytes.
     /// </summary>
     [ObservableProperty]
-    private long downloadedSize;
+    public partial long DownloadedSize { get; set; }
 
     /// <summary>
     /// Current download progress (0-100).
     /// </summary>
     [ObservableProperty]
-    private double progress;
+    public partial double Progress { get; set; }
 
     /// <summary>
     /// Current download status.
     /// </summary>
     [ObservableProperty]
-    private DownloadStatus status = DownloadStatus.Queued;
+    public partial DownloadStatus Status { get; set; } = DownloadStatus.Queued;
 
     /// <summary>
     /// Download speed in bytes per second.
     /// </summary>
     [ObservableProperty]
-    private long downloadSpeed;
+    public partial long DownloadSpeed { get; set; }
 
     /// <summary>
     /// Upload speed in bytes per second.
     /// </summary>
     [ObservableProperty]
-    private long uploadSpeed;
+    public partial long UploadSpeed { get; set; }
 
     /// <summary>
     /// Per-torrent download limit in KB/s (0 = unlimited).
     /// </summary>
     [ObservableProperty]
-    private int downloadLimitKbps;
+    public partial int DownloadLimitKbps { get; set; }
 
     /// <summary>
     /// Per-torrent upload limit in KB/s (0 = unlimited).
     /// </summary>
     [ObservableProperty]
-    private int uploadLimitKbps;
+    public partial int UploadLimitKbps { get; set; }
 
     /// <summary>
     /// Number of seeders connected.
     /// </summary>
     [ObservableProperty]
-    private int seeders;
+    public partial int Seeders { get; set; }
 
     /// <summary>
     /// Number of leechers connected.
     /// </summary>
     [ObservableProperty]
-    private int leechers;
+    public partial int Leechers { get; set; }
 
     /// <summary>
     /// Estimated seconds remaining to finish download.
     /// </summary>
     [ObservableProperty]
-    private long estimatedSecondsRemaining;
+    public partial long EstimatedSecondsRemaining { get; set; }
 
     /// <summary>
     /// Formatted ETA string for UI.
@@ -110,67 +110,67 @@ public partial class TorrentItem : ObservableObject
     /// Date and time when the torrent was added.
     /// </summary>
     [ObservableProperty]
-    private DateTime dateAdded = DateTime.Now;
+    public partial DateTime DateAdded { get; set; } = DateTime.Now;
 
     /// <summary>
     /// Date and time when the download completed.
     /// </summary>
     [ObservableProperty]
-    private DateTime? dateCompleted;
+    public partial DateTime? DateCompleted { get; set; }
 
     /// <summary>
     /// Date and time when seeding started.
     /// </summary>
     [ObservableProperty]
-    private DateTime? dateSeedingStarted;
+    public partial DateTime? DateSeedingStarted { get; set; }
 
     /// <summary>
     /// Per-torrent max seed ratio (0 = unlimited).
     /// </summary>
     [ObservableProperty]
-    private double maxSeedRatio;
+    public partial double MaxSeedRatio { get; set; }
 
     /// <summary>
     /// Per-torrent max seed time in minutes (0 = unlimited).
     /// </summary>
     [ObservableProperty]
-    private int maxSeedMinutes;
+    public partial int MaxSeedMinutes { get; set; }
 
     /// <summary>
     /// Local file path where the download is saved.
     /// </summary>
     [ObservableProperty]
-    private string savePath = string.Empty;
+    public partial string SavePath { get; set; } = string.Empty;
 
     /// <summary>
     /// Local .torrent file path when imported from disk.
     /// </summary>
     [ObservableProperty]
-    private string? torrentFilePath;
+    public partial string? TorrentFilePath { get; set; }
 
     /// <summary>
     /// Original .torrent file name when imported from disk.
     /// </summary>
     [ObservableProperty]
-    private string? torrentFileName;
+    public partial string? TorrentFileName { get; set; }
 
     /// <summary>
     /// Health score of the torrent (0-100).
     /// </summary>
     [ObservableProperty]
-    private int healthScore;
+    public partial int HealthScore { get; set; }
 
     /// <summary>
     /// Availability percentage (0-100).
     /// </summary>
     [ObservableProperty]
-    private double availabilityPercent;
+    public partial double AvailabilityPercent { get; set; }
 
     /// <summary>
     /// Availability label (e.g., 1.2x or 75%).
     /// </summary>
     [ObservableProperty]
-    private string availabilityLabel = "—";
+    public partial string AvailabilityLabel { get; set; } = "—";
 
     /// <summary>
     /// Download speed history in KB/s.

@@ -47,7 +47,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// </summary>
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AddTorrentCommand))]
-    private string magnetLinkInput = string.Empty;
+    public partial string MagnetLinkInput { get; set; } = string.Empty;
 
     /// <summary>
     /// Currently selected torrent item.
@@ -57,61 +57,61 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [NotifyCanExecuteChangedFor(nameof(PauseTorrentCommand))]
     [NotifyCanExecuteChangedFor(nameof(StopTorrentCommand))]
     [NotifyCanExecuteChangedFor(nameof(RemoveTorrentCommand))]
-    private TorrentItem? selectedTorrent;
+    public partial TorrentItem? SelectedTorrent { get; set; }
 
     /// <summary>
     /// Indicates if the view model is busy with an operation.
     /// </summary>
     [ObservableProperty]
-    private bool isBusy;
+    public partial bool IsBusy { get; set; }
 
     /// <summary>
     /// Error message to display to the user.
     /// </summary>
     [ObservableProperty]
-    private string? errorMessage;
+    public partial string? ErrorMessage { get; set; }
 
     /// <summary>
     /// Global download limit in KB/s (0 = unlimited).
     /// </summary>
     [ObservableProperty]
-    private int globalDownloadLimitKbps;
+    public partial int GlobalDownloadLimitKbps { get; set; }
 
     /// <summary>
     /// Global upload limit in KB/s (0 = unlimited).
     /// </summary>
     [ObservableProperty]
-    private int globalUploadLimitKbps;
+    public partial int GlobalUploadLimitKbps { get; set; }
 
     /// <summary>
     /// Max concurrent active downloads (0 = unlimited).
     /// </summary>
     [ObservableProperty]
-    private int maxActiveDownloads = 2;
+    public partial int MaxActiveDownloads { get; set; } = 2;
 
     /// <summary>
     /// Max concurrent active seeds (0 = unlimited).
     /// </summary>
     [ObservableProperty]
-    private int maxActiveSeeds = 2;
+    public partial int MaxActiveSeeds { get; set; } = 2;
 
     /// <summary>
     /// Global max seed ratio (0 = unlimited).
     /// </summary>
     [ObservableProperty]
-    private double globalMaxSeedRatio;
+    public partial double GlobalMaxSeedRatio { get; set; }
 
     /// <summary>
     /// Global max seed time in minutes (0 = unlimited).
     /// </summary>
     [ObservableProperty]
-    private int globalMaxSeedMinutes;
+    public partial int GlobalMaxSeedMinutes { get; set; }
 
     /// <summary>
     /// Controls visibility of selected torrent details.
     /// </summary>
     [ObservableProperty]
-    private bool showSelectedTorrentDetails;
+    public partial bool ShowSelectedTorrentDetails { get; set; }
 
     /// <summary>
     /// Indicates if selected torrent details should be shown.
@@ -264,6 +264,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 return;
             }
 
+#if WINDOWS
             if (DeviceInfo.Platform == DevicePlatform.WinUI)
             {
                 try
@@ -295,7 +296,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
                     // Fallback below
                 }
             }
-            else if (DeviceInfo.Platform == DevicePlatform.MacCatalyst)
+#endif
+#if MACCATALYST
+            if (DeviceInfo.Platform == DevicePlatform.MacCatalyst)
             {
                 try
                 {
@@ -326,6 +329,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                     // Fallback below
                 }
             }
+#endif
 
             // Best-effort fallback: open the folder (for directories, open directly; for files, open containing folder)
             var targetFolder = isDirectory ? downloadPath : folderPath;
@@ -533,7 +537,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return;
         }
 
-        var shouldAssociate = await Shell.Current.DisplayAlert(
+        var shouldAssociate = await Shell.Current.DisplayAlertAsync(
             "Associate .torrent files",
             "Do you want to open .torrent files with Torrent Free by default?",
             "Yes",

@@ -26,55 +26,55 @@ public partial class SettingsViewModel : ObservableObject
     /// Global download limit in KB/s (0 = unlimited).
     /// </summary>
     [ObservableProperty]
-    private int globalDownloadLimitKbps;
+    public partial int GlobalDownloadLimitKbps { get; set; }
 
     /// <summary>
     /// Global upload limit in KB/s (0 = unlimited).
     /// </summary>
     [ObservableProperty]
-    private int globalUploadLimitKbps;
+    public partial int GlobalUploadLimitKbps { get; set; }
 
     /// <summary>
     /// Max concurrent active downloads (0 = unlimited).
     /// </summary>
     [ObservableProperty]
-    private int maxActiveDownloads = 2;
+    public partial int MaxActiveDownloads { get; set; } = 2;
 
     /// <summary>
     /// Max concurrent active seeds (0 = unlimited).
     /// </summary>
     [ObservableProperty]
-    private int maxActiveSeeds = 2;
+    public partial int MaxActiveSeeds { get; set; } = 2;
 
     /// <summary>
     /// Global max seed ratio (0 = unlimited).
     /// </summary>
     [ObservableProperty]
-    private double globalMaxSeedRatio;
+    public partial double GlobalMaxSeedRatio { get; set; }
 
     /// <summary>
     /// Global max seed time in minutes (0 = unlimited).
     /// </summary>
     [ObservableProperty]
-    private int globalMaxSeedMinutes;
+    public partial int GlobalMaxSeedMinutes { get; set; }
 
     /// <summary>
     /// Validation message shown to the user.
     /// </summary>
     [ObservableProperty]
-    private string? validationMessage;
+    public partial string? ValidationMessage { get; set; }
 
     /// <summary>
     /// Indicates if file association is supported on this platform.
     /// </summary>
     [ObservableProperty]
-    private bool isFileAssociationSupported;
+    public partial bool IsFileAssociationSupported { get; set; }
 
     /// <summary>
     /// Indicates if .torrent files are associated with the app.
     /// </summary>
     [ObservableProperty]
-    private bool isTorrentAssociated;
+    public partial bool IsTorrentAssociated { get; set; }
 
     public SettingsViewModel(IStorageService storageService, ITorrentService torrentService, IFileAssociationService fileAssociationService)
     {

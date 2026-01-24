@@ -8,7 +8,7 @@
              x:Class="TorrentFree.MainPage"
              x:DataType="viewmodels:MainViewModel"
              BackgroundColor="{StaticResource PageBackgroundColor}"
-             Title="Torrent Free">
+             Title="Dashboard">
 
        <ContentPage.Resources>
               <ResourceDictionary>
@@ -30,10 +30,12 @@
 
                      <!-- Card Style -->
                      <Color x:Key="CardBackground">#FFFFFF</Color>
-                     <Color x:Key="CardBackgroundDark">#2D2D30</Color>
-                     <Color x:Key="PageBackgroundColor">#F5F5F5</Color>
-                     <Color x:Key="AccentColor">#6200EE</Color>
-                     <Color x:Key="AccentColorLight">#BB86FC</Color>
+                     <Color x:Key="CardBackgroundDark">#1F1F23</Color>
+                     <Color x:Key="PageBackgroundColor">#F3F4F6</Color>
+                     <Color x:Key="CardBorderColor">#E5E7EB</Color>
+                     <Color x:Key="TextSecondary">#6B7280</Color>
+                     <Color x:Key="AccentColor">#5B5BD6</Color>
+                     <Color x:Key="AccentColorLight">#8B8CF1</Color>
 
                      <!-- Button Styles -->
                      <Style x:Key="ActionButton"
@@ -41,122 +43,132 @@
                             <Setter Property="FontSize"
                                     Value="12"/>
                             <Setter Property="Padding"
-                                    Value="8,4"/>
+                                    Value="10,6"/>
                             <Setter Property="CornerRadius"
-                                    Value="4"/>
+                                    Value="10"/>
                             <Setter Property="HeightRequest"
-                                    Value="32"/>
+                                    Value="36"/>
                             <Setter Property="MinimumWidthRequest"
-                                    Value="60"/>
+                                    Value="70"/>
                      </Style>
 
                      <!-- Icon Button Style - square buttons with larger icons -->
                      <Style x:Key="IconButton"
                             TargetType="Button">
                             <Setter Property="FontSize"
-                                    Value="18"/>
+                                    Value="16"/>
                             <Setter Property="Padding"
                                     Value="0"/>
                             <Setter Property="CornerRadius"
-                                    Value="8"/>
+                                    Value="10"/>
                             <Setter Property="HeightRequest"
-                                    Value="40"/>
+                                    Value="36"/>
                             <Setter Property="WidthRequest"
-                                    Value="40"/>
+                                    Value="36"/>
                             <Setter Property="MinimumWidthRequest"
-                                    Value="40"/>
+                                    Value="36"/>
+                            <Setter Property="BackgroundColor"
+                                    Value="#F3F4F6"/>
+                            <Setter Property="TextColor"
+                                    Value="#374151"/>
+                            <Setter Property="BorderColor"
+                                    Value="#E5E7EB"/>
+                            <Setter Property="BorderWidth"
+                                    Value="1"/>
                      </Style>
 
                      <Style x:Key="StartButton"
                             TargetType="Button"
                             BasedOn="{StaticResource IconButton}">
                             <Setter Property="BackgroundColor"
-                                    Value="#4CAF50"/>
+                                    Value="#ECFDF3"/>
                             <Setter Property="TextColor"
-                                    Value="White"/>
+                                    Value="#16A34A"/>
                      </Style>
 
                      <Style x:Key="PauseButton"
                             TargetType="Button"
                             BasedOn="{StaticResource IconButton}">
                             <Setter Property="BackgroundColor"
-                                    Value="#FF9800"/>
+                                    Value="#FFF7ED"/>
                             <Setter Property="TextColor"
-                                    Value="White"/>
+                                    Value="#F97316"/>
                      </Style>
 
                      <Style x:Key="StopButton"
                             TargetType="Button"
                             BasedOn="{StaticResource IconButton}">
                             <Setter Property="BackgroundColor"
-                                    Value="#F44336"/>
+                                    Value="#FEF2F2"/>
                             <Setter Property="TextColor"
-                                    Value="White"/>
+                                    Value="#DC2626"/>
                      </Style>
 
                      <Style x:Key="RemoveButton"
                             TargetType="Button"
                             BasedOn="{StaticResource IconButton}">
                             <Setter Property="BackgroundColor"
-                                    Value="#E53935"/>
-                            <Setter Property="BorderColor"
-                                    Value="#C62828"/>
-                            <Setter Property="BorderWidth"
-                                    Value="1"/>
+                                    Value="#FEF2F2"/>
                             <Setter Property="TextColor"
-                                    Value="White"/>
+                                    Value="#DC2626"/>
                      </Style>
 
                      <Style x:Key="FolderButton"
                             TargetType="Button"
                             BasedOn="{StaticResource IconButton}">
                             <Setter Property="BackgroundColor"
-                                    Value="#03A9F4"/>
+                                    Value="#EFF6FF"/>
                             <Setter Property="TextColor"
-                                    Value="White"/>
+                                    Value="#2563EB"/>
                      </Style>
               </ResourceDictionary>
        </ContentPage.Resources>
 
        <Grid RowDefinitions="Auto,Auto,*"
-             Padding="16">
+             Padding="16,12">
 
               <!-- Header Section -->
               <Grid Grid.Row="0"
                     ColumnDefinitions="*,Auto"
-                    RowDefinitions="Auto,Auto">
-                     <Label Grid.Row="0"
-                            Grid.Column="0"
-                            Text="🔥 Torrent Free"
-                            FontSize="28"
-                            FontAttributes="Bold"
-                            TextColor="{StaticResource AccentColor}"
-                            HorizontalOptions="Center"
-                            HorizontalTextAlignment="Center"/>
+                    RowDefinitions="Auto"
+                    ColumnSpacing="12">
+                     <HorizontalStackLayout Grid.Row="0"
+                                            Grid.Column="0"
+                                            Spacing="10"
+                                            VerticalOptions="Center">
+                            <Image Source="app_logo.svg"
+                                   WidthRequest="28"
+                                   HeightRequest="28"/>
+                            <VerticalStackLayout Spacing="2">
+                                   <Label Text="Torrent Free · Hub"
+                                          FontSize="24"
+                                          FontAttributes="Bold"
+                                          TextColor="{StaticResource AccentColor}"
+                                          HorizontalOptions="Start"/>
+                                   <Label Text="Fast and simple torrent downloads"
+                                          FontSize="12"
+                                          TextColor="{StaticResource TextSecondary}"
+                                          HorizontalOptions="Start"/>
+                            </VerticalStackLayout>
+                     </HorizontalStackLayout>
                      <Button Grid.Row="0"
                              Grid.Column="1"
-                             Text="⚙️"
+                             Text="⚙"
                              Style="{StaticResource IconButton}"
                              BackgroundColor="{StaticResource AccentColorLight}"
                              TextColor="White"
                              Command="{Binding OpenSettingsCommand}"/>
-                     <Label Grid.Row="1"
-                            Grid.ColumnSpan="2"
-                            Text="Fast &amp; Free Torrent Downloads"
-                            FontSize="14"
-                            TextColor="Gray"
-                            HorizontalOptions="Center"/>
               </Grid>
 
               <!-- Input Section -->
               <VerticalStackLayout Grid.Row="1"
                                    Spacing="8"
                                    Margin="0,16,0,16">
-                     <Frame Padding="16"
+                     <Frame Padding="12"
                             CornerRadius="12"
-                            BorderColor="Transparent"
+                            BorderColor="{StaticResource CardBorderColor}"
                             BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                            HasShadow="True">
+                            HasShadow="False">
                             <Grid ColumnDefinitions="*,Auto"
                                   ColumnSpacing="12">
                                    <Entry Grid.Column="0"
@@ -169,9 +181,9 @@
                                           MaxLength="4000"/>
 
                                    <Button Grid.Column="1"
-                                           Text="📁 Browse"
+                                           Text="Browse"
                                            Command="{Binding BrowseTorrentFileCommand}"
-                                           BackgroundColor="#607D8B"
+                                           BackgroundColor="{StaticResource AccentColor}"
                                            TextColor="White"
                                            FontSize="14"
                                            FontAttributes="Bold"
@@ -189,20 +201,20 @@
 
                      <Frame Padding="12"
                             CornerRadius="12"
-                            BorderColor="Transparent"
+                            BorderColor="{StaticResource CardBorderColor}"
                             BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                            HasShadow="True">
+                            HasShadow="False">
                             <VerticalStackLayout Spacing="8">
-                                   <Label Text="📈 Bandwidth (Global)"
+                                   <Label Text="Bandwidth"
                                           FontSize="13"
                                           FontAttributes="Bold"/>
                                    <Grid ColumnDefinitions="*,*"
                                          ColumnSpacing="12">
                                           <VerticalStackLayout Grid.Column="0"
                                                                Spacing="4">
-                                                 <Label Text="⬇️ Download KB/s"
+                                                 <Label Text="Download KB/s"
                                                         FontSize="10"
-                                                        TextColor="Gray"/>
+                                                        TextColor="{StaticResource TextSecondary}"/>
                                                  <controls:LineChartView Values="{Binding GlobalDownloadHistory}"
                                                                          LineColor="#42A5F5"
                                                                          FillColor="#2642A5F5"
@@ -210,9 +222,9 @@
                                           </VerticalStackLayout>
                                           <VerticalStackLayout Grid.Column="1"
                                                                Spacing="4">
-                                                 <Label Text="⬆️ Upload KB/s"
+                                                 <Label Text="Upload KB/s"
                                                         FontSize="10"
-                                                        TextColor="Gray"/>
+                                                        TextColor="{StaticResource TextSecondary}"/>
                                                  <controls:LineChartView Values="{Binding GlobalUploadHistory}"
                                                                          LineColor="#26A69A"
                                                                          FillColor="#2626A69A"
@@ -230,14 +242,14 @@
                            ColumnDefinitions="*,Auto"
                            Margin="0,0,0,12">
                             <Label Grid.Column="0"
-                                   Text="📥 Downloads"
-                                   FontSize="20"
+                                   Text="Downloads"
+                                   FontSize="18"
                                    FontAttributes="Bold"/>
                             <Button Grid.Column="1"
-                                    Text="🪟"
-                                    Style="{StaticResource IconButton}"
-                                    BackgroundColor="{StaticResource AccentColorLight}"
-                                    TextColor="White"
+                                    Text="Details"
+                                    Style="{StaticResource ActionButton}"
+                                    BackgroundColor="#EEF2FF"
+                                    TextColor="#4F46E5"
                                     Command="{Binding ToggleSelectedTorrentDetailsCommand}"
                                     IsEnabled="{Binding SelectedTorrent, Converter={StaticResource ObjectNotNullConverter}}"/>
                      </Grid>
@@ -245,9 +257,9 @@
                      <Frame Grid.Row="1"
                             Padding="12"
                             CornerRadius="12"
-                            BorderColor="Transparent"
+                            BorderColor="{StaticResource CardBorderColor}"
                             BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                            HasShadow="True"
+                            HasShadow="False"
                             IsVisible="{Binding CanShowSelectedTorrentDetails}">
                             <Grid RowDefinitions="Auto,Auto,Auto"
                                   ColumnDefinitions="*,*"
@@ -255,16 +267,16 @@
                                   RowSpacing="8">
                                    <Label Grid.Row="0"
                                           Grid.ColumnSpan="2"
-                                          Text="🎯 Selected Torrent Limits"
+                                          Text="Selected torrent limits"
                                           FontSize="13"
                                           FontAttributes="Bold"/>
 
                                    <VerticalStackLayout Grid.Row="1"
                                                         Grid.Column="0"
                                                         Spacing="4">
-                                          <Label Text="⬇️ Download KB/s"
+                                          <Label Text="Download KB/s"
                                                  FontSize="10"
-                                                 TextColor="Gray"/>
+                                                 TextColor="{StaticResource TextSecondary}"/>
                                           <Entry Text="{Binding SelectedTorrent.DownloadLimitKbps}"
                                                  Keyboard="Numeric"
                                                  Placeholder="0 = global"/>
@@ -273,9 +285,9 @@
                                    <VerticalStackLayout Grid.Row="1"
                                                         Grid.Column="1"
                                                         Spacing="4">
-                                          <Label Text="⬆️ Upload KB/s"
+                                          <Label Text="Upload KB/s"
                                                  FontSize="10"
-                                                 TextColor="Gray"/>
+                                                 TextColor="{StaticResource TextSecondary}"/>
                                           <Entry Text="{Binding SelectedTorrent.UploadLimitKbps}"
                                                  Keyboard="Numeric"
                                                  Placeholder="0 = global"/>
@@ -284,9 +296,9 @@
                                    <VerticalStackLayout Grid.Row="2"
                                                         Grid.Column="0"
                                                         Spacing="4">
-                                          <Label Text="📊 Max Seed Ratio"
+                                          <Label Text="Max seed ratio"
                                                  FontSize="10"
-                                                 TextColor="Gray"/>
+                                                 TextColor="{StaticResource TextSecondary}"/>
                                           <Entry Text="{Binding SelectedTorrent.MaxSeedRatio}"
                                                  Keyboard="Numeric"
                                                  Placeholder="0 = global"/>
@@ -295,9 +307,9 @@
                                    <VerticalStackLayout Grid.Row="2"
                                                         Grid.Column="1"
                                                         Spacing="4">
-                                          <Label Text="⏱️ Max Seed Minutes"
+                                          <Label Text="Max seed minutes"
                                                  FontSize="10"
-                                                 TextColor="Gray"/>
+                                                 TextColor="{StaticResource TextSecondary}"/>
                                           <Entry Text="{Binding SelectedTorrent.MaxSeedMinutes}"
                                                  Keyboard="Numeric"
                                                  Placeholder="0 = global"/>
@@ -311,16 +323,13 @@
                                           VerticalOptions="Center"
                                           HorizontalOptions="Center"
                                           Spacing="16">
-                            <Label Text="📭"
-                                   FontSize="64"
-                                   HorizontalOptions="Center"/>
                             <Label Text="No downloads yet"
                                    FontSize="18"
                                    FontAttributes="Bold"
                                    HorizontalOptions="Center"/>
-                            <Label Text="Add a magnet link to get started!"
+                            <Label Text="Add a magnet link to get started."
                                    FontSize="14"
-                                   TextColor="Gray"
+                                   TextColor="{StaticResource TextSecondary}"
                                    HorizontalOptions="Center"/>
                      </VerticalStackLayout>
 
@@ -333,11 +342,11 @@
                             <CollectionView.ItemTemplate>
                                    <DataTemplate x:DataType="models:TorrentItem">
                                           <Frame Margin="0,0,0,12"
-                                                 Padding="16"
+                                                 Padding="12"
                                                  CornerRadius="12"
-                                                 BorderColor="Transparent"
+                                                 BorderColor="{StaticResource CardBorderColor}"
                                                  BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                                                 HasShadow="True">
+                                                 HasShadow="False">
                                                  <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
                                                        RowSpacing="8">
 
@@ -347,7 +356,7 @@
                                                               ColumnSpacing="8">
                                                                <Label Grid.Column="0"
                                                                       Text="{Binding Name}"
-                                                                      FontSize="16"
+                                                                      FontSize="15"
                                                                       FontAttributes="Bold"
                                                                       LineBreakMode="TailTruncation"
                                                                       MaxLines="2"/>
@@ -380,10 +389,19 @@
                                                         </Grid>
 
                                                         <!-- Row 1: Progress Bar -->
-                                                        <ProgressBar Grid.Row="1"
-                                                                     Progress="{Binding Progress, Converter={StaticResource ProgressConverter}}"
-                                                                     ProgressColor="{StaticResource AccentColor}"
-                                                                     HeightRequest="8"/>
+                                                        <Grid Grid.Row="1"
+                                                              ColumnDefinitions="*,Auto"
+                                                              ColumnSpacing="8">
+                                                               <ProgressBar Grid.Column="0"
+                                                                            Progress="{Binding Progress, Converter={StaticResource ProgressConverter}}"
+                                                                            ProgressColor="{StaticResource AccentColor}"
+                                                                            HeightRequest="6"/>
+                                                               <Label Grid.Column="1"
+                                                                      Text="{Binding Progress, StringFormat='{0:F0}%'}"
+                                                                      FontSize="10"
+                                                                      TextColor="{StaticResource TextSecondary}"
+                                                                      VerticalOptions="Center"/>
+                                                        </Grid>
 
                                                         <!-- Row 2: Stats -->
                                                         <Grid Grid.Row="2"
@@ -400,45 +418,45 @@
                                                                </VerticalStackLayout>
                                                                <VerticalStackLayout Grid.Column="1"
                                                                                     Spacing="2">
-                                                                      <Label Text="⬇️ Speed"
+                                                                      <Label Text="Down"
                                                                              FontSize="10"
-                                                                             TextColor="Gray"/>
+                                                                             TextColor="{StaticResource TextSecondary}"/>
                                                                       <Label Text="{Binding FormattedDownloadSpeed}"
                                                                              FontSize="12"
                                                                              FontAttributes="Bold"/>
                                                                </VerticalStackLayout>
                                                                <VerticalStackLayout Grid.Column="2"
                                                                                     Spacing="2">
-                                                                      <Label Text="⬆️ Speed"
+                                                                      <Label Text="Up"
                                                                              FontSize="10"
-                                                                             TextColor="Gray"/>
+                                                                             TextColor="{StaticResource TextSecondary}"/>
                                                                       <Label Text="{Binding FormattedUploadSpeed}"
                                                                              FontSize="12"
                                                                              FontAttributes="Bold"/>
                                                                </VerticalStackLayout>
                                                                <VerticalStackLayout Grid.Column="3"
                                                                                     Spacing="2">
-                                                                      <Label Text="🌱 Seeds"
+                                                                      <Label Text="Seeds"
                                                                              FontSize="10"
-                                                                             TextColor="Gray"/>
+                                                                             TextColor="{StaticResource TextSecondary}"/>
                                                                       <Label Text="{Binding Seeders}"
                                                                              FontSize="12"
                                                                              FontAttributes="Bold"/>
                                                                </VerticalStackLayout>
                                                                <VerticalStackLayout Grid.Column="4"
                                                                                     Spacing="2">
-                                                                      <Label Text="👥 Peers"
+                                                                      <Label Text="Peers"
                                                                              FontSize="10"
-                                                                             TextColor="Gray"/>
+                                                                             TextColor="{StaticResource TextSecondary}"/>
                                                                       <Label Text="{Binding Leechers}"
                                                                              FontSize="12"
                                                                              FontAttributes="Bold"/>
                                                                </VerticalStackLayout>
                                                                <VerticalStackLayout Grid.Column="5"
                                                                                     Spacing="2">
-                                                                      <Label Text="⏳ ETA"
+                                                                      <Label Text="ETA"
                                                                              FontSize="10"
-                                                                             TextColor="Gray"/>
+                                                                             TextColor="{StaticResource TextSecondary}"/>
                                                                       <Label Text="{Binding FormattedEstimatedTime}"
                                                                              FontSize="12"
                                                                              FontAttributes="Bold"/>
@@ -453,9 +471,9 @@
                                                                                     Spacing="4">
                                                                       <Grid ColumnDefinitions="*,Auto">
                                                                              <Label Grid.Column="0"
-                                                                                    Text="❤️ Health"
+                                                                                    Text="Health"
                                                                                     FontSize="10"
-                                                                                    TextColor="Gray"/>
+                                                                                    TextColor="{StaticResource TextSecondary}"/>
                                                                              <Label Grid.Column="1"
                                                                                     Text="{Binding HealthScore}"
                                                                                     FontSize="10"
@@ -469,9 +487,9 @@
                                                                                     Spacing="4">
                                                                       <Grid ColumnDefinitions="*,Auto">
                                                                              <Label Grid.Column="0"
-                                                                                    Text="🧩 Availability"
+                                                                                    Text="Availability"
                                                                                     FontSize="10"
-                                                                                    TextColor="Gray"/>
+                                                                                    TextColor="{StaticResource TextSecondary}"/>
                                                                              <Label Grid.Column="1"
                                                                                     Text="{Binding AvailabilityLabel}"
                                                                                     FontSize="10"
@@ -489,9 +507,9 @@
                                                               ColumnSpacing="12">
                                                                <VerticalStackLayout Grid.Column="0"
                                                                                     Spacing="4">
-                                                                      <Label Text="⬇️ Download KB/s"
+                                                                      <Label Text="Download KB/s"
                                                                              FontSize="10"
-                                                                             TextColor="Gray"/>
+                                                                             TextColor="{StaticResource TextSecondary}"/>
                                                                       <controls:LineChartView Values="{Binding DownloadSpeedHistory}"
                                                                                               LineColor="#42A5F5"
                                                                                               FillColor="#2642A5F5"
@@ -499,9 +517,9 @@
                                                                </VerticalStackLayout>
                                                                <VerticalStackLayout Grid.Column="1"
                                                                                     Spacing="4">
-                                                                      <Label Text="⬆️ Upload KB/s"
+                                                                      <Label Text="Upload KB/s"
                                                                              FontSize="10"
-                                                                             TextColor="Gray"/>
+                                                                             TextColor="{StaticResource TextSecondary}"/>
                                                                       <controls:LineChartView Values="{Binding UploadSpeedHistory}"
                                                                                               LineColor="#26A69A"
                                                                                               FillColor="#2626A69A"

@@ -41,13 +41,13 @@ public partial class DeleteTorrentDialogPage : ContentPage
 public partial class DeleteTorrentDialogViewModel : ObservableObject
 {
     [ObservableProperty]
-    private string torrentName;
+    public partial string TorrentName { get; set; }
 
     [ObservableProperty]
-    private bool deleteTorrentFile;
+    public partial bool DeleteTorrentFile { get; set; }
 
     [ObservableProperty]
-    private bool deleteDownloadedFiles;
+    public partial bool DeleteDownloadedFiles { get; set; }
 
     public DeleteTorrentDialogViewModel(string torrentName)
     {
