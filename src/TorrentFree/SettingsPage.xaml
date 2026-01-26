@@ -18,11 +18,12 @@
                    FontSize="12"
                    TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
 
-            <Frame Padding="16"
-                   CornerRadius="12"
-                   BorderColor="Transparent"
-                   BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                   HasShadow="True">
+            <Border Padding="16"
+                    Stroke="Transparent"
+                    Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
                 <Grid RowDefinitions="Auto,Auto,Auto"
                       ColumnDefinitions="*,*"
                       ColumnSpacing="12"
@@ -57,14 +58,15 @@
                                TextChanged="OnNumericTextChanged"/>
                     </VerticalStackLayout>
                 </Grid>
-            </Frame>
+            </Border>
 
-            <Frame Padding="16"
-                   CornerRadius="12"
-                   BorderColor="Transparent"
-                   BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                   HasShadow="True"
-                   IsVisible="{Binding IsFileAssociationSupported}">
+            <Border Padding="16"
+                    Stroke="Transparent"
+                    Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                    IsVisible="{Binding IsFileAssociationSupported}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
                 <Grid RowDefinitions="Auto,Auto"
                       ColumnDefinitions="*,Auto"
                       ColumnSpacing="12"
@@ -83,13 +85,14 @@
                             Grid.Column="1"
                             IsToggled="{Binding IsTorrentAssociated}"/>
                 </Grid>
-            </Frame>
+            </Border>
 
-            <Frame Padding="16"
-                   CornerRadius="12"
-                   BorderColor="Transparent"
-                   BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                   HasShadow="True">
+            <Border Padding="16"
+                    Stroke="Transparent"
+                    Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
                 <Grid RowDefinitions="Auto,Auto"
                       ColumnDefinitions="*,*"
                       ColumnSpacing="12"
@@ -124,13 +127,14 @@
                                TextChanged="OnNumericTextChanged"/>
                     </VerticalStackLayout>
                 </Grid>
-            </Frame>
+            </Border>
 
-            <Frame Padding="16"
-                   CornerRadius="12"
-                   BorderColor="Transparent"
-                   BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                   HasShadow="True">
+            <Border Padding="16"
+                    Stroke="Transparent"
+                    Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
                 <Grid RowDefinitions="Auto,Auto"
                       ColumnDefinitions="*,*"
                       ColumnSpacing="12"
@@ -165,7 +169,7 @@
                                TextChanged="OnNumericTextChanged"/>
                     </VerticalStackLayout>
                 </Grid>
-            </Frame>
+            </Border>
 
             <Label Text="{Binding ValidationMessage}"
                    TextColor="{StaticResource StatusFailed}"

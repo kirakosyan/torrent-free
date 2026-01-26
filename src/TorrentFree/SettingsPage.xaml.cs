@@ -1,9 +1,15 @@
+using Microsoft.Extensions.DependencyInjection;
 using TorrentFree.ViewModels;
 
 namespace TorrentFree;
 
 public partial class SettingsPage : ContentPage
 {
+    public SettingsPage()
+        : this(GetRequiredService<SettingsViewModel>())
+    {
+    }
+
     public SettingsPage(SettingsViewModel viewModel)
     {
         InitializeComponent();
@@ -65,5 +71,10 @@ public partial class SettingsPage : ContentPage
         {
             entry.Text = filtered;
         }
+    }
+
+    private static T GetRequiredService<T>() where T : notnull
+    {
+        return MauiProgram.Services.GetRequiredService<T>();
     }
 }

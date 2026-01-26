@@ -29,6 +29,7 @@
     <Color x:Key="Gray900">#212121</Color>
     <Color x:Key="Gray950">#141414</Color>
     <Color x:Key="Red">#ff3b30</Color>
+    <Color x:Key="StatusFailed">#EF5350</Color>
 
     <Color x:Key="PageBackgroundColorLight">#F3F4F6</Color>
     <Color x:Key="PageBackgroundColorDark">#111827</Color>
