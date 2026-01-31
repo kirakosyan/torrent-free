@@ -65,6 +65,11 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.2" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="MonoTorrent" Version="3.0.2" />
+		<PackageReference Include="Plugin.LocalNotification" Version="13.0.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
+		<AndroidLibrary Remove="**\playservicesbasement-18.2.0.aar" />
 	</ItemGroup>
 
 	<!-- Resource files for multilanguage support -->

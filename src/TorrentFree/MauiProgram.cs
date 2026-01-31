@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Plugin.LocalNotification;
 using TorrentFree.Services;
 using TorrentFree.ViewModels;
 
@@ -13,6 +14,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseLocalNotification()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -26,6 +28,12 @@ public static class MauiProgram
         builder.Services.AddSingleton<ITorrentFilePicker, MauiTorrentFilePicker>();
         builder.Services.AddSingleton<ITorrentFileParser, TorrentFileParser>();
         builder.Services.AddSingleton<IFileAssociationService, FileAssociationService>();
+        builder.Services.AddSingleton<TorrentFree.Services.INotificationService, NotificationService>();
+    #if ANDROID
+        builder.Services.AddSingleton<IBackgroundDownloadService, AndroidBackgroundDownloadService>();
+    #else
+        builder.Services.AddSingleton<IBackgroundDownloadService, BackgroundDownloadService>();
+    #endif
 
         // Register ViewModels
         builder.Services.AddSingleton<MainViewModel>();

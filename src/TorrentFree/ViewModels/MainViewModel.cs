@@ -20,6 +20,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly ITorrentFileParser _torrentFileParser;
     private readonly IStorageService _storageService;
     private readonly IFileAssociationService _fileAssociationService;
+    private readonly INotificationService _notificationService;
     private bool _disposed;
     private bool _isLoadingSettings;
     private bool _processedCommandLine;
@@ -123,13 +124,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// </summary>
     public bool IsEmpty => Torrents.Count == 0;
 
-    public MainViewModel(ITorrentService torrentService, ITorrentFilePicker torrentFilePicker, ITorrentFileParser torrentFileParser, IStorageService storageService, IFileAssociationService fileAssociationService)
+    public MainViewModel(ITorrentService torrentService, ITorrentFilePicker torrentFilePicker, ITorrentFileParser torrentFileParser, IStorageService storageService, IFileAssociationService fileAssociationService, INotificationService notificationService)
     {
         _torrentService = torrentService;
         _torrentFilePicker = torrentFilePicker;
         _torrentFileParser = torrentFileParser;
         _storageService = storageService;
         _fileAssociationService = fileAssociationService;
+        _notificationService = notificationService;
         Torrents.CollectionChanged += OnTorrentsCollectionChanged;
 
         ApplyGlobalSettings();
@@ -435,6 +437,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             GlobalMaxSeedMinutes = settings.GlobalMaxSeedMinutes;
 
             ApplyGlobalSettings();
+            await _notificationService.EnsurePermissionAsync();
             await _torrentService.InitializeAsync();
 
             await PromptFileAssociationAsync();

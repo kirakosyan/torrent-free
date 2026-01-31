@@ -82,6 +82,8 @@ public interface ITorrentService : IDisposable
 public class TorrentService : ITorrentService
 {
     private readonly IStorageService _storageService;
+    private readonly INotificationService _notificationService;
+    private readonly IBackgroundDownloadService _backgroundDownloadService;
     private readonly ConcurrentDictionary<string, CancellationTokenSource> _downloadTokens = new();
     private readonly ConcurrentDictionary<string, TorrentManager> _managers = new();
     private readonly object _torrentsLock = new();
@@ -90,6 +92,7 @@ public class TorrentService : ITorrentService
     private bool _initialized;
     private bool _pendingSave;
     private bool _disposed;
+    private bool _backgroundTransferActive;
 
     private int _maxActiveDownloads = 2;
     private int _maxActiveSeeds = 2;
@@ -100,9 +103,11 @@ public class TorrentService : ITorrentService
 
     public ObservableCollection<TorrentItem> Torrents { get; } = [];
 
-    public TorrentService(IStorageService storageService)
+    public TorrentService(IStorageService storageService, INotificationService notificationService, IBackgroundDownloadService backgroundDownloadService)
     {
         _storageService = storageService;
+        _notificationService = notificationService;
+        _backgroundDownloadService = backgroundDownloadService;
         // Debounced save timer - saves at most every 5 seconds
         _saveTimer = new Timer(async _ => await SaveIfPendingAsync(), null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
     }
@@ -256,6 +261,7 @@ public class TorrentService : ITorrentService
 
         torrent.Status = DownloadStatus.Downloading;
         await SaveAsync();
+        UpdateBackgroundTransferState();
 
         var manager = await GetOrCreateManagerAsync(torrent);
         ApplySpeedLimitsToManager(manager, torrent);
@@ -300,6 +306,7 @@ public class TorrentService : ITorrentService
         torrent.DownloadSpeed = 0;
         torrent.UploadSpeed = 0;
         await SaveAsync();
+        UpdateBackgroundTransferState();
 
         await TryStartQueuedTorrentsAsync();
     }
@@ -330,6 +337,7 @@ public class TorrentService : ITorrentService
         torrent.Progress = 0;
         torrent.DownloadedSize = 0;
         await SaveAsync();
+        UpdateBackgroundTransferState();
 
         await TryStartQueuedTorrentsAsync();
     }
@@ -359,6 +367,7 @@ public class TorrentService : ITorrentService
         DetachTorrentSettingsHandlers(torrent);
         Torrents.Remove(torrent);
         await SaveAsync();
+        UpdateBackgroundTransferState();
 
         if (deleteTorrentFile)
         {
@@ -626,6 +635,30 @@ public class TorrentService : ITorrentService
     }
 
     private static long KbpsToBytes(int kbps) => kbps <= 0 ? 0 : kbps * 1024L;
+
+    private void UpdateBackgroundTransferState()
+    {
+        bool hasActiveTransfers;
+        lock (_torrentsLock)
+        {
+            hasActiveTransfers = Torrents.Any(t => t.Status is DownloadStatus.Downloading or DownloadStatus.Seeding);
+        }
+        if (hasActiveTransfers == _backgroundTransferActive)
+        {
+            return;
+        }
+
+        _backgroundTransferActive = hasActiveTransfers;
+
+        if (hasActiveTransfers)
+        {
+            _backgroundDownloadService.Start();
+        }
+        else
+        {
+            _backgroundDownloadService.Stop();
+        }
+    }
 
     private bool TryGetTorrentById(string id, out TorrentItem? torrent)
     {
@@ -969,6 +1002,19 @@ public class TorrentService : ITorrentService
                     currentStatus = torrent.Status;
                 });
 
+                var wasComplete = previousStatus is DownloadStatus.Completed or DownloadStatus.Seeding;
+                var isComplete = currentStatus is DownloadStatus.Completed or DownloadStatus.Seeding;
+
+                if (previousStatus != currentStatus)
+                {
+                    UpdateBackgroundTransferState();
+                }
+
+                if (!wasComplete && isComplete)
+                {
+                    await _notificationService.ShowDownloadCompletedAsync(torrent);
+                }
+
                 if (manager.HasMetadata && manager.Torrent != null)
                 {
                     await MainThread.InvokeOnMainThreadAsync(() =>
@@ -1009,6 +1055,7 @@ public class TorrentService : ITorrentService
         {
             _downloadTokens.TryRemove(torrent.Id, out _);
             _pendingSave = true;
+            UpdateBackgroundTransferState();
         }
     }
 
