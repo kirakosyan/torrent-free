@@ -1,11 +1,12 @@
 using Android.App;
 using Android.Content;
+using Android.Content.PM;
 using Android.OS;
 using AndroidX.Core.App;
 
 namespace TorrentFree;
 
-[Service(Exported = false)]
+[Service(Exported = false, ForegroundServiceType = ForegroundService.TypeDataSync)]
 public sealed class DownloadForegroundService : Service
 {
     private const int NotificationId = 1001;
@@ -21,7 +22,16 @@ public sealed class DownloadForegroundService : Service
     public override StartCommandResult OnStartCommand(Intent? intent, StartCommandFlags flags, int startId)
     {
         var notification = BuildNotification();
-        StartForeground(NotificationId, notification);
+        if (Build.VERSION.SdkInt >= BuildVersionCodes.UpsideDownCake)
+        {
+#pragma warning disable CA1416
+            StartForeground(NotificationId, notification, ForegroundService.TypeDataSync);
+#pragma warning restore CA1416
+        }
+        else
+        {
+            StartForeground(NotificationId, notification);
+        }
         return StartCommandResult.Sticky;
     }
 

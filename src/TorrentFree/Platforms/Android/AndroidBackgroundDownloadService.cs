@@ -10,25 +10,39 @@ public sealed class AndroidBackgroundDownloadService : IBackgroundDownloadServic
 {
     public void Start()
     {
-        var context = Android.App.Application.Context;
-        var intent = new Intent(context, typeof(DownloadForegroundService));
+        try
+        {
+            var context = Android.App.Application.Context;
+            var intent = new Intent(context, typeof(DownloadForegroundService));
 
-        if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.O)
-        {
+            if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.O)
+            {
 #pragma warning disable CA1416
-            context.StartForegroundService(intent);
+                context.StartForegroundService(intent);
 #pragma warning restore CA1416
+            }
+            else
+            {
+                context.StartService(intent);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            context.StartService(intent);
+            System.Diagnostics.Debug.WriteLine($"Failed to start foreground service: {ex}");
         }
     }
 
     public void Stop()
     {
-        var context = Android.App.Application.Context;
-        var intent = new Intent(context, typeof(DownloadForegroundService));
-        context.StopService(intent);
+        try
+        {
+            var context = Android.App.Application.Context;
+            var intent = new Intent(context, typeof(DownloadForegroundService));
+            context.StopService(intent);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to stop foreground service: {ex}");
+        }
     }
 }

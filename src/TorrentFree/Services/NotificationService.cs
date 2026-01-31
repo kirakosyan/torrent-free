@@ -10,9 +10,14 @@ public sealed class NotificationService : INotificationService
 {
     private bool _permissionRequested;
 
+    /// <summary>
+    /// Check if local notifications are supported on this platform.
+    /// </summary>
+    private static bool IsSupported => LocalNotificationCenter.Current is not null;
+
     public async Task EnsurePermissionAsync()
     {
-        if (_permissionRequested)
+        if (_permissionRequested || !IsSupported)
         {
             return;
         }
@@ -23,6 +28,11 @@ public sealed class NotificationService : INotificationService
 
     public async Task ShowDownloadCompletedAsync(TorrentItem torrent)
     {
+        if (!IsSupported)
+        {
+            return;
+        }
+
         await EnsurePermissionAsync();
 
         var title = "Download complete";
