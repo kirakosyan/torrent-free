@@ -982,8 +982,18 @@ public class TorrentService : ITorrentService
                         TorrentState.Stopped when progress >= 100 => DownloadStatus.Completed,
                         TorrentState.Stopped => DownloadStatus.Stopped,
                         TorrentState.Downloading => DownloadStatus.Downloading,
+                        TorrentState.Error => DownloadStatus.Failed,
                         _ => torrent.Status
                     };
+
+                    if (manager.State == TorrentState.Error)
+                    {
+                        torrent.ErrorMessage = manager.Error?.Exception?.Message ?? "Unknown error occurred";
+                    }
+                    else
+                    {
+                        torrent.ErrorMessage = null;
+                    }
 
                     if (torrent.Status == DownloadStatus.Seeding)
                     {
@@ -1049,7 +1059,11 @@ public class TorrentService : ITorrentService
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Monitor error: {ex.Message}");
-            await MainThread.InvokeOnMainThreadAsync(() => torrent.Status = DownloadStatus.Failed);
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                torrent.Status = DownloadStatus.Failed;
+                torrent.ErrorMessage = ex.Message;
+            });
         }
         finally
         {

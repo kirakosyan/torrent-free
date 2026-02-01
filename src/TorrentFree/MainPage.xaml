@@ -363,12 +363,20 @@
                                                         <Grid Grid.Row="0"
                                                               ColumnDefinitions="*,Auto,Auto"
                                                               ColumnSpacing="8">
-                                                               <Label Grid.Column="0"
-                                                                      Text="{Binding Name}"
-                                                                      FontSize="15"
-                                                                      FontAttributes="Bold"
-                                                                      LineBreakMode="TailTruncation"
-                                                                      MaxLines="2"/>
+                                                               <VerticalStackLayout Grid.Column="0"
+                                                                                    Spacing="2">
+                                                                      <Label Text="{Binding Name}"
+                                                                             FontSize="15"
+                                                                             FontAttributes="Bold"
+                                                                             LineBreakMode="TailTruncation"
+                                                                             MaxLines="2"/>
+                                                                      <Label Text="{Binding ErrorMessage}"
+                                                                             FontSize="11"
+                                                                             TextColor="{StaticResource StatusFailed}"
+                                                                             IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                                                                             LineBreakMode="TailTruncation"
+                                                                             MaxLines="2"/>
+                                                               </VerticalStackLayout>
                                                                <Button Grid.Column="1"
                                                                        Text="📂"
                                                                        Style="{StaticResource FolderButton}"

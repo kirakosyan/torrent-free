@@ -149,10 +149,16 @@ public partial class TorrentItem : ObservableObject
     public partial string? TorrentFilePath { get; set; }
 
     /// <summary>
-    /// Original .torrent file name when imported from disk.
+    /// Name of the .torrent file (if applicable).
     /// </summary>
     [ObservableProperty]
     public partial string? TorrentFileName { get; set; }
+
+    /// <summary>
+    /// Error message explaining why the download failed or is stalled.
+    /// </summary>
+    [ObservableProperty]
+    public partial string? ErrorMessage { get; set; }
 
     /// <summary>
     /// Health score of the torrent (0-100).
