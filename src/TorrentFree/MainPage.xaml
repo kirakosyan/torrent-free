@@ -20,6 +20,7 @@
                      <converters:ObjectNotNullConverter x:Key="ObjectNotNullConverter"/>
                      <converters:ProgressConverter x:Key="ProgressConverter"/>
                      <converters:StatusColorConverter x:Key="StatusColorConverter"/>
+                     <converters:OddIndexConverter x:Key="OddIndexConverter"/>
 
                      <!-- Status Colors -->
                      <Color x:Key="StatusQueued">#FFA726</Color>
@@ -33,6 +34,8 @@
                      <!-- Card Style -->
                      <Color x:Key="CardBackground">#FFFFFF</Color>
                      <Color x:Key="CardBackgroundDark">#1F1F23</Color>
+                     <Color x:Key="CardBackgroundAlt">#E6ECFF</Color>
+                     <Color x:Key="CardBackgroundAltDark">#2A2F3A</Color>
                      <Color x:Key="PageBackgroundColorLight">#F3F4F6</Color>
                      <Color x:Key="PageBackgroundColorDark">#111827</Color>
                      <Color x:Key="CardBorderColor">#E5E7EB</Color>
@@ -366,6 +369,14 @@
                                                  <Border.StrokeShape>
                                                         <RoundRectangle CornerRadius="12"/>
                                                  </Border.StrokeShape>
+                                                 <Border.Triggers>
+                                                        <DataTrigger TargetType="Border"
+                                                                     Binding="{Binding DisplayIndex, Converter={StaticResource OddIndexConverter}}"
+                                                                     Value="True">
+                                                               <Setter Property="Background"
+                                                                       Value="{AppThemeBinding Light={StaticResource CardBackgroundAlt}, Dark={StaticResource CardBackgroundAltDark}}"/>
+                                                        </DataTrigger>
+                                                 </Border.Triggers>
                                                  <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
                                                        RowSpacing="8">
 

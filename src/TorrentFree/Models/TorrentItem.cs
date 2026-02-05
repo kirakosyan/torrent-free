@@ -161,6 +161,12 @@ public partial class TorrentItem : ObservableObject
     public partial string? ErrorMessage { get; set; }
 
     /// <summary>
+    /// Current display index in the list (used for styling).
+    /// </summary>
+    [ObservableProperty]
+    public partial int DisplayIndex { get; set; }
+
+    /// <summary>
     /// Health score of the torrent (0-100).
     /// </summary>
     [ObservableProperty]

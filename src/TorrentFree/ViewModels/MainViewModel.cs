@@ -485,8 +485,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
             : Torrents.AsEnumerable();
 
         DisplayTorrents.Clear();
+        var index = 0;
         foreach (var torrent in ordered)
         {
+            torrent.DisplayIndex = index++;
             DisplayTorrents.Add(torrent);
         }
     }
