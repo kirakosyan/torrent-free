@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TorrentFree.Models;
@@ -32,6 +33,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// Collection of all torrent items.
     /// </summary>
     public ObservableCollection<TorrentItem> Torrents => _torrentService.Torrents;
+
+    /// <summary>
+    /// Collection of torrents shown in the UI (can be sorted).
+    /// </summary>
+    public ObservableCollection<TorrentItem> DisplayTorrents { get; } = [];
 
     /// <summary>
     /// Global download speed history in KB/s.
@@ -65,6 +71,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// </summary>
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
+
+    /// <summary>
+    /// When enabled, downloading torrents are shown on top.
+    /// </summary>
+    [ObservableProperty]
+    public partial bool SortByStatus { get; set; }
 
     /// <summary>
     /// Error message to display to the user.
@@ -134,7 +146,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _notificationService = notificationService;
         Torrents.CollectionChanged += OnTorrentsCollectionChanged;
 
+        InitializeDisplayTorrents();
+
         ApplyGlobalSettings();
+    }
+
+    partial void OnSortByStatusChanged(bool value)
+    {
+        SyncDisplayTorrents();
+        _ = PersistSettingsAsync();
     }
 
     partial void OnGlobalDownloadLimitKbpsChanged(int value)
@@ -237,7 +257,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
             MaxActiveDownloads = MaxActiveDownloads,
             MaxActiveSeeds = MaxActiveSeeds,
             GlobalMaxSeedRatio = GlobalMaxSeedRatio,
-            GlobalMaxSeedMinutes = GlobalMaxSeedMinutes
+            GlobalMaxSeedMinutes = GlobalMaxSeedMinutes,
+            SortByStatus = SortByStatus
         };
 
         await _storageService.SaveSettingsAsync(settings);
@@ -365,42 +386,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
             }
 
             var metadata = _torrentFileParser.Parse(picked.Content);
-            TorrentItem? torrent = null;
-            try
-            {
-                torrent = await _torrentService.AddTorrentFileAsync(metadata);
-                if (torrent is null)
-                {
-                    ErrorMessage = "Invalid .torrent file. Unable to extract an info hash.";
-                    return;
-                }
-            }
-            catch (DuplicateTorrentException)
-            {
-                ErrorMessage = "This torrent is already in your list.";
-                return;
-            }
-
-            var folder = !string.IsNullOrWhiteSpace(picked.FullPath)
-                ? Path.GetDirectoryName(picked.FullPath)
-                : null;
-
-            if (!string.IsNullOrWhiteSpace(folder) && Directory.Exists(folder))
-            {
-                torrent.SavePath = folder;
-            }
-
-            if (!string.IsNullOrWhiteSpace(picked.FullPath) && File.Exists(picked.FullPath))
-            {
-                torrent.TorrentFilePath = picked.FullPath;
-            }
-
-            if (!string.IsNullOrWhiteSpace(picked.FileName))
-            {
-                torrent.TorrentFileName = picked.FileName;
-            }
-
-            await _torrentService.StartTorrentAsync(torrent);
+            await TryAddTorrentFromMetadataAsync(
+                metadata,
+                picked.FullPath,
+                picked.FileName,
+                notifyDuplicate: true,
+                notifyInvalid: true);
         }
         catch (Exception ex)
         {
@@ -416,6 +407,88 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private void OnTorrentsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         OnPropertyChanged(nameof(IsEmpty));
+        UpdateTorrentHandlers(e);
+        SyncDisplayTorrents();
+    }
+
+    private void InitializeDisplayTorrents()
+    {
+        foreach (var torrent in Torrents)
+        {
+            AttachTorrentHandlers(torrent);
+        }
+
+        SyncDisplayTorrents();
+    }
+
+    private void UpdateTorrentHandlers(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+        {
+            foreach (var existing in DisplayTorrents)
+            {
+                DetachTorrentHandlers(existing);
+            }
+
+            foreach (var torrent in Torrents)
+            {
+                AttachTorrentHandlers(torrent);
+            }
+
+            return;
+        }
+
+        if (e.OldItems is not null)
+        {
+            foreach (var oldItem in e.OldItems.OfType<TorrentItem>())
+            {
+                DetachTorrentHandlers(oldItem);
+            }
+        }
+
+        if (e.NewItems is not null)
+        {
+            foreach (var newItem in e.NewItems.OfType<TorrentItem>())
+            {
+                AttachTorrentHandlers(newItem);
+            }
+        }
+    }
+
+    private void AttachTorrentHandlers(TorrentItem torrent)
+    {
+        torrent.PropertyChanged += OnTorrentPropertyChanged;
+    }
+
+    private void DetachTorrentHandlers(TorrentItem torrent)
+    {
+        torrent.PropertyChanged -= OnTorrentPropertyChanged;
+    }
+
+    private void OnTorrentPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(TorrentItem.Status) && SortByStatus)
+        {
+            SyncDisplayTorrents();
+        }
+    }
+
+    private void SyncDisplayTorrents()
+    {
+        var ordered = SortByStatus
+            ? Torrents
+                .Select((torrent, index) => new { torrent, index })
+                .OrderBy(entry => entry.torrent.Status == DownloadStatus.Downloading ? 0 : 1)
+                .ThenBy(entry => entry.torrent.Name, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(entry => entry.index)
+                .Select(entry => entry.torrent)
+            : Torrents.AsEnumerable();
+
+        DisplayTorrents.Clear();
+        foreach (var torrent in ordered)
+        {
+            DisplayTorrents.Add(torrent);
+        }
     }
 
     /// <summary>
@@ -435,6 +508,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             MaxActiveSeeds = settings.MaxActiveSeeds;
             GlobalMaxSeedRatio = settings.GlobalMaxSeedRatio;
             GlobalMaxSeedMinutes = settings.GlobalMaxSeedMinutes;
+            SortByStatus = settings.SortByStatus;
 
             ApplyGlobalSettings();
             await _notificationService.EnsurePermissionAsync();
@@ -454,6 +528,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
             _isLoadingSettings = false;
             IsBusy = false;
         }
+    }
+
+    public Task ImportTorrentFileFromPathAsync(string filePath)
+    {
+        return TryAddTorrentFromFilePathAsync(filePath, notifyDuplicate: false, notifyInvalid: true);
     }
 
     private async Task ProcessCommandLineArgumentsAsync()
@@ -478,45 +557,88 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 continue;
             }
 
-            if (!File.Exists(arg))
+            await TryAddTorrentFromFilePathAsync(arg, notifyDuplicate: false, notifyInvalid: true);
+        }
+    }
+
+    private async Task<bool> TryAddTorrentFromFilePathAsync(string filePath, bool notifyDuplicate, bool notifyInvalid)
+    {
+        if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
+        {
+            return false;
+        }
+
+        try
+        {
+            var content = await File.ReadAllBytesAsync(filePath);
+            var metadata = _torrentFileParser.Parse(content);
+            return await TryAddTorrentFromMetadataAsync(
+                metadata,
+                filePath,
+                Path.GetFileName(filePath),
+                notifyDuplicate,
+                notifyInvalid);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Torrent add error: {ex}");
+            if (notifyInvalid)
             {
-                continue;
-            }
-
-            try
-            {
-                var content = await File.ReadAllBytesAsync(arg);
-                var metadata = _torrentFileParser.Parse(content);
-                TorrentItem? torrent = null;
-                try
-                {
-                    torrent = await _torrentService.AddTorrentFileAsync(metadata);
-                }
-                catch (DuplicateTorrentException)
-                {
-                    continue;
-                }
-
-                if (torrent is null)
-                {
-                    continue;
-                }
-
-                torrent.TorrentFilePath = arg;
-                torrent.TorrentFileName = Path.GetFileName(arg);
-                var folder = Path.GetDirectoryName(arg);
-                if (!string.IsNullOrWhiteSpace(folder) && Directory.Exists(folder))
-                {
-                    torrent.SavePath = folder;
-                }
-
-                await _torrentService.StartTorrentAsync(torrent);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Command line torrent add error: {ex}");
                 ErrorMessage = "Failed to import .torrent file. Please try again.";
             }
+            return false;
+        }
+    }
+
+    private async Task<bool> TryAddTorrentFromMetadataAsync(TorrentMetadata metadata, string? filePath, string? fileName, bool notifyDuplicate, bool notifyInvalid)
+    {
+        TorrentItem? torrent = null;
+        try
+        {
+            torrent = await _torrentService.AddTorrentFileAsync(metadata);
+        }
+        catch (DuplicateTorrentException)
+        {
+            if (notifyDuplicate)
+            {
+                ErrorMessage = "This torrent is already in your list.";
+            }
+            return false;
+        }
+
+        if (torrent is null)
+        {
+            if (notifyInvalid)
+            {
+                ErrorMessage = "Invalid .torrent file. Unable to extract an info hash.";
+            }
+            return false;
+        }
+
+        ApplyTorrentFileMetadata(torrent, filePath, fileName);
+        await _torrentService.StartTorrentAsync(torrent);
+        return true;
+    }
+
+    private static void ApplyTorrentFileMetadata(TorrentItem torrent, string? filePath, string? fileName)
+    {
+        if (!string.IsNullOrWhiteSpace(filePath) && File.Exists(filePath))
+        {
+            torrent.TorrentFilePath = filePath;
+        }
+
+        if (!string.IsNullOrWhiteSpace(fileName))
+        {
+            torrent.TorrentFileName = fileName;
+        }
+
+        var folder = !string.IsNullOrWhiteSpace(filePath)
+            ? Path.GetDirectoryName(filePath)
+            : null;
+
+        if (!string.IsNullOrWhiteSpace(folder) && Directory.Exists(folder))
+        {
+            torrent.SavePath = folder;
         }
     }
 
@@ -863,6 +985,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         _disposed = true;
         StopStatsTimer();
+        foreach (var torrent in DisplayTorrents)
+        {
+            DetachTorrentHandlers(torrent);
+        }
         Torrents.CollectionChanged -= OnTorrentsCollectionChanged;
         GC.SuppressFinalize(this);
     }

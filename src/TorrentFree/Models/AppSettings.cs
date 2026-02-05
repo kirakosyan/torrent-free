@@ -34,4 +34,9 @@ public class AppSettings
     /// Global max seed time in minutes (0 = unlimited).
     /// </summary>
     public int GlobalMaxSeedMinutes { get; set; }
+
+    /// <summary>
+    /// When enabled, downloading torrents are shown on top.
+    /// </summary>
+    public bool SortByStatus { get; set; }
 }
