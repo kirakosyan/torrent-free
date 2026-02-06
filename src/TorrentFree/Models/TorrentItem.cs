@@ -269,6 +269,31 @@ public partial class TorrentItem : ObservableObject
     };
 
     /// <summary>
+    /// Short hint shown when a torrent is not actively downloading.
+    /// </summary>
+    public string StatusHint
+    {
+        get
+        {
+            if (Status == DownloadStatus.Failed)
+            {
+                return string.IsNullOrWhiteSpace(ErrorMessage)
+                    ? "Download failed."
+                    : ErrorMessage;
+            }
+
+            return Status switch
+            {
+                DownloadStatus.Queued => "Queued. Waiting for an active slot.",
+                DownloadStatus.Paused => "Paused.",
+                DownloadStatus.Stopped => "Stopped.",
+                DownloadStatus.Downloading => BuildDownloadingHint(),
+                _ => string.Empty
+            };
+        }
+    }
+
+    /// <summary>
     /// Indicates whether the download can be started or resumed.
     /// </summary>
     public bool CanStart => Status is DownloadStatus.Queued or DownloadStatus.Paused or DownloadStatus.Stopped or DownloadStatus.Failed;
@@ -304,10 +329,21 @@ public partial class TorrentItem : ObservableObject
     partial void OnStatusChanged(DownloadStatus value)
     {
         OnPropertyChanged(nameof(StatusText));
+        OnPropertyChanged(nameof(StatusHint));
         OnPropertyChanged(nameof(CanStart));
         OnPropertyChanged(nameof(CanPause));
         OnPropertyChanged(nameof(CanStop));
         OnPropertyChanged(nameof(CanOpenDownloadedFile));
+    }
+
+    partial void OnSeedersChanged(int value)
+    {
+        OnPropertyChanged(nameof(StatusHint));
+    }
+
+    partial void OnLeechersChanged(int value)
+    {
+        OnPropertyChanged(nameof(StatusHint));
     }
 
     partial void OnSavePathChanged(string value)
@@ -326,6 +362,7 @@ public partial class TorrentItem : ObservableObject
     {
         OnPropertyChanged(nameof(FormattedDownloadSpeed));
         OnPropertyChanged(nameof(FormattedEstimatedTime));
+        OnPropertyChanged(nameof(StatusHint));
     }
 
     partial void OnUploadSpeedChanged(long value)
@@ -348,6 +385,31 @@ public partial class TorrentItem : ObservableObject
     partial void OnEstimatedSecondsRemainingChanged(long value)
     {
         OnPropertyChanged(nameof(FormattedEstimatedTime));
+    }
+
+    partial void OnErrorMessageChanged(string? value)
+    {
+        OnPropertyChanged(nameof(StatusHint));
+    }
+
+    private string BuildDownloadingHint()
+    {
+        if (DownloadSpeed > 0)
+        {
+            return string.Empty;
+        }
+
+        if (Seeders == 0 && Leechers == 0)
+        {
+            return "Searching for peers.";
+        }
+
+        if (Seeders == 0)
+        {
+            return "Waiting for seeds.";
+        }
+
+        return "Connecting to peers.";
     }
 
     public void AddSpeedSample(long downloadBytesPerSecond, long uploadBytesPerSecond)

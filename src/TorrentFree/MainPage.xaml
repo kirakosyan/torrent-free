@@ -397,6 +397,12 @@
                                                                              IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
                                                                              LineBreakMode="TailTruncation"
                                                                              MaxLines="2"/>
+                                                                      <Label Text="{Binding StatusHint}"
+                                                                             FontSize="11"
+                                                                             TextColor="{StaticResource TextSecondary}"
+                                                                             IsVisible="{Binding StatusHint, Converter={StaticResource StringNotEmptyConverter}}"
+                                                                             LineBreakMode="TailTruncation"
+                                                                             MaxLines="2"/>
                                                                </VerticalStackLayout>
                                                                <Button Grid.Column="1"
                                                                        Text="📂"
