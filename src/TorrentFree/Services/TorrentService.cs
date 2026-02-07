@@ -388,7 +388,7 @@ public class TorrentService : ITorrentService
                 // Verify the path is within the expected directory (prevent path traversal)
                 var fullPath = Path.GetFullPath(filePath);
                 var basePath = Path.GetFullPath(torrent.SavePath);
-                if (!fullPath.StartsWith(basePath, StringComparison.OrdinalIgnoreCase))
+                if (!PathGuard.IsPathWithinDirectory(fullPath, basePath))
                 {
                     System.Diagnostics.Debug.WriteLine("Attempted path traversal detected, skipping file deletion");
                     return;
@@ -1363,6 +1363,16 @@ public class TorrentService : ITorrentService
 
         _disposed = true;
         _saveTimer.Dispose();
+        _backgroundTransferActive = false;
+
+        try
+        {
+            _backgroundDownloadService.Stop();
+        }
+        catch
+        {
+            // Ignore shutdown errors
+        }
 
         // Cancel and dispose all active download tokens
         // Note: Using synchronous Cancel() here as Dispose should be synchronous
@@ -1379,6 +1389,50 @@ public class TorrentService : ITorrentService
             }
         }
         _downloadTokens.Clear();
+        _pendingSave = false;
+
+        foreach (var manager in _managers.Values)
+        {
+            try
+            {
+                manager.StopAsync().GetAwaiter().GetResult();
+            }
+            catch
+            {
+                // Ignore shutdown errors
+            }
+        }
+        _managers.Clear();
+
+        if (_engine is not null)
+        {
+            try
+            {
+                _engine.StopAllAsync().GetAwaiter().GetResult();
+            }
+            catch
+            {
+                // Ignore shutdown errors
+            }
+
+            try
+            {
+                if (_engine is IAsyncDisposable asyncDisposableEngine)
+                {
+                    asyncDisposableEngine.DisposeAsync().GetAwaiter().GetResult();
+                }
+                else if (_engine is IDisposable disposableEngine)
+                {
+                    disposableEngine.Dispose();
+                }
+            }
+            catch
+            {
+                // Ignore shutdown errors
+            }
+
+            _engine = null;
+        }
 
         GC.SuppressFinalize(this);
     }

@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 using TorrentFree.ViewModels;
 using Windows.ApplicationModel.Activation;
+using Windows.Foundation;
 using Windows.Storage;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -34,7 +35,15 @@ public partial class App : MauiWinUIApplication
 		_mainInstance = AppInstance.FindOrRegisterForKey(InstanceKey);
 		if (!_mainInstance.IsCurrent)
 		{
-			_ = _mainInstance.RedirectActivationToAsync(AppInstance.GetCurrent().GetActivatedEventArgs());
+			try
+			{
+				var redirectOperation = _mainInstance.RedirectActivationToAsync(AppInstance.GetCurrent().GetActivatedEventArgs());
+				WaitForRedirectCompletion(redirectOperation);
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"Activation redirection failed: {ex}");
+			}
 			Environment.Exit(0);
 			return;
 		}
@@ -144,6 +153,25 @@ public partial class App : MauiWinUIApplication
 		if (window?.Handler?.PlatformView is Microsoft.UI.Xaml.Window platformWindow)
 		{
 			platformWindow.Activate();
+		}
+	}
+
+	private static void WaitForRedirectCompletion(object? redirectOperation)
+	{
+		if (redirectOperation is null)
+		{
+			return;
+		}
+
+		if (redirectOperation is Task task)
+		{
+			task.GetAwaiter().GetResult();
+			return;
+		}
+
+		if (redirectOperation is IAsyncAction asyncAction)
+		{
+			asyncAction.AsTask().GetAwaiter().GetResult();
 		}
 	}
 }

@@ -18,6 +18,20 @@ public partial class DeleteTorrentDialogPage : ContentPage
 
     public DeleteTorrentDialogViewModel ViewModel { get; }
 
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+
+        // If the modal was dismissed via system gestures/back, complete the awaiting task.
+        Dispatcher.Dispatch(() =>
+        {
+            if (!Navigation.ModalStack.Contains(this))
+            {
+                _tcs.TrySetResult(null);
+            }
+        });
+    }
+
     private async void OnCancelClicked(object sender, EventArgs e)
     {
         _tcs.TrySetResult(null);

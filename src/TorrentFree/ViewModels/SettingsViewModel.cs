@@ -13,6 +13,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IStorageService _storageService;
     private readonly ITorrentService _torrentService;
     private readonly IFileAssociationService _fileAssociationService;
+    private AppSettings _loadedSettings = new();
     private bool _isLoadingSettings;
     private bool _isNormalizing;
     private bool _isUpdatingAssociation;
@@ -89,6 +90,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         _isLoadingSettings = true;
         var settings = await _storageService.LoadSettingsAsync();
+        _loadedSettings = settings;
 
         GlobalDownloadLimitKbps = settings.GlobalDownloadLimitKbps;
         GlobalUploadLimitKbps = settings.GlobalUploadLimitKbps;
@@ -215,16 +217,16 @@ public partial class SettingsViewModel : ObservableObject
             return;
         }
 
-        var settings = new AppSettings
-        {
-            GlobalDownloadLimitKbps = GlobalDownloadLimitKbps,
-            GlobalUploadLimitKbps = GlobalUploadLimitKbps,
-            MaxActiveDownloads = MaxActiveDownloads,
-            MaxActiveSeeds = MaxActiveSeeds,
-            GlobalMaxSeedRatio = GlobalMaxSeedRatio,
-            GlobalMaxSeedMinutes = GlobalMaxSeedMinutes
-        };
+        var settings = AppSettingsFactory.CreateForSettingsPage(
+            _loadedSettings,
+            GlobalDownloadLimitKbps,
+            GlobalUploadLimitKbps,
+            MaxActiveDownloads,
+            MaxActiveSeeds,
+            GlobalMaxSeedRatio,
+            GlobalMaxSeedMinutes);
 
+        _loadedSettings = settings;
         await _storageService.SaveSettingsAsync(settings);
     }
 

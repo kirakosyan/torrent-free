@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorrentFree", "src\TorrentF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreeTorrentWeb", "FreeTorrentWeb\FreeTorrentWeb.csproj", "{6CDA54F4-0F5B-4E8A-9870-605290A835CA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorrentFree.UnitTests", "tests\TorrentFree.UnitTests\TorrentFree.UnitTests.csproj", "{DFE17623-6320-4356-886B-FC2D85ECFFDF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +47,18 @@ Global
 		{6CDA54F4-0F5B-4E8A-9870-605290A835CA}.Release|x64.Build.0 = Release|Any CPU
 		{6CDA54F4-0F5B-4E8A-9870-605290A835CA}.Release|x86.ActiveCfg = Release|Any CPU
 		{6CDA54F4-0F5B-4E8A-9870-605290A835CA}.Release|x86.Build.0 = Release|Any CPU
+		{DFE17623-6320-4356-886B-FC2D85ECFFDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFE17623-6320-4356-886B-FC2D85ECFFDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFE17623-6320-4356-886B-FC2D85ECFFDF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DFE17623-6320-4356-886B-FC2D85ECFFDF}.Debug|x64.Build.0 = Debug|Any CPU
+		{DFE17623-6320-4356-886B-FC2D85ECFFDF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DFE17623-6320-4356-886B-FC2D85ECFFDF}.Debug|x86.Build.0 = Debug|Any CPU
+		{DFE17623-6320-4356-886B-FC2D85ECFFDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFE17623-6320-4356-886B-FC2D85ECFFDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFE17623-6320-4356-886B-FC2D85ECFFDF}.Release|x64.ActiveCfg = Release|Any CPU
+		{DFE17623-6320-4356-886B-FC2D85ECFFDF}.Release|x64.Build.0 = Release|Any CPU
+		{DFE17623-6320-4356-886B-FC2D85ECFFDF}.Release|x86.ActiveCfg = Release|Any CPU
+		{DFE17623-6320-4356-886B-FC2D85ECFFDF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,5 +66,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{821BDC9B-6568-47FC-A456-0BB830AACDD1} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{6CDA54F4-0F5B-4E8A-9870-605290A835CA} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{DFE17623-6320-4356-886B-FC2D85ECFFDF} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal
