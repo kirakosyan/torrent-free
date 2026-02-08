@@ -64,9 +64,27 @@ internal static class Bencode
             throw new FormatException("Empty integer.");
         }
 
+        // BEP 0003: leading zeros are not allowed (except "i0e" for zero)
+        if (span.Length > 1 && span[0] == (byte)'0')
+        {
+            throw new FormatException("Leading zeros in integer are not allowed.");
+        }
+
+        // BEP 0003: leading zeros in negative integers are not allowed (e.g. "i-03e")
+        if (span.Length > 2 && span[0] == (byte)'-' && span[1] == (byte)'0')
+        {
+            throw new FormatException("Leading zeros in negative integer are not allowed.");
+        }
+
         if (!TryParseInt64Ascii(span, out var value))
         {
             throw new FormatException("Invalid integer value.");
+        }
+
+        // BEP 0003: negative zero ("i-0e") is not allowed
+        if (value == 0 && span[0] == (byte)'-')
+        {
+            throw new FormatException("Negative zero is not allowed.");
         }
 
         return new BInteger(value);

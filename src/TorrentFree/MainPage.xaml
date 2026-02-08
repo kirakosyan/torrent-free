@@ -155,13 +155,14 @@
                                           HorizontalOptions="Start"/>
                                    <Label Text="Fast and simple torrent downloads"
                                           FontSize="12"
-                                          TextColor="{StaticResource TextSecondary}"
+                                          TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                           HorizontalOptions="Start"/>
                             </VerticalStackLayout>
                      </HorizontalStackLayout>
                      <Button Grid.Row="0"
                              Grid.Column="1"
                              Text="⚙"
+                             AutomationProperties.Name="Settings"
                              Style="{StaticResource IconButton}"
                              BackgroundColor="{StaticResource AccentColorLight}"
                              TextColor="White"
@@ -191,6 +192,7 @@
 
                                    <Button Grid.Column="1"
                                            Text="Browse"
+                                           AutomationProperties.Name="Browse for torrent file"
                                            Command="{Binding BrowseTorrentFileCommand}"
                                            BackgroundColor="{StaticResource AccentColor}"
                                            TextColor="White"
@@ -262,7 +264,7 @@
                                    <CheckBox IsChecked="{Binding SortByStatus}"/>
                                    <Label Text="Downloading on top"
                                           FontSize="12"
-                                          TextColor="{StaticResource TextSecondary}"
+                                          TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                           VerticalOptions="Center"/>
                             </HorizontalStackLayout>
                             <Button Grid.Column="2"
@@ -350,7 +352,7 @@
                                    HorizontalOptions="Center"/>
                             <Label Text="Add a magnet link to get started."
                                    FontSize="14"
-                                   TextColor="{StaticResource TextSecondary}"
+                                   TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                    HorizontalOptions="Center"/>
                      </VerticalStackLayout>
 
@@ -399,13 +401,14 @@
                                                                              MaxLines="2"/>
                                                                       <Label Text="{Binding StatusHint}"
                                                                              FontSize="11"
-                                                                             TextColor="{StaticResource TextSecondary}"
+                                                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                                                              IsVisible="{Binding StatusHint, Converter={StaticResource StringNotEmptyConverter}}"
                                                                              LineBreakMode="TailTruncation"
                                                                              MaxLines="2"/>
                                                                </VerticalStackLayout>
                                                                <Button Grid.Column="1"
                                                                        Text="📂"
+                                                                       AutomationProperties.Name="Show in folder"
                                                                        Style="{StaticResource FolderButton}"
                                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=ShowInFolderCommand}"
                                                                        CommandParameter="{Binding .}"
@@ -445,7 +448,7 @@
                                                                <Label Grid.Column="1"
                                                                       Text="{Binding Progress, StringFormat='{0:F0}%'}"
                                                                       FontSize="10"
-                                                                      TextColor="{StaticResource TextSecondary}"
+                                                                      TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                                                       VerticalOptions="Center"/>
                                                         </Grid>
 
@@ -457,7 +460,7 @@
                                                                                     Spacing="2">
                                                                       <Label Text="Size"
                                                                              FontSize="10"
-                                                                             TextColor="Gray"/>
+                                                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                                                       <Label Text="{Binding FormattedTotalSize}"
                                                                              FontSize="12"
                                                                              FontAttributes="Bold"/>
@@ -535,7 +538,7 @@
                                                                              <Label Grid.Column="0"
                                                                                     Text="Availability"
                                                                                     FontSize="10"
-                                                                                    TextColor="{StaticResource TextSecondary}"/>
+                                                                                    TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                                                              <Label Grid.Column="1"
                                                                                     Text="{Binding AvailabilityLabel}"
                                                                                     FontSize="10"
@@ -555,7 +558,7 @@
                                                                                     Spacing="4">
                                                                       <Label Text="Download KB/s"
                                                                              FontSize="10"
-                                                                             TextColor="{StaticResource TextSecondary}"/>
+                                                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                                                       <controls:LineChartView Values="{Binding DownloadSpeedHistory}"
                                                                                               LineColor="#42A5F5"
                                                                                               FillColor="#2642A5F5"
@@ -565,7 +568,7 @@
                                                                                     Spacing="4">
                                                                       <Label Text="Upload KB/s"
                                                                              FontSize="10"
-                                                                             TextColor="{StaticResource TextSecondary}"/>
+                                                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                                                       <controls:LineChartView Values="{Binding UploadSpeedHistory}"
                                                                                               LineColor="#26A69A"
                                                                                               FillColor="#2626A69A"
@@ -579,21 +582,25 @@
                                                                                HorizontalOptions="End"
                                                                                Margin="0,8,0,0">
                                                                <Button Text="▶️"
+                                                                       AutomationProperties.Name="Start download"
                                                                        Style="{StaticResource StartButton}"
                                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=StartSpecificTorrentCommand}"
                                                                        CommandParameter="{Binding .}"
                                                                        IsVisible="{Binding CanStart}"/>
                                                                <Button Text="⏸️"
+                                                                       AutomationProperties.Name="Pause download"
                                                                        Style="{StaticResource PauseButton}"
                                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=PauseSpecificTorrentCommand}"
                                                                        CommandParameter="{Binding .}"
                                                                        IsVisible="{Binding CanPause}"/>
                                                                <Button Text="⏹️"
+                                                                       AutomationProperties.Name="Stop and reset download"
                                                                        Style="{StaticResource StopButton}"
                                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=StopSpecificTorrentCommand}"
                                                                        CommandParameter="{Binding .}"
                                                                        IsVisible="{Binding CanStop}"/>
                                                                <Button Text="🗑️"
+                                                                       AutomationProperties.Name="Remove torrent"
                                                                        Style="{StaticResource RemoveButton}"
                                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=RemoveSpecificTorrentCommand}"
                                                                        CommandParameter="{Binding .}"/>

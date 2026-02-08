@@ -125,6 +125,18 @@ public sealed class LineChartView : GraphicsView
         }
     }
 
+    protected override void OnHandlerChanging(HandlerChangingEventArgs args)
+    {
+        base.OnHandlerChanging(args);
+
+        // When the view is disconnected from the visual tree, unsubscribe
+        // to prevent the ObservableCollection from holding a strong reference.
+        if (args.NewHandler is null)
+        {
+            Unsubscribe(_currentCollection);
+        }
+    }
+
     private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         Invalidate();
