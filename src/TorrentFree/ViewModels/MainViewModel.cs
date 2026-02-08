@@ -944,7 +944,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return false;
         }
 
-        return await Shell.Current.DisplayAlert(
+        return await Shell.Current.DisplayAlertAsync(
             "Stop and reset",
             "Stopping will reset download progress. Are you sure?",
             "Stop",
