@@ -15,10 +15,10 @@
                HorizontalOptions="Center"
                MaximumWidthRequest="420">
             <VerticalStackLayout Spacing="16">
-                <Label Text="Delete torrent"
+                <Label Text="Remove torrent"
                        FontSize="18"
                        FontAttributes="Bold"/>
-                <Label Text="Choose what to delete:"
+                <Label Text="Optionally delete associated files:"
                        FontSize="12"
                        TextColor="Gray"/>
                 <Label Text="{Binding TorrentName}"
@@ -43,10 +43,9 @@
                             BackgroundColor="#BDBDBD"
                             TextColor="White"
                             Clicked="OnCancelClicked"/>
-                    <Button Text="Delete"
+                    <Button Text="Remove"
                             BackgroundColor="#E53935"
                             TextColor="White"
-                            IsEnabled="{Binding CanDelete}"
                             Clicked="OnDeleteClicked"/>
                 </HorizontalStackLayout>
             </VerticalStackLayout>

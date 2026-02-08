@@ -99,22 +99,12 @@ public class StorageService : IStorageService
                 Settings = _cachedSettings
             };
 
-            var json = JsonSerializer.Serialize(data, _jsonOptions);
-
-            // Ensure directory exists
-            var directory = Path.GetDirectoryName(_dataPath);
-            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            await File.WriteAllTextAsync(_dataPath, json);
+            await WriteDataAsync(data);
         }
         catch (IOException ex)
         {
             // Log I/O errors - disk full, permissions, etc.
             System.Diagnostics.Debug.WriteLine($"Error saving torrents (I/O error): {ex.Message}");
-            // TODO: Consider notifying user about save failure in a future update
         }
         catch (Exception ex)
         {
@@ -149,6 +139,8 @@ public class StorageService : IStorageService
         await _saveLock.WaitAsync();
         try
         {
+            // Read current data under the lock so concurrent SaveTorrentsAsync
+            // cannot interleave between our read and write.
             var data = await LoadDataAsync();
             data.Settings = settings;
             data.Torrents ??= [];
@@ -157,15 +149,7 @@ public class StorageService : IStorageService
 
             _cachedSettings = settings;
 
-            var json = JsonSerializer.Serialize(data, _jsonOptions);
-
-            var directory = Path.GetDirectoryName(_dataPath);
-            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            await File.WriteAllTextAsync(_dataPath, json);
+            await WriteDataAsync(data);
         }
         catch (IOException ex)
         {
@@ -216,6 +200,19 @@ public class StorageService : IStorageService
         var json = await File.ReadAllTextAsync(_dataPath);
         var data = JsonSerializer.Deserialize<TorrentStorageData>(json, _jsonOptions);
         return data ?? new TorrentStorageData { Settings = new AppSettings() };
+    }
+
+    private async Task WriteDataAsync(TorrentStorageData data)
+    {
+        var json = JsonSerializer.Serialize(data, _jsonOptions);
+
+        var directory = Path.GetDirectoryName(_dataPath);
+        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        await File.WriteAllTextAsync(_dataPath, json);
     }
 }
 

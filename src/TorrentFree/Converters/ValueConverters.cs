@@ -66,20 +66,24 @@ public class ProgressConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is double progress)
+        return value switch
         {
-            return progress / 100.0;
-        }
-        return 0.0;
+            double d => d / 100.0,
+            int i => i / 100.0,
+            float f => f / 100.0,
+            _ => 0.0
+        };
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is double progress)
+        return value switch
         {
-            return progress * 100.0;
-        }
-        return 0.0;
+            double d => d * 100.0,
+            int i => i * 100.0,
+            float f => f * 100.0,
+            _ => 0.0
+        };
     }
 }
 

@@ -154,43 +154,43 @@ public partial class MainViewModel : ObservableObject, IDisposable
     partial void OnSortByStatusChanged(bool value)
     {
         SyncDisplayTorrents();
-        _ = PersistSettingsAsync();
+        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnGlobalDownloadLimitKbpsChanged(int value)
     {
         ApplyGlobalSpeedLimits();
-        _ = PersistSettingsAsync();
+        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnGlobalUploadLimitKbpsChanged(int value)
     {
         ApplyGlobalSpeedLimits();
-        _ = PersistSettingsAsync();
+        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnMaxActiveDownloadsChanged(int value)
     {
         ApplyQueueLimits();
-        _ = PersistSettingsAsync();
+        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnMaxActiveSeedsChanged(int value)
     {
         ApplyQueueLimits();
-        _ = PersistSettingsAsync();
+        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnGlobalMaxSeedRatioChanged(double value)
     {
         ApplySeedingLimits();
-        _ = PersistSettingsAsync();
+        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnGlobalMaxSeedMinutesChanged(int value)
     {
         ApplySeedingLimits();
-        _ = PersistSettingsAsync();
+        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnShowSelectedTorrentDetailsChanged(bool value)
@@ -482,15 +482,52 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 .ThenBy(entry => entry.torrent.Name, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(entry => entry.index)
                 .Select(entry => entry.torrent)
-            : Torrents.AsEnumerable();
+                .ToList()
+            : Torrents.ToList();
 
-        DisplayTorrents.Clear();
-        var index = 0;
-        foreach (var torrent in ordered)
+        // Reconcile in-place to minimise CollectionChanged events.
+        for (var i = 0; i < ordered.Count; i++)
         {
-            torrent.DisplayIndex = index++;
-            DisplayTorrents.Add(torrent);
+            ordered[i].DisplayIndex = i;
+
+            if (i < DisplayTorrents.Count)
+            {
+                if (!ReferenceEquals(DisplayTorrents[i], ordered[i]))
+                {
+                    var existingIndex = IndexOfRef(DisplayTorrents, ordered[i], i);
+                    if (existingIndex >= 0)
+                    {
+                        DisplayTorrents.Move(existingIndex, i);
+                    }
+                    else
+                    {
+                        DisplayTorrents.Insert(i, ordered[i]);
+                    }
+                }
+            }
+            else
+            {
+                DisplayTorrents.Add(ordered[i]);
+            }
         }
+
+        // Remove any trailing items.
+        while (DisplayTorrents.Count > ordered.Count)
+        {
+            DisplayTorrents.RemoveAt(DisplayTorrents.Count - 1);
+        }
+    }
+
+    private static int IndexOfRef(ObservableCollection<TorrentItem> collection, TorrentItem item, int startIndex)
+    {
+        for (var i = startIndex; i < collection.Count; i++)
+        {
+            if (ReferenceEquals(collection[i], item))
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /// <summary>
@@ -722,21 +759,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private async Task StartTorrentAsync()
     {
         if (SelectedTorrent == null) return;
-
-        IsBusy = true;
-        try
-        {
-            await _torrentService.StartTorrentAsync(SelectedTorrent);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Start torrent error: {ex}");
-            ErrorMessage = "Failed to start torrent. Please try again.";
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        await StartTorrentCoreAsync(SelectedTorrent, setBusy: true);
     }
 
     private bool CanStartTorrent() => SelectedTorrent?.CanStart ?? false;
@@ -748,21 +771,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private async Task PauseTorrentAsync()
     {
         if (SelectedTorrent == null) return;
-
-        IsBusy = true;
-        try
-        {
-            await _torrentService.PauseTorrentAsync(SelectedTorrent);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Pause torrent error: {ex}");
-            ErrorMessage = "Failed to pause torrent. Please try again.";
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        await PauseTorrentCoreAsync(SelectedTorrent, setBusy: true);
     }
 
     private bool CanPauseTorrent() => SelectedTorrent?.CanPause ?? false;
@@ -774,21 +783,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private async Task StopTorrentAsync()
     {
         if (SelectedTorrent == null) return;
-
-        IsBusy = true;
-        try
-        {
-            await _torrentService.StopTorrentAsync(SelectedTorrent);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Stop torrent error: {ex}");
-            ErrorMessage = "Failed to stop torrent. Please try again.";
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        await StopTorrentCoreAsync(SelectedTorrent, setBusy: true);
     }
 
     private bool CanStopTorrent() => SelectedTorrent?.CanStop ?? false;
@@ -801,28 +796,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         if (SelectedTorrent == null) return;
 
-        IsBusy = true;
-        try
-        {
-            var torrentToRemove = SelectedTorrent;
-            var result = await ShowDeleteDialogAsync(torrentToRemove);
-            if (result is null)
-            {
-                return;
-            }
-
-            SelectedTorrent = null;
-            await _torrentService.RemoveTorrentAsync(torrentToRemove, result.DeleteTorrentFile, result.DeleteDownloadedFiles);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Remove torrent error: {ex}");
-            ErrorMessage = "Failed to remove torrent. Please try again.";
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        var torrentToRemove = SelectedTorrent;
+        SelectedTorrent = null;
+        await RemoveTorrentCoreAsync(torrentToRemove, setBusy: true);
     }
 
     private bool CanRemoveTorrent() => SelectedTorrent != null;
@@ -831,58 +807,22 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// Starts a specific torrent (used from UI list buttons).
     /// </summary>
     [RelayCommand]
-    private async Task StartSpecificTorrentAsync(TorrentItem torrent)
-    {
-        if (torrent == null || !torrent.CanStart) return;
-
-        try
-        {
-            await _torrentService.StartTorrentAsync(torrent);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Start specific torrent error: {ex}");
-            ErrorMessage = "Failed to start torrent. Please try again.";
-        }
-    }
+    private Task StartSpecificTorrentAsync(TorrentItem torrent) =>
+        torrent?.CanStart == true ? StartTorrentCoreAsync(torrent, setBusy: false) : Task.CompletedTask;
 
     /// <summary>
     /// Pauses a specific torrent (used from UI list buttons).
     /// </summary>
     [RelayCommand]
-    private async Task PauseSpecificTorrentAsync(TorrentItem torrent)
-    {
-        if (torrent == null || !torrent.CanPause) return;
-
-        try
-        {
-            await _torrentService.PauseTorrentAsync(torrent);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Pause specific torrent error: {ex}");
-            ErrorMessage = "Failed to pause torrent. Please try again.";
-        }
-    }
+    private Task PauseSpecificTorrentAsync(TorrentItem torrent) =>
+        torrent?.CanPause == true ? PauseTorrentCoreAsync(torrent, setBusy: false) : Task.CompletedTask;
 
     /// <summary>
     /// Stops a specific torrent (used from UI list buttons).
     /// </summary>
     [RelayCommand]
-    private async Task StopSpecificTorrentAsync(TorrentItem torrent)
-    {
-        if (torrent == null || !torrent.CanStop) return;
-
-        try
-        {
-            await _torrentService.StopTorrentAsync(torrent);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Stop specific torrent error: {ex}");
-            ErrorMessage = "Failed to stop torrent. Please try again.";
-        }
-    }
+    private Task StopSpecificTorrentAsync(TorrentItem torrent) =>
+        torrent?.CanStop == true ? StopTorrentCoreAsync(torrent, setBusy: false) : Task.CompletedTask;
 
     /// <summary>
     /// Removes a specific torrent (used from UI list buttons).
@@ -892,12 +832,77 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         if (torrent == null) return;
 
+        if (SelectedTorrent == torrent)
+        {
+            SelectedTorrent = null;
+        }
+        await RemoveTorrentCoreAsync(torrent, setBusy: false);
+    }
+
+    private async Task StartTorrentCoreAsync(TorrentItem torrent, bool setBusy)
+    {
+        if (setBusy) IsBusy = true;
         try
         {
-            if (SelectedTorrent == torrent)
-            {
-                SelectedTorrent = null;
-            }
+            await _torrentService.StartTorrentAsync(torrent);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Start torrent error: {ex}");
+            ErrorMessage = "Failed to start torrent. Please try again.";
+        }
+        finally
+        {
+            if (setBusy) IsBusy = false;
+        }
+    }
+
+    private async Task PauseTorrentCoreAsync(TorrentItem torrent, bool setBusy)
+    {
+        if (setBusy) IsBusy = true;
+        try
+        {
+            await _torrentService.PauseTorrentAsync(torrent);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Pause torrent error: {ex}");
+            ErrorMessage = "Failed to pause torrent. Please try again.";
+        }
+        finally
+        {
+            if (setBusy) IsBusy = false;
+        }
+    }
+
+    private async Task StopTorrentCoreAsync(TorrentItem torrent, bool setBusy)
+    {
+        if (!await ConfirmStopAsync())
+        {
+            return;
+        }
+
+        if (setBusy) IsBusy = true;
+        try
+        {
+            await _torrentService.StopTorrentAsync(torrent);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Stop torrent error: {ex}");
+            ErrorMessage = "Failed to stop torrent. Please try again.";
+        }
+        finally
+        {
+            if (setBusy) IsBusy = false;
+        }
+    }
+
+    private async Task RemoveTorrentCoreAsync(TorrentItem torrent, bool setBusy)
+    {
+        if (setBusy) IsBusy = true;
+        try
+        {
             var result = await ShowDeleteDialogAsync(torrent);
             if (result is null)
             {
@@ -908,8 +913,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Remove specific torrent error: {ex}");
+            System.Diagnostics.Debug.WriteLine($"Remove torrent error: {ex}");
             ErrorMessage = "Failed to remove torrent. Please try again.";
+        }
+        finally
+        {
+            if (setBusy) IsBusy = false;
         }
     }
 
@@ -923,6 +932,23 @@ public partial class MainViewModel : ObservableObject, IDisposable
         var dialog = new DeleteTorrentDialogPage(torrent.Name);
         await Shell.Current.Navigation.PushModalAsync(dialog);
         return await dialog.Result;
+    }
+
+    /// <summary>
+    /// Prompts the user to confirm the stop action, which resets download progress.
+    /// </summary>
+    private static async Task<bool> ConfirmStopAsync()
+    {
+        if (Shell.Current is null)
+        {
+            return false;
+        }
+
+        return await Shell.Current.DisplayAlert(
+            "Stop and reset",
+            "Stopping will reset download progress. Are you sure?",
+            "Stop",
+            "Cancel");
     }
 
     private void StartStatsTimer()
@@ -993,5 +1019,20 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         Torrents.CollectionChanged -= OnTorrentsCollectionChanged;
         GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Runs the task without awaiting, logging any exceptions instead of crashing.
+    /// </summary>
+    private static async void SafeFireAndForget(Task task)
+    {
+        try
+        {
+            await task;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Fire-and-forget error: {ex}");
+        }
     }
 }

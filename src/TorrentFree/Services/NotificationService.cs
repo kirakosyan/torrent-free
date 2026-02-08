@@ -41,7 +41,7 @@ public sealed class NotificationService : INotificationService
 
         var request = new NotificationRequest
         {
-            NotificationId = Math.Abs(torrent.Id.GetHashCode()),
+            NotificationId = torrent.Id.GetHashCode() & 0x7FFFFFFF,
             Title = title,
             Description = body,
             ReturningData = torrent.Id,

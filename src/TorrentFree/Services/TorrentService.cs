@@ -13,7 +13,7 @@ namespace TorrentFree.Services;
 /// <summary>
 /// Interface for torrent management operations.
 /// </summary>
-public interface ITorrentService : IDisposable
+public interface ITorrentService : IDisposable, IAsyncDisposable
 {
     /// <summary>
     /// Collection of all torrent items.
@@ -228,20 +228,23 @@ public class TorrentService : ITorrentService
 
     private bool IsDuplicate(string infoHash, string magnetLink)
     {
-        foreach (var existing in Torrents)
+        lock (_torrentsLock)
         {
-            if (!string.IsNullOrWhiteSpace(infoHash) && infoHash.Equals(existing.InfoHash, StringComparison.OrdinalIgnoreCase))
+            foreach (var existing in Torrents)
             {
-                return true;
+                if (!string.IsNullOrWhiteSpace(infoHash) && infoHash.Equals(existing.InfoHash, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                if (magnetLink.Equals(existing.MagnetLink, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
             }
 
-            if (magnetLink.Equals(existing.MagnetLink, StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
+            return false;
         }
-
-        return false;
     }
 
     /// <inheritdoc />
@@ -546,7 +549,7 @@ public class TorrentService : ITorrentService
         _maxActiveDownloads = Math.Max(0, maxActiveDownloads);
         _maxActiveSeeds = Math.Max(0, maxActiveSeeds);
 
-        _ = TryStartQueuedTorrentsAsync();
+        SafeFireAndForget(TryStartQueuedTorrentsAsync());
 
         if (_maxActiveSeeds > 0)
         {
@@ -554,7 +557,7 @@ public class TorrentService : ITorrentService
             {
                 if (TryGetTorrentById(kvp.Key, out var torrent) && torrent is not null && torrent.Status == DownloadStatus.Seeding)
                 {
-                    _ = EnforceSeedingLimitsAsync(torrent, kvp.Value);
+                    SafeFireAndForget(EnforceSeedingLimitsAsync(torrent, kvp.Value));
                 }
             }
         }
@@ -570,7 +573,7 @@ public class TorrentService : ITorrentService
         {
             if (TryGetTorrentById(kvp.Key, out var torrent) && torrent is not null && torrent.Status == DownloadStatus.Seeding)
             {
-                _ = EnforceSeedingLimitsAsync(torrent, kvp.Value);
+                SafeFireAndForget(EnforceSeedingLimitsAsync(torrent, kvp.Value));
             }
         }
     }
@@ -662,8 +665,11 @@ public class TorrentService : ITorrentService
 
     private bool TryGetTorrentById(string id, out TorrentItem? torrent)
     {
-        torrent = Torrents.FirstOrDefault(t => t.Id == id);
-        return torrent is not null;
+        lock (_torrentsLock)
+        {
+            torrent = Torrents.FirstOrDefault(t => t.Id == id);
+            return torrent is not null;
+        }
     }
 
     private void AttachTorrentSettingsHandlers(TorrentItem torrent)
@@ -686,7 +692,7 @@ public class TorrentService : ITorrentService
 
         if (e.PropertyName is nameof(TorrentItem.DownloadLimitKbps) or nameof(TorrentItem.UploadLimitKbps))
         {
-            _ = UpdateTorrentManagerSettingsAsync(torrent);
+            SafeFireAndForget(UpdateTorrentManagerSettingsAsync(torrent));
         }
     }
 
@@ -712,7 +718,11 @@ public class TorrentService : ITorrentService
             return true;
         }
 
-        var activeDownloads = Torrents.Count(t => t.Status == DownloadStatus.Downloading);
+        int activeDownloads;
+        lock (_torrentsLock)
+        {
+            activeDownloads = Torrents.Count(t => t.Status == DownloadStatus.Downloading);
+        }
         return activeDownloads < _maxActiveDownloads;
     }
 
@@ -723,26 +733,34 @@ public class TorrentService : ITorrentService
             return true;
         }
 
-        var activeSeeds = Torrents.Count(t => t.Status == DownloadStatus.Seeding);
+        int activeSeeds;
+        lock (_torrentsLock)
+        {
+            activeSeeds = Torrents.Count(t => t.Status == DownloadStatus.Seeding);
+        }
         return activeSeeds < _maxActiveSeeds;
     }
 
     private async Task TryStartQueuedTorrentsAsync()
     {
-        var availableSlots = _maxActiveDownloads <= 0
-            ? int.MaxValue
-            : Math.Max(0, _maxActiveDownloads - Torrents.Count(t => t.Status == DownloadStatus.Downloading));
-
-        if (availableSlots <= 0)
+        List<TorrentItem> queued;
+        lock (_torrentsLock)
         {
-            return;
-        }
+            var availableSlots = _maxActiveDownloads <= 0
+                ? int.MaxValue
+                : Math.Max(0, _maxActiveDownloads - Torrents.Count(t => t.Status == DownloadStatus.Downloading));
 
-        var queued = Torrents
-            .Where(t => t.Status == DownloadStatus.Queued)
-            .OrderBy(t => t.DateAdded)
-            .Take(availableSlots)
-            .ToList();
+            if (availableSlots <= 0)
+            {
+                return;
+            }
+
+            queued = Torrents
+                .Where(t => t.Status == DownloadStatus.Queued)
+                .OrderBy(t => t.DateAdded)
+                .Take(availableSlots)
+                .ToList();
+        }
 
         foreach (var torrent in queued)
         {
@@ -759,7 +777,11 @@ public class TorrentService : ITorrentService
 
         if (_maxActiveSeeds > 0)
         {
-            var activeSeeds = Torrents.Count(t => t.Status == DownloadStatus.Seeding);
+            int activeSeeds;
+            lock (_torrentsLock)
+            {
+                activeSeeds = Torrents.Count(t => t.Status == DownloadStatus.Seeding);
+            }
             if (activeSeeds > _maxActiveSeeds)
             {
                 await PauseTorrentAsync(torrent);
@@ -1362,6 +1384,24 @@ public class TorrentService : ITorrentService
         }
 
         _disposed = true;
+        DisposeAsyncCore().GetAwaiter().GetResult();
+        GC.SuppressFinalize(this);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        await DisposeAsyncCore();
+        GC.SuppressFinalize(this);
+    }
+
+    private async Task DisposeAsyncCore()
+    {
         _saveTimer.Dispose();
         _backgroundTransferActive = false;
 
@@ -1375,7 +1415,6 @@ public class TorrentService : ITorrentService
         }
 
         // Cancel and dispose all active download tokens
-        // Note: Using synchronous Cancel() here as Dispose should be synchronous
         foreach (var kvp in _downloadTokens)
         {
             try
@@ -1395,7 +1434,7 @@ public class TorrentService : ITorrentService
         {
             try
             {
-                manager.StopAsync().GetAwaiter().GetResult();
+                await manager.StopAsync();
             }
             catch
             {
@@ -1408,7 +1447,7 @@ public class TorrentService : ITorrentService
         {
             try
             {
-                _engine.StopAllAsync().GetAwaiter().GetResult();
+                await _engine.StopAllAsync();
             }
             catch
             {
@@ -1419,7 +1458,7 @@ public class TorrentService : ITorrentService
             {
                 if (_engine is IAsyncDisposable asyncDisposableEngine)
                 {
-                    asyncDisposableEngine.DisposeAsync().GetAwaiter().GetResult();
+                    await asyncDisposableEngine.DisposeAsync();
                 }
                 else if (_engine is IDisposable disposableEngine)
                 {
@@ -1433,7 +1472,20 @@ public class TorrentService : ITorrentService
 
             _engine = null;
         }
+    }
 
-        GC.SuppressFinalize(this);
+    /// <summary>
+    /// Runs the task without awaiting, logging any exceptions instead of crashing.
+    /// </summary>
+    private static async void SafeFireAndForget(Task task)
+    {
+        try
+        {
+            await task;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Fire-and-forget error: {ex}");
+        }
     }
 }

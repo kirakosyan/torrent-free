@@ -70,15 +70,9 @@ public partial class DeleteTorrentDialogViewModel : ObservableObject
         DeleteDownloadedFiles = true;
     }
 
-    public bool CanDelete => DeleteTorrentFile || DeleteDownloadedFiles;
-
-    partial void OnDeleteTorrentFileChanged(bool value)
-    {
-        OnPropertyChanged(nameof(CanDelete));
-    }
-
-    partial void OnDeleteDownloadedFilesChanged(bool value)
-    {
-        OnPropertyChanged(nameof(CanDelete));
-    }
+    /// <summary>
+    /// Always allow the delete/remove action. When both checkboxes are unchecked
+    /// the torrent is removed from the list without deleting any files.
+    /// </summary>
+    public bool CanDelete => true;
 }

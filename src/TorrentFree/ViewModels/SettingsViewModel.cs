@@ -103,7 +103,7 @@ public partial class SettingsViewModel : ObservableObject
         await RefreshFileAssociationAsync();
         NormalizeAllSettings();
         ApplySettingsToService();
-        _ = PersistSettingsAsync();
+        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnGlobalDownloadLimitKbpsChanged(int value)
@@ -115,7 +115,7 @@ public partial class SettingsViewModel : ObservableObject
         }
 
         ApplySpeedLimits();
-        _ = PersistSettingsAsync();
+        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnGlobalUploadLimitKbpsChanged(int value)
@@ -127,7 +127,7 @@ public partial class SettingsViewModel : ObservableObject
         }
 
         ApplySpeedLimits();
-        _ = PersistSettingsAsync();
+        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnMaxActiveDownloadsChanged(int value)
@@ -139,7 +139,7 @@ public partial class SettingsViewModel : ObservableObject
         }
 
         ApplyQueueLimits();
-        _ = PersistSettingsAsync();
+        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnMaxActiveSeedsChanged(int value)
@@ -151,7 +151,7 @@ public partial class SettingsViewModel : ObservableObject
         }
 
         ApplyQueueLimits();
-        _ = PersistSettingsAsync();
+        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnGlobalMaxSeedRatioChanged(double value)
@@ -163,7 +163,7 @@ public partial class SettingsViewModel : ObservableObject
         }
 
         ApplySeedingLimits();
-        _ = PersistSettingsAsync();
+        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnGlobalMaxSeedMinutesChanged(int value)
@@ -175,7 +175,7 @@ public partial class SettingsViewModel : ObservableObject
         }
 
         ApplySeedingLimits();
-        _ = PersistSettingsAsync();
+        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnIsTorrentAssociatedChanged(bool value)
@@ -185,7 +185,7 @@ public partial class SettingsViewModel : ObservableObject
             return;
         }
 
-        _ = ToggleFileAssociationAsync(value);
+        SafeFireAndForget(ToggleFileAssociationAsync(value));
     }
 
     private void ApplySettingsToService()
@@ -372,5 +372,20 @@ public partial class SettingsViewModel : ObservableObject
         }
 
         return value;
+    }
+
+    /// <summary>
+    /// Runs the task without awaiting, logging any exceptions instead of crashing.
+    /// </summary>
+    private static async void SafeFireAndForget(Task task)
+    {
+        try
+        {
+            await task;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Fire-and-forget error: {ex}");
+        }
     }
 }
