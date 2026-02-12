@@ -7,175 +7,190 @@
              BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}"
              Title="Settings">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="16"
-                             Spacing="16">
-            <Label Text="⚙️ Settings"
-                   FontSize="22"
-                   FontAttributes="Bold"/>
+       <ScrollView>
+              <VerticalStackLayout Padding="16"
+                                   Spacing="16">
+                     <Label Text="⚙️ Settings"
+                            FontSize="22"
+                            FontAttributes="Bold"/>
 
-            <Label Text="Changes are saved automatically."
-                   FontSize="12"
-                   TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                     <Label Text="Changes are saved automatically."
+                            FontSize="12"
+                            TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
 
-            <Border Padding="16"
-                    Stroke="Transparent"
-                    Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
-                <Grid RowDefinitions="Auto,Auto,Auto"
-                      ColumnDefinitions="*,*"
-                      ColumnSpacing="12"
-                      RowSpacing="8">
-                    <Label Grid.Row="0"
-                           Grid.ColumnSpan="2"
-                           Text="Speed Limits"
-                           FontSize="14"
-                           FontAttributes="Bold"/>
+                     <Border Padding="16"
+                             Stroke="Transparent"
+                             Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
+                            <Border.StrokeShape>
+                                   <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
+                            <Grid RowDefinitions="Auto,Auto,Auto"
+                                  ColumnDefinitions="*,*"
+                                  ColumnSpacing="12"
+                                  RowSpacing="8">
+                                   <Label Grid.Row="0"
+                                          Grid.ColumnSpan="2"
+                                          Text="Speed Limits"
+                                          FontSize="14"
+                                          FontAttributes="Bold"/>
 
-                    <VerticalStackLayout Grid.Row="1"
-                                         Grid.Column="0"
-                                         Spacing="4">
-                        <Label Text="⬇️ Download KB/s"
-                               FontSize="11"
-                               TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                        <Entry Text="{Binding GlobalDownloadLimitKbps}"
-                               Keyboard="Numeric"
-                               Placeholder="0 = unlimited"
-                               TextChanged="OnNumericTextChanged"/>
-                    </VerticalStackLayout>
+                                   <VerticalStackLayout Grid.Row="1"
+                                                        Grid.Column="0"
+                                                        Spacing="4">
+                                          <Label Text="⬇️ Download KB/s"
+                                                 FontSize="11"
+                                                 TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                          <Entry Text="{Binding GlobalDownloadLimitKbps}"
+                                                 SemanticProperties.Description="Global download speed limit in kilobytes per second"
+                                                 SemanticProperties.Hint="Enter zero for unlimited"
+                                                 Keyboard="Numeric"
+                                                 Placeholder="0 = unlimited"
+                                                 TextChanged="OnNumericTextChanged"/>
+                                   </VerticalStackLayout>
 
-                    <VerticalStackLayout Grid.Row="1"
-                                         Grid.Column="1"
-                                         Spacing="4">
-                        <Label Text="⬆️ Upload KB/s"
-                               FontSize="11"
-                               TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                        <Entry Text="{Binding GlobalUploadLimitKbps}"
-                               Keyboard="Numeric"
-                               Placeholder="0 = unlimited"
-                               TextChanged="OnNumericTextChanged"/>
-                    </VerticalStackLayout>
-                </Grid>
-            </Border>
+                                   <VerticalStackLayout Grid.Row="1"
+                                                        Grid.Column="1"
+                                                        Spacing="4">
+                                          <Label Text="⬆️ Upload KB/s"
+                                                 FontSize="11"
+                                                 TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                          <Entry Text="{Binding GlobalUploadLimitKbps}"
+                                                 SemanticProperties.Description="Global upload speed limit in kilobytes per second"
+                                                 SemanticProperties.Hint="Enter zero for unlimited"
+                                                 Keyboard="Numeric"
+                                                 Placeholder="0 = unlimited"
+                                                 TextChanged="OnNumericTextChanged"/>
+                                   </VerticalStackLayout>
+                            </Grid>
+                     </Border>
 
-            <Border Padding="16"
-                    Stroke="Transparent"
-                    Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                    IsVisible="{Binding IsFileAssociationSupported}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
-                <Grid RowDefinitions="Auto,Auto"
-                      ColumnDefinitions="*,Auto"
-                      ColumnSpacing="12"
-                      RowSpacing="8">
-                    <Label Grid.Row="0"
-                           Grid.ColumnSpan="2"
-                           Text="File Associations"
-                           FontSize="14"
-                           FontAttributes="Bold"/>
-                    <Label Grid.Row="1"
-                           Grid.Column="0"
-                           Text="Associate .torrent files"
-                           FontSize="12"
-                           TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                    <Switch Grid.Row="1"
-                            Grid.Column="1"
-                            IsToggled="{Binding IsTorrentAssociated}"/>
-                </Grid>
-            </Border>
+                     <Border Padding="16"
+                             Stroke="Transparent"
+                             Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                             IsVisible="{Binding IsFileAssociationSupported}">
+                            <Border.StrokeShape>
+                                   <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
+                            <Grid RowDefinitions="Auto,Auto"
+                                  ColumnDefinitions="*,Auto"
+                                  ColumnSpacing="12"
+                                  RowSpacing="8">
+                                   <Label Grid.Row="0"
+                                          Grid.ColumnSpan="2"
+                                          Text="File Associations"
+                                          FontSize="14"
+                                          FontAttributes="Bold"/>
+                                   <Label Grid.Row="1"
+                                          Grid.Column="0"
+                                          Text="Associate .torrent files"
+                                          FontSize="12"
+                                          TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                   <Switch Grid.Row="1"
+                                           Grid.Column="1"
+                                           IsToggled="{Binding IsTorrentAssociated}"
+                                           SemanticProperties.Description="Associate torrent files with Torrent Free"
+                                           SemanticProperties.Hint="Turn on to open .torrent files with this app"/>
+                            </Grid>
+                     </Border>
 
-            <Border Padding="16"
-                    Stroke="Transparent"
-                    Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
-                <Grid RowDefinitions="Auto,Auto"
-                      ColumnDefinitions="*,*"
-                      ColumnSpacing="12"
-                      RowSpacing="8">
-                    <Label Grid.Row="0"
-                           Grid.ColumnSpan="2"
-                           Text="Queue Limits"
-                           FontSize="14"
-                           FontAttributes="Bold"/>
+                     <Border Padding="16"
+                             Stroke="Transparent"
+                             Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
+                            <Border.StrokeShape>
+                                   <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
+                            <Grid RowDefinitions="Auto,Auto"
+                                  ColumnDefinitions="*,*"
+                                  ColumnSpacing="12"
+                                  RowSpacing="8">
+                                   <Label Grid.Row="0"
+                                          Grid.ColumnSpan="2"
+                                          Text="Queue Limits"
+                                          FontSize="14"
+                                          FontAttributes="Bold"/>
 
-                    <VerticalStackLayout Grid.Row="1"
-                                         Grid.Column="0"
-                                         Spacing="4">
-                        <Label Text="⬇️ Max Active Downloads"
-                               FontSize="11"
-                               TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                        <Entry Text="{Binding MaxActiveDownloads}"
-                               Keyboard="Numeric"
-                               Placeholder="0 = unlimited"
-                               TextChanged="OnNumericTextChanged"/>
-                    </VerticalStackLayout>
+                                   <VerticalStackLayout Grid.Row="1"
+                                                        Grid.Column="0"
+                                                        Spacing="4">
+                                          <Label Text="⬇️ Max Active Downloads"
+                                                 FontSize="11"
+                                                 TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                          <Entry Text="{Binding MaxActiveDownloads}"
+                                                 SemanticProperties.Description="Maximum number of active downloads"
+                                                 SemanticProperties.Hint="Enter zero for unlimited"
+                                                 Keyboard="Numeric"
+                                                 Placeholder="0 = unlimited"
+                                                 TextChanged="OnNumericTextChanged"/>
+                                   </VerticalStackLayout>
 
-                    <VerticalStackLayout Grid.Row="1"
-                                         Grid.Column="1"
-                                         Spacing="4">
-                        <Label Text="🌱 Max Active Seeds"
-                               FontSize="11"
-                               TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                        <Entry Text="{Binding MaxActiveSeeds}"
-                               Keyboard="Numeric"
-                               Placeholder="0 = unlimited"
-                               TextChanged="OnNumericTextChanged"/>
-                    </VerticalStackLayout>
-                </Grid>
-            </Border>
+                                   <VerticalStackLayout Grid.Row="1"
+                                                        Grid.Column="1"
+                                                        Spacing="4">
+                                          <Label Text="🌱 Max Active Seeds"
+                                                 FontSize="11"
+                                                 TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                          <Entry Text="{Binding MaxActiveSeeds}"
+                                                 SemanticProperties.Description="Maximum number of active seed jobs"
+                                                 SemanticProperties.Hint="Enter zero for unlimited"
+                                                 Keyboard="Numeric"
+                                                 Placeholder="0 = unlimited"
+                                                 TextChanged="OnNumericTextChanged"/>
+                                   </VerticalStackLayout>
+                            </Grid>
+                     </Border>
 
-            <Border Padding="16"
-                    Stroke="Transparent"
-                    Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
-                <Grid RowDefinitions="Auto,Auto"
-                      ColumnDefinitions="*,*"
-                      ColumnSpacing="12"
-                      RowSpacing="8">
-                    <Label Grid.Row="0"
-                           Grid.ColumnSpan="2"
-                           Text="Seeding Limits"
-                           FontSize="14"
-                           FontAttributes="Bold"/>
+                     <Border Padding="16"
+                             Stroke="Transparent"
+                             Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
+                            <Border.StrokeShape>
+                                   <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
+                            <Grid RowDefinitions="Auto,Auto"
+                                  ColumnDefinitions="*,*"
+                                  ColumnSpacing="12"
+                                  RowSpacing="8">
+                                   <Label Grid.Row="0"
+                                          Grid.ColumnSpan="2"
+                                          Text="Seeding Limits"
+                                          FontSize="14"
+                                          FontAttributes="Bold"/>
 
-                    <VerticalStackLayout Grid.Row="1"
-                                         Grid.Column="0"
-                                         Spacing="4">
-                        <Label Text="📊 Max Seed Ratio"
-                               FontSize="11"
-                               TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                        <Entry Text="{Binding GlobalMaxSeedRatio}"
-                               Keyboard="Numeric"
-                               Placeholder="0 = unlimited"
-                               TextChanged="OnDecimalTextChanged"/>
-                    </VerticalStackLayout>
+                                   <VerticalStackLayout Grid.Row="1"
+                                                        Grid.Column="0"
+                                                        Spacing="4">
+                                          <Label Text="📊 Max Seed Ratio"
+                                                 FontSize="11"
+                                                 TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                          <Entry Text="{Binding GlobalMaxSeedRatio}"
+                                                 SemanticProperties.Description="Global maximum seed ratio"
+                                                 SemanticProperties.Hint="Enter zero for unlimited"
+                                                 Keyboard="Numeric"
+                                                 Placeholder="0 = unlimited"
+                                                 TextChanged="OnDecimalTextChanged"/>
+                                   </VerticalStackLayout>
 
-                    <VerticalStackLayout Grid.Row="1"
-                                         Grid.Column="1"
-                                         Spacing="4">
-                        <Label Text="⏱️ Max Seed Minutes"
-                               FontSize="11"
-                               TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                        <Entry Text="{Binding GlobalMaxSeedMinutes}"
-                               Keyboard="Numeric"
-                               Placeholder="0 = unlimited"
-                               TextChanged="OnNumericTextChanged"/>
-                    </VerticalStackLayout>
-                </Grid>
-            </Border>
+                                   <VerticalStackLayout Grid.Row="1"
+                                                        Grid.Column="1"
+                                                        Spacing="4">
+                                          <Label Text="⏱️ Max Seed Minutes"
+                                                 FontSize="11"
+                                                 TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                          <Entry Text="{Binding GlobalMaxSeedMinutes}"
+                                                 SemanticProperties.Description="Global maximum seed minutes"
+                                                 SemanticProperties.Hint="Enter zero for unlimited"
+                                                 Keyboard="Numeric"
+                                                 Placeholder="0 = unlimited"
+                                                 TextChanged="OnNumericTextChanged"/>
+                                   </VerticalStackLayout>
+                            </Grid>
+                     </Border>
 
-            <Label Text="{Binding ValidationMessage}"
-                   TextColor="{StaticResource StatusFailed}"
-                   IsVisible="{Binding ValidationMessage, Converter={StaticResource StringNotEmptyConverter}}"
-                   FontSize="12"/>
-        </VerticalStackLayout>
-    </ScrollView>
+                     <Label Text="{Binding ValidationMessage}"
+                            SemanticProperties.Description="Settings validation message"
+                            TextColor="{StaticResource StatusFailed}"
+                            IsVisible="{Binding ValidationMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                            FontSize="12"/>
+              </VerticalStackLayout>
+       </ScrollView>
 
 </ContentPage>

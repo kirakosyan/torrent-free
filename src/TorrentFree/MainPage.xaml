@@ -189,6 +189,8 @@
                                   ColumnSpacing="12">
                                    <Entry Grid.Column="0"
                                           Placeholder="Enter magnet link here..."
+                                          SemanticProperties.Description="Magnet link input"
+                                          SemanticProperties.Hint="Paste a magnet URI or URL, then press Enter or Browse"
                                           Text="{Binding MagnetLinkInput}"
                                           ReturnCommand="{Binding AddTorrentCommand}"
                                           FontSize="14"
@@ -267,7 +269,9 @@
                             <HorizontalStackLayout Grid.Column="1"
                                                    Spacing="6"
                                                    VerticalOptions="Center">
-                                   <CheckBox IsChecked="{Binding SortByStatus}"/>
+                                   <CheckBox IsChecked="{Binding SortByStatus}"
+                                             SemanticProperties.Description="Sort downloads by status"
+                                             SemanticProperties.Hint="When enabled, downloading items appear at the top"/>
                                    <Label Text="Downloading on top"
                                           FontSize="12"
                                           TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
@@ -275,6 +279,7 @@
                             </HorizontalStackLayout>
                             <Button Grid.Column="2"
                                     Text="Details"
+                                    SemanticProperties.Description="Toggle selected torrent details"
                                     Style="{StaticResource ActionButton}"
                                     BackgroundColor="#EEF2FF"
                                     TextColor="#4F46E5"
@@ -307,6 +312,8 @@
                                                  FontSize="10"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding SelectedTorrent.DownloadLimitKbps}"
+                                                 SemanticProperties.Description="Selected torrent download limit in kilobytes per second"
+                                                 SemanticProperties.Hint="Enter zero to use global limit"
                                                  Keyboard="Numeric"
                                                  Placeholder="0 = global"/>
                                    </VerticalStackLayout>
@@ -318,6 +325,8 @@
                                                  FontSize="10"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding SelectedTorrent.UploadLimitKbps}"
+                                                 SemanticProperties.Description="Selected torrent upload limit in kilobytes per second"
+                                                 SemanticProperties.Hint="Enter zero to use global limit"
                                                  Keyboard="Numeric"
                                                  Placeholder="0 = global"/>
                                    </VerticalStackLayout>
@@ -329,6 +338,8 @@
                                                  FontSize="10"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding SelectedTorrent.MaxSeedRatio}"
+                                                 SemanticProperties.Description="Selected torrent maximum seed ratio"
+                                                 SemanticProperties.Hint="Enter zero for unlimited seeding ratio"
                                                  Keyboard="Numeric"
                                                  Placeholder="0 = global"/>
                                    </VerticalStackLayout>
@@ -340,6 +351,8 @@
                                                  FontSize="10"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding SelectedTorrent.MaxSeedMinutes}"
+                                                 SemanticProperties.Description="Selected torrent maximum seed minutes"
+                                                 SemanticProperties.Hint="Enter zero for unlimited seeding time"
                                                  Keyboard="Numeric"
                                                  Placeholder="0 = global"/>
                                    </VerticalStackLayout>
@@ -365,6 +378,7 @@
                      <!-- Downloads List -->
                      <CollectionView Grid.Row="2"
                                      ItemsSource="{Binding DisplayTorrents}"
+                                     SemanticProperties.Description="Torrent downloads list"
                                      SelectionMode="Single"
                                      SelectedItem="{Binding SelectedTorrent}"
                                      IsVisible="{Binding IsEmpty, Converter={StaticResource InverseBoolConverter}}">
@@ -449,6 +463,7 @@
                                                               ColumnSpacing="8">
                                                                <ProgressBar Grid.Column="0"
                                                                             Progress="{Binding Progress, Converter={StaticResource ProgressConverter}}"
+                                                                            SemanticProperties.Description="Download progress"
                                                                             ProgressColor="{StaticResource AccentColor}"
                                                                             HeightRequest="6"/>
                                                                <Label Grid.Column="1"
@@ -622,6 +637,7 @@
               <ActivityIndicator Grid.RowSpan="3"
                                  IsRunning="{Binding IsBusy}"
                                  IsVisible="{Binding IsBusy}"
+                                 SemanticProperties.Description="Loading torrent data"
                                  Color="{StaticResource AccentColor}"
                                  VerticalOptions="Center"
                                  HorizontalOptions="Center"/>
