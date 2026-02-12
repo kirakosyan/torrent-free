@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace TorrentFree.Models;
@@ -193,6 +194,16 @@ public partial class TorrentItem : ObservableObject
     /// Upload speed history in KB/s.
     /// </summary>
     public ObservableCollection<double> UploadSpeedHistory { get; } = [];
+
+    public ICommand? ShowInFolderCommand { get; set; }
+
+    public ICommand? StartSpecificTorrentCommand { get; set; }
+
+    public ICommand? PauseSpecificTorrentCommand { get; set; }
+
+    public ICommand? StopSpecificTorrentCommand { get; set; }
+
+    public ICommand? RemoveSpecificTorrentCommand { get; set; }
 
     /// <summary>
     /// Gets the full path to the downloaded file or folder.

@@ -457,12 +457,23 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void AttachTorrentHandlers(TorrentItem torrent)
     {
+        AttachTorrentCommands(torrent);
         torrent.PropertyChanged += OnTorrentPropertyChanged;
     }
 
     private void DetachTorrentHandlers(TorrentItem torrent)
     {
         torrent.PropertyChanged -= OnTorrentPropertyChanged;
+    }
+
+    private void AttachTorrentCommands(TorrentItem torrent)
+    {
+        // Bind per-item UI buttons directly to these commands to avoid Source-based bindings in XAML.
+        torrent.ShowInFolderCommand = ShowInFolderCommand;
+        torrent.StartSpecificTorrentCommand = StartSpecificTorrentCommand;
+        torrent.PauseSpecificTorrentCommand = PauseSpecificTorrentCommand;
+        torrent.StopSpecificTorrentCommand = StopSpecificTorrentCommand;
+        torrent.RemoveSpecificTorrentCommand = RemoveSpecificTorrentCommand;
     }
 
     private void OnTorrentPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
