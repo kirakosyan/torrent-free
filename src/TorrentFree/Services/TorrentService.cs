@@ -125,15 +125,34 @@ public class TorrentService : ITorrentService
         try
         {
             var savedTorrents = await _storageService.LoadTorrentsAsync();
+            var validTorrents = new List<TorrentItem>();
+            var hadStaleEntries = false;
+
             foreach (var torrent in savedTorrents)
             {
+                // If the torrent was imported from a .torrent file that no longer exists,
+                // skip it so the app does not crash when trying to use the missing file.
+                if (!string.IsNullOrWhiteSpace(torrent.TorrentFilePath) && !File.Exists(torrent.TorrentFilePath))
+                {
+                    System.Diagnostics.Debug.WriteLine($"Skipping torrent '{torrent.Name}' – .torrent file no longer exists: {torrent.TorrentFilePath}");
+                    hadStaleEntries = true;
+                    continue;
+                }
+
                 // Reset downloading status to paused on startup
                 if (torrent.Status == DownloadStatus.Downloading)
                 {
                     torrent.Status = DownloadStatus.Paused;
                 }
                 AttachTorrentSettingsHandlers(torrent);
+                validTorrents.Add(torrent);
                 Torrents.Add(torrent);
+            }
+
+            // Persist the cleaned-up list so stale entries are not reloaded next time.
+            if (hadStaleEntries)
+            {
+                await SaveAsync();
             }
         }
         catch
@@ -1402,16 +1421,24 @@ public class TorrentService : ITorrentService
 
     private async Task DisposeAsyncCore()
     {
-        _saveTimer.Dispose();
+        try
+        {
+            _saveTimer.Dispose();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Save timer dispose error: {ex.Message}");
+        }
+
         _backgroundTransferActive = false;
 
         try
         {
             _backgroundDownloadService.Stop();
         }
-        catch
+        catch (Exception ex)
         {
-            // Ignore shutdown errors
+            System.Diagnostics.Debug.WriteLine($"Background service stop error: {ex.Message}");
         }
 
         // Cancel and dispose all active download tokens
@@ -1422,23 +1449,24 @@ public class TorrentService : ITorrentService
                 kvp.Value.Cancel();
                 kvp.Value.Dispose();
             }
-            catch
+            catch (Exception ex)
             {
-                // Ignore disposal errors
+                System.Diagnostics.Debug.WriteLine($"Token disposal error for {kvp.Key}: {ex.Message}");
             }
         }
         _downloadTokens.Clear();
         _pendingSave = false;
 
-        foreach (var manager in _managers.Values)
+        foreach (var kvp in _managers)
         {
             try
             {
-                await manager.StopAsync();
+                await kvp.Value.StopAsync();
             }
-            catch
+            catch (Exception ex)
             {
-                // Ignore shutdown errors
+                // A missing .torrent file or network error during shutdown should not crash the app.
+                System.Diagnostics.Debug.WriteLine($"Manager stop error for {kvp.Key}: {ex.Message}");
             }
         }
         _managers.Clear();
@@ -1449,9 +1477,9 @@ public class TorrentService : ITorrentService
             {
                 await _engine.StopAllAsync();
             }
-            catch
+            catch (Exception ex)
             {
-                // Ignore shutdown errors
+                System.Diagnostics.Debug.WriteLine($"Engine StopAll error: {ex.Message}");
             }
 
             try
@@ -1465,9 +1493,9 @@ public class TorrentService : ITorrentService
                     disposableEngine.Dispose();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // Ignore shutdown errors
+                System.Diagnostics.Debug.WriteLine($"Engine dispose error: {ex.Message}");
             }
 
             _engine = null;

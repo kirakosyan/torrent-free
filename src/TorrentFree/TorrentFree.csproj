@@ -33,7 +33,10 @@
 		<ApplicationVersion>1</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
-		<WindowsPackageType>MSIX</WindowsPackageType>
+		<!-- Debug builds run unpackaged so the output .exe can be launched directly without MSIX deployment. -->
+		<!-- Release builds use MSIX packaging for Store submission. -->
+		<WindowsPackageType Condition="'$(Configuration)' == 'Debug'">None</WindowsPackageType>
+		<WindowsPackageType Condition="'$(Configuration)' == 'Release'">MSIX</WindowsPackageType>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>

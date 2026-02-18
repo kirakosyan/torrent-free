@@ -48,13 +48,76 @@ public class StorageService : IStorageService
 
     public StorageService()
     {
-        _dataPath = Path.Combine(FileSystem.AppDataDirectory, TorrentsFileName);
+        _dataPath = Path.Combine(GetAppDataDirectory(), TorrentsFileName);
         _jsonOptions = new JsonSerializerOptions
         {
             WriteIndented = true,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
     }
+
+    // On Windows the MAUI FileSystem.AppDataDirectory points to the MSIX package sandbox
+    // (LocalState) when running packaged, but to a different temp path when unpackaged.
+    // Using LocalApplicationData + app subfolder gives a consistent, user-scoped path in
+    // both modes so data is never lost when switching between Debug (unpackaged) and a
+    // deployed MSIX build.
+    private static string GetAppDataDirectory()
+    {
+#if WINDOWS
+        var dir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "TorrentFree");
+        Directory.CreateDirectory(dir);
+
+        // One-time migration: copy data from the old MSIX sandbox path if the new location
+        // is empty and the old one has data (happens on first run after this change).
+        MigrateFromMsixSandboxIfNeeded(dir);
+
+        return dir;
+#else
+        return FileSystem.AppDataDirectory;
+#endif
+    }
+
+#if WINDOWS
+    private static void MigrateFromMsixSandboxIfNeeded(string newDir)
+    {
+        try
+        {
+            var newFile = Path.Combine(newDir, TorrentsFileName);
+            if (File.Exists(newFile))
+            {
+                return; // already migrated or has its own data
+            }
+
+            // FileSystem.AppDataDirectory on a packaged app points to the MSIX LocalState folder.
+            // Try to locate it via the known Packages path pattern.
+            var packagesRoot = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Packages");
+
+            if (!Directory.Exists(packagesRoot))
+            {
+                return;
+            }
+
+            foreach (var pkgDir in Directory.EnumerateDirectories(packagesRoot, "com.torrentfree.app*"))
+            {
+                var candidate = Path.Combine(pkgDir, "LocalState", TorrentsFileName);
+                if (File.Exists(candidate))
+                {
+                    File.Copy(candidate, newFile, overwrite: false);
+                    System.Diagnostics.Debug.WriteLine($"Migrated torrents.json from {candidate} to {newFile}");
+                    break;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Data migration error: {ex.Message}");
+        }
+    }
+#endif
 
     /// <inheritdoc />
     public async Task<List<TorrentItem>> LoadTorrentsAsync()

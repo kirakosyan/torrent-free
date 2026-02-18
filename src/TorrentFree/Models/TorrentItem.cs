@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -103,6 +104,7 @@ public partial class TorrentItem : ObservableObject
     /// <summary>
     /// Formatted ETA string for UI.
     /// </summary>
+    [JsonIgnore]
     public string FormattedEstimatedTime => EstimatedSecondsRemaining <= 0
         ? "—"
         : TimeSpan.FromSeconds(EstimatedSecondsRemaining).ToString(EstimatedSecondsRemaining >= 3600 ? "hh\\:mm\\:ss" : "mm\\:ss");
@@ -188,26 +190,34 @@ public partial class TorrentItem : ObservableObject
     /// <summary>
     /// Download speed history in KB/s.
     /// </summary>
+    [JsonIgnore]
     public ObservableCollection<double> DownloadSpeedHistory { get; } = [];
 
     /// <summary>
     /// Upload speed history in KB/s.
     /// </summary>
+    [JsonIgnore]
     public ObservableCollection<double> UploadSpeedHistory { get; } = [];
 
+    [JsonIgnore]
     public ICommand? ShowInFolderCommand { get; set; }
 
+    [JsonIgnore]
     public ICommand? StartSpecificTorrentCommand { get; set; }
 
+    [JsonIgnore]
     public ICommand? PauseSpecificTorrentCommand { get; set; }
 
+    [JsonIgnore]
     public ICommand? StopSpecificTorrentCommand { get; set; }
 
+    [JsonIgnore]
     public ICommand? RemoveSpecificTorrentCommand { get; set; }
 
     /// <summary>
     /// Gets the full path to the downloaded file or folder.
     /// </summary>
+    [JsonIgnore]
     public string DownloadedFilePath
     {
         get
@@ -227,6 +237,7 @@ public partial class TorrentItem : ObservableObject
     /// <summary>
     /// Indicates whether the downloaded file or folder can be opened from the UI.
     /// </summary>
+    [JsonIgnore]
     public bool CanOpenDownloadedFile
     {
         get
@@ -247,26 +258,31 @@ public partial class TorrentItem : ObservableObject
     /// <summary>
     /// Gets the formatted download speed string.
     /// </summary>
+    [JsonIgnore]
     public string FormattedDownloadSpeed => FormatBytes(DownloadSpeed) + "/s";
 
     /// <summary>
     /// Gets the formatted upload speed string.
     /// </summary>
+    [JsonIgnore]
     public string FormattedUploadSpeed => FormatBytes(UploadSpeed) + "/s";
 
     /// <summary>
     /// Gets the formatted total size string.
     /// </summary>
+    [JsonIgnore]
     public string FormattedTotalSize => FormatBytes(TotalSize);
 
     /// <summary>
     /// Gets the formatted downloaded size string.
     /// </summary>
+    [JsonIgnore]
     public string FormattedDownloadedSize => FormatBytes(DownloadedSize);
 
     /// <summary>
     /// Gets the status display text.
     /// </summary>
+    [JsonIgnore]
     public string StatusText => Status switch
     {
         DownloadStatus.Queued => "Queued",
@@ -282,6 +298,7 @@ public partial class TorrentItem : ObservableObject
     /// <summary>
     /// Short hint shown when a torrent is not actively downloading.
     /// </summary>
+    [JsonIgnore]
     public string StatusHint
     {
         get
@@ -307,16 +324,19 @@ public partial class TorrentItem : ObservableObject
     /// <summary>
     /// Indicates whether the download can be started or resumed.
     /// </summary>
+    [JsonIgnore]
     public bool CanStart => Status is DownloadStatus.Queued or DownloadStatus.Paused or DownloadStatus.Stopped or DownloadStatus.Failed;
 
     /// <summary>
     /// Indicates whether the download can be paused.
     /// </summary>
+    [JsonIgnore]
     public bool CanPause => Status is DownloadStatus.Downloading or DownloadStatus.Seeding;
 
     /// <summary>
     /// Indicates whether the download can be stopped.
     /// </summary>
+    [JsonIgnore]
     public bool CanStop => Status is DownloadStatus.Downloading or DownloadStatus.Paused or DownloadStatus.Queued;
 
     private static string FormatBytes(long bytes)
