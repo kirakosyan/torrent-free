@@ -186,10 +186,12 @@
                      </Border>
 
                      <!-- Proxy Settings -->
-                     <Border StrokeShape="RoundRectangle 12"
-                             Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
-                             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
-                             Padding="16">
+                     <Border Padding="16"
+                             Stroke="Transparent"
+                             Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
+                            <Border.StrokeShape>
+                                   <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
                             <Grid RowDefinitions="Auto,Auto,Auto,Auto"
                                   ColumnDefinitions="*,*"
                                   ColumnSpacing="12"
