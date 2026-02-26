@@ -21,7 +21,19 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 - **Save path** prefers the picked `.torrent` folder (if available) otherwise the default path
 - **Persistent storage** of torrent list and settings
 
-## 📱 Supported Platforms
+## � Release Notes
+
+### v1.2
+
+- **SOCKS5 Proxy** — Route torrent traffic through a SOCKS5 proxy. Configure host, port, and optional credentials in Settings.
+- **Native .torrent file loading** — Torrents added with a `.torrent` file now load instantly without waiting for DHT/tracker metadata.
+- **Download progress fix** — Progress no longer resets when pausing and resuming.
+- **Persistent seeding ratio** — Upload tracking survives app restarts so ratio limits work correctly.
+- **Memory leak fix** — Removing a torrent now properly releases engine resources.
+- **Atomic storage writes** — Settings and torrent data are written atomically to prevent corruption on crash.
+- **Full backward compatibility** — Upgrading from v1.1 preserves all existing settings.
+
+## �📱 Supported Platforms
 
 | Platform | Status |
 |----------|--------|
