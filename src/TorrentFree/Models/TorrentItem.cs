@@ -48,6 +48,12 @@ public partial class TorrentItem : ObservableObject
     public partial long DownloadedSize { get; set; }
 
     /// <summary>
+    /// Uploaded size in bytes.
+    /// </summary>
+    [ObservableProperty]
+    public partial long UploadedSize { get; set; }
+
+    /// <summary>
     /// Current download progress (0-100).
     /// </summary>
     [ObservableProperty]

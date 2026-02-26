@@ -379,6 +379,10 @@ public class TorrentService : ITorrentService
             try
             {
                 await manager.StopAsync();
+                if (_engine is not null)
+                {
+                    await _engine.RemoveAsync(manager);
+                }
             }
             catch
             {
@@ -813,8 +817,7 @@ public class TorrentService : ITorrentService
 
         if (maxRatio > 0 && torrent.TotalSize > 0)
         {
-            var uploadedBytes = manager.Monitor.DataBytesSent;
-            var ratio = uploadedBytes / (double)torrent.TotalSize;
+            var ratio = torrent.UploadedSize / (double)torrent.TotalSize;
             if (ratio >= maxRatio)
             {
                 await PauseTorrentAsync(torrent);
@@ -930,6 +933,8 @@ public class TorrentService : ITorrentService
     {
         try
         {
+            long previousDataBytesSent = manager.Monitor.DataBytesSent;
+
             while (!cancellationToken.IsCancellationRequested)
             {
                 await Task.Delay(1000, cancellationToken);
@@ -938,6 +943,9 @@ public class TorrentService : ITorrentService
                 var progress = manager.Progress;
                 var previousStatus = torrent.Status;
                 var currentStatus = previousStatus;
+                var currentDataBytesSent = manager.Monitor.DataBytesSent;
+                var uploadedDelta = currentDataBytesSent - previousDataBytesSent;
+                previousDataBytesSent = currentDataBytesSent;
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
@@ -946,14 +954,14 @@ public class TorrentService : ITorrentService
                         torrent.TotalSize = metadataSize.Value;
                     }
 
-                    var downloadedBytes = manager.Monitor.DataBytesReceived;
-                    if (downloadedBytes > 0)
+                    if (torrent.TotalSize > 0)
                     {
-                        torrent.DownloadedSize = downloadedBytes;
-                        if (torrent.TotalSize > 0)
-                        {
-                            progress = (double)downloadedBytes / torrent.TotalSize * 100;
-                        }
+                        torrent.DownloadedSize = (long)(torrent.TotalSize * (progress / 100.0));
+                    }
+
+                    if (uploadedDelta > 0)
+                    {
+                        torrent.UploadedSize += uploadedDelta;
                     }
 
                     torrent.Progress = progress;
@@ -1377,7 +1385,6 @@ public class TorrentService : ITorrentService
 
         var engine = await EnsureEngineAsync();
         var downloadPath = string.IsNullOrWhiteSpace(torrent.SavePath) ? _storageService.GetDefaultDownloadPath() : torrent.SavePath;
-        var magnet = MagnetLink.Parse(torrent.MagnetLink);
 
         var torrentSettings = new TorrentSettingsBuilder
         {
@@ -1387,7 +1394,26 @@ public class TorrentService : ITorrentService
             UploadSlots = 4,
         }.ToSettings();
 
-        var manager = await engine.AddAsync(magnet, downloadPath, torrentSettings);
+        TorrentManager manager;
+        if (!string.IsNullOrWhiteSpace(torrent.TorrentFilePath) && File.Exists(torrent.TorrentFilePath))
+        {
+            try
+            {
+                var monoTorrent = await MonoTorrent.Torrent.LoadAsync(torrent.TorrentFilePath);
+                manager = await engine.AddAsync(monoTorrent, downloadPath, torrentSettings);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to load .torrent file: {ex.Message}. Falling back to magnet link.");
+                var magnet = MagnetLink.Parse(torrent.MagnetLink);
+                manager = await engine.AddAsync(magnet, downloadPath, torrentSettings);
+            }
+        }
+        else
+        {
+            var magnet = MagnetLink.Parse(torrent.MagnetLink);
+            manager = await engine.AddAsync(magnet, downloadPath, torrentSettings);
+        }
 
         ApplySpeedLimitsToManager(manager, torrent);
 

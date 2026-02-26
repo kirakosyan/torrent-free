@@ -276,7 +276,9 @@ public class StorageService : IStorageService
             Directory.CreateDirectory(directory);
         }
 
-        await File.WriteAllTextAsync(_dataPath, json);
+        var tempPath = _dataPath + ".tmp";
+        await File.WriteAllTextAsync(tempPath, json);
+        File.Move(tempPath, _dataPath, overwrite: true);
     }
 }
 
