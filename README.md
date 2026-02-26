@@ -132,6 +132,14 @@ Open the **Settings** page from the app shell. Changes are saved automatically a
 
 Values are normalized to safe ranges (e.g., non-negative, capped to maximums). If a value is out of range, the app adjusts it and shows a short warning message.
 
+## 🗺️ Planned Features
+
+The following features are planned for future releases:
+
+- **RSS Feed Automation** — Subscribe to RSS feeds from torrent sites to automatically download new episodes, releases, or content matching custom filters.
+- **Sequential Downloading** — Download pieces in order so that media files can be previewed or played before the full download completes.
+- **Selective File Downloading** — Choose which files inside a multi-file torrent to download, skipping unwanted content to save disk space and bandwidth.
+
 ## 🏗️ Architecture
 
 The app follows **MVVM**:

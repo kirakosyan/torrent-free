@@ -25,6 +25,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private bool _disposed;
     private bool _isLoadingSettings;
     private bool _processedCommandLine;
+    private AppSettings _loadedSettings = new();
     private PeriodicTimer? _statsTimer;
     private CancellationTokenSource? _statsTimerCts;
     private bool _statsTimerStarted;
@@ -209,6 +210,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         ApplyGlobalSpeedLimits();
         ApplyQueueLimits();
         ApplySeedingLimits();
+        ApplyProxySettings();
     }
 
     private void ApplyGlobalSpeedLimits()
@@ -224,6 +226,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private void ApplySeedingLimits()
     {
         _torrentService.UpdateSeedingLimits(GlobalMaxSeedRatio, GlobalMaxSeedMinutes);
+    }
+
+    private void ApplyProxySettings()
+    {
+        _torrentService.UpdateProxySettings(
+            _loadedSettings.ProxyEnabled,
+            _loadedSettings.ProxyHost,
+            _loadedSettings.ProxyPort,
+            _loadedSettings.ProxyUsername,
+            _loadedSettings.ProxyPassword);
     }
 
     [RelayCommand]
@@ -258,7 +270,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
             MaxActiveSeeds = MaxActiveSeeds,
             GlobalMaxSeedRatio = GlobalMaxSeedRatio,
             GlobalMaxSeedMinutes = GlobalMaxSeedMinutes,
-            SortByStatus = SortByStatus
+            SortByStatus = SortByStatus,
+            // Preserve proxy settings managed by SettingsPage
+            ProxyEnabled = _loadedSettings.ProxyEnabled,
+            ProxyHost = _loadedSettings.ProxyHost,
+            ProxyPort = _loadedSettings.ProxyPort,
+            ProxyUsername = _loadedSettings.ProxyUsername,
+            ProxyPassword = _loadedSettings.ProxyPassword
         };
 
         await _storageService.SaveSettingsAsync(settings);
@@ -552,6 +570,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             _isLoadingSettings = true;
             var settings = await _storageService.LoadSettingsAsync();
+            _loadedSettings = settings;
             GlobalDownloadLimitKbps = settings.GlobalDownloadLimitKbps;
             GlobalUploadLimitKbps = settings.GlobalUploadLimitKbps;
             MaxActiveDownloads = settings.MaxActiveDownloads;

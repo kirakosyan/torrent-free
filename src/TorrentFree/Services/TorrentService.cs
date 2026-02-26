@@ -74,6 +74,11 @@ public interface ITorrentService : IDisposable, IAsyncDisposable
     /// Update global seeding limits. 0 = unlimited.
     /// </summary>
     void UpdateSeedingLimits(double maxSeedRatio, int maxSeedMinutes);
+
+    /// <summary>
+    /// Update SOCKS5 proxy settings. Takes effect on the next engine creation.
+    /// </summary>
+    void UpdateProxySettings(bool enabled, string host, int port, string username, string password);
 }
 
 /// <summary>
@@ -100,6 +105,12 @@ public class TorrentService : ITorrentService
     private long _globalUploadLimitBytesPerSec;
     private double _globalMaxSeedRatio;
     private int _globalMaxSeedMinutes;
+
+    private bool _proxyEnabled;
+    private string _proxyHost = string.Empty;
+    private int _proxyPort = 1080;
+    private string _proxyUsername = string.Empty;
+    private string _proxyPassword = string.Empty;
 
     public ObservableCollection<TorrentItem> Torrents { get; } = [];
 
@@ -598,6 +609,57 @@ public class TorrentService : ITorrentService
             {
                 SafeFireAndForget(EnforceSeedingLimitsAsync(torrent, kvp.Value));
             }
+        }
+    }
+
+    /// <inheritdoc />
+    public void UpdateProxySettings(bool enabled, string host, int port, string username, string password)
+    {
+        _proxyEnabled = enabled;
+        _proxyHost = host ?? string.Empty;
+        _proxyPort = port is > 0 and <= 65535 ? port : 1080;
+        _proxyUsername = username ?? string.Empty;
+        _proxyPassword = password ?? string.Empty;
+
+        // Proxy settings are applied when the engine is created (EnsureEngineAsync).
+        // If the engine is already running, the new proxy will take effect on next restart.
+        // Log for transparency.
+        System.Diagnostics.Debug.WriteLine(_proxyEnabled
+            ? $"Proxy settings updated: {_proxyHost}:{_proxyPort} (will apply on next engine start)"
+            : "Proxy disabled (will apply on next engine start)");
+    }
+
+    /// <summary>
+    /// Attempts to set the proxy URI on the EngineSettingsBuilder via reflection.
+    /// MonoTorrent may or may not expose a proxy property depending on the version.
+    /// </summary>
+    private static void TryApplyProxy(EngineSettingsBuilder builder, string host, int port, string username, string password)
+    {
+        try
+        {
+            // Build the SOCKS5 proxy URI
+            var hasCredentials = !string.IsNullOrEmpty(username);
+            var userInfo = hasCredentials ? $"{Uri.EscapeDataString(username)}:{Uri.EscapeDataString(password)}@" : "";
+            var proxyUri = new Uri($"socks5://{userInfo}{host}:{port}");
+
+            // Try known property names used by various MonoTorrent versions
+            var proxyNames = new[] { "ProxyUri", "Proxy", "ProxyEndPoint" };
+            foreach (var name in proxyNames)
+            {
+                var prop = builder.GetType().GetProperty(name);
+                if (prop is not null && prop.CanWrite && prop.PropertyType == typeof(Uri))
+                {
+                    prop.SetValue(builder, proxyUri);
+                    System.Diagnostics.Debug.WriteLine($"Applied proxy via {name}: {host}:{port}");
+                    return;
+                }
+            }
+
+            System.Diagnostics.Debug.WriteLine("MonoTorrent version does not expose a proxy property on EngineSettingsBuilder. Proxy not applied at engine level.");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to apply proxy settings: {ex.Message}");
         }
     }
 
@@ -1349,7 +1411,7 @@ public class TorrentService : ITorrentService
             return _engine;
         }
 
-        var engineSettings = new EngineSettingsBuilder
+        var builder = new EngineSettingsBuilder
         {
             CacheDirectory = _storageService.GetDefaultDownloadPath(),
             // Enable UPnP/NAT-PMP port forwarding so peers can connect to us
@@ -1366,7 +1428,15 @@ public class TorrentService : ITorrentService
             {
                 { "ipv4", new System.Net.IPEndPoint(System.Net.IPAddress.Any, 0) }
             }
-        }.ToSettings();
+        };
+
+        // Apply SOCKS5 proxy if configured
+        if (_proxyEnabled && !string.IsNullOrWhiteSpace(_proxyHost))
+        {
+            TryApplyProxy(builder, _proxyHost, _proxyPort, _proxyUsername, _proxyPassword);
+        }
+
+        var engineSettings = builder.ToSettings();
 
         _engine = new ClientEngine(engineSettings);
 

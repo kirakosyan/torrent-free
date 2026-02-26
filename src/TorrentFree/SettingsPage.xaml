@@ -185,6 +185,88 @@
                             </Grid>
                      </Border>
 
+                     <!-- Proxy Settings -->
+                     <Border StrokeShape="RoundRectangle 12"
+                             Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
+                             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
+                             Padding="16">
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                                  ColumnDefinitions="*,*"
+                                  ColumnSpacing="12"
+                                  RowSpacing="8">
+                                   <Label Grid.Row="0"
+                                          Grid.ColumnSpan="2"
+                                          Text="SOCKS5 Proxy"
+                                          FontSize="14"
+                                          FontAttributes="Bold"/>
+
+                                   <HorizontalStackLayout Grid.Row="1"
+                                                          Grid.ColumnSpan="2"
+                                                          Spacing="8">
+                                          <Switch IsToggled="{Binding ProxyEnabled}"
+                                                  SemanticProperties.Description="Enable SOCKS5 proxy"/>
+                                          <Label Text="Enable Proxy"
+                                                 VerticalOptions="Center"
+                                                 FontSize="13"/>
+                                   </HorizontalStackLayout>
+
+                                   <VerticalStackLayout Grid.Row="2"
+                                                        Grid.Column="0"
+                                                        Spacing="4">
+                                          <Label Text="🌐 Host"
+                                                 FontSize="11"
+                                                 TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                          <Entry Text="{Binding ProxyHost}"
+                                                 SemanticProperties.Description="SOCKS5 proxy host address"
+                                                 SemanticProperties.Hint="Enter proxy host or IP"
+                                                 Placeholder="e.g. 127.0.0.1"
+                                                 IsEnabled="{Binding ProxyEnabled}"/>
+                                   </VerticalStackLayout>
+
+                                   <VerticalStackLayout Grid.Row="2"
+                                                        Grid.Column="1"
+                                                        Spacing="4">
+                                          <Label Text="🔌 Port"
+                                                 FontSize="11"
+                                                 TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                          <Entry Text="{Binding ProxyPort}"
+                                                 SemanticProperties.Description="SOCKS5 proxy port"
+                                                 SemanticProperties.Hint="Enter proxy port number"
+                                                 Keyboard="Numeric"
+                                                 Placeholder="1080"
+                                                 IsEnabled="{Binding ProxyEnabled}"
+                                                 TextChanged="OnNumericTextChanged"/>
+                                   </VerticalStackLayout>
+
+                                   <VerticalStackLayout Grid.Row="3"
+                                                        Grid.Column="0"
+                                                        Spacing="4">
+                                          <Label Text="👤 Username"
+                                                 FontSize="11"
+                                                 TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                          <Entry Text="{Binding ProxyUsername}"
+                                                 SemanticProperties.Description="SOCKS5 proxy username"
+                                                 SemanticProperties.Hint="Optional authentication username"
+                                                 Placeholder="optional"
+                                                 IsEnabled="{Binding ProxyEnabled}"/>
+                                   </VerticalStackLayout>
+
+                                   <VerticalStackLayout Grid.Row="3"
+                                                        Grid.Column="1"
+                                                        Spacing="4">
+                                          <Label Text="🔒 Password"
+                                                 FontSize="11"
+                                                 TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                          <Entry Text="{Binding ProxyPassword}"
+                                                 SemanticProperties.Description="SOCKS5 proxy password"
+                                                 SemanticProperties.Hint="Optional authentication password"
+                                                 Placeholder="optional"
+                                                 IsPassword="True"
+                                                 IsEnabled="{Binding ProxyEnabled}"/>
+                                   </VerticalStackLayout>
+                            </Grid>
+                     </Border>
+
                      <Label Text="{Binding ValidationMessage}"
                             SemanticProperties.Description="Settings validation message"
                             TextColor="{StaticResource StatusFailed}"

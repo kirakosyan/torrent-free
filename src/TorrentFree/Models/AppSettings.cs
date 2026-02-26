@@ -39,4 +39,29 @@ public class AppSettings
     /// When enabled, downloading torrents are shown on top.
     /// </summary>
     public bool SortByStatus { get; set; }
+
+    /// <summary>
+    /// Indicates if SOCKS5 proxy is enabled.
+    /// </summary>
+    public bool ProxyEnabled { get; set; }
+
+    /// <summary>
+    /// SOCKS5 proxy host address.
+    /// </summary>
+    public string ProxyHost { get; set; } = string.Empty;
+
+    /// <summary>
+    /// SOCKS5 proxy port (1-65535).
+    /// </summary>
+    public int ProxyPort { get; set; } = 1080;
+
+    /// <summary>
+    /// SOCKS5 proxy username (optional).
+    /// </summary>
+    public string ProxyUsername { get; set; } = string.Empty;
+
+    /// <summary>
+    /// SOCKS5 proxy password (optional).
+    /// </summary>
+    public string ProxyPassword { get; set; } = string.Empty;
 }

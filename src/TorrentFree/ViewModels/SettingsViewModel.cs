@@ -60,6 +60,36 @@ public partial class SettingsViewModel : ObservableObject
     public partial int GlobalMaxSeedMinutes { get; set; }
 
     /// <summary>
+    /// Indicates if SOCKS5 proxy is enabled.
+    /// </summary>
+    [ObservableProperty]
+    public partial bool ProxyEnabled { get; set; }
+
+    /// <summary>
+    /// SOCKS5 proxy host address.
+    /// </summary>
+    [ObservableProperty]
+    public partial string ProxyHost { get; set; } = string.Empty;
+
+    /// <summary>
+    /// SOCKS5 proxy port.
+    /// </summary>
+    [ObservableProperty]
+    public partial int ProxyPort { get; set; } = 1080;
+
+    /// <summary>
+    /// SOCKS5 proxy username (optional).
+    /// </summary>
+    [ObservableProperty]
+    public partial string ProxyUsername { get; set; } = string.Empty;
+
+    /// <summary>
+    /// SOCKS5 proxy password (optional).
+    /// </summary>
+    [ObservableProperty]
+    public partial string ProxyPassword { get; set; } = string.Empty;
+
+    /// <summary>
     /// Validation message shown to the user.
     /// </summary>
     [ObservableProperty]
@@ -98,6 +128,11 @@ public partial class SettingsViewModel : ObservableObject
         MaxActiveSeeds = settings.MaxActiveSeeds;
         GlobalMaxSeedRatio = settings.GlobalMaxSeedRatio;
         GlobalMaxSeedMinutes = settings.GlobalMaxSeedMinutes;
+        ProxyEnabled = settings.ProxyEnabled;
+        ProxyHost = settings.ProxyHost ?? string.Empty;
+        ProxyPort = settings.ProxyPort is > 0 and <= 65535 ? settings.ProxyPort : 1080;
+        ProxyUsername = settings.ProxyUsername ?? string.Empty;
+        ProxyPassword = settings.ProxyPassword ?? string.Empty;
 
         _isLoadingSettings = false;
         await RefreshFileAssociationAsync();
@@ -178,6 +213,47 @@ public partial class SettingsViewModel : ObservableObject
         SafeFireAndForget(PersistSettingsAsync());
     }
 
+    partial void OnProxyEnabledChanged(bool value)
+    {
+        if (_isLoadingSettings) return;
+        ApplyProxySettings();
+        SafeFireAndForget(PersistSettingsAsync());
+    }
+
+    partial void OnProxyHostChanged(string value)
+    {
+        if (_isLoadingSettings) return;
+        ApplyProxySettings();
+        SafeFireAndForget(PersistSettingsAsync());
+    }
+
+    partial void OnProxyPortChanged(int value)
+    {
+        if (TryNormalizeInt(nameof(ProxyPort), value, 1, 65535, "Proxy port", "", out var normalized))
+        {
+            ProxyPort = normalized;
+            return;
+        }
+
+        if (_isLoadingSettings) return;
+        ApplyProxySettings();
+        SafeFireAndForget(PersistSettingsAsync());
+    }
+
+    partial void OnProxyUsernameChanged(string value)
+    {
+        if (_isLoadingSettings) return;
+        ApplyProxySettings();
+        SafeFireAndForget(PersistSettingsAsync());
+    }
+
+    partial void OnProxyPasswordChanged(string value)
+    {
+        if (_isLoadingSettings) return;
+        ApplyProxySettings();
+        SafeFireAndForget(PersistSettingsAsync());
+    }
+
     partial void OnIsTorrentAssociatedChanged(bool value)
     {
         if (_isLoadingSettings || _isUpdatingAssociation || !IsFileAssociationSupported)
@@ -193,6 +269,7 @@ public partial class SettingsViewModel : ObservableObject
         ApplySpeedLimits();
         ApplyQueueLimits();
         ApplySeedingLimits();
+        ApplyProxySettings();
     }
 
     private void ApplySpeedLimits()
@@ -210,6 +287,11 @@ public partial class SettingsViewModel : ObservableObject
         _torrentService.UpdateSeedingLimits(GlobalMaxSeedRatio, GlobalMaxSeedMinutes);
     }
 
+    private void ApplyProxySettings()
+    {
+        _torrentService.UpdateProxySettings(ProxyEnabled, ProxyHost, ProxyPort, ProxyUsername, ProxyPassword);
+    }
+
     private async Task PersistSettingsAsync()
     {
         if (_isLoadingSettings || _isNormalizing)
@@ -224,7 +306,12 @@ public partial class SettingsViewModel : ObservableObject
             MaxActiveDownloads,
             MaxActiveSeeds,
             GlobalMaxSeedRatio,
-            GlobalMaxSeedMinutes);
+            GlobalMaxSeedMinutes,
+            ProxyEnabled,
+            ProxyHost,
+            ProxyPort,
+            ProxyUsername,
+            ProxyPassword);
 
         _loadedSettings = settings;
         await _storageService.SaveSettingsAsync(settings);
@@ -292,6 +379,10 @@ public partial class SettingsViewModel : ObservableObject
         var seedMinutes = NormalizeInt(GlobalMaxSeedMinutes, 0, MaxSeedMinutesLimit);
         adjusted |= seedMinutes != GlobalMaxSeedMinutes;
         GlobalMaxSeedMinutes = seedMinutes;
+
+        var proxyPort = NormalizeInt(ProxyPort, 1, 65535);
+        adjusted |= proxyPort != ProxyPort;
+        ProxyPort = proxyPort;
 
         ValidationMessage = adjusted ? "Some settings were adjusted to safe limits." : null;
 
