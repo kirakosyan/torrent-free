@@ -1001,19 +1001,95 @@ public class TorrentService : ITorrentService
             {
                 await Task.Delay(1000, cancellationToken);
 
+                // ---- Collect all data on the background thread ----
                 var metadataSize = manager.Torrent?.Size;
                 var progress = manager.Progress;
                 var previousStatus = torrent.Status;
-                var currentStatus = previousStatus;
                 var currentDataBytesSent = manager.Monitor.DataBytesSent;
                 var uploadedDelta = currentDataBytesSent - previousDataBytesSent;
                 previousDataBytesSent = currentDataBytesSent;
 
+                var downloadRate = manager.Monitor.DownloadRate;
+                var uploadRate = manager.Monitor.UploadRate;
+                var managerState = manager.State;
+                var errorMessage = managerState == TorrentState.Error
+                    ? (manager.Error?.Exception?.Message ?? "Unknown error occurred")
+                    : null;
+
+                // Peer stats via reflection – all done off the UI thread
+                var peers = manager.Peers;
+                var seedsProp = peers.GetType().GetProperty("Seeds") ?? peers.GetType().GetProperty("Seeding");
+                var leechProp = peers.GetType().GetProperty("Leeches") ?? peers.GetType().GetProperty("Leeching");
+                var connectedProp = peers.GetType().GetProperty("ConnectedPeers")
+                                    ?? peers.GetType().GetProperty("ActivePeers")
+                                    ?? peers.GetType().GetProperty("AvailablePeers");
+
+                var seeds = seedsProp?.GetValue(peers) as int? ?? 0;
+                var leeches = leechProp?.GetValue(peers) as int? ?? 0;
+
+                // Fallback: infer from connected peers collection if direct counts unavailable
+                if ((seeds == 0 || leeches == 0) && connectedProp?.GetValue(peers) is System.Collections.IEnumerable peerList)
+                {
+                    int seedCount = 0;
+                    int leechCount = 0;
+                    foreach (var peer in peerList)
+                    {
+                        var isSeederProp = peer?.GetType().GetProperty("IsSeeder") ?? peer?.GetType().GetProperty("AmSeeder");
+                        var isSeeder = (bool?)(isSeederProp?.GetValue(peer)) == true;
+                        if (isSeeder)
+                        {
+                            seedCount++;
+                        }
+                        else
+                        {
+                            leechCount++;
+                        }
+                    }
+
+                    if (seedCount > 0 || leechCount > 0)
+                    {
+                        seeds = seedCount;
+                        leeches = leechCount;
+                    }
+                }
+
+                // Availability / health – heavy reflection, done on background thread
+                var availabilityInfo = GetAvailabilityInfo(manager, seeds, leeches);
+                var healthScore = ComputeHealthScore(seeds, leeches, availabilityInfo.Percent);
+
+                // Metadata from torrent file (if available)
+                var torrentSize = (manager.HasMetadata && manager.Torrent != null) ? manager.Torrent.Size : (long?)null;
+                var torrentName = (manager.HasMetadata && manager.Torrent != null) ? manager.Torrent.Name : null;
+
+                // Map state on background thread
+                var mappedStatus = managerState switch
+                {
+                    TorrentState.Paused => DownloadStatus.Paused,
+                    TorrentState.Seeding => DownloadStatus.Seeding,
+                    TorrentState.Stopped when progress >= 100 => DownloadStatus.Completed,
+                    TorrentState.Stopped => DownloadStatus.Stopped,
+                    TorrentState.Downloading => DownloadStatus.Downloading,
+                    TorrentState.Error => DownloadStatus.Failed,
+                    _ => previousStatus
+                };
+
+                // ---- Marshal only lightweight property assignments to the UI thread ----
+                var currentStatus = previousStatus;
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     if (metadataSize.HasValue && metadataSize.Value > 0)
                     {
                         torrent.TotalSize = metadataSize.Value;
+                    }
+
+                    if (torrentSize.HasValue && torrentSize.Value > 0)
+                    {
+                        torrent.TotalSize = torrentSize.Value;
+                    }
+
+                    if (torrentName is not null)
+                    {
+                        torrent.Name = torrentName;
                     }
 
                     if (torrent.TotalSize > 0)
@@ -1027,84 +1103,30 @@ public class TorrentService : ITorrentService
                     }
 
                     torrent.Progress = progress;
-                    torrent.DownloadSpeed = manager.Monitor.DownloadRate;
-                    torrent.UploadSpeed = manager.Monitor.UploadRate;
-                    var peers = manager.Peers;
-                    var seedsProp = peers.GetType().GetProperty("Seeds") ?? peers.GetType().GetProperty("Seeding");
-                    var leechProp = peers.GetType().GetProperty("Leeches") ?? peers.GetType().GetProperty("Leeching");
-                    var connectedProp = peers.GetType().GetProperty("ConnectedPeers")
-                                        ?? peers.GetType().GetProperty("ActivePeers")
-                                        ?? peers.GetType().GetProperty("AvailablePeers");
-
-                    var seeds = seedsProp?.GetValue(peers) as int? ?? 0;
-                    var leeches = leechProp?.GetValue(peers) as int? ?? 0;
-
-                    // Fallback: infer from connected peers collection if direct counts unavailable
-                    if ((seeds == 0 || leeches == 0) && connectedProp?.GetValue(peers) is System.Collections.IEnumerable peerList)
-                    {
-                        int seedCount = 0;
-                        int leechCount = 0;
-                        foreach (var peer in peerList)
-                        {
-                            var isSeederProp = peer?.GetType().GetProperty("IsSeeder") ?? peer?.GetType().GetProperty("AmSeeder");
-                            var isSeeder = (bool?)(isSeederProp?.GetValue(peer)) == true;
-                            if (isSeeder)
-                            {
-                                seedCount++;
-                            }
-                            else
-                            {
-                                leechCount++;
-                            }
-                        }
-
-                        if (seedCount > 0 || leechCount > 0)
-                        {
-                            seeds = seedCount;
-                            leeches = leechCount;
-                        }
-                    }
+                    torrent.DownloadSpeed = downloadRate;
+                    torrent.UploadSpeed = uploadRate;
 
                     torrent.Seeders = seeds;
                     torrent.Leechers = leeches;
 
-                    var availabilityInfo = GetAvailabilityInfo(manager, seeds, leeches);
                     torrent.AvailabilityPercent = availabilityInfo.Percent;
                     torrent.AvailabilityLabel = availabilityInfo.Label;
-                    torrent.HealthScore = ComputeHealthScore(seeds, leeches, availabilityInfo.Percent);
+                    torrent.HealthScore = healthScore;
 
-                    torrent.AddSpeedSample(torrent.DownloadSpeed, torrent.UploadSpeed);
+                    torrent.AddSpeedSample(downloadRate, uploadRate);
 
-                    if (torrent.DownloadSpeed > 0 && torrent.TotalSize > 0)
+                    if (downloadRate > 0 && torrent.TotalSize > 0)
                     {
                         var remainingBytes = Math.Max(0, torrent.TotalSize - torrent.DownloadedSize);
-                        torrent.EstimatedSecondsRemaining = remainingBytes / Math.Max(1, torrent.DownloadSpeed);
+                        torrent.EstimatedSecondsRemaining = remainingBytes / Math.Max(1, downloadRate);
                     }
                     else
                     {
                         torrent.EstimatedSecondsRemaining = 0;
                     }
 
-                    // Map state
-                    torrent.Status = manager.State switch
-                    {
-                        TorrentState.Paused => DownloadStatus.Paused,
-                        TorrentState.Seeding => DownloadStatus.Seeding,
-                        TorrentState.Stopped when progress >= 100 => DownloadStatus.Completed,
-                        TorrentState.Stopped => DownloadStatus.Stopped,
-                        TorrentState.Downloading => DownloadStatus.Downloading,
-                        TorrentState.Error => DownloadStatus.Failed,
-                        _ => torrent.Status
-                    };
-
-                    if (manager.State == TorrentState.Error)
-                    {
-                        torrent.ErrorMessage = manager.Error?.Exception?.Message ?? "Unknown error occurred";
-                    }
-                    else
-                    {
-                        torrent.ErrorMessage = null;
-                    }
+                    torrent.Status = mappedStatus;
+                    torrent.ErrorMessage = errorMessage;
 
                     if (torrent.Status == DownloadStatus.Seeding)
                     {
@@ -1136,15 +1158,6 @@ public class TorrentService : ITorrentService
                     await _notificationService.ShowDownloadCompletedAsync(torrent);
                 }
 
-                if (manager.HasMetadata && manager.Torrent != null)
-                {
-                    await MainThread.InvokeOnMainThreadAsync(() =>
-                    {
-                        torrent.TotalSize = manager.Torrent.Size;
-                        torrent.Name = manager.Torrent.Name;
-                    });
-                }
-
                 _pendingSave = true;
 
                 if (previousStatus == DownloadStatus.Downloading && currentStatus != DownloadStatus.Downloading)
@@ -1157,7 +1170,7 @@ public class TorrentService : ITorrentService
                     await EnforceSeedingLimitsAsync(torrent, manager);
                 }
 
-                if (manager.State == TorrentState.Stopped && progress >= 100)
+                if (managerState == TorrentState.Stopped && progress >= 100)
                 {
                     break;
                 }
