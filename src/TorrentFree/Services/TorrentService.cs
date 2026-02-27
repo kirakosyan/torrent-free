@@ -1024,8 +1024,10 @@ public class TorrentService : ITorrentService
                                     ?? peers.GetType().GetProperty("ActivePeers")
                                     ?? peers.GetType().GetProperty("AvailablePeers");
 
-                var seeds = seedsProp?.GetValue(peers) as int? ?? 0;
-                var leeches = leechProp?.GetValue(peers) as int? ?? 0;
+                var seedsObj = seedsProp?.GetValue(peers);
+                var seeds = seedsObj != null ? System.Convert.ToInt32(seedsObj) : 0;
+                var leechesObj = leechProp?.GetValue(peers);
+                var leeches = leechesObj != null ? System.Convert.ToInt32(leechesObj) : 0;
 
                 // Fallback: infer from connected peers collection if direct counts unavailable
                 if ((seeds == 0 || leeches == 0) && connectedProp?.GetValue(peers) is System.Collections.IEnumerable peerList)
