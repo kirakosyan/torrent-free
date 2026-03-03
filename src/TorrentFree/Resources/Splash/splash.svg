@@ -2,30 +2,41 @@
 <svg width="456" height="456" viewBox="0 0 456 456" version="1.1" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="sbg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0B1224" />
-      <stop offset="100%" stop-color="#2640A3" />
+      <stop offset="0%" stop-color="#0A0E27" />
+      <stop offset="50%" stop-color="#141B4D" />
+      <stop offset="100%" stop-color="#1B3A8A" />
     </linearGradient>
-    <radialGradient id="sglow" cx="50%" cy="35%" r="60%">
-      <stop offset="0%" stop-color="#4FD1C5" stop-opacity="0.55" />
-      <stop offset="100%" stop-color="#1A2D6C" stop-opacity="0" />
+    <radialGradient id="sglow" cx="50%" cy="30%" r="55%">
+      <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.35" />
+      <stop offset="60%" stop-color="#3B82F6" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#0A0E27" stop-opacity="0" />
     </radialGradient>
     <linearGradient id="sring" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6FF2E6" />
-      <stop offset="100%" stop-color="#3DA6FF" />
+      <stop offset="0%" stop-color="#A78BFA" />
+      <stop offset="50%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#34D399" />
     </linearGradient>
-    <linearGradient id="sarrow" x1="0%" y1="0%" x2="0%" y2="100%">
+    <linearGradient id="sarrow" x1="50%" y1="0%" x2="50%" y2="100%">
       <stop offset="0%" stop-color="#FFFFFF" />
-      <stop offset="100%" stop-color="#C7F5FF" />
+      <stop offset="50%" stop-color="#A5F3FC" />
+      <stop offset="100%" stop-color="#38BDF8" />
+    </linearGradient>
+    <linearGradient id="sglass" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#0F172A" stop-opacity="0.95" />
     </linearGradient>
   </defs>
   <rect width="456" height="456" rx="96" fill="url(#sbg)" />
   <rect width="456" height="456" rx="96" fill="url(#sglow)" />
-  <g transform="translate(68 68)">
-    <circle cx="160" cy="160" r="145" fill="#0F1C3D" opacity="0.75" />
-    <circle cx="160" cy="160" r="125" fill="none" stroke="url(#sring)" stroke-width="16" />
-    <circle cx="160" cy="160" r="92" fill="#122657" opacity="0.85" />
-    <path d="M160 98c-5 0-9 4-9 9v79.5l-24-24c-3.4-3.4-9-3.4-12.4 0-3.4 3.4-3.4 9 0 12.4l38.8 38.8c3.4 3.4 9 3.4 12.4 0l38.8-38.8c3.4-3.4 3.4-9 0-12.4-3.4-3.4-9-3.4-12.4 0l-24 24V107c0-5-4-9-9-9z" fill="url(#sarrow)" />
-    <circle cx="160" cy="222" r="10" fill="#6FF2E6" opacity="0.9" />
-    <circle cx="194" cy="212" r="6" fill="#6FF2E6" opacity="0.7" />
+  <g transform="translate(228 228)">
+    <!-- Outer glow ring -->
+    <circle cx="0" cy="0" r="135" fill="none" stroke="url(#sring)" stroke-width="4" opacity="0.6" />
+    <!-- Main glass circle -->
+    <circle cx="0" cy="0" r="120" fill="url(#sglass)" />
+    <!-- Download bolt -->
+    <path d="M -7 -64 L 7 -64 L 7 22 L 31 22 L 0 62 L -31 22 L -7 22 Z" fill="url(#sarrow)" />
+    <!-- Accent dots -->
+    <circle cx="52" cy="-47" r="4" fill="#38BDF8" opacity="0.7" />
+    <circle cx="60" cy="43" r="3.5" fill="#34D399" opacity="0.6" />
   </g>
 </svg>

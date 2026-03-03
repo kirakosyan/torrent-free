@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="512" height="512" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background: midnight indigo → electric blue -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A0E27" />
+      <stop offset="50%" stop-color="#141B4D" />
+      <stop offset="100%" stop-color="#1B3A8A" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="30%" r="55%">
+      <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.35" />
+      <stop offset="60%" stop-color="#3B82F6" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#0A0E27" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="glow2" cx="50%" cy="75%" r="45%">
+      <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#0A0E27" stop-opacity="0" />
+    </radialGradient>
+    <!-- Foreground -->
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A78BFA" />
+      <stop offset="50%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#34D399" />
+    </linearGradient>
+    <linearGradient id="glass" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#0F172A" stop-opacity="0.95" />
+    </linearGradient>
+    <linearGradient id="arrow" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="50%" stop-color="#A5F3FC" />
+      <stop offset="100%" stop-color="#38BDF8" />
+    </linearGradient>
+    <linearGradient id="speed" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#38BDF8" stop-opacity="0" />
+      <stop offset="50%" stop-color="#38BDF8" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#38BDF8" stop-opacity="0" />
+    </linearGradient>
+    <filter id="boltglow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    <filter id="ringglow" x="-15%" y="-15%" width="130%" height="130%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Full-bleed square background (NO rounded corners – Google Play applies them) -->
+  <rect width="512" height="512" fill="url(#bg)" />
+  <rect width="512" height="512" fill="url(#glow)" />
+  <rect width="512" height="512" fill="url(#glow2)" />
+
+  <!-- Foreground centered -->
+  <g transform="translate(256 256)">
+    <!-- Outer glowing ring -->
+    <circle cx="0" cy="0" r="178" fill="none" stroke="url(#ring)" stroke-width="5.5" opacity="0.6" filter="url(#ringglow)" />
+    <!-- Main circle glass -->
+    <circle cx="0" cy="0" r="157" fill="url(#glass)" />
+    <!-- Subtle highlight arc -->
+    <path d="M -100 -121 A 157 157 0 0 1 100 -121" fill="none" stroke="white" stroke-width="1.5" opacity="0.12" />
+    <!-- Speed lines -->
+    <rect x="-107" y="-13" width="62" height="3.4" rx="1.7" fill="url(#speed)" opacity="0.5" />
+    <rect x="-96" y="9" width="45" height="2.8" rx="1.4" fill="url(#speed)" opacity="0.35" />
+    <rect x="-88" y="-34" width="39" height="2.2" rx="1.1" fill="url(#speed)" opacity="0.25" />
+    <!-- Download bolt -->
+    <g filter="url(#boltglow)">
+      <path d="M -9 -84 L 9 -84 L 9 28 L 40 28 L 0 81 L -40 28 L -9 28 Z" fill="url(#arrow)" />
+    </g>
+    <!-- Data particle dots -->
+    <circle cx="67" cy="-62" r="5.6" fill="#38BDF8" opacity="0.7" />
+    <circle cx="84" cy="-39" r="3.4" fill="#A78BFA" opacity="0.5" />
+    <circle cx="79" cy="56" r="4.5" fill="#34D399" opacity="0.6" />
+    <circle cx="-73" cy="62" r="3.9" fill="#38BDF8" opacity="0.4" />
+  </g>
+</svg>
