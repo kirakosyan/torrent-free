@@ -36,4 +36,5 @@ public partial class MainPage : ContentPage
                 BrowserLaunchMode.External);
         }
     }
+
 }

@@ -129,6 +129,32 @@
                             <Setter Property="TextColor"
                                     Value="#2563EB"/>
                      </Style>
+
+                     <Style x:Key="HeaderIconButton"
+                            TargetType="Button">
+                            <Setter Property="HeightRequest"
+                                    Value="42"/>
+                            <Setter Property="WidthRequest"
+                                    Value="42"/>
+                            <Setter Property="MinimumWidthRequest"
+                                    Value="42"/>
+                            <Setter Property="Padding"
+                                    Value="0"/>
+                            <Setter Property="CornerRadius"
+                                    Value="14"/>
+                            <Setter Property="FontSize"
+                                    Value="20"/>
+                            <Setter Property="FontAttributes"
+                                    Value="None"/>
+                            <Setter Property="BackgroundColor"
+                                    Value="{AppThemeBinding Light=#FFFFFF, Dark=#17202D}"/>
+                            <Setter Property="TextColor"
+                                    Value="{AppThemeBinding Light=#55627A, Dark=#E2E8F0}"/>
+                            <Setter Property="BorderColor"
+                                    Value="{AppThemeBinding Light=#D6DEEA, Dark=#334155}"/>
+                            <Setter Property="BorderWidth"
+                                    Value="1"/>
+                     </Style>
               </ResourceDictionary>
        </ContentPage.Resources>
 
@@ -161,17 +187,15 @@
                      </HorizontalStackLayout>
                      <Button Grid.Row="0"
                              Grid.Column="1"
-                             Text="ℹ"
+                             Text="ⓘ"
                              SemanticProperties.Description="About"
-                             Style="{StaticResource IconButton}"
+                             Style="{StaticResource HeaderIconButton}"
                              Clicked="OnAboutClicked"/>
                      <Button Grid.Row="0"
                              Grid.Column="2"
-                             Text="⚙"
+                             Text="⚙️"
                              SemanticProperties.Description="Settings"
-                             Style="{StaticResource IconButton}"
-                             BackgroundColor="{StaticResource AccentColorLight}"
-                             TextColor="White"
+                             Style="{StaticResource HeaderIconButton}"
                              Command="{Binding OpenSettingsCommand}"/>
               </Grid>
 
