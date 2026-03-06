@@ -153,7 +153,7 @@ public class TorrentService : ITorrentService
                 {
                     if (hadMissingTorrentFile)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Skipping torrent '{torrent.Name}' because its .torrent file is missing and no valid magnet fallback is available.");
+                        System.Diagnostics.Debug.WriteLine($"Skipping torrent '{torrent.Name}' because its .torrent file is missing and it will not be restored (e.g., duplicate entry or invalid magnet link).");
                     }
 
                     continue;
