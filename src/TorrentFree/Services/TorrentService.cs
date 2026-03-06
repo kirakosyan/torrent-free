@@ -89,6 +89,7 @@ public class TorrentService : ITorrentService
     private readonly IStorageService _storageService;
     private readonly INotificationService _notificationService;
     private readonly IBackgroundDownloadService _backgroundDownloadService;
+    private readonly AsyncKeyedLocker _torrentOperationLock = new();
     private readonly ConcurrentDictionary<string, CancellationTokenSource> _downloadTokens = new();
     private readonly ConcurrentDictionary<string, TorrentManager> _managers = new();
     private readonly object _torrentsLock = new();
@@ -136,18 +137,37 @@ public class TorrentService : ITorrentService
         try
         {
             var savedTorrents = await _storageService.LoadTorrentsAsync();
-            var validTorrents = new List<TorrentItem>();
-            var hadStaleEntries = false;
+            var hadStateChanges = false;
 
             foreach (var torrent in savedTorrents)
             {
-                // If the torrent was imported from a .torrent file that no longer exists,
-                // skip it so the app does not crash when trying to use the missing file.
-                if (!string.IsNullOrWhiteSpace(torrent.TorrentFilePath) && !File.Exists(torrent.TorrentFilePath))
+                var hadMissingTorrentFile = TorrentRestoreRules.HasMissingTorrentFile(torrent.TorrentFilePath);
+                var restoreDecision = TorrentRestoreRules.Evaluate(
+                    new TorrentIdentity(torrent.Id, torrent.InfoHash, torrent.MagnetLink),
+                    torrent.TorrentFilePath,
+                    GetTorrentIdentitySnapshot(),
+                    IsValidMagnetLink);
+                hadStateChanges |= restoreDecision.ShouldPersistChanges;
+
+                if (!restoreDecision.ShouldAdd)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Skipping torrent '{torrent.Name}' – .torrent file no longer exists: {torrent.TorrentFilePath}");
-                    hadStaleEntries = true;
+                    if (hadMissingTorrentFile)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Skipping torrent '{torrent.Name}' because its .torrent file is missing and no valid magnet fallback is available.");
+                    }
+
                     continue;
+                }
+
+                if (restoreDecision.ClearTorrentFileMetadata)
+                {
+                    torrent.TorrentFilePath = null;
+                    torrent.TorrentFileName = null;
+                }
+
+                if (hadMissingTorrentFile)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Recovered torrent '{torrent.Name}' using its stored magnet link after the original .torrent file went missing.");
                 }
 
                 // Reset downloading status to paused on startup
@@ -155,13 +175,13 @@ public class TorrentService : ITorrentService
                 {
                     torrent.Status = DownloadStatus.Paused;
                 }
+
                 AttachTorrentSettingsHandlers(torrent);
-                validTorrents.Add(torrent);
                 Torrents.Add(torrent);
             }
 
-            // Persist the cleaned-up list so stale entries are not reloaded next time.
-            if (hadStaleEntries)
+            // Persist the cleaned-up list so stale or duplicate entries are not reloaded next time.
+            if (hadStateChanges)
             {
                 await SaveAsync();
             }
@@ -280,6 +300,8 @@ public class TorrentService : ITorrentService
     /// <inheritdoc />
     public async Task StartTorrentAsync(TorrentItem torrent)
     {
+        await using var operationLock = await _torrentOperationLock.AcquireAsync(torrent.Id);
+
         if (!torrent.CanStart)
         {
             return;
@@ -318,6 +340,8 @@ public class TorrentService : ITorrentService
     /// <inheritdoc />
     public async Task PauseTorrentAsync(TorrentItem torrent)
     {
+        await using var operationLock = await _torrentOperationLock.AcquireAsync(torrent.Id);
+
         if (!torrent.CanPause)
         {
             return;
@@ -347,6 +371,8 @@ public class TorrentService : ITorrentService
     /// <inheritdoc />
     public async Task StopTorrentAsync(TorrentItem torrent)
     {
+        await using var operationLock = await _torrentOperationLock.AcquireAsync(torrent.Id);
+
         if (!torrent.CanStop)
         {
             return;
@@ -378,6 +404,8 @@ public class TorrentService : ITorrentService
     /// <inheritdoc />
     public async Task RemoveTorrentAsync(TorrentItem torrent, bool deleteTorrentFile = false, bool deleteFiles = false)
     {
+        await using var operationLock = await _torrentOperationLock.AcquireAsync(torrent.Id);
+
         // Cancel any active download
         if (_downloadTokens.TryRemove(torrent.Id, out var cts))
         {
@@ -754,6 +782,16 @@ public class TorrentService : ITorrentService
         {
             torrent = Torrents.FirstOrDefault(t => t.Id == id);
             return torrent is not null;
+        }
+    }
+
+    private List<TorrentIdentity> GetTorrentIdentitySnapshot()
+    {
+        lock (_torrentsLock)
+        {
+            return Torrents
+                .Select(static torrent => new TorrentIdentity(torrent.Id, torrent.InfoHash, torrent.MagnetLink))
+                .ToList();
         }
     }
 
@@ -1567,6 +1605,7 @@ public class TorrentService : ITorrentService
         }
         _downloadTokens.Clear();
         _pendingSave = false;
+        _torrentOperationLock.Dispose();
 
         foreach (var kvp in _managers)
         {
