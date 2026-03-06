@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
+using TorrentFree.Services;
 using TorrentFree.ViewModels;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -69,10 +70,10 @@ public partial class App : MauiWinUIApplication
 				return;
 			}
 
-			foreach (var path in paths)
-			{
-				await viewModel.ImportTorrentFileFromPathAsync(path);
-			}
+			await ActivationImportCoordinator.ImportAsync(
+				paths,
+				() => viewModel.InitializeCommand.ExecuteAsync(null),
+				viewModel.ImportTorrentFileFromPathAsync);
 
 			ActivateMainWindow();
 		});

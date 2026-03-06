@@ -23,7 +23,10 @@
   <ItemGroup>
     <Compile Include="..\..\src\TorrentFree\Models\AppSettings.cs" Link="App\Models\AppSettings.cs" />
     <Compile Include="..\..\src\TorrentFree\Models\AppSettingsFactory.cs" Link="App\Models\AppSettingsFactory.cs" />
+    <Compile Include="..\..\src\TorrentFree\Services\ActivationImportCoordinator.cs" Link="App\Services\ActivationImportCoordinator.cs" />
+    <Compile Include="..\..\src\TorrentFree\Services\AsyncKeyedLocker.cs" Link="App\Services\AsyncKeyedLocker.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\PathGuard.cs" Link="App\Services\PathGuard.cs" />
+    <Compile Include="..\..\src\TorrentFree\Services\TorrentRestoreRules.cs" Link="App\Services\TorrentRestoreRules.cs" />
   </ItemGroup>
 
 </Project>
