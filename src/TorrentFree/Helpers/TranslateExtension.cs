@@ -2,7 +2,7 @@ namespace TorrentFree.Helpers;
 
 /// <summary>
 /// XAML markup extension that produces a binding to a localization resource key.
-/// Usage: <c>Text="{local:Translate BrowseButton}"</c>.
+/// Usage: <c>Text="{helpers:Translate BrowseButton}"</c>.
 /// The binding auto-refreshes when <see cref="Services.LocalizationResourceManager.SetCulture"/> is called.
 /// </summary>
 [ContentProperty(nameof(Key))]
