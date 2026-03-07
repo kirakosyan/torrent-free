@@ -299,7 +299,7 @@ public partial class TorrentItem : ObservableObject
         DownloadStatus.Seeding => LocalizationResourceManager.Instance["StatusSeeding"],
         DownloadStatus.Failed => LocalizationResourceManager.Instance["StatusFailed"],
         DownloadStatus.Stopped => LocalizationResourceManager.Instance["StatusStopped"],
-        _ => "Unknown"
+        _ => "Unknown" // Not localized by design: defensive fallback for unexpected DownloadStatus values.
     };
 
     /// <summary>
@@ -362,6 +362,16 @@ public partial class TorrentItem : ObservableObject
     partial void OnProgressChanged(double value)
     {
         OnPropertyChanged(nameof(StatusText));
+    }
+
+    /// <summary>
+    /// Raises property changed notifications for all localizable display properties.
+    /// Call this when the application language changes to refresh displayed strings.
+    /// </summary>
+    public void RefreshLocalizableProperties()
+    {
+        OnPropertyChanged(nameof(StatusText));
+        OnPropertyChanged(nameof(StatusHint));
     }
 
     partial void OnStatusChanged(DownloadStatus value)

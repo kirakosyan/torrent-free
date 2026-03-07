@@ -295,7 +295,7 @@ public partial class SettingsViewModel : ObservableObject
         if (_isLoadingSettings || value is null) return;
 
         var culture = string.IsNullOrEmpty(value.Code)
-            ? CultureInfo.InstalledUICulture
+            ? LocalizationResourceManager.OriginalSystemCulture
             : new CultureInfo(value.Code);
 
         _localizationService.SetCulture(culture);

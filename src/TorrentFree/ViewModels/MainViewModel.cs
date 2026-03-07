@@ -147,6 +147,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _notificationService = notificationService;
         Torrents.CollectionChanged += OnTorrentsCollectionChanged;
 
+        LocalizationResourceManager.Instance.PropertyChanged += OnLocalizationChanged;
+
         InitializeDisplayTorrents();
 
         ApplyGlobalSettings();
@@ -482,6 +484,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private void DetachTorrentHandlers(TorrentItem torrent)
     {
         torrent.PropertyChanged -= OnTorrentPropertyChanged;
+    }
+
+    private void OnLocalizationChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        foreach (var torrent in DisplayTorrents)
+        {
+            torrent.RefreshLocalizableProperties();
+        }
     }
 
     private void AttachTorrentCommands(TorrentItem torrent)
@@ -1043,6 +1053,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         _disposed = true;
         StopStatsTimer();
+        LocalizationResourceManager.Instance.PropertyChanged -= OnLocalizationChanged;
         foreach (var torrent in DisplayTorrents)
         {
             DetachTorrentHandlers(torrent);
