@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <PackageReference Include="MonoTorrent" Version="3.0.2" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
       <PrivateAssets>all</PrivateAssets>
@@ -25,7 +26,9 @@
     <Compile Include="..\..\src\TorrentFree\Models\AppSettingsFactory.cs" Link="App\Models\AppSettingsFactory.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\ActivationImportCoordinator.cs" Link="App\Services\ActivationImportCoordinator.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\AsyncKeyedLocker.cs" Link="App\Services\AsyncKeyedLocker.cs" />
+    <Compile Include="..\..\src\TorrentFree\Services\MagnetTrackerBootstrapRules.cs" Link="App\Services\MagnetTrackerBootstrapRules.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\PathGuard.cs" Link="App\Services\PathGuard.cs" />
+    <Compile Include="..\..\src\TorrentFree\Services\TorrentManagerStateRules.cs" Link="App\Services\TorrentManagerStateRules.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\TorrentRestoreRules.cs" Link="App\Services\TorrentRestoreRules.cs" />
   </ItemGroup>
 
