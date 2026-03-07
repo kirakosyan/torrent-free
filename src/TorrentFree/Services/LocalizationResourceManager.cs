@@ -15,10 +15,10 @@ public sealed class LocalizationResourceManager : INotifyPropertyChanged
     public static LocalizationResourceManager Instance => _lazy.Value;
 
     /// <summary>
-    /// The system UI culture captured at app startup, before any language override is applied.
+    /// The system UI culture captured from the OS, independent of any runtime overrides.
     /// Use this to revert to the user's original preferred language ("System Default").
     /// </summary>
-    public static readonly CultureInfo OriginalSystemCulture = CultureInfo.CurrentUICulture;
+    public static readonly CultureInfo OriginalSystemCulture = CultureInfo.InstalledUICulture;
 
     private readonly ResourceManager _resourceManager;
     private CultureInfo _culture = CultureInfo.CurrentUICulture;
