@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using TorrentFree.Services;
 
 namespace TorrentFree.Models;
 
@@ -291,13 +292,13 @@ public partial class TorrentItem : ObservableObject
     [JsonIgnore]
     public string StatusText => Status switch
     {
-        DownloadStatus.Queued => "Queued",
-        DownloadStatus.Downloading => $"Downloading - {Progress:F1}%",
-        DownloadStatus.Paused => "Paused",
-        DownloadStatus.Completed => "Completed",
-        DownloadStatus.Seeding => "Seeding",
-        DownloadStatus.Failed => "Failed",
-        DownloadStatus.Stopped => "Stopped",
+        DownloadStatus.Queued => LocalizationResourceManager.Instance["StatusQueued"],
+        DownloadStatus.Downloading => $"{LocalizationResourceManager.Instance["StatusDownloading"]} - {Progress:F1}%",
+        DownloadStatus.Paused => LocalizationResourceManager.Instance["StatusPaused"],
+        DownloadStatus.Completed => LocalizationResourceManager.Instance["StatusCompleted"],
+        DownloadStatus.Seeding => LocalizationResourceManager.Instance["StatusSeeding"],
+        DownloadStatus.Failed => LocalizationResourceManager.Instance["StatusFailed"],
+        DownloadStatus.Stopped => LocalizationResourceManager.Instance["StatusStopped"],
         _ => "Unknown"
     };
 
@@ -312,15 +313,15 @@ public partial class TorrentItem : ObservableObject
             if (Status == DownloadStatus.Failed)
             {
                 return string.IsNullOrWhiteSpace(ErrorMessage)
-                    ? "Download failed."
+                    ? LocalizationResourceManager.Instance["HintDownloadFailed"]
                     : ErrorMessage;
             }
 
             return Status switch
             {
-                DownloadStatus.Queued => "Queued. Waiting for an active slot.",
-                DownloadStatus.Paused => "Paused.",
-                DownloadStatus.Stopped => "Stopped.",
+                DownloadStatus.Queued => LocalizationResourceManager.Instance["HintQueued"],
+                DownloadStatus.Paused => LocalizationResourceManager.Instance["HintPaused"],
+                DownloadStatus.Stopped => LocalizationResourceManager.Instance["HintStopped"],
                 DownloadStatus.Downloading => BuildDownloadingHint(),
                 _ => string.Empty
             };
@@ -438,15 +439,15 @@ public partial class TorrentItem : ObservableObject
 
         if (Seeders == 0 && Leechers == 0)
         {
-            return "Searching for peers.";
+            return LocalizationResourceManager.Instance["HintSearchingPeers"];
         }
 
         if (Seeders == 0)
         {
-            return "Waiting for seeds.";
+            return LocalizationResourceManager.Instance["HintWaitingSeeds"];
         }
 
-        return "Connecting to peers.";
+        return LocalizationResourceManager.Instance["HintConnectingPeers"];
     }
 
     public void AddSpeedSample(long downloadBytesPerSecond, long uploadBytesPerSecond)

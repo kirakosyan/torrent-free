@@ -382,7 +382,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Show in folder error: {ex}");
-            ErrorMessage = "Failed to open folder for the download.";
+            ErrorMessage = LocalizationResourceManager.Instance["ErrorOpenFolder"];
         }
     }
 
@@ -414,7 +414,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Browse torrent file error: {ex}");
-            ErrorMessage = "Failed to import .torrent file. Please try again.";
+            ErrorMessage = LocalizationResourceManager.Instance["ErrorImportTorrent"];
         }
         finally
         {
@@ -590,7 +590,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Initialization error: {ex}");
-            ErrorMessage = "Failed to load your downloads. Please restart the app.";
+            ErrorMessage = LocalizationResourceManager.Instance["ErrorLoadDownloads"];
         }
         finally
         {
@@ -653,7 +653,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             System.Diagnostics.Debug.WriteLine($"Torrent add error: {ex}");
             if (notifyInvalid)
             {
-                ErrorMessage = "Failed to import .torrent file. Please try again.";
+                ErrorMessage = LocalizationResourceManager.Instance["ErrorImportTorrent"];
             }
             return false;
         }
@@ -670,7 +670,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             if (notifyDuplicate)
             {
-                ErrorMessage = "This torrent is already in your list.";
+                ErrorMessage = LocalizationResourceManager.Instance["ErrorDuplicateTorrent"];
             }
             return false;
         }
@@ -679,7 +679,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             if (notifyInvalid)
             {
-                ErrorMessage = "Invalid .torrent file. Unable to extract an info hash.";
+                ErrorMessage = LocalizationResourceManager.Instance["ErrorInvalidTorrentFile"];
             }
             return false;
         }
@@ -732,10 +732,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
 
         var shouldAssociate = await Shell.Current.DisplayAlertAsync(
-            "Associate .torrent files",
-            "Do you want to open .torrent files with Torrent Free by default?",
-            "Yes",
-            "No");
+            LocalizationResourceManager.Instance["AssociateTorrentTitle"],
+            LocalizationResourceManager.Instance["AssociateTorrentMessage"],
+            LocalizationResourceManager.Instance["Yes"],
+            LocalizationResourceManager.Instance["No"]);
 
         if (shouldAssociate)
         {
@@ -762,13 +762,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
             }
             else
             {
-                ErrorMessage = "Invalid magnet link. Please ensure your link starts with 'magnet:?' and contains an info hash (xt= parameter).";
+                ErrorMessage = LocalizationResourceManager.Instance["ErrorInvalidMagnet"];
             }
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Add torrent error: {ex}");
-            ErrorMessage = "Failed to add torrent. Please try again.";
+            ErrorMessage = LocalizationResourceManager.Instance["ErrorAddTorrent"];
         }
         finally
         {
@@ -879,7 +879,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Start torrent error: {ex}");
-            ErrorMessage = "Failed to start torrent. Please try again.";
+            ErrorMessage = LocalizationResourceManager.Instance["ErrorStartTorrent"];
         }
         finally
         {
@@ -897,7 +897,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Pause torrent error: {ex}");
-            ErrorMessage = "Failed to pause torrent. Please try again.";
+            ErrorMessage = LocalizationResourceManager.Instance["ErrorPauseTorrent"];
         }
         finally
         {
@@ -920,7 +920,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Stop torrent error: {ex}");
-            ErrorMessage = "Failed to stop torrent. Please try again.";
+            ErrorMessage = LocalizationResourceManager.Instance["ErrorStopTorrent"];
         }
         finally
         {
@@ -944,7 +944,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Remove torrent error: {ex}");
-            ErrorMessage = "Failed to remove torrent. Please try again.";
+            ErrorMessage = LocalizationResourceManager.Instance["ErrorRemoveTorrent"];
         }
         finally
         {
@@ -975,10 +975,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
 
         return await Shell.Current.DisplayAlertAsync(
-            "Stop and reset",
-            "Stopping will reset download progress. Are you sure?",
-            "Stop",
-            "Cancel");
+            LocalizationResourceManager.Instance["StopAndResetTitle"],
+            LocalizationResourceManager.Instance["StopAndResetMessage"],
+            LocalizationResourceManager.Instance["StopButton"],
+            LocalizationResourceManager.Instance["Cancel"]);
     }
 
     private void StartStatsTimer()

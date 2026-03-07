@@ -1,4 +1,5 @@
 ﻿using Microsoft.Maui.ApplicationModel;
+using TorrentFree.Services;
 using TorrentFree.ViewModels;
 
 namespace TorrentFree;
@@ -24,10 +25,10 @@ public partial class MainPage : ContentPage
     private async void OnAboutClicked(object? sender, EventArgs e)
     {
         var openSources = await DisplayAlertAsync(
-            "About Torrent Free",
-            "Torrent Free is free to use.\n\nSources: https://github.com/kirakosyan/torrent-free",
-            "Open Source",
-            "OK");
+            LocalizationResourceManager.Instance["AboutTitle"],
+            LocalizationResourceManager.Instance["AboutMessage"],
+            LocalizationResourceManager.Instance["OpenSource"],
+            LocalizationResourceManager.Instance["OK"]);
 
         if (openSources)
         {

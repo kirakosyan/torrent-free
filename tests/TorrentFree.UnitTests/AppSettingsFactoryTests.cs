@@ -27,7 +27,8 @@ public sealed class AppSettingsFactoryTests
             proxyHost: "127.0.0.1",
             proxyPort: 9050,
             proxyUsername: "user",
-            proxyPassword: "pass");
+            proxyPassword: "pass",
+            language: "fr");
 
         Assert.True(updated.SortByStatus);
         Assert.Equal(1200, updated.GlobalDownloadLimitKbps);
@@ -63,7 +64,8 @@ public sealed class AppSettingsFactoryTests
             proxyHost: "",
             proxyPort: 1080,
             proxyUsername: "",
-            proxyPassword: "");
+            proxyPassword: "",
+            language: null);
 
         Assert.False(updated.SortByStatus);
         Assert.False(updated.ProxyEnabled);
@@ -86,7 +88,8 @@ public sealed class AppSettingsFactoryTests
             proxyHost: null!,
             proxyPort: 0,
             proxyUsername: null!,
-            proxyPassword: null!);
+            proxyPassword: null!,
+            language: "es");
 
         Assert.Equal(string.Empty, updated.ProxyHost);
         Assert.Equal(1080, updated.ProxyPort);
@@ -129,5 +132,7 @@ public sealed class AppSettingsFactoryTests
         Assert.Equal(1080, settings.ProxyPort);
         Assert.Equal(string.Empty, settings.ProxyUsername);
         Assert.Equal(string.Empty, settings.ProxyPassword);
+        // Language falls back to null (system default) when missing from old JSON
+        Assert.Null(settings.Language);
     }
 }

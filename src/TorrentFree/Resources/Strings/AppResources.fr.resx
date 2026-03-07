@@ -131,4 +131,253 @@
   <data name="InvalidMagnetLink" xml:space="preserve">
     <value>Lien magnet invalide. Veuillez entrer une URL magnet:? valide.</value>
   </data>
+
+  <!-- Status (additional) -->
+  <data name="StatusSeeding" xml:space="preserve">
+    <value>Partage</value>
+  </data>
+
+  <!-- Main Page (additional) -->
+  <data name="AppSubtitle" xml:space="preserve">
+    <value>Téléchargements torrent rapides et simples</value>
+  </data>
+  <data name="BrowseButton" xml:space="preserve">
+    <value>Parcourir</value>
+  </data>
+  <data name="Bandwidth" xml:space="preserve">
+    <value>Bande passante</value>
+  </data>
+  <data name="DownloadKBs" xml:space="preserve">
+    <value>Téléchargement Ko/s</value>
+  </data>
+  <data name="UploadKBs" xml:space="preserve">
+    <value>Envoi Ko/s</value>
+  </data>
+  <data name="DownloadingOnTop" xml:space="preserve">
+    <value>Téléchargements en haut</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Détails</value>
+  </data>
+  <data name="SelectedTorrentLimits" xml:space="preserve">
+    <value>Limites du torrent sélectionné</value>
+  </data>
+  <data name="MaxSeedRatio" xml:space="preserve">
+    <value>Ratio de partage max</value>
+  </data>
+  <data name="MaxSeedMinutes" xml:space="preserve">
+    <value>Minutes de partage max</value>
+  </data>
+  <data name="NoDownloadsYet" xml:space="preserve">
+    <value>Aucun téléchargement</value>
+  </data>
+  <data name="AddMagnetHint" xml:space="preserve">
+    <value>Ajoutez un lien magnet pour commencer.</value>
+  </data>
+  <data name="Down" xml:space="preserve">
+    <value>Réception</value>
+  </data>
+  <data name="Up" xml:space="preserve">
+    <value>Envoi</value>
+  </data>
+  <data name="Seeds" xml:space="preserve">
+    <value>Sources</value>
+  </data>
+  <data name="Peers" xml:space="preserve">
+    <value>Pairs</value>
+  </data>
+  <data name="ETA" xml:space="preserve">
+    <value>ETA</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>Santé</value>
+  </data>
+  <data name="Availability" xml:space="preserve">
+    <value>Disponibilité</value>
+  </data>
+
+  <!-- Settings Page -->
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Paramètres</value>
+  </data>
+  <data name="AutoSaveNote" xml:space="preserve">
+    <value>Les modifications sont enregistrées automatiquement.</value>
+  </data>
+  <data name="SpeedLimits" xml:space="preserve">
+    <value>Limites de vitesse</value>
+  </data>
+  <data name="FileAssociations" xml:space="preserve">
+    <value>Associations de fichiers</value>
+  </data>
+  <data name="AssociateTorrentFiles" xml:space="preserve">
+    <value>Associer les fichiers .torrent</value>
+  </data>
+  <data name="QueueLimits" xml:space="preserve">
+    <value>Limites de file d'attente</value>
+  </data>
+  <data name="MaxActiveDownloads" xml:space="preserve">
+    <value>Téléchargements actifs max</value>
+  </data>
+  <data name="MaxActiveSeeds" xml:space="preserve">
+    <value>Partages actifs max</value>
+  </data>
+  <data name="SeedingLimits" xml:space="preserve">
+    <value>Limites de partage</value>
+  </data>
+  <data name="Socks5Proxy" xml:space="preserve">
+    <value>Proxy SOCKS5</value>
+  </data>
+  <data name="EnableProxy" xml:space="preserve">
+    <value>Activer le proxy</value>
+  </data>
+  <data name="Host" xml:space="preserve">
+    <value>Hôte</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Nom d'utilisateur</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Mot de passe</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>Langue</value>
+  </data>
+
+  <!-- Delete Dialog -->
+  <data name="RemoveTorrent" xml:space="preserve">
+    <value>Supprimer le torrent</value>
+  </data>
+  <data name="DeleteFilesOptional" xml:space="preserve">
+    <value>Supprimer éventuellement les fichiers associés :</value>
+  </data>
+  <data name="DeleteTorrentFile" xml:space="preserve">
+    <value>Supprimer le fichier .torrent du disque</value>
+  </data>
+  <data name="DeleteDownloadedFiles" xml:space="preserve">
+    <value>Supprimer les fichiers téléchargés</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+
+  <!-- Hints -->
+  <data name="UnlimitedHint" xml:space="preserve">
+    <value>0 = illimité</value>
+  </data>
+  <data name="GlobalHint" xml:space="preserve">
+    <value>0 = global</value>
+  </data>
+
+  <!-- Dialogs -->
+  <data name="StopAndResetTitle" xml:space="preserve">
+    <value>Arrêter et réinitialiser</value>
+  </data>
+  <data name="StopAndResetMessage" xml:space="preserve">
+    <value>L'arrêt réinitialisera la progression du téléchargement. Êtes-vous sûr ?</value>
+  </data>
+  <data name="AssociateTorrentTitle" xml:space="preserve">
+    <value>Associer les fichiers .torrent</value>
+  </data>
+  <data name="AssociateTorrentMessage" xml:space="preserve">
+    <value>Voulez-vous ouvrir les fichiers .torrent avec Torrent Free par défaut ?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Oui</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Non</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>À propos de Torrent Free</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>Torrent Free est gratuit.\n\nSources : https://github.com/kirakosyan/torrent-free</value>
+  </data>
+  <data name="OpenSource" xml:space="preserve">
+    <value>Code source</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+
+  <!-- Error Messages -->
+  <data name="ErrorOpenFolder" xml:space="preserve">
+    <value>Impossible d'ouvrir le dossier de téléchargement.</value>
+  </data>
+  <data name="ErrorImportTorrent" xml:space="preserve">
+    <value>Impossible d'importer le fichier .torrent. Veuillez réessayer.</value>
+  </data>
+  <data name="ErrorLoadDownloads" xml:space="preserve">
+    <value>Impossible de charger vos téléchargements. Veuillez redémarrer l'application.</value>
+  </data>
+  <data name="ErrorDuplicateTorrent" xml:space="preserve">
+    <value>Ce torrent est déjà dans votre liste.</value>
+  </data>
+  <data name="ErrorInvalidTorrentFile" xml:space="preserve">
+    <value>Fichier .torrent invalide. Impossible d'extraire un hash d'information.</value>
+  </data>
+  <data name="ErrorInvalidMagnet" xml:space="preserve">
+    <value>Lien magnet invalide. Assurez-vous que votre lien commence par 'magnet:?' et contient un hash (paramètre xt=).</value>
+  </data>
+  <data name="ErrorAddTorrent" xml:space="preserve">
+    <value>Impossible d'ajouter le torrent. Veuillez réessayer.</value>
+  </data>
+  <data name="ErrorStartTorrent" xml:space="preserve">
+    <value>Impossible de démarrer le torrent. Veuillez réessayer.</value>
+  </data>
+  <data name="ErrorPauseTorrent" xml:space="preserve">
+    <value>Impossible de mettre en pause le torrent. Veuillez réessayer.</value>
+  </data>
+  <data name="ErrorStopTorrent" xml:space="preserve">
+    <value>Impossible d'arrêter le torrent. Veuillez réessayer.</value>
+  </data>
+  <data name="ErrorRemoveTorrent" xml:space="preserve">
+    <value>Impossible de supprimer le torrent. Veuillez réessayer.</value>
+  </data>
+
+  <!-- Status Hints -->
+  <data name="HintDownloadFailed" xml:space="preserve">
+    <value>Téléchargement échoué.</value>
+  </data>
+  <data name="HintQueued" xml:space="preserve">
+    <value>En file d'attente. En attente d'un emplacement actif.</value>
+  </data>
+  <data name="HintPaused" xml:space="preserve">
+    <value>En pause.</value>
+  </data>
+  <data name="HintStopped" xml:space="preserve">
+    <value>Arrêté.</value>
+  </data>
+  <data name="HintSearchingPeers" xml:space="preserve">
+    <value>Recherche de pairs.</value>
+  </data>
+  <data name="HintWaitingSeeds" xml:space="preserve">
+    <value>En attente de sources.</value>
+  </data>
+  <data name="HintConnectingPeers" xml:space="preserve">
+    <value>Connexion aux pairs.</value>
+  </data>
+
+  <!-- Settings Validation -->
+  <data name="ValidationFileAssociation" xml:space="preserve">
+    <value>Impossible de mettre à jour l'association de fichiers.</value>
+  </data>
+  <data name="ValidationAdjustedLimits" xml:space="preserve">
+    <value>Certains paramètres ont été ajustés aux limites sûres.</value>
+  </data>
+  <data name="ValidationSeedRatioInvalid" xml:space="preserve">
+    <value>Le ratio de partage doit être un nombre non négatif valide. Réinitialisé à 0.</value>
+  </data>
+  <data name="ValidationSeedRatioHigh" xml:space="preserve">
+    <value>Le ratio de partage est trop élevé. Limité à {0}.</value>
+  </data>
+  <data name="ValidationNegative" xml:space="preserve">
+    <value>{0} ne peut pas être négatif. Défini à {1}{2}.</value>
+  </data>
+  <data name="ValidationTooHigh" xml:space="preserve">
+    <value>{0} est trop élevé. Limité à {1}{2}.</value>
+  </data>
 </root>

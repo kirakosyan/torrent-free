@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:TorrentFree"
+             xmlns:helpers="clr-namespace:TorrentFree.Helpers"
              x:Class="TorrentFree.DeleteTorrentDialogPage"
              x:DataType="local:DeleteTorrentDialogViewModel"
              BackgroundColor="#80000000"
@@ -17,10 +18,10 @@
                      HorizontalOptions="Center"
                      MaximumWidthRequest="420">
                      <VerticalStackLayout Spacing="16">
-                            <Label Text="Remove torrent"
+                            <Label Text="{helpers:Translate RemoveTorrent}"
                                    FontSize="18"
                                    FontAttributes="Bold"/>
-                            <Label Text="Optionally delete associated files:"
+                            <Label Text="{helpers:Translate DeleteFilesOptional}"
                                    FontSize="12"
                                    TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                             <Label Text="{Binding TorrentName}"
@@ -31,7 +32,7 @@
                                    <CheckBox IsChecked="{Binding DeleteTorrentFile}"
                                              SemanticProperties.Description="Delete torrent file"
                                              SemanticProperties.Hint="When checked, the source .torrent file is deleted from disk"/>
-                                   <Label Text="Delete .torrent file from disk"
+                                   <Label Text="{helpers:Translate DeleteTorrentFile}"
                                           VerticalOptions="Center"/>
                             </HorizontalStackLayout>
 
@@ -39,18 +40,18 @@
                                    <CheckBox IsChecked="{Binding DeleteDownloadedFiles}"
                                              SemanticProperties.Description="Delete downloaded files"
                                              SemanticProperties.Hint="When checked, downloaded content files are permanently deleted"/>
-                                   <Label Text="Delete downloaded files"
+                                   <Label Text="{helpers:Translate DeleteDownloadedFiles}"
                                           VerticalOptions="Center"/>
                             </HorizontalStackLayout>
 
                             <HorizontalStackLayout Spacing="12"
                                                    HorizontalOptions="End">
-                                   <Button Text="Cancel"
+                                   <Button Text="{helpers:Translate Cancel}"
                                            SemanticProperties.Description="Cancel remove torrent"
                                            BackgroundColor="#BDBDBD"
                                            TextColor="White"
                                            Clicked="OnCancelClicked"/>
-                                   <Button Text="Remove"
+                                   <Button Text="{helpers:Translate RemoveButton}"
                                            SemanticProperties.Description="Confirm remove torrent"
                                            SemanticProperties.Hint="Removes the torrent and applies selected file deletion options"
                                            BackgroundColor="#E53935"

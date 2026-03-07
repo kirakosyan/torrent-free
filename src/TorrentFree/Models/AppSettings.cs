@@ -64,4 +64,10 @@ public class AppSettings
     /// SOCKS5 proxy password (optional).
     /// </summary>
     public string ProxyPassword { get; set; } = string.Empty;
+
+    /// <summary>
+    /// User-selected language code (e.g. "en", "es", "fr", "ru").
+    /// Null or empty means follow system language.
+    /// </summary>
+    public string? Language { get; set; }
 }
