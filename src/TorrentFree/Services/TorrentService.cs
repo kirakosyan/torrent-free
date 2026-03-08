@@ -86,6 +86,21 @@ public interface ITorrentService : IDisposable, IAsyncDisposable
 /// </summary>
 public class TorrentService : ITorrentService
 {
+    private static readonly TimeSpan ManagerStopTimeout = TimeSpan.FromSeconds(2);
+    private static readonly Uri[] PublicTrackers =
+    [
+        new("udp://tracker.opentrackr.org:1337/announce"),
+        new("udp://open.tracker.cl:1337/announce"),
+        new("udp://open.demonii.com:1337/announce"),
+        new("udp://open.stealth.si:80/announce"),
+        new("udp://tracker.torrent.eu.org:451/announce"),
+        new("udp://exodus.desync.com:6969/announce"),
+        new("udp://tracker.tiny-vps.com:6969/announce"),
+        new("udp://tracker.moeking.me:6969/announce"),
+        new("udp://explodie.org:6969/announce"),
+        new("udp://tracker.openbittorrent.com:6969/announce"),
+    ];
+
     private readonly IStorageService _storageService;
     private readonly INotificationService _notificationService;
     private readonly IBackgroundDownloadService _backgroundDownloadService;
@@ -309,12 +324,18 @@ public class TorrentService : ITorrentService
 
         if (!CanStartAnotherDownload())
         {
-            torrent.Status = DownloadStatus.Queued;
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                torrent.Status = DownloadStatus.Queued;
+            });
             await SaveAsync();
             return;
         }
 
-        torrent.Status = DownloadStatus.Downloading;
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            torrent.Status = DownloadStatus.Downloading;
+        });
         await SaveAsync();
         UpdateBackgroundTransferState();
 
@@ -354,14 +375,22 @@ public class TorrentService : ITorrentService
             cts.Dispose();
         }
 
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            torrent.DownloadSpeed = 0;
+            torrent.UploadSpeed = 0;
+        });
+
         if (_managers.TryGetValue(torrent.Id, out var manager))
         {
             await manager.PauseAsync();
         }
 
-        torrent.Status = DownloadStatus.Paused;
-        torrent.DownloadSpeed = 0;
-        torrent.UploadSpeed = 0;
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            torrent.Status = DownloadStatus.Paused;
+        });
+
         await SaveAsync();
         UpdateBackgroundTransferState();
 
@@ -385,16 +414,22 @@ public class TorrentService : ITorrentService
             cts.Dispose();
         }
 
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            torrent.DownloadSpeed = 0;
+            torrent.UploadSpeed = 0;
+        });
+
         if (_managers.TryGetValue(torrent.Id, out var manager))
         {
-            await manager.StopAsync();
+            await StopManagerAsync(manager);
         }
 
-        torrent.Status = DownloadStatus.Stopped;
-        torrent.DownloadSpeed = 0;
-        torrent.UploadSpeed = 0;
-        torrent.Progress = 0;
-        torrent.DownloadedSize = 0;
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            torrent.Status = DownloadStatus.Stopped;
+        });
+
         await SaveAsync();
         UpdateBackgroundTransferState();
 
@@ -404,6 +439,8 @@ public class TorrentService : ITorrentService
     /// <inheritdoc />
     public async Task RemoveTorrentAsync(TorrentItem torrent, bool deleteTorrentFile = false, bool deleteFiles = false)
     {
+        ArgumentNullException.ThrowIfNull(torrent);
+
         await using var operationLock = await _torrentOperationLock.AcquireAsync(torrent.Id);
 
         // Cancel any active download
@@ -417,20 +454,21 @@ public class TorrentService : ITorrentService
         {
             try
             {
-                await manager.StopAsync();
+                await StopManagerAsync(manager);
+
                 if (_engine is not null)
                 {
                     await _engine.RemoveAsync(manager);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // ignore stop errors on remove
+                System.Diagnostics.Debug.WriteLine($"Remove manager cleanup error for '{torrent.Name}' ({torrent.Id}): {ex}");
             }
         }
 
         DetachTorrentSettingsHandlers(torrent);
-        Torrents.Remove(torrent);
+        await MainThread.InvokeOnMainThreadAsync(() => Torrents.Remove(torrent));
         await SaveAsync();
         UpdateBackgroundTransferState();
 
@@ -1117,6 +1155,14 @@ public class TorrentService : ITorrentService
                 var currentStatus = previousStatus;
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
+                    // If the download was cancelled (pause/stop) while this dispatch was
+                    // queued, skip the update to avoid overwriting the status set by
+                    // PauseTorrentAsync / StopTorrentAsync.
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
                     if (metadataSize.HasValue && metadataSize.Value > 0)
                     {
                         torrent.TotalSize = metadataSize.Value;
@@ -1231,7 +1277,13 @@ public class TorrentService : ITorrentService
         }
         finally
         {
-            _downloadTokens.TryRemove(torrent.Id, out _);
+            // Only remove our CTS – a newer Start may have already replaced it.
+            if (_downloadTokens.TryGetValue(torrent.Id, out var activeCts)
+                && activeCts.Token == cancellationToken)
+            {
+                _downloadTokens.TryRemove(torrent.Id, out _);
+            }
+
             _pendingSave = true;
             UpdateBackgroundTransferState();
         }
@@ -1530,18 +1582,50 @@ public class TorrentService : ITorrentService
                 System.Diagnostics.Debug.WriteLine($"Failed to load .torrent file: {ex.Message}. Falling back to magnet link.");
                 var magnet = MagnetLink.Parse(torrent.MagnetLink);
                 manager = await engine.AddAsync(magnet, downloadPath, torrentSettings);
+                await AddPublicTrackersIfNeededAsync(manager, torrent.MagnetLink);
             }
         }
         else
         {
             var magnet = MagnetLink.Parse(torrent.MagnetLink);
             manager = await engine.AddAsync(magnet, downloadPath, torrentSettings);
+            await AddPublicTrackersIfNeededAsync(manager, torrent.MagnetLink);
         }
 
         ApplySpeedLimitsToManager(manager, torrent);
 
         _managers[torrent.Id] = manager;
         return manager;
+    }
+
+    private static Task StopManagerAsync(TorrentManager manager)
+    {
+        if (!TorrentManagerStateRules.RequiresFullStop(manager.State))
+        {
+            return Task.CompletedTask;
+        }
+
+        return manager.StopAsync(ManagerStopTimeout);
+    }
+
+    private static async Task AddPublicTrackersIfNeededAsync(TorrentManager manager, string magnetLink)
+    {
+        if (!MagnetTrackerBootstrapRules.ShouldAddPublicTrackers(magnetLink) || manager.TrackerManager.Private)
+        {
+            return;
+        }
+
+        foreach (var tracker in PublicTrackers)
+        {
+            try
+            {
+                await manager.TrackerManager.AddTrackerAsync(tracker);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to add bootstrap tracker {tracker}: {ex.Message}");
+            }
+        }
     }
 
     public void Dispose()

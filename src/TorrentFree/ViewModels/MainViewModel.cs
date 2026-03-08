@@ -28,6 +28,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private AppSettings _loadedSettings = new();
     private PeriodicTimer? _statsTimer;
     private CancellationTokenSource? _statsTimerCts;
+    private CancellationTokenSource? _magnetAutoStartCts;
     private bool _statsTimerStarted;
 
     /// <summary>
@@ -152,6 +153,21 @@ public partial class MainViewModel : ObservableObject, IDisposable
         InitializeDisplayTorrents();
 
         ApplyGlobalSettings();
+    }
+
+    partial void OnMagnetLinkInputChanged(string value)
+    {
+        CancelPendingMagnetAutoStart();
+
+        var trimmed = value?.Trim() ?? string.Empty;
+        if (IsBusy || string.IsNullOrWhiteSpace(trimmed) || !_torrentService.IsValidMagnetLink(trimmed))
+        {
+            return;
+        }
+
+        var cts = new CancellationTokenSource();
+        _magnetAutoStartCts = cts;
+        SafeFireAndForget(AutoStartMagnetInputAsync(trimmed, cts.Token));
     }
 
     partial void OnSortByStatusChanged(bool value)
@@ -759,6 +775,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand(CanExecute = nameof(CanAddTorrent))]
     private async Task AddTorrentAsync()
     {
+        CancelPendingMagnetAutoStart();
         IsBusy = true;
         ErrorMessage = null;
         try
@@ -784,6 +801,42 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             IsBusy = false;
         }
+    }
+
+    private async Task AutoStartMagnetInputAsync(string magnetLink, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(300), cancellationToken);
+
+            if (cancellationToken.IsCancellationRequested || IsBusy)
+            {
+                return;
+            }
+
+            if (!string.Equals(MagnetLinkInput.Trim(), magnetLink, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            if (!CanAddTorrent())
+            {
+                return;
+            }
+
+            await AddTorrentCommand.ExecuteAsync(null);
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected when the user keeps typing, clears the field, or submits manually.
+        }
+    }
+
+    private void CancelPendingMagnetAutoStart()
+    {
+        _magnetAutoStartCts?.Cancel();
+        _magnetAutoStartCts?.Dispose();
+        _magnetAutoStartCts = null;
     }
 
     private bool CanAddTorrent()
@@ -975,7 +1028,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
     /// <summary>
-    /// Prompts the user to confirm the stop action, which resets download progress.
+    /// Prompts the user to confirm the stop action.
     /// </summary>
     private static async Task<bool> ConfirmStopAsync()
     {
@@ -1052,6 +1105,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
 
         _disposed = true;
+        CancelPendingMagnetAutoStart();
         StopStatsTimer();
         LocalizationResourceManager.Instance.PropertyChanged -= OnLocalizationChanged;
         foreach (var torrent in DisplayTorrents)

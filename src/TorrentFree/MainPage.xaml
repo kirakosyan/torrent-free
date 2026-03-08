@@ -640,7 +640,7 @@
                                                                        CommandParameter="{Binding .}"
                                                                        IsVisible="{Binding CanPause}"/>
                                                                <Button Text="⏹️"
-                                                                       SemanticProperties.Description="Stop and reset download"
+                                                                        SemanticProperties.Description="Stop download"
                                                                        Style="{StaticResource StopButton}"
                                                                        Command="{Binding StopSpecificTorrentCommand}"
                                                                        CommandParameter="{Binding .}"
