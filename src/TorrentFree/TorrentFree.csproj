@@ -29,8 +29,14 @@
 		<ApplicationId>com.torrentfree.app</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
+		<AppDisplayVersion>1.5</AppDisplayVersion>
+		<AppBuildNumber>5</AppBuildNumber>
+		<ApplicationDisplayVersion>$(AppDisplayVersion)</ApplicationDisplayVersion>
+		<ApplicationVersion>$(AppBuildNumber)</ApplicationVersion>
+		<Version>$(AppDisplayVersion).0</Version>
+		<AssemblyVersion>$(AppDisplayVersion).0.0</AssemblyVersion>
+		<FileVersion>$(AppDisplayVersion).0.0</FileVersion>
+		<InformationalVersion>$(AppDisplayVersion)</InformationalVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<!-- Debug builds run unpackaged so the output .exe can be launched directly without MSIX deployment. -->
@@ -59,6 +65,11 @@
 		<AndroidLinkMode>SdkOnly</AndroidLinkMode>
 		<AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<AssemblyMetadata Include="DisplayVersion" Value="$(AppDisplayVersion)" />
+		<AssemblyMetadata Include="BuildNumber" Value="$(AppBuildNumber)" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<!-- App Icon -->

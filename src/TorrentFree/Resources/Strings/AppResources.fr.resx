@@ -294,9 +294,22 @@
     <value>À propos de Torrent Free</value>
   </data>
   <data name="AboutMessage" xml:space="preserve">
-    <value>Torrent Free est gratuit.
-
-Sources : https://github.com/kirakosyan/torrent-free</value>
+    <value>Torrent Free est gratuit.</value>
+  </data>
+  <data name="AboutVersionLabel" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="AboutBuildLabel" xml:space="preserve">
+    <value>Build</value>
+  </data>
+  <data name="AboutFileVersionLabel" xml:space="preserve">
+    <value>Version du fichier</value>
+  </data>
+  <data name="AboutSourceLabel" xml:space="preserve">
+    <value>Code source</value>
+  </data>
+  <data name="AboutUnavailable" xml:space="preserve">
+    <value>n/d</value>
   </data>
   <data name="OpenSource" xml:space="preserve">
     <value>Code source</value>

@@ -294,9 +294,22 @@
     <value>О Torrent Free</value>
   </data>
   <data name="AboutMessage" xml:space="preserve">
-    <value>Torrent Free — бесплатное приложение.
-
-Исходный код: https://github.com/kirakosyan/torrent-free</value>
+    <value>Torrent Free — бесплатное приложение.</value>
+  </data>
+  <data name="AboutVersionLabel" xml:space="preserve">
+    <value>Версия</value>
+  </data>
+  <data name="AboutBuildLabel" xml:space="preserve">
+    <value>Сборка</value>
+  </data>
+  <data name="AboutFileVersionLabel" xml:space="preserve">
+    <value>Версия файла</value>
+  </data>
+  <data name="AboutSourceLabel" xml:space="preserve">
+    <value>Исходный код</value>
+  </data>
+  <data name="AboutUnavailable" xml:space="preserve">
+    <value>н/д</value>
   </data>
   <data name="OpenSource" xml:space="preserve">
     <value>Исходный код</value>

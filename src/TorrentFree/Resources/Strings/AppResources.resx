@@ -58,12 +58,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-
   <!-- App Title -->
   <data name="AppTitle" xml:space="preserve">
     <value>Torrent Free</value>
   </data>
-
   <!-- Main Page -->
   <data name="AddTorrentPlaceholder" xml:space="preserve">
     <value>Enter magnet link here...</value>
@@ -89,7 +87,6 @@
   <data name="NoDownloads" xml:space="preserve">
     <value>No downloads yet. Add a magnet link to get started!</value>
   </data>
-
   <!-- Status -->
   <data name="StatusQueued" xml:space="preserve">
     <value>Queued</value>
@@ -109,7 +106,6 @@
   <data name="StatusStopped" xml:space="preserve">
     <value>Stopped</value>
   </data>
-
   <!-- Labels -->
   <data name="Seeders" xml:space="preserve">
     <value>Seeders</value>
@@ -126,17 +122,14 @@
   <data name="Size" xml:space="preserve">
     <value>Size</value>
   </data>
-
   <!-- Errors -->
   <data name="InvalidMagnetLink" xml:space="preserve">
     <value>Invalid magnet link. Please enter a valid magnet:? URL.</value>
   </data>
-
   <!-- Status (additional) -->
   <data name="StatusSeeding" xml:space="preserve">
     <value>Seeding</value>
   </data>
-
   <!-- Main Page (additional) -->
   <data name="AppSubtitle" xml:space="preserve">
     <value>Fast and simple torrent downloads</value>
@@ -195,7 +188,6 @@
   <data name="Availability" xml:space="preserve">
     <value>Availability</value>
   </data>
-
   <!-- Settings Page -->
   <data name="SettingsTitle" xml:space="preserve">
     <value>Settings</value>
@@ -245,7 +237,6 @@
   <data name="LanguageLabel" xml:space="preserve">
     <value>Language</value>
   </data>
-
   <!-- Delete Dialog -->
   <data name="RemoveTorrent" xml:space="preserve">
     <value>Remove torrent</value>
@@ -262,7 +253,6 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
-
   <!-- Hints -->
   <data name="UnlimitedHint" xml:space="preserve">
     <value>0 = unlimited</value>
@@ -270,7 +260,6 @@
   <data name="GlobalHint" xml:space="preserve">
     <value>0 = global</value>
   </data>
-
   <!-- Dialogs -->
   <data name="StopAndResetTitle" xml:space="preserve">
     <value>Stop torrent</value>
@@ -294,9 +283,22 @@
     <value>About Torrent Free</value>
   </data>
   <data name="AboutMessage" xml:space="preserve">
-    <value>Torrent Free is free to use.
-
-Sources: https://github.com/kirakosyan/torrent-free</value>
+    <value>Torrent Free is free to use.</value>
+  </data>
+  <data name="AboutVersionLabel" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="AboutBuildLabel" xml:space="preserve">
+    <value>Build</value>
+  </data>
+  <data name="AboutFileVersionLabel" xml:space="preserve">
+    <value>File version</value>
+  </data>
+  <data name="AboutSourceLabel" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="AboutUnavailable" xml:space="preserve">
+    <value>n/a</value>
   </data>
   <data name="OpenSource" xml:space="preserve">
     <value>Open Source</value>
@@ -304,7 +306,6 @@ Sources: https://github.com/kirakosyan/torrent-free</value>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
   </data>
-
   <!-- Error Messages -->
   <data name="ErrorOpenFolder" xml:space="preserve">
     <value>Failed to open folder for the download.</value>
@@ -339,7 +340,6 @@ Sources: https://github.com/kirakosyan/torrent-free</value>
   <data name="ErrorRemoveTorrent" xml:space="preserve">
     <value>Failed to remove torrent. Please try again.</value>
   </data>
-
   <!-- Status Hints -->
   <data name="HintDownloadFailed" xml:space="preserve">
     <value>Download failed.</value>
@@ -362,7 +362,6 @@ Sources: https://github.com/kirakosyan/torrent-free</value>
   <data name="HintConnectingPeers" xml:space="preserve">
     <value>Connecting to peers.</value>
   </data>
-
   <!-- Settings Validation -->
   <data name="ValidationFileAssociation" xml:space="preserve">
     <value>Unable to update file association.</value>
