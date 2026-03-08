@@ -273,10 +273,10 @@
 
   <!-- Dialogs -->
   <data name="StopAndResetTitle" xml:space="preserve">
-    <value>Stop and reset</value>
+    <value>Stop torrent</value>
   </data>
   <data name="StopAndResetMessage" xml:space="preserve">
-    <value>Stopping will reset download progress. Are you sure?</value>
+    <value>Stopping will keep your downloaded data so you can resume later. Are you sure?</value>
   </data>
   <data name="AssociateTorrentTitle" xml:space="preserve">
     <value>Associate .torrent files</value>

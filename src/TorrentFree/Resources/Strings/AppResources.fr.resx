@@ -273,10 +273,10 @@
 
   <!-- Dialogs -->
   <data name="StopAndResetTitle" xml:space="preserve">
-    <value>Arrêter et réinitialiser</value>
+    <value>Arrêter le torrent</value>
   </data>
   <data name="StopAndResetMessage" xml:space="preserve">
-    <value>L'arrêt réinitialisera la progression du téléchargement. Êtes-vous sûr ?</value>
+    <value>L'arrêt conservera les données téléchargées afin que vous puissiez reprendre plus tard. Êtes-vous sûr ?</value>
   </data>
   <data name="AssociateTorrentTitle" xml:space="preserve">
     <value>Associer les fichiers .torrent</value>

@@ -273,10 +273,10 @@
 
   <!-- Dialogs -->
   <data name="StopAndResetTitle" xml:space="preserve">
-    <value>Detener y reiniciar</value>
+    <value>Detener torrent</value>
   </data>
   <data name="StopAndResetMessage" xml:space="preserve">
-    <value>Detener reiniciará el progreso de descarga. ¿Está seguro?</value>
+    <value>Al detener se conservarán los datos descargados para que pueda reanudar más tarde. ¿Está seguro?</value>
   </data>
   <data name="AssociateTorrentTitle" xml:space="preserve">
     <value>Asociar archivos .torrent</value>
