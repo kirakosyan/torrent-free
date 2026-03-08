@@ -2,21 +2,44 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:TorrentFree.ViewModels"
+             xmlns:helpers="clr-namespace:TorrentFree.Helpers"
              x:Class="TorrentFree.SettingsPage"
              x:DataType="viewmodels:SettingsViewModel"
              BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}"
-             Title="Settings">
+             Title="{helpers:Translate SettingsTitle}">
 
        <ScrollView>
               <VerticalStackLayout Padding="16"
                                    Spacing="16">
-                     <Label Text="⚙️ Settings"
+                     <Label Text="{helpers:Translate SettingsTitle, StringFormat='⚙️ {0}'}"
                             FontSize="22"
                             FontAttributes="Bold"/>
 
-                     <Label Text="Changes are saved automatically."
+                     <Label Text="{helpers:Translate AutoSaveNote}"
                             FontSize="12"
                             TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+
+                     <!-- Language -->
+                     <Border Padding="16"
+                             Stroke="Transparent"
+                             Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
+                            <Border.StrokeShape>
+                                   <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
+                            <Grid RowDefinitions="Auto,Auto"
+                                  ColumnDefinitions="*"
+                                  RowSpacing="8">
+                                   <Label Grid.Row="0"
+                                          Text="{helpers:Translate LanguageLabel, StringFormat='🌐 {0}'}"
+                                          FontSize="14"
+                                          FontAttributes="Bold"/>
+                                   <Picker Grid.Row="1"
+                                           ItemsSource="{Binding AvailableLanguages}"
+                                           SelectedItem="{Binding SelectedLanguage}"
+                                           SemanticProperties.Description="Select application language"
+                                           SemanticProperties.Hint="Choose system default or a specific language"/>
+                            </Grid>
+                     </Border>
 
                      <Border Padding="16"
                              Stroke="Transparent"
@@ -30,35 +53,35 @@
                                   RowSpacing="8">
                                    <Label Grid.Row="0"
                                           Grid.ColumnSpan="2"
-                                          Text="Speed Limits"
+                                          Text="{helpers:Translate SpeedLimits}"
                                           FontSize="14"
                                           FontAttributes="Bold"/>
 
                                    <VerticalStackLayout Grid.Row="1"
                                                         Grid.Column="0"
                                                         Spacing="4">
-                                          <Label Text="⬇️ Download KB/s"
+                                          <Label Text="{helpers:Translate DownloadKBs, StringFormat='⬇️ {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding GlobalDownloadLimitKbps}"
                                                  SemanticProperties.Description="Global download speed limit in kilobytes per second"
                                                  SemanticProperties.Hint="Enter zero for unlimited"
                                                  Keyboard="Numeric"
-                                                 Placeholder="0 = unlimited"
+                                                 Placeholder="{helpers:Translate UnlimitedHint}"
                                                  TextChanged="OnNumericTextChanged"/>
                                    </VerticalStackLayout>
 
                                    <VerticalStackLayout Grid.Row="1"
                                                         Grid.Column="1"
                                                         Spacing="4">
-                                          <Label Text="⬆️ Upload KB/s"
+                                          <Label Text="{helpers:Translate UploadKBs, StringFormat='⬆️ {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding GlobalUploadLimitKbps}"
                                                  SemanticProperties.Description="Global upload speed limit in kilobytes per second"
                                                  SemanticProperties.Hint="Enter zero for unlimited"
                                                  Keyboard="Numeric"
-                                                 Placeholder="0 = unlimited"
+                                                 Placeholder="{helpers:Translate UnlimitedHint}"
                                                  TextChanged="OnNumericTextChanged"/>
                                    </VerticalStackLayout>
                             </Grid>
@@ -77,12 +100,12 @@
                                   RowSpacing="8">
                                    <Label Grid.Row="0"
                                           Grid.ColumnSpan="2"
-                                          Text="File Associations"
+                                          Text="{helpers:Translate FileAssociations}"
                                           FontSize="14"
                                           FontAttributes="Bold"/>
                                    <Label Grid.Row="1"
                                           Grid.Column="0"
-                                          Text="Associate .torrent files"
+                                          Text="{helpers:Translate AssociateTorrentFiles}"
                                           FontSize="12"
                                           TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                    <Switch Grid.Row="1"
@@ -105,35 +128,35 @@
                                   RowSpacing="8">
                                    <Label Grid.Row="0"
                                           Grid.ColumnSpan="2"
-                                          Text="Queue Limits"
+                                          Text="{helpers:Translate QueueLimits}"
                                           FontSize="14"
                                           FontAttributes="Bold"/>
 
                                    <VerticalStackLayout Grid.Row="1"
                                                         Grid.Column="0"
                                                         Spacing="4">
-                                          <Label Text="⬇️ Max Active Downloads"
+                                          <Label Text="{helpers:Translate MaxActiveDownloads, StringFormat='⬇️ {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding MaxActiveDownloads}"
                                                  SemanticProperties.Description="Maximum number of active downloads"
                                                  SemanticProperties.Hint="Enter zero for unlimited"
                                                  Keyboard="Numeric"
-                                                 Placeholder="0 = unlimited"
+                                                 Placeholder="{helpers:Translate UnlimitedHint}"
                                                  TextChanged="OnNumericTextChanged"/>
                                    </VerticalStackLayout>
 
                                    <VerticalStackLayout Grid.Row="1"
                                                         Grid.Column="1"
                                                         Spacing="4">
-                                          <Label Text="🌱 Max Active Seeds"
+                                          <Label Text="{helpers:Translate MaxActiveSeeds, StringFormat='🌱 {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding MaxActiveSeeds}"
                                                  SemanticProperties.Description="Maximum number of active seed jobs"
                                                  SemanticProperties.Hint="Enter zero for unlimited"
                                                  Keyboard="Numeric"
-                                                 Placeholder="0 = unlimited"
+                                                 Placeholder="{helpers:Translate UnlimitedHint}"
                                                  TextChanged="OnNumericTextChanged"/>
                                    </VerticalStackLayout>
                             </Grid>
@@ -151,35 +174,35 @@
                                   RowSpacing="8">
                                    <Label Grid.Row="0"
                                           Grid.ColumnSpan="2"
-                                          Text="Seeding Limits"
+                                          Text="{helpers:Translate SeedingLimits}"
                                           FontSize="14"
                                           FontAttributes="Bold"/>
 
                                    <VerticalStackLayout Grid.Row="1"
                                                         Grid.Column="0"
                                                         Spacing="4">
-                                          <Label Text="📊 Max Seed Ratio"
+                                          <Label Text="{helpers:Translate MaxSeedRatio, StringFormat='📊 {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding GlobalMaxSeedRatio}"
                                                  SemanticProperties.Description="Global maximum seed ratio"
                                                  SemanticProperties.Hint="Enter zero for unlimited"
                                                  Keyboard="Numeric"
-                                                 Placeholder="0 = unlimited"
+                                                 Placeholder="{helpers:Translate UnlimitedHint}"
                                                  TextChanged="OnDecimalTextChanged"/>
                                    </VerticalStackLayout>
 
                                    <VerticalStackLayout Grid.Row="1"
                                                         Grid.Column="1"
                                                         Spacing="4">
-                                          <Label Text="⏱️ Max Seed Minutes"
+                                          <Label Text="{helpers:Translate MaxSeedMinutes, StringFormat='⏱️ {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding GlobalMaxSeedMinutes}"
                                                  SemanticProperties.Description="Global maximum seed minutes"
                                                  SemanticProperties.Hint="Enter zero for unlimited"
                                                  Keyboard="Numeric"
-                                                 Placeholder="0 = unlimited"
+                                                 Placeholder="{helpers:Translate UnlimitedHint}"
                                                  TextChanged="OnNumericTextChanged"/>
                                    </VerticalStackLayout>
                             </Grid>
@@ -198,7 +221,7 @@
                                   RowSpacing="8">
                                    <Label Grid.Row="0"
                                           Grid.ColumnSpan="2"
-                                          Text="SOCKS5 Proxy"
+                                          Text="{helpers:Translate Socks5Proxy}"
                                           FontSize="14"
                                           FontAttributes="Bold"/>
 
@@ -207,7 +230,7 @@
                                                           Spacing="8">
                                           <Switch IsToggled="{Binding ProxyEnabled}"
                                                   SemanticProperties.Description="Enable SOCKS5 proxy"/>
-                                          <Label Text="Enable Proxy"
+                                          <Label Text="{helpers:Translate EnableProxy}"
                                                  VerticalOptions="Center"
                                                  FontSize="13"/>
                                    </HorizontalStackLayout>
@@ -215,7 +238,7 @@
                                    <VerticalStackLayout Grid.Row="2"
                                                         Grid.Column="0"
                                                         Spacing="4">
-                                          <Label Text="🌐 Host"
+                                          <Label Text="{helpers:Translate Host, StringFormat='🌐 {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding ProxyHost}"
@@ -228,7 +251,7 @@
                                    <VerticalStackLayout Grid.Row="2"
                                                         Grid.Column="1"
                                                         Spacing="4">
-                                          <Label Text="🔌 Port"
+                                          <Label Text="{helpers:Translate Port, StringFormat='🔌 {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding ProxyPort}"
@@ -243,7 +266,7 @@
                                    <VerticalStackLayout Grid.Row="3"
                                                         Grid.Column="0"
                                                         Spacing="4">
-                                          <Label Text="👤 Username"
+                                          <Label Text="{helpers:Translate Username, StringFormat='👤 {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding ProxyUsername}"
@@ -256,7 +279,7 @@
                                    <VerticalStackLayout Grid.Row="3"
                                                         Grid.Column="1"
                                                         Spacing="4">
-                                          <Label Text="🔒 Password"
+                                          <Label Text="{helpers:Translate Password, StringFormat='🔒 {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding ProxyPassword}"

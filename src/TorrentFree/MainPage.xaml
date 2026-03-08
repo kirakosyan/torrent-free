@@ -5,6 +5,7 @@
              xmlns:models="clr-namespace:TorrentFree.Models"
              xmlns:converters="clr-namespace:TorrentFree.Converters"
              xmlns:controls="clr-namespace:TorrentFree.Controls"
+             xmlns:helpers="clr-namespace:TorrentFree.Helpers"
              xmlns:xaml="clr-namespace:Microsoft.Maui.Controls.Xaml;assembly=Microsoft.Maui.Controls.Xaml"
              xmlns:maui="clr-namespace:Microsoft.Maui.Controls;assembly=Microsoft.Maui.Controls"
              x:Class="TorrentFree.MainPage"
@@ -179,7 +180,7 @@
                                           FontAttributes="Bold"
                                           TextColor="{StaticResource AccentColor}"
                                           HorizontalOptions="Start"/>
-                                   <Label Text="Fast and simple torrent downloads"
+                                   <Label Text="{helpers:Translate AppSubtitle}"
                                           FontSize="12"
                                           TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                           HorizontalOptions="Start"/>
@@ -212,7 +213,7 @@
                             <Grid ColumnDefinitions="*,Auto"
                                   ColumnSpacing="12">
                                    <Entry Grid.Column="0"
-                                          Placeholder="Enter magnet link here..."
+                                          Placeholder="{helpers:Translate AddTorrentPlaceholder}"
                                           SemanticProperties.Description="Magnet link input"
                                           SemanticProperties.Hint="Paste a magnet URI or URL, then press Enter or Browse"
                                           Text="{Binding MagnetLinkInput}"
@@ -223,7 +224,7 @@
                                           MaxLength="4000"/>
 
                                    <Button Grid.Column="1"
-                                           Text="Browse"
+                                           Text="{helpers:Translate BrowseButton}"
                                            SemanticProperties.Description="Browse for torrent file"
                                            Command="{Binding BrowseTorrentFileCommand}"
                                            BackgroundColor="{StaticResource AccentColor}"
@@ -249,14 +250,14 @@
                                    <RoundRectangle CornerRadius="12"/>
                             </Border.StrokeShape>
                             <VerticalStackLayout Spacing="8">
-                                   <Label Text="Bandwidth"
+                                   <Label Text="{helpers:Translate Bandwidth}"
                                           FontSize="13"
                                           FontAttributes="Bold"/>
                                    <Grid ColumnDefinitions="*,*"
                                          ColumnSpacing="12">
                                           <VerticalStackLayout Grid.Column="0"
                                                                Spacing="4">
-                                                 <Label Text="Download KB/s"
+                                                 <Label Text="{helpers:Translate DownloadKBs}"
                                                         FontSize="10"
                                                         TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                                  <controls:LineChartView Values="{Binding GlobalDownloadHistory}"
@@ -266,7 +267,7 @@
                                           </VerticalStackLayout>
                                           <VerticalStackLayout Grid.Column="1"
                                                                Spacing="4">
-                                                 <Label Text="Upload KB/s"
+                                                 <Label Text="{helpers:Translate UploadKBs}"
                                                         FontSize="10"
                                                         TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                                  <controls:LineChartView Values="{Binding GlobalUploadHistory}"
@@ -287,7 +288,7 @@
                            ColumnSpacing="12"
                            Margin="0,0,0,12">
                             <Label Grid.Column="0"
-                                   Text="Downloads"
+                                   Text="{helpers:Translate DownloadsTitle}"
                                    FontSize="18"
                                    FontAttributes="Bold"/>
                             <HorizontalStackLayout Grid.Column="1"
@@ -296,13 +297,13 @@
                                    <CheckBox IsChecked="{Binding SortByStatus}"
                                              SemanticProperties.Description="Sort downloads by status"
                                              SemanticProperties.Hint="When enabled, downloading items appear at the top"/>
-                                   <Label Text="Downloading on top"
+                                   <Label Text="{helpers:Translate DownloadingOnTop}"
                                           FontSize="12"
                                           TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                           VerticalOptions="Center"/>
                             </HorizontalStackLayout>
                             <Button Grid.Column="2"
-                                    Text="Details"
+                                    Text="{helpers:Translate Details}"
                                     SemanticProperties.Description="Toggle selected torrent details"
                                     Style="{StaticResource ActionButton}"
                                     BackgroundColor="#EEF2FF"
@@ -325,60 +326,60 @@
                                   RowSpacing="8">
                                    <Label Grid.Row="0"
                                           Grid.ColumnSpan="2"
-                                          Text="Selected torrent limits"
+                                          Text="{helpers:Translate SelectedTorrentLimits}"
                                           FontSize="13"
                                           FontAttributes="Bold"/>
 
                                    <VerticalStackLayout Grid.Row="1"
                                                         Grid.Column="0"
                                                         Spacing="4">
-                                          <Label Text="Download KB/s"
+                                          <Label Text="{helpers:Translate DownloadKBs}"
                                                  FontSize="10"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding SelectedTorrent.DownloadLimitKbps}"
                                                  SemanticProperties.Description="Selected torrent download limit in kilobytes per second"
                                                  SemanticProperties.Hint="Enter zero to use global limit"
                                                  Keyboard="Numeric"
-                                                 Placeholder="0 = global"/>
+                                                 Placeholder="{helpers:Translate GlobalHint}"/>
                                    </VerticalStackLayout>
 
                                    <VerticalStackLayout Grid.Row="1"
                                                         Grid.Column="1"
                                                         Spacing="4">
-                                          <Label Text="Upload KB/s"
+                                          <Label Text="{helpers:Translate UploadKBs}"
                                                  FontSize="10"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding SelectedTorrent.UploadLimitKbps}"
                                                  SemanticProperties.Description="Selected torrent upload limit in kilobytes per second"
                                                  SemanticProperties.Hint="Enter zero to use global limit"
                                                  Keyboard="Numeric"
-                                                 Placeholder="0 = global"/>
+                                                 Placeholder="{helpers:Translate GlobalHint}"/>
                                    </VerticalStackLayout>
 
                                    <VerticalStackLayout Grid.Row="2"
                                                         Grid.Column="0"
                                                         Spacing="4">
-                                          <Label Text="Max seed ratio"
+                                          <Label Text="{helpers:Translate MaxSeedRatio}"
                                                  FontSize="10"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding SelectedTorrent.MaxSeedRatio}"
                                                  SemanticProperties.Description="Selected torrent maximum seed ratio"
                                                  SemanticProperties.Hint="Enter zero for unlimited seeding ratio"
                                                  Keyboard="Numeric"
-                                                 Placeholder="0 = global"/>
+                                                 Placeholder="{helpers:Translate GlobalHint}"/>
                                    </VerticalStackLayout>
 
                                    <VerticalStackLayout Grid.Row="2"
                                                         Grid.Column="1"
                                                         Spacing="4">
-                                          <Label Text="Max seed minutes"
+                                          <Label Text="{helpers:Translate MaxSeedMinutes}"
                                                  FontSize="10"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Entry Text="{Binding SelectedTorrent.MaxSeedMinutes}"
                                                  SemanticProperties.Description="Selected torrent maximum seed minutes"
                                                  SemanticProperties.Hint="Enter zero for unlimited seeding time"
                                                  Keyboard="Numeric"
-                                                 Placeholder="0 = global"/>
+                                                 Placeholder="{helpers:Translate GlobalHint}"/>
                                    </VerticalStackLayout>
                             </Grid>
                      </Border>
@@ -389,11 +390,11 @@
                                           VerticalOptions="Center"
                                           HorizontalOptions="Center"
                                           Spacing="16">
-                            <Label Text="No downloads yet"
+                            <Label Text="{helpers:Translate NoDownloadsYet}"
                                    FontSize="18"
                                    FontAttributes="Bold"
                                    HorizontalOptions="Center"/>
-                            <Label Text="Add a magnet link to get started."
+                            <Label Text="{helpers:Translate AddMagnetHint}"
                                    FontSize="14"
                                    TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                    HorizontalOptions="Center"/>
@@ -503,7 +504,7 @@
                                                               ColumnSpacing="8">
                                                                <VerticalStackLayout Grid.Column="0"
                                                                                     Spacing="2">
-                                                                      <Label Text="Size"
+                                                                      <Label Text="{helpers:Translate Size}"
                                                                              FontSize="10"
                                                                              TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                                                       <Label Text="{Binding FormattedTotalSize}"
@@ -512,7 +513,7 @@
                                                                </VerticalStackLayout>
                                                                <VerticalStackLayout Grid.Column="1"
                                                                                     Spacing="2">
-                                                                      <Label Text="Down"
+                                                                      <Label Text="{helpers:Translate Down}"
                                                                              FontSize="10"
                                                                              TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                                                       <Label Text="{Binding FormattedDownloadSpeed}"
@@ -521,7 +522,7 @@
                                                                </VerticalStackLayout>
                                                                <VerticalStackLayout Grid.Column="2"
                                                                                     Spacing="2">
-                                                                      <Label Text="Up"
+                                                                      <Label Text="{helpers:Translate Up}"
                                                                              FontSize="10"
                                                                              TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                                                       <Label Text="{Binding FormattedUploadSpeed}"
@@ -530,7 +531,7 @@
                                                                </VerticalStackLayout>
                                                                <VerticalStackLayout Grid.Column="3"
                                                                                     Spacing="2">
-                                                                      <Label Text="Seeds"
+                                                                      <Label Text="{helpers:Translate Seeds}"
                                                                              FontSize="10"
                                                                              TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                                                       <Label Text="{Binding Seeders}"
@@ -539,7 +540,7 @@
                                                                </VerticalStackLayout>
                                                                <VerticalStackLayout Grid.Column="4"
                                                                                     Spacing="2">
-                                                                      <Label Text="Peers"
+                                                                      <Label Text="{helpers:Translate Peers}"
                                                                              FontSize="10"
                                                                              TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                                                       <Label Text="{Binding Leechers}"
@@ -548,7 +549,7 @@
                                                                </VerticalStackLayout>
                                                                <VerticalStackLayout Grid.Column="5"
                                                                                     Spacing="2">
-                                                                      <Label Text="ETA"
+                                                                      <Label Text="{helpers:Translate ETA}"
                                                                              FontSize="10"
                                                                              TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                                                       <Label Text="{Binding FormattedEstimatedTime}"
@@ -565,7 +566,7 @@
                                                                                     Spacing="4">
                                                                       <Grid ColumnDefinitions="*,Auto">
                                                                              <Label Grid.Column="0"
-                                                                                    Text="Health"
+                                                                                    Text="{helpers:Translate Health}"
                                                                                     FontSize="10"
                                                                                     TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                                                              <Label Grid.Column="1"
@@ -581,7 +582,7 @@
                                                                                     Spacing="4">
                                                                       <Grid ColumnDefinitions="*,Auto">
                                                                              <Label Grid.Column="0"
-                                                                                    Text="Availability"
+                                                                                    Text="{helpers:Translate Availability}"
                                                                                     FontSize="10"
                                                                                     TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                                                              <Label Grid.Column="1"
@@ -601,7 +602,7 @@
                                                               ColumnSpacing="12">
                                                                <VerticalStackLayout Grid.Column="0"
                                                                                     Spacing="4">
-                                                                      <Label Text="Download KB/s"
+                                                                      <Label Text="{helpers:Translate DownloadKBs}"
                                                                              FontSize="10"
                                                                              TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                                                       <controls:LineChartView Values="{Binding DownloadSpeedHistory}"
@@ -611,7 +612,7 @@
                                                                </VerticalStackLayout>
                                                                <VerticalStackLayout Grid.Column="1"
                                                                                     Spacing="4">
-                                                                      <Label Text="Upload KB/s"
+                                                                      <Label Text="{helpers:Translate UploadKBs}"
                                                                              FontSize="10"
                                                                              TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                                                       <controls:LineChartView Values="{Binding UploadSpeedHistory}"

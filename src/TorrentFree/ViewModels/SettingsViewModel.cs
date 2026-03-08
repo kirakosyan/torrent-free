@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TorrentFree.Models;
@@ -13,8 +15,9 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IStorageService _storageService;
     private readonly ITorrentService _torrentService;
     private readonly IFileAssociationService _fileAssociationService;
+    private readonly ILocalizationService _localizationService;
     private AppSettings _loadedSettings = new();
-    private bool _isLoadingSettings;
+    private bool _isLoadingSettings = true;
     private bool _isNormalizing;
     private bool _isUpdatingAssociation;
 
@@ -107,12 +110,32 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsTorrentAssociated { get; set; }
 
-    public SettingsViewModel(IStorageService storageService, ITorrentService torrentService, IFileAssociationService fileAssociationService)
+    /// <summary>
+    /// Available language options. Empty string means system default.
+    /// </summary>
+    public ObservableCollection<LanguageOption> AvailableLanguages { get; } =
+    [
+        new("System Default", ""),
+        new("English", "en"),
+        new("Español", "es"),
+        new("Français", "fr"),
+        new("Русский", "ru"),
+    ];
+
+    /// <summary>
+    /// The currently selected language option.
+    /// </summary>
+    [ObservableProperty]
+    public partial LanguageOption SelectedLanguage { get; set; } = null!;
+
+    public SettingsViewModel(IStorageService storageService, ITorrentService torrentService, IFileAssociationService fileAssociationService, ILocalizationService localizationService)
     {
         _storageService = storageService;
         _torrentService = torrentService;
         _fileAssociationService = fileAssociationService;
+        _localizationService = localizationService;
         IsFileAssociationSupported = _fileAssociationService.IsSupported;
+        SelectedLanguage = AvailableLanguages[0];
     }
 
     [RelayCommand]
@@ -134,6 +157,9 @@ public partial class SettingsViewModel : ObservableObject
         ProxyUsername = settings.ProxyUsername ?? string.Empty;
         ProxyPassword = settings.ProxyPassword ?? string.Empty;
 
+        SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == (settings.Language ?? ""))
+                           ?? AvailableLanguages[0];
+
         _isLoadingSettings = false;
         await RefreshFileAssociationAsync();
         NormalizeAllSettings();
@@ -143,7 +169,7 @@ public partial class SettingsViewModel : ObservableObject
 
     partial void OnGlobalDownloadLimitKbpsChanged(int value)
     {
-        if (TryNormalizeInt(nameof(GlobalDownloadLimitKbps), value, 0, MaxKbpsLimit, "Download limit", " KB/s", out var normalized))
+        if (TryNormalizeInt(nameof(GlobalDownloadLimitKbps), value, 0, MaxKbpsLimit, LocalizationResourceManager.Instance["DownloadKBs"], " KB/s", out var normalized))
         {
             GlobalDownloadLimitKbps = normalized;
             return;
@@ -155,7 +181,7 @@ public partial class SettingsViewModel : ObservableObject
 
     partial void OnGlobalUploadLimitKbpsChanged(int value)
     {
-        if (TryNormalizeInt(nameof(GlobalUploadLimitKbps), value, 0, MaxKbpsLimit, "Upload limit", " KB/s", out var normalized))
+        if (TryNormalizeInt(nameof(GlobalUploadLimitKbps), value, 0, MaxKbpsLimit, LocalizationResourceManager.Instance["UploadKBs"], " KB/s", out var normalized))
         {
             GlobalUploadLimitKbps = normalized;
             return;
@@ -167,7 +193,7 @@ public partial class SettingsViewModel : ObservableObject
 
     partial void OnMaxActiveDownloadsChanged(int value)
     {
-        if (TryNormalizeInt(nameof(MaxActiveDownloads), value, 0, MaxActiveLimit, "Max active downloads", "", out var normalized))
+        if (TryNormalizeInt(nameof(MaxActiveDownloads), value, 0, MaxActiveLimit, LocalizationResourceManager.Instance["MaxActiveDownloads"], "", out var normalized))
         {
             MaxActiveDownloads = normalized;
             return;
@@ -179,7 +205,7 @@ public partial class SettingsViewModel : ObservableObject
 
     partial void OnMaxActiveSeedsChanged(int value)
     {
-        if (TryNormalizeInt(nameof(MaxActiveSeeds), value, 0, MaxActiveLimit, "Max active seeds", "", out var normalized))
+        if (TryNormalizeInt(nameof(MaxActiveSeeds), value, 0, MaxActiveLimit, LocalizationResourceManager.Instance["MaxActiveSeeds"], "", out var normalized))
         {
             MaxActiveSeeds = normalized;
             return;
@@ -203,7 +229,7 @@ public partial class SettingsViewModel : ObservableObject
 
     partial void OnGlobalMaxSeedMinutesChanged(int value)
     {
-        if (TryNormalizeInt(nameof(GlobalMaxSeedMinutes), value, 0, MaxSeedMinutesLimit, "Max seed minutes", " min", out var normalized))
+        if (TryNormalizeInt(nameof(GlobalMaxSeedMinutes), value, 0, MaxSeedMinutesLimit, LocalizationResourceManager.Instance["MaxSeedMinutes"], " min", out var normalized))
         {
             GlobalMaxSeedMinutes = normalized;
             return;
@@ -229,7 +255,7 @@ public partial class SettingsViewModel : ObservableObject
 
     partial void OnProxyPortChanged(int value)
     {
-        if (TryNormalizeInt(nameof(ProxyPort), value, 1, 65535, "Proxy port", "", out var normalized))
+        if (TryNormalizeInt(nameof(ProxyPort), value, 1, 65535, LocalizationResourceManager.Instance["Port"], "", out var normalized))
         {
             ProxyPort = normalized;
             return;
@@ -262,6 +288,18 @@ public partial class SettingsViewModel : ObservableObject
         }
 
         SafeFireAndForget(ToggleFileAssociationAsync(value));
+    }
+
+    partial void OnSelectedLanguageChanged(LanguageOption value)
+    {
+        if (_isLoadingSettings || value is null) return;
+
+        var culture = string.IsNullOrEmpty(value.Code)
+            ? LocalizationResourceManager.OriginalSystemCulture
+            : new CultureInfo(value.Code);
+
+        _localizationService.SetCulture(culture);
+        SafeFireAndForget(PersistSettingsAsync());
     }
 
     private void ApplySettingsToService()
@@ -311,7 +349,8 @@ public partial class SettingsViewModel : ObservableObject
             ProxyHost,
             ProxyPort,
             ProxyUsername,
-            ProxyPassword);
+            ProxyPassword,
+            SelectedLanguage?.Code);
 
         _loadedSettings = settings;
         await _storageService.SaveSettingsAsync(settings);
@@ -344,7 +383,7 @@ public partial class SettingsViewModel : ObservableObject
 
         if (!result)
         {
-            ValidationMessage = "Unable to update file association.";
+            ValidationMessage = LocalizationResourceManager.Instance["ValidationFileAssociation"];
         }
 
         await RefreshFileAssociationAsync();
@@ -384,7 +423,7 @@ public partial class SettingsViewModel : ObservableObject
         adjusted |= proxyPort != ProxyPort;
         ProxyPort = proxyPort;
 
-        ValidationMessage = adjusted ? "Some settings were adjusted to safe limits." : null;
+        ValidationMessage = adjusted ? LocalizationResourceManager.Instance["ValidationAdjustedLimits"] : null;
 
         _isNormalizing = false;
     }
@@ -402,8 +441,8 @@ public partial class SettingsViewModel : ObservableObject
         {
             _isNormalizing = true;
             ValidationMessage = value < min
-                ? $"{label} cannot be negative. Set to {min}{unit}."
-                : $"{label} is too high. Capped at {max}{unit}.";
+                ? string.Format(LocalizationResourceManager.Instance["ValidationNegative"], label, min, unit)
+                : string.Format(LocalizationResourceManager.Instance["ValidationTooHigh"], label, max, unit);
             _isNormalizing = false;
             return true;
         }
@@ -425,8 +464,8 @@ public partial class SettingsViewModel : ObservableObject
         {
             _isNormalizing = true;
             ValidationMessage = double.IsNaN(value) || double.IsInfinity(value) || value < 0
-                ? "Seed ratio must be a valid non-negative number. Reset to 0."
-                : $"Seed ratio is too high. Capped at {MaxSeedRatioLimit}.";
+                ? LocalizationResourceManager.Instance["ValidationSeedRatioInvalid"]
+                : string.Format(LocalizationResourceManager.Instance["ValidationSeedRatioHigh"], MaxSeedRatioLimit);
             _isNormalizing = false;
             return true;
         }
@@ -479,4 +518,12 @@ public partial class SettingsViewModel : ObservableObject
             System.Diagnostics.Debug.WriteLine($"Fire-and-forget error: {ex}");
         }
     }
+}
+
+/// <summary>
+/// Represents a selectable language in the settings picker.
+/// </summary>
+public record LanguageOption(string DisplayName, string Code)
+{
+    public override string ToString() => DisplayName;
 }

@@ -64,5 +64,6 @@ public class LocalizationService : ILocalizationService
         _currentCulture = culture;
         CultureInfo.CurrentUICulture = culture;
         CultureInfo.CurrentCulture = culture;
+        LocalizationResourceManager.Instance.SetCulture(culture);
     }
 }

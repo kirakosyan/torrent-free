@@ -20,7 +20,8 @@ public static class AppSettingsFactory
         string proxyHost,
         int proxyPort,
         string proxyUsername,
-        string proxyPassword)
+        string proxyPassword,
+        string? language)
     {
         ArgumentNullException.ThrowIfNull(existing);
 
@@ -37,7 +38,8 @@ public static class AppSettingsFactory
             ProxyHost = proxyHost ?? string.Empty,
             ProxyPort = proxyPort is > 0 and <= 65535 ? proxyPort : 1080,
             ProxyUsername = proxyUsername ?? string.Empty,
-            ProxyPassword = proxyPassword ?? string.Empty
+            ProxyPassword = proxyPassword ?? string.Empty,
+            Language = language
         };
     }
 }
