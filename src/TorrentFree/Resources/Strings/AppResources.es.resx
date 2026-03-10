@@ -276,10 +276,10 @@
 
   <!-- Dialogs -->
   <data name="StopAndResetTitle" xml:space="preserve">
-    <value>Detener y reiniciar</value>
+    <value>Detener torrent</value>
   </data>
   <data name="StopAndResetMessage" xml:space="preserve">
-    <value>Detener reiniciará el progreso de descarga. ¿Está seguro?</value>
+    <value>Al detener se conservarán los datos descargados para que pueda reanudar más tarde. ¿Está seguro?</value>
   </data>
   <data name="AssociateTorrentTitle" xml:space="preserve">
     <value>Asociar archivos .torrent</value>
@@ -297,9 +297,22 @@
     <value>Acerca de Torrent Free</value>
   </data>
   <data name="AboutMessage" xml:space="preserve">
-    <value>Torrent Free es gratuito.
-
-Código fuente: https://github.com/kirakosyan/torrent-free</value>
+    <value>Torrent Free es gratuito.</value>
+  </data>
+  <data name="AboutVersionLabel" xml:space="preserve">
+    <value>Versión</value>
+  </data>
+  <data name="AboutBuildLabel" xml:space="preserve">
+    <value>Compilación</value>
+  </data>
+  <data name="AboutFileVersionLabel" xml:space="preserve">
+    <value>Versión del archivo</value>
+  </data>
+  <data name="AboutSourceLabel" xml:space="preserve">
+    <value>Código fuente</value>
+  </data>
+  <data name="AboutUnavailable" xml:space="preserve">
+    <value>n/d</value>
   </data>
   <data name="OpenSource" xml:space="preserve">
     <value>Código fuente</value>

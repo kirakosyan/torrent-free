@@ -335,27 +335,72 @@ public class TorrentService : ITorrentService
         await MainThread.InvokeOnMainThreadAsync(() =>
         {
             torrent.Status = DownloadStatus.Downloading;
+            torrent.ErrorMessage = null;
         });
         await SaveAsync();
         UpdateBackgroundTransferState();
 
-        var manager = await GetOrCreateManagerAsync(torrent);
-        ApplySpeedLimitsToManager(manager, torrent);
-
-        // Cancel any existing download for this torrent
-        if (_downloadTokens.TryRemove(torrent.Id, out var existingCts))
+        TorrentManager? manager = null;
+        try
         {
-            await existingCts.CancelAsync();
-            existingCts.Dispose();
+            manager = await GetOrCreateManagerAsync(torrent);
+            ApplySpeedLimitsToManager(manager, torrent);
+
+            // Cancel any existing download for this torrent
+            if (_downloadTokens.TryRemove(torrent.Id, out var existingCts))
+            {
+                await existingCts.CancelAsync();
+                existingCts.Dispose();
+            }
+
+            var cts = new CancellationTokenSource();
+            _downloadTokens[torrent.Id] = cts;
+
+            // Start real download
+            await StartManagerAsync(manager);
+
+            _ = MonitorTorrentAsync(torrent, manager, cts.Token);
         }
+        catch (Exception ex)
+        {
+            if (_downloadTokens.TryRemove(torrent.Id, out var failedCts))
+            {
+                failedCts.Dispose();
+            }
 
-        var cts = new CancellationTokenSource();
-        _downloadTokens[torrent.Id] = cts;
+            if (manager is not null && _managers.TryGetValue(torrent.Id, out var activeManager) && ReferenceEquals(manager, activeManager))
+            {
+                try
+                {
+                    await StopManagerAsync(manager);
 
-        // Start real download
-        await manager.StartAsync();
+                    if (_engine is not null)
+                    {
+                        await _engine.RemoveAsync(manager);
+                    }
+                }
+                catch (Exception cleanupEx)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Start rollback cleanup error for '{torrent.Name}' ({torrent.Id}): {cleanupEx}");
+                }
+                finally
+                {
+                    _managers.TryRemove(torrent.Id, out _);
+                }
+            }
 
-        _ = MonitorTorrentAsync(torrent, manager, cts.Token);
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                torrent.Status = DownloadStatus.Failed;
+                torrent.DownloadSpeed = 0;
+                torrent.UploadSpeed = 0;
+                torrent.ErrorMessage = ex.Message;
+            });
+
+            await SaveAsync();
+            UpdateBackgroundTransferState();
+            throw;
+        }
     }
 
     /// <inheritdoc />
@@ -1551,7 +1596,7 @@ public class TorrentService : ITorrentService
     }
 
 
-    private async Task<TorrentManager> GetOrCreateManagerAsync(TorrentItem torrent)
+    protected virtual async Task<TorrentManager> GetOrCreateManagerAsync(TorrentItem torrent)
     {
         if (_managers.TryGetValue(torrent.Id, out var existing))
         {
@@ -1597,6 +1642,8 @@ public class TorrentService : ITorrentService
         _managers[torrent.Id] = manager;
         return manager;
     }
+
+    protected virtual Task StartManagerAsync(TorrentManager manager) => manager.StartAsync();
 
     private static Task StopManagerAsync(TorrentManager manager)
     {

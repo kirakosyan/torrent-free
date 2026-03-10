@@ -281,23 +281,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return;
         }
 
-        var settings = new AppSettings
-        {
-            GlobalDownloadLimitKbps = GlobalDownloadLimitKbps,
-            GlobalUploadLimitKbps = GlobalUploadLimitKbps,
-            MaxActiveDownloads = MaxActiveDownloads,
-            MaxActiveSeeds = MaxActiveSeeds,
-            GlobalMaxSeedRatio = GlobalMaxSeedRatio,
-            GlobalMaxSeedMinutes = GlobalMaxSeedMinutes,
-            SortByStatus = SortByStatus,
-            // Preserve proxy settings managed by SettingsPage
-            ProxyEnabled = _loadedSettings.ProxyEnabled,
-            ProxyHost = _loadedSettings.ProxyHost,
-            ProxyPort = _loadedSettings.ProxyPort,
-            ProxyUsername = _loadedSettings.ProxyUsername,
-            ProxyPassword = _loadedSettings.ProxyPassword
-        };
+        var existingSettings = await _storageService.LoadSettingsAsync();
+        var settings = AppSettingsFactory.CreateForMainPage(
+            existingSettings,
+            GlobalDownloadLimitKbps,
+            GlobalUploadLimitKbps,
+            MaxActiveDownloads,
+            MaxActiveSeeds,
+            GlobalMaxSeedRatio,
+            GlobalMaxSeedMinutes,
+            SortByStatus);
 
+        _loadedSettings = settings;
         await _storageService.SaveSettingsAsync(settings);
     }
 
