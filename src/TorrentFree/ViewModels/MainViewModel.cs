@@ -5,6 +5,7 @@ using System.Threading;
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui.ApplicationModel;
 using TorrentFree.Models;
 using TorrentFree.Services;
 
@@ -795,6 +796,34 @@ public partial class MainViewModel : ObservableObject, IDisposable
         finally
         {
             IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task PasteMagnetLinkAsync()
+    {
+        try
+        {
+            if (!Clipboard.Default.HasText)
+            {
+                ErrorMessage = LocalizationResourceManager.Instance["ErrorClipboardEmpty"];
+                return;
+            }
+
+            var clipboardText = (await Clipboard.Default.GetTextAsync())?.Trim();
+            if (string.IsNullOrWhiteSpace(clipboardText))
+            {
+                ErrorMessage = LocalizationResourceManager.Instance["ErrorClipboardEmpty"];
+                return;
+            }
+
+            ErrorMessage = null;
+            MagnetLinkInput = clipboardText;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Paste magnet link error: {ex}");
+            ErrorMessage = LocalizationResourceManager.Instance["ErrorPasteClipboard"];
         }
     }
 
