@@ -215,7 +215,7 @@
                                    <Entry Grid.Column="0"
                                           Placeholder="{helpers:Translate AddTorrentPlaceholder}"
                                           SemanticProperties.Description="Magnet link input"
-                                          SemanticProperties.Hint="Paste a magnet URI or URL, then press Enter or Browse"
+                                          SemanticProperties.Hint="Paste a magnet URI or URL, then press Enter, Paste, or Browse"
                                           Text="{Binding MagnetLinkInput}"
                                           ReturnCommand="{Binding AddTorrentCommand}"
                                           FontSize="14"
