@@ -210,8 +210,8 @@
                             <Border.StrokeShape>
                                    <RoundRectangle CornerRadius="12"/>
                             </Border.StrokeShape>
-                            <Grid ColumnDefinitions="*,Auto"
-                                  ColumnSpacing="12">
+                            <Grid ColumnDefinitions="*,Auto,Auto"
+                                  ColumnSpacing="8">
                                    <Entry Grid.Column="0"
                                           Placeholder="{helpers:Translate AddTorrentPlaceholder}"
                                           SemanticProperties.Description="Magnet link input"
@@ -224,6 +224,18 @@
                                           MaxLength="4000"/>
 
                                    <Button Grid.Column="1"
+                                           Text="{helpers:Translate PasteButton}"
+                                           SemanticProperties.Description="Paste clipboard text into magnet link input"
+                                           Command="{Binding PasteMagnetLinkCommand}"
+                                           BackgroundColor="#EEF2FF"
+                                           TextColor="#4F46E5"
+                                           FontSize="14"
+                                           FontAttributes="Bold"
+                                           CornerRadius="8"
+                                           Padding="12,8"
+                                           HeightRequest="44"/>
+
+                                   <Button Grid.Column="2"
                                            Text="{helpers:Translate BrowseButton}"
                                            SemanticProperties.Description="Browse for torrent file"
                                            Command="{Binding BrowseTorrentFileCommand}"
