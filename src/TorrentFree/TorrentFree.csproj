@@ -29,9 +29,9 @@
 		<ApplicationId>com.torrentfree.app</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.5</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>1.4</ApplicationDisplayVersion>
 		<ApplicationVersion>9</ApplicationVersion>
-		<AndroidVersionName>1.5</AndroidVersionName>
+		<AndroidVersionName>1.4</AndroidVersionName>
 		<AndroidVersionCode>9</AndroidVersionCode>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
