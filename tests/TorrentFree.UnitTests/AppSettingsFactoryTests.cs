@@ -98,6 +98,45 @@ public sealed class AppSettingsFactoryTests
     }
 
     [Fact]
+    public void CreateForMainPage_PreservesSettingsManagedOutsideMainPage()
+    {
+        var existing = new AppSettings
+        {
+            ProxyEnabled = true,
+            ProxyHost = "127.0.0.1",
+            ProxyPort = 9050,
+            ProxyUsername = "user",
+            ProxyPassword = "pass",
+            Language = "fr"
+        };
+
+        var updated = AppSettingsFactory.CreateForMainPage(
+            existing,
+            globalDownloadLimitKbps: 800,
+            globalUploadLimitKbps: 120,
+            maxActiveDownloads: 4,
+            maxActiveSeeds: 6,
+            globalMaxSeedRatio: 1.75,
+            globalMaxSeedMinutes: 240,
+            sortByStatus: true);
+
+        Assert.Equal(800, updated.GlobalDownloadLimitKbps);
+        Assert.Equal(120, updated.GlobalUploadLimitKbps);
+        Assert.Equal(4, updated.MaxActiveDownloads);
+        Assert.Equal(6, updated.MaxActiveSeeds);
+        Assert.Equal(1.75, updated.GlobalMaxSeedRatio);
+        Assert.Equal(240, updated.GlobalMaxSeedMinutes);
+        Assert.True(updated.SortByStatus);
+
+        Assert.True(updated.ProxyEnabled);
+        Assert.Equal("127.0.0.1", updated.ProxyHost);
+        Assert.Equal(9050, updated.ProxyPort);
+        Assert.Equal("user", updated.ProxyUsername);
+        Assert.Equal("pass", updated.ProxyPassword);
+        Assert.Equal("fr", updated.Language);
+    }
+
+    [Fact]
     public void OldSettingsJson_DeserializesWithSafeProxyDefaults()
     {
         // Simulate a settings JSON saved by a previous app version that has

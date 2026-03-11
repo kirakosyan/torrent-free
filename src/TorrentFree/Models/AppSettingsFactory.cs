@@ -6,6 +6,40 @@ namespace TorrentFree.Models;
 public static class AppSettingsFactory
 {
     /// <summary>
+    /// Builds the settings payload for the main page save flow while preserving
+    /// settings managed elsewhere, such as proxy and language.
+    /// </summary>
+    public static AppSettings CreateForMainPage(
+        AppSettings existing,
+        int globalDownloadLimitKbps,
+        int globalUploadLimitKbps,
+        int maxActiveDownloads,
+        int maxActiveSeeds,
+        double globalMaxSeedRatio,
+        int globalMaxSeedMinutes,
+        bool sortByStatus)
+    {
+        ArgumentNullException.ThrowIfNull(existing);
+
+        return new AppSettings
+        {
+            GlobalDownloadLimitKbps = globalDownloadLimitKbps,
+            GlobalUploadLimitKbps = globalUploadLimitKbps,
+            MaxActiveDownloads = maxActiveDownloads,
+            MaxActiveSeeds = maxActiveSeeds,
+            GlobalMaxSeedRatio = globalMaxSeedRatio,
+            GlobalMaxSeedMinutes = globalMaxSeedMinutes,
+            SortByStatus = sortByStatus,
+            ProxyEnabled = existing.ProxyEnabled,
+            ProxyHost = existing.ProxyHost ?? string.Empty,
+            ProxyPort = existing.ProxyPort is > 0 and <= 65535 ? existing.ProxyPort : 1080,
+            ProxyUsername = existing.ProxyUsername ?? string.Empty,
+            ProxyPassword = existing.ProxyPassword ?? string.Empty,
+            Language = existing.Language
+        };
+    }
+
+    /// <summary>
     /// Builds the settings payload for the settings page save flow.
     /// </summary>
     public static AppSettings CreateForSettingsPage(

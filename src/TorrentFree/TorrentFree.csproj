@@ -63,6 +63,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<AssemblyMetadata Include="DisplayVersion" Value="$(AppDisplayVersion)" />
+		<AssemblyMetadata Include="BuildNumber" Value="$(AppBuildNumber)" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#0A0E27" />
 
