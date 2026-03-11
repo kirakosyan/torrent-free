@@ -238,10 +238,15 @@ public class StorageService : IStorageService
             return _cachedDownloadPath;
         }
 
-        // Use the app's cache directory for downloads on mobile, or Documents on desktop
-        var basePath = DeviceInfo.Platform == DevicePlatform.Android || DeviceInfo.Platform == DevicePlatform.iOS
-            ? FileSystem.CacheDirectory
-            : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+#if ANDROID
+        // Prefer app-specific external Downloads storage so completed files persist and can be surfaced via Android file providers.
+        var basePath = Android.App.Application.Context.GetExternalFilesDir(Android.OS.Environment.DirectoryDownloads)?.AbsolutePath
+            ?? FileSystem.AppDataDirectory;
+#elif IOS
+        var basePath = FileSystem.CacheDirectory;
+#else
+        var basePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+#endif
 
         var downloadPath = Path.Combine(basePath, "TorrentFree", "Downloads");
 

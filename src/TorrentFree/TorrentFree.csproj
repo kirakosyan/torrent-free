@@ -30,9 +30,9 @@
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.4</ApplicationDisplayVersion>
-		<ApplicationVersion>8</ApplicationVersion>
+		<ApplicationVersion>9</ApplicationVersion>
 		<AndroidVersionName>1.4</AndroidVersionName>
-		<AndroidVersionCode>8</AndroidVersionCode>
+		<AndroidVersionCode>9</AndroidVersionCode>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<!-- Debug builds run unpackaged so the output .exe can be launched directly without MSIX deployment. -->

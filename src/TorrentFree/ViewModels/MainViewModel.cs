@@ -314,9 +314,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
             var downloadPath = torrent.DownloadedFilePath;
             var isDirectory = Directory.Exists(downloadPath);
 
-            // For directories, we want to open the folder itself
-            // For files, we want to open the containing folder and select the file
-            var targetPath = isDirectory ? downloadPath : downloadPath;
             var folderPath = isDirectory ? downloadPath : Path.GetDirectoryName(downloadPath);
 
             if (string.IsNullOrWhiteSpace(folderPath))
@@ -390,6 +387,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 }
             }
 #endif
+#if ANDROID
+            if (DeviceInfo.Platform == DevicePlatform.Android)
+            {
+                if (await TryOpenAndroidFolderAsync(downloadPath, folderPath, isDirectory))
+                {
+                    return;
+                }
+            }
+#endif
 
             // Best-effort fallback: open the folder (for directories, open directly; for files, open containing folder)
             var targetFolder = isDirectory ? downloadPath : folderPath;
@@ -404,6 +410,112 @@ public partial class MainViewModel : ObservableObject, IDisposable
             ErrorMessage = LocalizationResourceManager.Instance["ErrorOpenFolder"];
         }
     }
+
+#if ANDROID
+    private static async Task<bool> TryOpenAndroidFolderAsync(string downloadPath, string folderPath, bool isDirectory)
+    {
+        var targetFolder = isDirectory ? downloadPath : folderPath;
+        if (string.IsNullOrWhiteSpace(targetFolder) || !Directory.Exists(targetFolder))
+        {
+            return false;
+        }
+
+        if (TryOpenAndroidDocumentFolder(targetFolder))
+        {
+            return true;
+        }
+
+        if (!isDirectory && File.Exists(downloadPath))
+        {
+            try
+            {
+                await Launcher.Default.OpenAsync(new OpenFileRequest
+                {
+                    File = new ReadOnlyFile(downloadPath)
+                });
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Android file open fallback error: {ex}");
+            }
+        }
+
+        return false;
+    }
+
+    private static bool TryOpenAndroidDocumentFolder(string folderPath)
+    {
+        var folderUri = BuildAndroidExternalStorageDocumentUri(folderPath);
+        if (folderUri is null)
+        {
+            return false;
+        }
+
+        var context = Platform.CurrentActivity ?? Android.App.Application.Context;
+        var packageManager = context.PackageManager;
+        if (packageManager is null)
+        {
+            return false;
+        }
+
+        var viewIntent = new Android.Content.Intent(Android.Content.Intent.ActionView);
+        viewIntent.SetDataAndType(folderUri, Android.Provider.DocumentsContract.Document.MimeTypeDir);
+        viewIntent.AddFlags(Android.Content.ActivityFlags.GrantReadUriPermission | Android.Content.ActivityFlags.NewTask);
+
+        if (viewIntent.ResolveActivity(packageManager) is not null)
+        {
+            context.StartActivity(viewIntent);
+            return true;
+        }
+
+        var treeIntent = new Android.Content.Intent(Android.Content.Intent.ActionOpenDocumentTree);
+        if (OperatingSystem.IsAndroidVersionAtLeast(26))
+        {
+            treeIntent.PutExtra(Android.Provider.DocumentsContract.ExtraInitialUri, folderUri);
+        }
+
+        treeIntent.AddFlags(
+            Android.Content.ActivityFlags.GrantReadUriPermission |
+            Android.Content.ActivityFlags.GrantWriteUriPermission |
+            Android.Content.ActivityFlags.GrantPersistableUriPermission |
+            Android.Content.ActivityFlags.NewTask);
+
+        if (treeIntent.ResolveActivity(packageManager) is null)
+        {
+            return false;
+        }
+
+        context.StartActivity(treeIntent);
+        return true;
+    }
+
+    private static Android.Net.Uri? BuildAndroidExternalStorageDocumentUri(string folderPath)
+    {
+        var externalRoot = Android.OS.Environment.ExternalStorageDirectory?.AbsolutePath;
+        if (string.IsNullOrWhiteSpace(externalRoot))
+        {
+            return null;
+        }
+
+        var fullFolderPath = Path.GetFullPath(folderPath);
+        if (!fullFolderPath.StartsWith(externalRoot, StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        var relativePath = Path.GetRelativePath(externalRoot, fullFolderPath)
+            .Replace(Path.DirectorySeparatorChar, '/')
+            .Replace(Path.AltDirectorySeparatorChar, '/');
+
+        var documentId = relativePath == "."
+            ? "primary:"
+            : $"primary:{relativePath}";
+
+        return Android.Net.Uri.Parse($"content://com.android.externalstorage.documents/document/{Android.Net.Uri.Encode(documentId)}");
+    }
+#endif
 
     /// <summary>
     /// Lets the user pick a local .torrent file, converts it to a magnet link, and starts the download.
