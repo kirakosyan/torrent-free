@@ -203,6 +203,18 @@
   <data name="AutoSaveNote" xml:space="preserve">
     <value>Изменения сохраняются автоматически.</value>
   </data>
+  <data name="DownloadLocation" xml:space="preserve">
+    <value>Папка загрузки</value>
+  </data>
+  <data name="DownloadToTorrentFolderLabel" xml:space="preserve">
+    <value>Сохранять загрузки .torrent рядом с исходным файлом .torrent</value>
+  </data>
+  <data name="SpecificDownloadFolderLabel" xml:space="preserve">
+    <value>Отдельная папка для загрузки</value>
+  </data>
+  <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
+    <value>Введите путь к папке</value>
+  </data>
   <data name="SpeedLimits" xml:space="preserve">
     <value>Ограничения скорости</value>
   </data>
@@ -394,5 +406,8 @@
   </data>
   <data name="ValidationTooHigh" xml:space="preserve">
     <value>{0} слишком высокое. Ограничено до {1}{2}.</value>
+  </data>
+  <data name="ValidationSelectFolder" xml:space="preserve">
+    <value>Не удалось выбрать папку.</value>
   </data>
 </root>

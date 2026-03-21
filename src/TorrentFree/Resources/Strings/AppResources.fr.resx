@@ -203,6 +203,18 @@
   <data name="AutoSaveNote" xml:space="preserve">
     <value>Les modifications sont enregistrées automatiquement.</value>
   </data>
+  <data name="DownloadLocation" xml:space="preserve">
+    <value>Emplacement de téléchargement</value>
+  </data>
+  <data name="DownloadToTorrentFolderLabel" xml:space="preserve">
+    <value>Enregistrer les téléchargements .torrent à côté du fichier .torrent d'origine</value>
+  </data>
+  <data name="SpecificDownloadFolderLabel" xml:space="preserve">
+    <value>Dossier de téléchargement spécifique</value>
+  </data>
+  <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
+    <value>Entrez un chemin de dossier</value>
+  </data>
   <data name="SpeedLimits" xml:space="preserve">
     <value>Limites de vitesse</value>
   </data>
@@ -394,5 +406,8 @@
   </data>
   <data name="ValidationTooHigh" xml:space="preserve">
     <value>{0} est trop élevé. Limité à {1}{2}.</value>
+  </data>
+  <data name="ValidationSelectFolder" xml:space="preserve">
+    <value>Impossible de sélectionner un dossier.</value>
   </data>
 </root>

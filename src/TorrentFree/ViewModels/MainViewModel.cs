@@ -705,12 +705,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return false;
         }
 
-        ApplyTorrentFileMetadata(torrent, filePath, fileName);
+        await ApplyTorrentFileMetadataAsync(torrent, filePath, fileName);
         await _torrentService.StartTorrentAsync(torrent);
         return true;
     }
 
-    private static void ApplyTorrentFileMetadata(TorrentItem torrent, string? filePath, string? fileName)
+    private async Task ApplyTorrentFileMetadataAsync(TorrentItem torrent, string? filePath, string? fileName)
     {
         if (!string.IsNullOrWhiteSpace(filePath) && File.Exists(filePath))
         {
@@ -722,14 +722,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
             torrent.TorrentFileName = fileName;
         }
 
-        var folder = !string.IsNullOrWhiteSpace(filePath)
-            ? Path.GetDirectoryName(filePath)
-            : null;
+        var settings = await _storageService.LoadSettingsAsync();
+        var fallbackDownloadPath = string.IsNullOrWhiteSpace(torrent.SavePath)
+            ? _storageService.GetDefaultDownloadPath()
+            : torrent.SavePath;
 
-        if (!string.IsNullOrWhiteSpace(folder) && Directory.Exists(folder))
-        {
-            torrent.SavePath = folder;
-        }
+        torrent.SavePath = DownloadLocationResolver.ResolveSavePath(settings, filePath, fallbackDownloadPath);
     }
 
     private async Task PromptFileAssociationAsync()

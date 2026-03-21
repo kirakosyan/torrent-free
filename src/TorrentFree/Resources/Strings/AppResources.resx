@@ -195,6 +195,18 @@
   <data name="AutoSaveNote" xml:space="preserve">
     <value>Changes are saved automatically.</value>
   </data>
+  <data name="DownloadLocation" xml:space="preserve">
+    <value>Download Location</value>
+  </data>
+  <data name="DownloadToTorrentFolderLabel" xml:space="preserve">
+    <value>Save .torrent downloads next to the original .torrent file</value>
+  </data>
+  <data name="SpecificDownloadFolderLabel" xml:space="preserve">
+    <value>Specific download folder</value>
+  </data>
+  <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
+    <value>Enter a folder path</value>
+  </data>
   <data name="SpeedLimits" xml:space="preserve">
     <value>Speed Limits</value>
   </data>
@@ -380,5 +392,8 @@
   </data>
   <data name="ValidationTooHigh" xml:space="preserve">
     <value>{0} is too high. Capped at {1}{2}.</value>
+  </data>
+  <data name="ValidationSelectFolder" xml:space="preserve">
+    <value>Unable to select a folder.</value>
   </data>
 </root>

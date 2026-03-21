@@ -48,6 +48,57 @@
                                    <RoundRectangle CornerRadius="12"/>
                             </Border.StrokeShape>
                             <Grid RowDefinitions="Auto,Auto,Auto"
+                                  ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="12"
+                                  RowSpacing="8">
+                                   <Label Grid.Row="0"
+                                          Grid.ColumnSpan="2"
+                                          Text="{helpers:Translate DownloadLocation}"
+                                          FontSize="14"
+                                          FontAttributes="Bold"/>
+
+                                   <CheckBox Grid.Row="1"
+                                             Grid.Column="0"
+                                             IsChecked="{Binding DownloadToTorrentFolder}"
+                                             SemanticProperties.Description="Use the original torrent file folder for downloads"/>
+                                   <Label Grid.Row="1"
+                                          Grid.Column="1"
+                                          Text="{helpers:Translate DownloadToTorrentFolderLabel}"
+                                          VerticalOptions="Center"
+                                          FontSize="12"
+                                          TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+
+                                   <VerticalStackLayout Grid.Row="2"
+                                                        Grid.ColumnSpan="2"
+                                                        Spacing="4"
+                                                        IsVisible="{Binding UseSpecificDownloadFolder}">
+                                          <Label Text="{helpers:Translate SpecificDownloadFolderLabel}"
+                                                 FontSize="11"
+                                                 TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                          <Grid ColumnDefinitions="*,Auto"
+                                                ColumnSpacing="8">
+                                                 <Entry Grid.Column="0"
+                                                        Text="{Binding SpecificDownloadFolder}"
+                                                        SemanticProperties.Description="Custom download folder path"
+                                                        SemanticProperties.Hint="Enter the folder where new downloads should be saved"
+                                                        Placeholder="{helpers:Translate SpecificDownloadFolderPlaceholder}"/>
+                                                 <Button Grid.Column="1"
+                                                         Text="{helpers:Translate BrowseButton}"
+                                                         Command="{Binding BrowseDownloadFolderCommand}"
+                                                         IsVisible="{Binding IsFolderPickerSupported}"
+                                                         SemanticProperties.Description="Browse for a custom download folder"/>
+                                          </Grid>
+                                   </VerticalStackLayout>
+                            </Grid>
+                     </Border>
+
+                     <Border Padding="16"
+                             Stroke="Transparent"
+                             Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
+                            <Border.StrokeShape>
+                                   <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
+                            <Grid RowDefinitions="Auto,Auto,Auto"
                                   ColumnDefinitions="*,*"
                                   ColumnSpacing="12"
                                   RowSpacing="8">
@@ -85,12 +136,12 @@
                                                  TextChanged="OnNumericTextChanged"/>
                                    </VerticalStackLayout>
                             </Grid>
-                     </Border>
+                          </Border>
 
-                     <Border Padding="16"
-                             Stroke="Transparent"
-                             Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                             IsVisible="{Binding IsFileAssociationSupported}">
+                          <Border Padding="16"
+                                 Stroke="Transparent"
+                                 Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                                 IsVisible="{Binding IsFileAssociationSupported}">
                             <Border.StrokeShape>
                                    <RoundRectangle CornerRadius="12"/>
                             </Border.StrokeShape>

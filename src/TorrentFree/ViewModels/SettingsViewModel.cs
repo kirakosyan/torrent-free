@@ -16,6 +16,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ITorrentService _torrentService;
     private readonly IFileAssociationService _fileAssociationService;
     private readonly ILocalizationService _localizationService;
+    private readonly IFolderPickerService _folderPickerService;
     private AppSettings _loadedSettings = new();
     private bool _isLoadingSettings = true;
     private bool _isNormalizing;
@@ -61,6 +62,18 @@ public partial class SettingsViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     public partial int GlobalMaxSeedMinutes { get; set; }
+
+    /// <summary>
+    /// When enabled, .torrent imports download next to the source file.
+    /// </summary>
+    [ObservableProperty]
+    public partial bool DownloadToTorrentFolder { get; set; } = true;
+
+    /// <summary>
+    /// Custom download folder used when torrent-folder mode is disabled.
+    /// </summary>
+    [ObservableProperty]
+    public partial string SpecificDownloadFolder { get; set; } = string.Empty;
 
     /// <summary>
     /// Indicates if SOCKS5 proxy is enabled.
@@ -128,12 +141,23 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     public partial LanguageOption SelectedLanguage { get; set; } = null!;
 
-    public SettingsViewModel(IStorageService storageService, ITorrentService torrentService, IFileAssociationService fileAssociationService, ILocalizationService localizationService)
+    /// <summary>
+    /// Indicates whether the custom download folder field should be shown.
+    /// </summary>
+    public bool UseSpecificDownloadFolder => !DownloadToTorrentFolder;
+
+    /// <summary>
+    /// Indicates whether a native folder picker button can be shown.
+    /// </summary>
+    public bool IsFolderPickerSupported => _folderPickerService.IsSupported;
+
+    public SettingsViewModel(IStorageService storageService, ITorrentService torrentService, IFileAssociationService fileAssociationService, ILocalizationService localizationService, IFolderPickerService folderPickerService)
     {
         _storageService = storageService;
         _torrentService = torrentService;
         _fileAssociationService = fileAssociationService;
         _localizationService = localizationService;
+        _folderPickerService = folderPickerService;
         IsFileAssociationSupported = _fileAssociationService.IsSupported;
         SelectedLanguage = AvailableLanguages[0];
     }
@@ -151,6 +175,8 @@ public partial class SettingsViewModel : ObservableObject
         MaxActiveSeeds = settings.MaxActiveSeeds;
         GlobalMaxSeedRatio = settings.GlobalMaxSeedRatio;
         GlobalMaxSeedMinutes = settings.GlobalMaxSeedMinutes;
+        DownloadToTorrentFolder = settings.DownloadToTorrentFolder;
+        SpecificDownloadFolder = settings.SpecificDownloadFolder?.Trim() ?? string.Empty;
         ProxyEnabled = settings.ProxyEnabled;
         ProxyHost = settings.ProxyHost ?? string.Empty;
         ProxyPort = settings.ProxyPort is > 0 and <= 65535 ? settings.ProxyPort : 1080;
@@ -237,6 +263,46 @@ public partial class SettingsViewModel : ObservableObject
 
         ApplySeedingLimits();
         SafeFireAndForget(PersistSettingsAsync());
+    }
+
+    partial void OnDownloadToTorrentFolderChanged(bool value)
+    {
+        OnPropertyChanged(nameof(UseSpecificDownloadFolder));
+
+        if (!value && string.IsNullOrWhiteSpace(SpecificDownloadFolder))
+        {
+            SpecificDownloadFolder = _storageService.GetDefaultDownloadPath();
+        }
+
+        if (_isLoadingSettings) return;
+        SafeFireAndForget(PersistSettingsAsync());
+    }
+
+    partial void OnSpecificDownloadFolderChanged(string value)
+    {
+        if (_isLoadingSettings) return;
+        SafeFireAndForget(PersistSettingsAsync());
+    }
+
+    [RelayCommand]
+    private async Task BrowseDownloadFolderAsync()
+    {
+        try
+        {
+            var selectedFolder = await _folderPickerService.PickFolderAsync();
+            if (string.IsNullOrWhiteSpace(selectedFolder))
+            {
+                return;
+            }
+
+            SpecificDownloadFolder = selectedFolder;
+            ValidationMessage = null;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Folder picker error: {ex}");
+            ValidationMessage = LocalizationResourceManager.Instance["ValidationSelectFolder"];
+        }
     }
 
     partial void OnProxyEnabledChanged(bool value)
@@ -345,6 +411,8 @@ public partial class SettingsViewModel : ObservableObject
             MaxActiveSeeds,
             GlobalMaxSeedRatio,
             GlobalMaxSeedMinutes,
+            DownloadToTorrentFolder,
+            SpecificDownloadFolder,
             ProxyEnabled,
             ProxyHost,
             ProxyPort,

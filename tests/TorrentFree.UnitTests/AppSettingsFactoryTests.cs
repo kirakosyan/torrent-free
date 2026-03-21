@@ -23,6 +23,8 @@ public sealed class AppSettingsFactoryTests
             maxActiveSeeds: 7,
             globalMaxSeedRatio: 2.5,
             globalMaxSeedMinutes: 180,
+            downloadToTorrentFolder: false,
+            specificDownloadFolder: @"D:\Downloads\Torrents",
             proxyEnabled: true,
             proxyHost: "127.0.0.1",
             proxyPort: 9050,
@@ -37,6 +39,8 @@ public sealed class AppSettingsFactoryTests
         Assert.Equal(7, updated.MaxActiveSeeds);
         Assert.Equal(2.5, updated.GlobalMaxSeedRatio);
         Assert.Equal(180, updated.GlobalMaxSeedMinutes);
+        Assert.False(updated.DownloadToTorrentFolder);
+        Assert.Equal(@"D:\Downloads\Torrents", updated.SpecificDownloadFolder);
         Assert.True(updated.ProxyEnabled);
         Assert.Equal("127.0.0.1", updated.ProxyHost);
         Assert.Equal(9050, updated.ProxyPort);
@@ -49,7 +53,9 @@ public sealed class AppSettingsFactoryTests
     {
         var existing = new AppSettings
         {
-            SortByStatus = false
+            SortByStatus = false,
+            DownloadToTorrentFolder = true,
+            SpecificDownloadFolder = @"C:\Existing"
         };
 
         var updated = AppSettingsFactory.CreateForSettingsPage(
@@ -60,6 +66,8 @@ public sealed class AppSettingsFactoryTests
             maxActiveSeeds: 2,
             globalMaxSeedRatio: 0,
             globalMaxSeedMinutes: 0,
+            downloadToTorrentFolder: true,
+            specificDownloadFolder: string.Empty,
             proxyEnabled: false,
             proxyHost: "",
             proxyPort: 1080,
@@ -68,6 +76,8 @@ public sealed class AppSettingsFactoryTests
             language: null);
 
         Assert.False(updated.SortByStatus);
+        Assert.True(updated.DownloadToTorrentFolder);
+        Assert.Equal(string.Empty, updated.SpecificDownloadFolder);
         Assert.False(updated.ProxyEnabled);
     }
 
@@ -84,6 +94,8 @@ public sealed class AppSettingsFactoryTests
             maxActiveSeeds: 2,
             globalMaxSeedRatio: 0,
             globalMaxSeedMinutes: 0,
+            downloadToTorrentFolder: false,
+            specificDownloadFolder: null!,
             proxyEnabled: false,
             proxyHost: null!,
             proxyPort: 0,
@@ -91,6 +103,8 @@ public sealed class AppSettingsFactoryTests
             proxyPassword: null!,
             language: "es");
 
+        Assert.False(updated.DownloadToTorrentFolder);
+        Assert.Equal(string.Empty, updated.SpecificDownloadFolder);
         Assert.Equal(string.Empty, updated.ProxyHost);
         Assert.Equal(1080, updated.ProxyPort);
         Assert.Equal(string.Empty, updated.ProxyUsername);
@@ -102,6 +116,8 @@ public sealed class AppSettingsFactoryTests
     {
         var existing = new AppSettings
         {
+            DownloadToTorrentFolder = false,
+            SpecificDownloadFolder = @"C:\Saved",
             ProxyEnabled = true,
             ProxyHost = "127.0.0.1",
             ProxyPort = 9050,
@@ -127,6 +143,8 @@ public sealed class AppSettingsFactoryTests
         Assert.Equal(1.75, updated.GlobalMaxSeedRatio);
         Assert.Equal(240, updated.GlobalMaxSeedMinutes);
         Assert.True(updated.SortByStatus);
+        Assert.False(updated.DownloadToTorrentFolder);
+        Assert.Equal(@"C:\Saved", updated.SpecificDownloadFolder);
 
         Assert.True(updated.ProxyEnabled);
         Assert.Equal("127.0.0.1", updated.ProxyHost);
@@ -165,6 +183,8 @@ public sealed class AppSettingsFactoryTests
         // Original fields preserved
         Assert.Equal(500, settings.GlobalDownloadLimitKbps);
         Assert.True(settings.SortByStatus);
+        Assert.True(settings.DownloadToTorrentFolder);
+        Assert.Equal(string.Empty, settings.SpecificDownloadFolder);
         // Proxy fields fall back to safe defaults
         Assert.False(settings.ProxyEnabled);
         Assert.Equal(string.Empty, settings.ProxyHost);

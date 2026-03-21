@@ -24,6 +24,7 @@
   <ItemGroup>
     <Compile Include="..\..\src\TorrentFree\Models\AppSettings.cs" Link="App\Models\AppSettings.cs" />
     <Compile Include="..\..\src\TorrentFree\Models\AppSettingsFactory.cs" Link="App\Models\AppSettingsFactory.cs" />
+    <Compile Include="..\..\src\TorrentFree\Models\DownloadLocationResolver.cs" Link="App\Models\DownloadLocationResolver.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\AboutDialogMessageBuilder.cs" Link="App\Services\AboutDialogMessageBuilder.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\ActivationImportCoordinator.cs" Link="App\Services\ActivationImportCoordinator.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\AsyncKeyedLocker.cs" Link="App\Services\AsyncKeyedLocker.cs" />

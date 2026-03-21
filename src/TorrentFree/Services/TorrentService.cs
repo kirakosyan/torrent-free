@@ -238,6 +238,9 @@ public class TorrentService : ITorrentService
             ? SanitizeFileName(magnet.Name)
             : SanitizeFileName(ParseTorrentName(magnetLink));
 
+        var settings = await _storageService.LoadSettingsAsync();
+        var fallbackDownloadPath = _storageService.GetDefaultDownloadPath();
+
         var torrent = new TorrentItem
         {
             MagnetLink = magnetLink,
@@ -245,7 +248,7 @@ public class TorrentService : ITorrentService
             Name = name,
             Status = DownloadStatus.Queued,
             TotalSize = 0,
-            SavePath = _storageService.GetDefaultDownloadPath()
+            SavePath = DownloadLocationResolver.ResolveSavePath(settings, sourceTorrentFilePath: null, fallbackDownloadPath)
         };
 
         AttachTorrentSettingsHandlers(torrent);
@@ -1605,6 +1608,8 @@ public class TorrentService : ITorrentService
 
         var engine = await EnsureEngineAsync();
         var downloadPath = string.IsNullOrWhiteSpace(torrent.SavePath) ? _storageService.GetDefaultDownloadPath() : torrent.SavePath;
+        Directory.CreateDirectory(downloadPath);
+        torrent.SavePath = downloadPath;
 
         var torrentSettings = new TorrentSettingsBuilder
         {

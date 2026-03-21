@@ -41,6 +41,16 @@ public class AppSettings
     public bool SortByStatus { get; set; }
 
     /// <summary>
+    /// When enabled, .torrent imports download next to the source .torrent file.
+    /// </summary>
+    public bool DownloadToTorrentFolder { get; set; } = true;
+
+    /// <summary>
+    /// Optional custom download folder used when <see cref="DownloadToTorrentFolder"/> is disabled.
+    /// </summary>
+    public string SpecificDownloadFolder { get; set; } = string.Empty;
+
+    /// <summary>
     /// Indicates if SOCKS5 proxy is enabled.
     /// </summary>
     public bool ProxyEnabled { get; set; }
