@@ -144,6 +144,9 @@
   <data name="BrowseButton" xml:space="preserve">
     <value>Обзор</value>
   </data>
+  <data name="PasteButton" xml:space="preserve">
+    <value>Вставить</value>
+  </data>
   <data name="Bandwidth" xml:space="preserve">
     <value>Пропускная способность</value>
   </data>
@@ -351,6 +354,12 @@
   </data>
   <data name="ErrorAddTorrent" xml:space="preserve">
     <value>Не удалось добавить торрент. Попробуйте снова.</value>
+  </data>
+  <data name="ErrorClipboardEmpty" xml:space="preserve">
+    <value>Буфер обмена пуст. Сначала скопируйте magnet-ссылку.</value>
+  </data>
+  <data name="ErrorPasteClipboard" xml:space="preserve">
+    <value>Не удалось прочитать буфер обмена. Попробуйте снова.</value>
   </data>
   <data name="ErrorStartTorrent" xml:space="preserve">
     <value>Не удалось запустить торрент. Попробуйте снова.</value>

@@ -144,6 +144,9 @@
   <data name="BrowseButton" xml:space="preserve">
     <value>Parcourir</value>
   </data>
+  <data name="PasteButton" xml:space="preserve">
+    <value>Coller</value>
+  </data>
   <data name="Bandwidth" xml:space="preserve">
     <value>Bande passante</value>
   </data>
@@ -351,6 +354,12 @@
   </data>
   <data name="ErrorAddTorrent" xml:space="preserve">
     <value>Impossible d'ajouter le torrent. Veuillez réessayer.</value>
+  </data>
+  <data name="ErrorClipboardEmpty" xml:space="preserve">
+    <value>Le presse-papiers est vide. Copiez d'abord un lien magnet.</value>
+  </data>
+  <data name="ErrorPasteClipboard" xml:space="preserve">
+    <value>Impossible de lire le presse-papiers. Veuillez rÃ©essayer.</value>
   </data>
   <data name="ErrorStartTorrent" xml:space="preserve">
     <value>Impossible de démarrer le torrent. Veuillez réessayer.</value>
