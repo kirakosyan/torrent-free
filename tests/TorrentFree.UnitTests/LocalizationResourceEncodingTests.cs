@@ -42,6 +42,28 @@ public sealed class LocalizationResourceEncodingTests
         Assert.Contains("Сборка", content, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void TurkishResourceFile_ContainsExpectedTranslations()
+    {
+        var content = ReadResource("AppResources.tr.resx");
+
+        Assert.Contains("Kaynak kodu", content, StringComparison.Ordinal);
+        Assert.Contains("Dosya sürümü", content, StringComparison.Ordinal);
+        Assert.Contains("Özel indirme klasörü", content, StringComparison.Ordinal);
+        Assert.Contains("Evet", content, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void HindiResourceFile_ContainsExpectedTranslations()
+    {
+        var content = ReadResource("AppResources.hi.resx");
+
+        Assert.Contains("स्रोत कोड", content, StringComparison.Ordinal);
+        Assert.Contains("फाइल संस्करण", content, StringComparison.Ordinal);
+        Assert.Contains("कस्टम डाउनलोड फोल्डर", content, StringComparison.Ordinal);
+        Assert.Contains("हाँ", content, StringComparison.Ordinal);
+    }
+
     private static string ReadResource(string fileName)
     {
         var repoRoot = Path.GetFullPath(Path.Combine(

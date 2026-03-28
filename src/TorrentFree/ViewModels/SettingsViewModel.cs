@@ -132,6 +132,8 @@ public partial class SettingsViewModel : ObservableObject
         new("English", "en"),
         new("Español", "es"),
         new("Français", "fr"),
+        new("Türkçe", "tr"),
+        new("हिन्दी", "hi"),
         new("Русский", "ru"),
     ];
 

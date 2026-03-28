@@ -23,6 +23,10 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 
 ## � Release Notes
 
+### v1.6
+
+- Added full `tr` and `hi` resource sets for Turkish and Hindi across the app UI.
+
 ### v1.2
 
 - **SOCKS5 Proxy** — Route torrent traffic through a SOCKS5 proxy. Configure host, port, and optional credentials in Settings.
@@ -176,8 +180,10 @@ The app supports the following languages:
 | Language | Code | File |
 |----------|------|------|
 | English | en | `AppResources.resx` |
-| French | fr | `AppResources.fr.resx` |
 | Spanish | es | `AppResources.es.resx` |
+| French | fr | `AppResources.fr.resx` |
+| Turkish | tr | `AppResources.tr.resx` |
+| Hindi | hi | `AppResources.hi.resx` |
 | Russian | ru | `AppResources.ru.resx` |
 
 The app automatically uses the system language. To add more languages, create a new resource file following the naming pattern `AppResources.{culture-code}.resx`.

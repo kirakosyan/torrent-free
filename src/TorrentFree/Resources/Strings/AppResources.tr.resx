@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <!-- App Title -->
+  <data name="AppTitle" xml:space="preserve">
+    <value>Torrent Free</value>
+  </data>
+  <!-- Main Page -->
+  <data name="AddTorrentPlaceholder" xml:space="preserve">
+    <value>Magnet bağlantısını buraya girin...</value>
+  </data>
+  <data name="AddButton" xml:space="preserve">
+    <value>İndir</value>
+  </data>
+  <data name="StartButton" xml:space="preserve">
+    <value>Başlat</value>
+  </data>
+  <data name="PauseButton" xml:space="preserve">
+    <value>Duraklat</value>
+  </data>
+  <data name="StopButton" xml:space="preserve">
+    <value>Durdur</value>
+  </data>
+  <data name="RemoveButton" xml:space="preserve">
+    <value>Kaldır</value>
+  </data>
+  <data name="DownloadsTitle" xml:space="preserve">
+    <value>İndirmeler</value>
+  </data>
+  <data name="NoDownloads" xml:space="preserve">
+    <value>Henüz indirme yok. Başlamak için bir magnet bağlantısı ekleyin!</value>
+  </data>
+  <!-- Status -->
+  <data name="StatusQueued" xml:space="preserve">
+    <value>Sırada</value>
+  </data>
+  <data name="StatusDownloading" xml:space="preserve">
+    <value>İndiriliyor</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>Duraklatıldı</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>Tamamlandı</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>Başarısız</value>
+  </data>
+  <data name="StatusStopped" xml:space="preserve">
+    <value>Durduruldu</value>
+  </data>
+  <!-- Labels -->
+  <data name="Seeders" xml:space="preserve">
+    <value>Kaynaklar</value>
+  </data>
+  <data name="Leechers" xml:space="preserve">
+    <value>İndirenler</value>
+  </data>
+  <data name="DownloadSpeed" xml:space="preserve">
+    <value>İndirme</value>
+  </data>
+  <data name="UploadSpeed" xml:space="preserve">
+    <value>Yükleme</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Boyut</value>
+  </data>
+  <!-- Errors -->
+  <data name="InvalidMagnetLink" xml:space="preserve">
+    <value>Geçersiz magnet bağlantısı. Lütfen geçerli bir magnet:? URL'si girin.</value>
+  </data>
+  <!-- Status (additional) -->
+  <data name="StatusSeeding" xml:space="preserve">
+    <value>Paylaşılıyor</value>
+  </data>
+  <!-- Main Page (additional) -->
+  <data name="AppSubtitle" xml:space="preserve">
+    <value>Hızlı ve basit torrent indirmeleri</value>
+  </data>
+  <data name="BrowseButton" xml:space="preserve">
+    <value>Gözat</value>
+  </data>
+  <data name="PasteButton" xml:space="preserve">
+    <value>Yapıştır</value>
+  </data>
+  <data name="Bandwidth" xml:space="preserve">
+    <value>Bant genişliği</value>
+  </data>
+  <data name="DownloadKBs" xml:space="preserve">
+    <value>İndirme KB/sn</value>
+  </data>
+  <data name="UploadKBs" xml:space="preserve">
+    <value>Yükleme KB/sn</value>
+  </data>
+  <data name="DownloadingOnTop" xml:space="preserve">
+    <value>İndirmeler üstte</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Ayrıntılar</value>
+  </data>
+  <data name="SelectedTorrentLimits" xml:space="preserve">
+    <value>Seçili torrent sınırları</value>
+  </data>
+  <data name="MaxSeedRatio" xml:space="preserve">
+    <value>Maksimum seed oranı</value>
+  </data>
+  <data name="MaxSeedMinutes" xml:space="preserve">
+    <value>Maksimum paylaşım süresi</value>
+  </data>
+  <data name="NoDownloadsYet" xml:space="preserve">
+    <value>Henüz indirme yok</value>
+  </data>
+  <data name="AddMagnetHint" xml:space="preserve">
+    <value>Başlamak için bir magnet bağlantısı ekleyin.</value>
+  </data>
+  <data name="Down" xml:space="preserve">
+    <value>İndirme</value>
+  </data>
+  <data name="Up" xml:space="preserve">
+    <value>Yükleme</value>
+  </data>
+  <data name="Seeds" xml:space="preserve">
+    <value>Kaynaklar</value>
+  </data>
+  <data name="Peers" xml:space="preserve">
+    <value>Eşler</value>
+  </data>
+  <data name="ETA" xml:space="preserve">
+    <value>Kalan süre</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>Sağlık</value>
+  </data>
+  <data name="Availability" xml:space="preserve">
+    <value>Kullanılabilirlik</value>
+  </data>
+  <!-- Settings Page -->
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Ayarlar</value>
+  </data>
+  <data name="AutoSaveNote" xml:space="preserve">
+    <value>Değişiklikler otomatik olarak kaydedilir.</value>
+  </data>
+  <data name="DownloadLocation" xml:space="preserve">
+    <value>İndirme konumu</value>
+  </data>
+  <data name="DownloadToTorrentFolderLabel" xml:space="preserve">
+    <value>.torrent indirmelerini özgün .torrent dosyasının yanına kaydet</value>
+  </data>
+  <data name="SpecificDownloadFolderLabel" xml:space="preserve">
+    <value>Özel indirme klasörü</value>
+  </data>
+  <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
+    <value>Bir klasör yolu girin</value>
+  </data>
+  <data name="SpeedLimits" xml:space="preserve">
+    <value>Hız sınırları</value>
+  </data>
+  <data name="FileAssociations" xml:space="preserve">
+    <value>Dosya ilişkilendirmeleri</value>
+  </data>
+  <data name="AssociateTorrentFiles" xml:space="preserve">
+    <value>.torrent dosyalarını ilişkilendir</value>
+  </data>
+  <data name="QueueLimits" xml:space="preserve">
+    <value>Kuyruk sınırları</value>
+  </data>
+  <data name="MaxActiveDownloads" xml:space="preserve">
+    <value>Maksimum etkin indirme sayısı</value>
+  </data>
+  <data name="MaxActiveSeeds" xml:space="preserve">
+    <value>Maksimum etkin paylaşım sayısı</value>
+  </data>
+  <data name="SeedingLimits" xml:space="preserve">
+    <value>Paylaşım sınırları</value>
+  </data>
+  <data name="Socks5Proxy" xml:space="preserve">
+    <value>SOCKS5 proxy</value>
+  </data>
+  <data name="EnableProxy" xml:space="preserve">
+    <value>Proxy'yi etkinleştir</value>
+  </data>
+  <data name="Host" xml:space="preserve">
+    <value>Sunucu</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Kullanıcı adı</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Parola</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>Dil</value>
+  </data>
+  <!-- Delete Dialog -->
+  <data name="RemoveTorrent" xml:space="preserve">
+    <value>Torrenti kaldır</value>
+  </data>
+  <data name="DeleteFilesOptional" xml:space="preserve">
+    <value>İsterseniz ilişkili dosyaları silin:</value>
+  </data>
+  <data name="DeleteTorrentFile" xml:space="preserve">
+    <value>.torrent dosyasını diskten sil</value>
+  </data>
+  <data name="DeleteDownloadedFiles" xml:space="preserve">
+    <value>İndirilen dosyaları sil</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>İptal</value>
+  </data>
+  <!-- Hints -->
+  <data name="UnlimitedHint" xml:space="preserve">
+    <value>0 = sınırsız</value>
+  </data>
+  <data name="GlobalHint" xml:space="preserve">
+    <value>0 = genel</value>
+  </data>
+  <!-- Dialogs -->
+  <data name="StopAndResetTitle" xml:space="preserve">
+    <value>Torrenti durdur</value>
+  </data>
+  <data name="StopAndResetMessage" xml:space="preserve">
+    <value>Durdurmak, indirilen verilerinizi korur; daha sonra devam edebilirsiniz. Emin misiniz?</value>
+  </data>
+  <data name="AssociateTorrentTitle" xml:space="preserve">
+    <value>.torrent dosyalarını ilişkilendir</value>
+  </data>
+  <data name="AssociateTorrentMessage" xml:space="preserve">
+    <value>.torrent dosyalarını varsayılan olarak Torrent Free ile açmak istiyor musunuz?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Evet</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Hayır</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>Torrent Free hakkında</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>Torrent Free ücretsizdir.</value>
+  </data>
+  <data name="AboutVersionLabel" xml:space="preserve">
+    <value>Sürüm</value>
+  </data>
+  <data name="AboutBuildLabel" xml:space="preserve">
+    <value>Derleme</value>
+  </data>
+  <data name="AboutFileVersionLabel" xml:space="preserve">
+    <value>Dosya sürümü</value>
+  </data>
+  <data name="AboutSourceLabel" xml:space="preserve">
+    <value>Kaynak kodu</value>
+  </data>
+  <data name="AboutUnavailable" xml:space="preserve">
+    <value>yok</value>
+  </data>
+  <data name="OpenSource" xml:space="preserve">
+    <value>Kaynak kodu</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>Tamam</value>
+  </data>
+  <!-- Error Messages -->
+  <data name="ErrorOpenFolder" xml:space="preserve">
+    <value>İndirme klasörü açılamadı.</value>
+  </data>
+  <data name="ErrorImportTorrent" xml:space="preserve">
+    <value>.torrent dosyası içe aktarılamadı. Lütfen tekrar deneyin.</value>
+  </data>
+  <data name="ErrorLoadDownloads" xml:space="preserve">
+    <value>İndirmeleriniz yüklenemedi. Lütfen uygulamayı yeniden başlatın.</value>
+  </data>
+  <data name="ErrorDuplicateTorrent" xml:space="preserve">
+    <value>Bu torrent zaten listenizde.</value>
+  </data>
+  <data name="ErrorInvalidTorrentFile" xml:space="preserve">
+    <value>Geçersiz .torrent dosyası. Bir info hash çıkarılamadı.</value>
+  </data>
+  <data name="ErrorInvalidMagnet" xml:space="preserve">
+    <value>Geçersiz magnet bağlantısı. Lütfen bağlantınızın 'magnet:?' ile başladığından ve bir info hash içerdiğinden (xt= parametresi) emin olun.</value>
+  </data>
+  <data name="ErrorAddTorrent" xml:space="preserve">
+    <value>Torrent eklenemedi. Lütfen tekrar deneyin.</value>
+  </data>
+  <data name="ErrorClipboardEmpty" xml:space="preserve">
+    <value>Pano boş. Önce bir magnet bağlantısı kopyalayın.</value>
+  </data>
+  <data name="ErrorPasteClipboard" xml:space="preserve">
+    <value>Pano okunamadı. Lütfen tekrar deneyin.</value>
+  </data>
+  <data name="ErrorStartTorrent" xml:space="preserve">
+    <value>Torrent başlatılamadı. Lütfen tekrar deneyin.</value>
+  </data>
+  <data name="ErrorPauseTorrent" xml:space="preserve">
+    <value>Torrent duraklatılamadı. Lütfen tekrar deneyin.</value>
+  </data>
+  <data name="ErrorStopTorrent" xml:space="preserve">
+    <value>Torrent durdurulamadı. Lütfen tekrar deneyin.</value>
+  </data>
+  <data name="ErrorRemoveTorrent" xml:space="preserve">
+    <value>Torrent kaldırılamadı. Lütfen tekrar deneyin.</value>
+  </data>
+  <!-- Status Hints -->
+  <data name="HintDownloadFailed" xml:space="preserve">
+    <value>İndirme başarısız oldu.</value>
+  </data>
+  <data name="HintQueued" xml:space="preserve">
+    <value>Sırada. Etkin bir yuva bekleniyor.</value>
+  </data>
+  <data name="HintPaused" xml:space="preserve">
+    <value>Duraklatıldı.</value>
+  </data>
+  <data name="HintStopped" xml:space="preserve">
+    <value>Durduruldu.</value>
+  </data>
+  <data name="HintSearchingPeers" xml:space="preserve">
+    <value>Eşler aranıyor.</value>
+  </data>
+  <data name="HintWaitingSeeds" xml:space="preserve">
+    <value>Kaynaklar bekleniyor.</value>
+  </data>
+  <data name="HintConnectingPeers" xml:space="preserve">
+    <value>Eşlere bağlanılıyor.</value>
+  </data>
+  <!-- Settings Validation -->
+  <data name="ValidationFileAssociation" xml:space="preserve">
+    <value>Dosya ilişkilendirmesi güncellenemedi.</value>
+  </data>
+  <data name="ValidationAdjustedLimits" xml:space="preserve">
+    <value>Bazı ayarlar güvenli sınırlara göre düzeltildi.</value>
+  </data>
+  <data name="ValidationSeedRatioInvalid" xml:space="preserve">
+    <value>Seed oranı geçerli, negatif olmayan bir sayı olmalıdır. 0'a sıfırlandı.</value>
+  </data>
+  <data name="ValidationSeedRatioHigh" xml:space="preserve">
+    <value>Seed oranı çok yüksek. {0} ile sınırlandı.</value>
+  </data>
+  <data name="ValidationNegative" xml:space="preserve">
+    <value>{0} negatif olamaz. {1}{2} olarak ayarlandı.</value>
+  </data>
+  <data name="ValidationTooHigh" xml:space="preserve">
+    <value>{0} çok yüksek. {1}{2} ile sınırlandı.</value>
+  </data>
+  <data name="ValidationSelectFolder" xml:space="preserve">
+    <value>Klasör seçilemedi.</value>
+  </data>
+</root>

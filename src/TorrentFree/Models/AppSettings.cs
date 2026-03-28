@@ -76,7 +76,7 @@ public class AppSettings
     public string ProxyPassword { get; set; } = string.Empty;
 
     /// <summary>
-    /// User-selected language code (e.g. "en", "es", "fr", "ru").
+    /// User-selected language code (e.g. "en", "es", "fr", "tr", "hi", "ru").
     /// Null or empty means follow system language.
     /// </summary>
     public string? Language { get; set; }

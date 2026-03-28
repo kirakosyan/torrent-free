@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <!-- App Title -->
+  <data name="AppTitle" xml:space="preserve">
+    <value>Torrent Free</value>
+  </data>
+  <!-- Main Page -->
+  <data name="AddTorrentPlaceholder" xml:space="preserve">
+    <value>यहाँ magnet लिंक दर्ज करें...</value>
+  </data>
+  <data name="AddButton" xml:space="preserve">
+    <value>डाउनलोड</value>
+  </data>
+  <data name="StartButton" xml:space="preserve">
+    <value>शुरू करें</value>
+  </data>
+  <data name="PauseButton" xml:space="preserve">
+    <value>रोकें</value>
+  </data>
+  <data name="StopButton" xml:space="preserve">
+    <value>बंद करें</value>
+  </data>
+  <data name="RemoveButton" xml:space="preserve">
+    <value>हटाएँ</value>
+  </data>
+  <data name="DownloadsTitle" xml:space="preserve">
+    <value>डाउनलोड</value>
+  </data>
+  <data name="NoDownloads" xml:space="preserve">
+    <value>अभी तक कोई डाउनलोड नहीं है। शुरू करने के लिए एक magnet लिंक जोड़ें!</value>
+  </data>
+  <!-- Status -->
+  <data name="StatusQueued" xml:space="preserve">
+    <value>कतार में</value>
+  </data>
+  <data name="StatusDownloading" xml:space="preserve">
+    <value>डाउनलोड हो रहा है</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>रुका हुआ</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>पूर्ण</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>विफल</value>
+  </data>
+  <data name="StatusStopped" xml:space="preserve">
+    <value>रुका</value>
+  </data>
+  <!-- Labels -->
+  <data name="Seeders" xml:space="preserve">
+    <value>सीडर्स</value>
+  </data>
+  <data name="Leechers" xml:space="preserve">
+    <value>लीचर्स</value>
+  </data>
+  <data name="DownloadSpeed" xml:space="preserve">
+    <value>डाउनलोड</value>
+  </data>
+  <data name="UploadSpeed" xml:space="preserve">
+    <value>अपलोड</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>आकार</value>
+  </data>
+  <!-- Errors -->
+  <data name="InvalidMagnetLink" xml:space="preserve">
+    <value>अमान्य magnet लिंक। कृपया वैध magnet:? URL दर्ज करें।</value>
+  </data>
+  <!-- Status (additional) -->
+  <data name="StatusSeeding" xml:space="preserve">
+    <value>सीडिंग</value>
+  </data>
+  <!-- Main Page (additional) -->
+  <data name="AppSubtitle" xml:space="preserve">
+    <value>तेज़ और सरल टोरेंट डाउनलोड</value>
+  </data>
+  <data name="BrowseButton" xml:space="preserve">
+    <value>ब्राउज़</value>
+  </data>
+  <data name="PasteButton" xml:space="preserve">
+    <value>पेस्ट</value>
+  </data>
+  <data name="Bandwidth" xml:space="preserve">
+    <value>बैंडविड्थ</value>
+  </data>
+  <data name="DownloadKBs" xml:space="preserve">
+    <value>डाउनलोड KB/s</value>
+  </data>
+  <data name="UploadKBs" xml:space="preserve">
+    <value>अपलोड KB/s</value>
+  </data>
+  <data name="DownloadingOnTop" xml:space="preserve">
+    <value>डाउनलोड सबसे ऊपर</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>विवरण</value>
+  </data>
+  <data name="SelectedTorrentLimits" xml:space="preserve">
+    <value>चयनित टोरेंट सीमाएँ</value>
+  </data>
+  <data name="MaxSeedRatio" xml:space="preserve">
+    <value>अधिकतम सीड अनुपात</value>
+  </data>
+  <data name="MaxSeedMinutes" xml:space="preserve">
+    <value>अधिकतम सीड समय</value>
+  </data>
+  <data name="NoDownloadsYet" xml:space="preserve">
+    <value>अभी तक कोई डाउनलोड नहीं</value>
+  </data>
+  <data name="AddMagnetHint" xml:space="preserve">
+    <value>शुरू करने के लिए एक magnet लिंक जोड़ें।</value>
+  </data>
+  <data name="Down" xml:space="preserve">
+    <value>डाउनलोड</value>
+  </data>
+  <data name="Up" xml:space="preserve">
+    <value>अपलोड</value>
+  </data>
+  <data name="Seeds" xml:space="preserve">
+    <value>सीड्स</value>
+  </data>
+  <data name="Peers" xml:space="preserve">
+    <value>पीयर्स</value>
+  </data>
+  <data name="ETA" xml:space="preserve">
+    <value>शेष समय</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>स्वास्थ्य</value>
+  </data>
+  <data name="Availability" xml:space="preserve">
+    <value>उपलब्धता</value>
+  </data>
+  <!-- Settings Page -->
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>सेटिंग्स</value>
+  </data>
+  <data name="AutoSaveNote" xml:space="preserve">
+    <value>बदलाव अपने आप सहेजे जाते हैं।</value>
+  </data>
+  <data name="DownloadLocation" xml:space="preserve">
+    <value>डाउनलोड स्थान</value>
+  </data>
+  <data name="DownloadToTorrentFolderLabel" xml:space="preserve">
+    <value>.torrent डाउनलोड को मूल .torrent फाइल के पास सहेजें</value>
+  </data>
+  <data name="SpecificDownloadFolderLabel" xml:space="preserve">
+    <value>कस्टम डाउनलोड फोल्डर</value>
+  </data>
+  <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
+    <value>फोल्डर का पथ दर्ज करें</value>
+  </data>
+  <data name="SpeedLimits" xml:space="preserve">
+    <value>गति सीमाएँ</value>
+  </data>
+  <data name="FileAssociations" xml:space="preserve">
+    <value>फाइल संबद्धताएँ</value>
+  </data>
+  <data name="AssociateTorrentFiles" xml:space="preserve">
+    <value>.torrent फाइलों को संबद्ध करें</value>
+  </data>
+  <data name="QueueLimits" xml:space="preserve">
+    <value>कतार सीमाएँ</value>
+  </data>
+  <data name="MaxActiveDownloads" xml:space="preserve">
+    <value>अधिकतम सक्रिय डाउनलोड</value>
+  </data>
+  <data name="MaxActiveSeeds" xml:space="preserve">
+    <value>अधिकतम सक्रिय सीड</value>
+  </data>
+  <data name="SeedingLimits" xml:space="preserve">
+    <value>सीडिंग सीमाएँ</value>
+  </data>
+  <data name="Socks5Proxy" xml:space="preserve">
+    <value>SOCKS5 प्रॉक्सी</value>
+  </data>
+  <data name="EnableProxy" xml:space="preserve">
+    <value>प्रॉक्सी सक्षम करें</value>
+  </data>
+  <data name="Host" xml:space="preserve">
+    <value>होस्ट</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>पोर्ट</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>उपयोगकर्ता नाम</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>पासवर्ड</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>भाषा</value>
+  </data>
+  <!-- Delete Dialog -->
+  <data name="RemoveTorrent" xml:space="preserve">
+    <value>टोरेंट हटाएँ</value>
+  </data>
+  <data name="DeleteFilesOptional" xml:space="preserve">
+    <value>वैकल्पिक रूप से संबंधित फाइलें हटाएँ:</value>
+  </data>
+  <data name="DeleteTorrentFile" xml:space="preserve">
+    <value>डिस्क से .torrent फाइल हटाएँ</value>
+  </data>
+  <data name="DeleteDownloadedFiles" xml:space="preserve">
+    <value>डाउनलोड की गई फाइलें हटाएँ</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>रद्द करें</value>
+  </data>
+  <!-- Hints -->
+  <data name="UnlimitedHint" xml:space="preserve">
+    <value>0 = असीमित</value>
+  </data>
+  <data name="GlobalHint" xml:space="preserve">
+    <value>0 = global</value>
+  </data>
+  <!-- Dialogs -->
+  <data name="StopAndResetTitle" xml:space="preserve">
+    <value>टोरेंट रोकें</value>
+  </data>
+  <data name="StopAndResetMessage" xml:space="preserve">
+    <value>रोकने पर डाउनलोड किया गया डेटा सुरक्षित रहेगा ताकि आप बाद में जारी रख सकें। क्या आप निश्चित हैं?</value>
+  </data>
+  <data name="AssociateTorrentTitle" xml:space="preserve">
+    <value>.torrent फाइलों को संबद्ध करें</value>
+  </data>
+  <data name="AssociateTorrentMessage" xml:space="preserve">
+    <value>क्या आप .torrent फाइलों को डिफ़ॉल्ट रूप से Torrent Free से खोलना चाहते हैं?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>हाँ</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>नहीं</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>Torrent Free के बारे में</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>Torrent Free मुफ्त है।</value>
+  </data>
+  <data name="AboutVersionLabel" xml:space="preserve">
+    <value>संस्करण</value>
+  </data>
+  <data name="AboutBuildLabel" xml:space="preserve">
+    <value>बिल्ड</value>
+  </data>
+  <data name="AboutFileVersionLabel" xml:space="preserve">
+    <value>फाइल संस्करण</value>
+  </data>
+  <data name="AboutSourceLabel" xml:space="preserve">
+    <value>स्रोत कोड</value>
+  </data>
+  <data name="AboutUnavailable" xml:space="preserve">
+    <value>उपलब्ध नहीं</value>
+  </data>
+  <data name="OpenSource" xml:space="preserve">
+    <value>स्रोत कोड</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>ठीक है</value>
+  </data>
+  <!-- Error Messages -->
+  <data name="ErrorOpenFolder" xml:space="preserve">
+    <value>डाउनलोड फोल्डर नहीं खुल सका।</value>
+  </data>
+  <data name="ErrorImportTorrent" xml:space="preserve">
+    <value>.torrent फाइल आयात नहीं की जा सकी। कृपया फिर से प्रयास करें।</value>
+  </data>
+  <data name="ErrorLoadDownloads" xml:space="preserve">
+    <value>आपके डाउनलोड लोड नहीं हो सके। कृपया ऐप को पुनः शुरू करें।</value>
+  </data>
+  <data name="ErrorDuplicateTorrent" xml:space="preserve">
+    <value>यह टोरेंट आपकी सूची में पहले से है।</value>
+  </data>
+  <data name="ErrorInvalidTorrentFile" xml:space="preserve">
+    <value>अमान्य .torrent फाइल। info hash निकाला नहीं जा सका।</value>
+  </data>
+  <data name="ErrorInvalidMagnet" xml:space="preserve">
+    <value>अमान्य magnet लिंक। कृपया सुनिश्चित करें कि आपका लिंक 'magnet:?' से शुरू होता है और उसमें info hash (xt= पैरामीटर) शामिल है।</value>
+  </data>
+  <data name="ErrorAddTorrent" xml:space="preserve">
+    <value>टोरेंट जोड़ा नहीं जा सका। कृपया फिर से प्रयास करें।</value>
+  </data>
+  <data name="ErrorClipboardEmpty" xml:space="preserve">
+    <value>क्लिपबोर्ड खाली है। पहले एक magnet लिंक कॉपी करें।</value>
+  </data>
+  <data name="ErrorPasteClipboard" xml:space="preserve">
+    <value>क्लिपबोर्ड पढ़ा नहीं जा सका। कृपया फिर से प्रयास करें।</value>
+  </data>
+  <data name="ErrorStartTorrent" xml:space="preserve">
+    <value>टोरेंट शुरू नहीं किया जा सका। कृपया फिर से प्रयास करें।</value>
+  </data>
+  <data name="ErrorPauseTorrent" xml:space="preserve">
+    <value>टोरेंट रोका नहीं जा सका। कृपया फिर से प्रयास करें।</value>
+  </data>
+  <data name="ErrorStopTorrent" xml:space="preserve">
+    <value>टोरेंट बंद नहीं किया जा सका। कृपया फिर से प्रयास करें।</value>
+  </data>
+  <data name="ErrorRemoveTorrent" xml:space="preserve">
+    <value>टोरेंट हटाया नहीं जा सका। कृपया फिर से प्रयास करें।</value>
+  </data>
+  <!-- Status Hints -->
+  <data name="HintDownloadFailed" xml:space="preserve">
+    <value>डाउनलोड विफल हुआ।</value>
+  </data>
+  <data name="HintQueued" xml:space="preserve">
+    <value>कतार में है। सक्रिय स्लॉट की प्रतीक्षा कर रहा है।</value>
+  </data>
+  <data name="HintPaused" xml:space="preserve">
+    <value>रुका हुआ है।</value>
+  </data>
+  <data name="HintStopped" xml:space="preserve">
+    <value>रुका हुआ है।</value>
+  </data>
+  <data name="HintSearchingPeers" xml:space="preserve">
+    <value>पीयर्स खोजे जा रहे हैं।</value>
+  </data>
+  <data name="HintWaitingSeeds" xml:space="preserve">
+    <value>सीड्स की प्रतीक्षा हो रही है।</value>
+  </data>
+  <data name="HintConnectingPeers" xml:space="preserve">
+    <value>पीयर्स से कनेक्ट किया जा रहा है।</value>
+  </data>
+  <!-- Settings Validation -->
+  <data name="ValidationFileAssociation" xml:space="preserve">
+    <value>फाइल संबद्धता अपडेट नहीं हो सकी।</value>
+  </data>
+  <data name="ValidationAdjustedLimits" xml:space="preserve">
+    <value>कुछ सेटिंग्स को सुरक्षित सीमाओं में समायोजित किया गया।</value>
+  </data>
+  <data name="ValidationSeedRatioInvalid" xml:space="preserve">
+    <value>सीड अनुपात मान्य गैर-ऋणात्मक संख्या होना चाहिए। इसे 0 पर रीसेट किया गया।</value>
+  </data>
+  <data name="ValidationSeedRatioHigh" xml:space="preserve">
+    <value>सीड अनुपात बहुत अधिक है। इसे {0} तक सीमित किया गया।</value>
+  </data>
+  <data name="ValidationNegative" xml:space="preserve">
+    <value>{0} नकारात्मक नहीं हो सकता। इसे {1}{2} पर सेट किया गया।</value>
+  </data>
+  <data name="ValidationTooHigh" xml:space="preserve">
+    <value>{0} बहुत अधिक है। इसे {1}{2} तक सीमित किया गया।</value>
+  </data>
+  <data name="ValidationSelectFolder" xml:space="preserve">
+    <value>फोल्डर चुना नहीं जा सका।</value>
+  </data>
+</root>
