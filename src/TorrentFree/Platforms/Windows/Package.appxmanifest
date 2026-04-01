@@ -6,7 +6,7 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap rescap">
 
-  <Identity Name="9971ArmenKirakosyan.TorrentClientApp" Publisher="CN=BF1328E0-7B4C-496F-A203-4A69B637F145" Version="1.6.6.0" />
+  <Identity Name="9971ArmenKirakosyan.TorrentClientApp" Publisher="CN=BF1328E0-7B4C-496F-A203-4A69B637F145" Version="1.6.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="cbf247c2-cd4b-4bf9-8116-a76ef2d050d7" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
