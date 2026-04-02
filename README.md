@@ -1,5 +1,10 @@
 # Torrent Free (.NET MAUI)
 
+## 🏬 Available in Stores
+
+- **Android (Google Play):** https://play.google.com/store/apps/details?id=com.torrentfree.app
+- **Microsoft Store:** https://apps.microsoft.com/detail/9nnx2ztpxc26
+
 Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real engine, not simulated). Supports importing `.torrent` files and magnet links, shows live stats, and stores downloads next to the picked `.torrent` when possible.
 
 ![.NET MAUI](https://img.shields.io/badge/.NET-MAUI-purple)
