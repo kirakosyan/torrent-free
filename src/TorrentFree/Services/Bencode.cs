@@ -106,9 +106,16 @@ internal static class Bencode
                 throw new FormatException("Invalid string length.");
             }
 
-            checked
+            try
             {
-                length = (length * 10) + (c - (byte)'0');
+                checked
+                {
+                    length = (length * 10) + (c - (byte)'0');
+                }
+            }
+            catch (OverflowException)
+            {
+                throw new FormatException("String length overflow.");
             }
             position++;
         }
