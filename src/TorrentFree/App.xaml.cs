@@ -39,6 +39,7 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "app.apply-saved-language");
             System.Diagnostics.Debug.WriteLine($"Failed to apply saved language: {ex.Message}");
         }
     }

@@ -43,6 +43,7 @@ public partial class App : MauiWinUIApplication
 			}
 			catch (Exception ex)
 			{
+				AppTelemetry.CaptureHandledException(ex, "windows.activation-redirection");
 				System.Diagnostics.Debug.WriteLine($"Activation redirection failed: {ex}");
 			}
 			Environment.Exit(0);

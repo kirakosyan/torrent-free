@@ -96,6 +96,30 @@ dotnet build src/TorrentFree/TorrentFree.csproj -t:Run -f net10.0-android
 dotnet run --project src/TorrentFree/TorrentFree.csproj -f net10.0-windows10.0.19041.0
 ```
 
+## Sentry
+
+Sentry telemetry and crash reporting are wired into the app through `Sentry.Maui`.
+
+Telemetry is enabled only when a DSN is provided at build time. The project reads:
+
+- `SentryDsn` or `SENTRY_DSN`
+- `SentryEnvironment` or `SENTRY_ENVIRONMENT`
+- `SentryTracesSampleRate`
+
+Example:
+
+```bash
+dotnet build src/TorrentFree/TorrentFree.csproj \
+  -f net10.0-android \
+  -p:SentryDsn=https://<public-key>@o<org>.ingest.sentry.io/<project-id> \
+  -p:SentryEnvironment=production \
+  -p:SentryTracesSampleRate=0.1
+```
+
+Release metadata is derived from the app identifier, display version, and build number, so Sentry events are tagged with the app release automatically.
+
+If you want symbol or source upload for release builds, the Sentry MAUI SDK also supports the standard MSBuild properties such as `SentryOrg`, `SentryProject`, `SentryUploadSymbols`, and `SentryUploadSources`, together with a Sentry auth token.
+
 ## 📖 How to Use
 
 ### Adding a Torrent
@@ -198,6 +222,7 @@ The app automatically uses the system language. To add more languages, create a 
 - .NET MAUI
 - MonoTorrent
 - CommunityToolkit.Mvvm
+- Sentry.Maui
 - System.Text.Json
 
 ## 📄 License

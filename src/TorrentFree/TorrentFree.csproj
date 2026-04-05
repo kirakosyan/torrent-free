@@ -57,6 +57,11 @@
 		<GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 		<DefaultLanguage>en-US</DefaultLanguage>
+		<SentryDsn Condition="'$(SentryDsn)' == ''">$(SENTRY_DSN)</SentryDsn>
+		<SentryEnvironment Condition="'$(SentryEnvironment)' == '' and '$(Configuration)' == 'Debug'">development</SentryEnvironment>
+		<SentryEnvironment Condition="'$(SentryEnvironment)' == ''">production</SentryEnvironment>
+		<SentryTracesSampleRate Condition="'$(SentryTracesSampleRate)' == '' and '$(Configuration)' == 'Debug'">1.0</SentryTracesSampleRate>
+		<SentryTracesSampleRate Condition="'$(SentryTracesSampleRate)' == ''">0.1</SentryTracesSampleRate>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -68,6 +73,9 @@
 	<ItemGroup>
 		<AssemblyMetadata Include="DisplayVersion" Value="$(AppDisplayVersion)" />
 		<AssemblyMetadata Include="BuildNumber" Value="$(AppBuildNumber)" />
+		<AssemblyMetadata Include="SentryDsn" Value="$(SentryDsn)" />
+		<AssemblyMetadata Include="SentryEnvironment" Value="$(SentryEnvironment)" />
+		<AssemblyMetadata Include="SentryTracesSampleRate" Value="$(SentryTracesSampleRate)" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -94,6 +102,8 @@
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="MonoTorrent" Version="3.0.2" />
 		<PackageReference Include="Plugin.LocalNotification" Version="13.0.0" />
+		<PackageReference Include="Sentry.Maui" Version="6.3.0" />
+		<PackageReference Include="Sentry.Maui.CommunityToolkit.Mvvm" Version="6.3.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">

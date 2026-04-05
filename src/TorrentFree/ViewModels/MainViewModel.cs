@@ -401,6 +401,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "main.show-in-folder");
             System.Diagnostics.Debug.WriteLine($"Show in folder error: {ex}");
             ErrorMessage = LocalizationResourceManager.Instance["ErrorOpenFolder"];
         }
@@ -433,6 +434,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             }
             catch (Exception ex)
             {
+                AppTelemetry.CaptureHandledException(ex, "main.android-open-file-fallback");
                 System.Diagnostics.Debug.WriteLine($"Android file open fallback error: {ex}");
             }
         }
@@ -539,6 +541,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "main.browse-torrent-file");
             System.Diagnostics.Debug.WriteLine($"Browse torrent file error: {ex}");
             ErrorMessage = LocalizationResourceManager.Instance["ErrorImportTorrent"];
         }
@@ -723,6 +726,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "main.initialize");
             System.Diagnostics.Debug.WriteLine($"Initialization error: {ex}");
             ErrorMessage = LocalizationResourceManager.Instance["ErrorLoadDownloads"];
         }
@@ -784,6 +788,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "main.add-torrent-from-file");
             System.Diagnostics.Debug.WriteLine($"Torrent add error: {ex}");
             if (notifyInvalid)
             {
@@ -900,6 +905,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "main.add-magnet");
             System.Diagnostics.Debug.WriteLine($"Add torrent error: {ex}");
             ErrorMessage = LocalizationResourceManager.Instance["ErrorAddTorrent"];
         }
@@ -932,6 +938,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "main.paste-magnet-link");
             Debug.WriteLine($"Paste magnet link error: {ex}");
             ErrorMessage = LocalizationResourceManager.Instance["ErrorPasteClipboard"];
         }
@@ -1075,6 +1082,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "main.start-torrent");
             System.Diagnostics.Debug.WriteLine($"Start torrent error: {ex}");
             ErrorMessage = LocalizationResourceManager.Instance["ErrorStartTorrent"];
         }
@@ -1093,6 +1101,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "main.pause-torrent");
             System.Diagnostics.Debug.WriteLine($"Pause torrent error: {ex}");
             ErrorMessage = LocalizationResourceManager.Instance["ErrorPauseTorrent"];
         }
@@ -1116,6 +1125,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "main.stop-torrent");
             System.Diagnostics.Debug.WriteLine($"Stop torrent error: {ex}");
             ErrorMessage = LocalizationResourceManager.Instance["ErrorStopTorrent"];
         }
@@ -1140,6 +1150,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "main.remove-torrent");
             System.Diagnostics.Debug.WriteLine($"Remove torrent error: {ex}");
             ErrorMessage = LocalizationResourceManager.Instance["ErrorRemoveTorrent"];
         }
@@ -1261,6 +1272,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "main.fire-and-forget");
             System.Diagnostics.Debug.WriteLine($"Fire-and-forget error: {ex}");
         }
     }

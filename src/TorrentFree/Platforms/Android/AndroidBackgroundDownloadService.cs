@@ -28,6 +28,7 @@ public sealed class AndroidBackgroundDownloadService : IBackgroundDownloadServic
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "android.background-service.start");
             System.Diagnostics.Debug.WriteLine($"Failed to start foreground service: {ex}");
         }
     }
@@ -42,6 +43,7 @@ public sealed class AndroidBackgroundDownloadService : IBackgroundDownloadServic
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "android.background-service.stop");
             System.Diagnostics.Debug.WriteLine($"Failed to stop foreground service: {ex}");
         }
     }

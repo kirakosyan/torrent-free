@@ -1,5 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Plugin.LocalNotification;
+using Sentry.Maui;
 using TorrentFree.Services;
 using TorrentFree.ViewModels;
 
@@ -12,16 +13,22 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
-        builder
-            .UseMauiApp<App>()
+        builder.UseMauiApp<App>();
+
 #if ANDROID || IOS || MACCATALYST
-            .UseLocalNotification()
+        builder.UseLocalNotification();
 #endif
-            .ConfigureFonts(fonts =>
-            {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-            });
+
+        if (AppTelemetry.Options.IsEnabled)
+        {
+            builder.UseSentry(AppTelemetry.Configure);
+        }
+
+        builder.ConfigureFonts(fonts =>
+        {
+            fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+            fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+        });
 
         // Register Services
         builder.Services.AddSingleton<IStorageService, StorageService>();
@@ -32,11 +39,11 @@ public static class MauiProgram
         builder.Services.AddSingleton<ITorrentFileParser, TorrentFileParser>();
         builder.Services.AddSingleton<IFileAssociationService, FileAssociationService>();
         builder.Services.AddSingleton<TorrentFree.Services.INotificationService, NotificationService>();
-    #if ANDROID
+#if ANDROID
         builder.Services.AddSingleton<IBackgroundDownloadService, AndroidBackgroundDownloadService>();
-    #else
+#else
         builder.Services.AddSingleton<IBackgroundDownloadService, BackgroundDownloadService>();
-    #endif
+#endif
 
         // Register ViewModels
         builder.Services.AddSingleton<MainViewModel>();
@@ -50,6 +57,9 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
+
+        builder.Logging.AddFilter(null, LogLevel.Warning);
+        builder.Logging.AddFilter("TorrentFree", LogLevel.Information);
 
         var app = builder.Build();
         Services = app.Services;

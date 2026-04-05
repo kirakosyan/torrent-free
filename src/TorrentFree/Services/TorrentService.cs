@@ -384,6 +384,7 @@ public class TorrentService : ITorrentService
                 }
                 catch (Exception cleanupEx)
                 {
+                    AppTelemetry.CaptureHandledException(cleanupEx, "torrent.start-rollback-cleanup");
                     System.Diagnostics.Debug.WriteLine($"Start rollback cleanup error for '{torrent.Name}' ({torrent.Id}): {cleanupEx}");
                 }
                 finally
@@ -511,6 +512,7 @@ public class TorrentService : ITorrentService
             }
             catch (Exception ex)
             {
+                AppTelemetry.CaptureHandledException(ex, "torrent.remove-manager-cleanup");
                 System.Diagnostics.Debug.WriteLine($"Remove manager cleanup error for '{torrent.Name}' ({torrent.Id}): {ex}");
             }
         }
@@ -1321,6 +1323,7 @@ public class TorrentService : ITorrentService
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "torrent.monitor");
             System.Diagnostics.Debug.WriteLine($"Monitor error: {ex.Message}");
             await MainThread.InvokeOnMainThreadAsync(() =>
             {
@@ -1555,6 +1558,7 @@ public class TorrentService : ITorrentService
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "torrent.save-if-pending");
             System.Diagnostics.Debug.WriteLine($"Debounced save error: {ex.Message}");
         }
     }
@@ -1811,6 +1815,7 @@ public class TorrentService : ITorrentService
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "torrent.fire-and-forget");
             System.Diagnostics.Debug.WriteLine($"Fire-and-forget error: {ex}");
         }
     }

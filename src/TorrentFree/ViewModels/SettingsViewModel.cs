@@ -302,6 +302,7 @@ public partial class SettingsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "settings.browse-download-folder");
             System.Diagnostics.Debug.WriteLine($"Folder picker error: {ex}");
             ValidationMessage = LocalizationResourceManager.Instance["ValidationSelectFolder"];
         }
@@ -585,6 +586,7 @@ public partial class SettingsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            AppTelemetry.CaptureHandledException(ex, "settings.fire-and-forget");
             System.Diagnostics.Debug.WriteLine($"Fire-and-forget error: {ex}");
         }
     }

@@ -3,7 +3,7 @@
 **App name:** Torrent Free  
 **App ID:** com.torrentfree.app  
 **Platforms:** Android, iOS, macOS, Windows  
-**Last updated:** 2025-07-10
+**Last updated:** 2026-04-05
 
 ---
 
@@ -11,7 +11,7 @@
 
 Torrent Free is a free, open-source torrent client. We are committed to protecting your privacy. This policy explains what data the app accesses, how it is used, and what is never collected.
 
-**Short version:** The app does not collect, store, share, or transmit any personal information to us or any third party.
+**Short version:** The app stores its torrent and settings data locally on your device. Official builds may send limited crash and performance diagnostics to Sentry so we can investigate failures and improve reliability.
 
 ---
 
@@ -22,8 +22,6 @@ Torrent Free does **not** collect or transmit:
 - Personal identification information (name, email, phone number, etc.)
 - Device identifiers or advertising IDs
 - Location data
-- Usage analytics or telemetry
-- Crash reports sent to any remote server
 - Browsing or download history
 
 ---
@@ -41,7 +39,23 @@ You can delete all locally stored data by uninstalling the app or clearing its s
 
 ---
 
-## 4. Internet Access and Peer-to-Peer Connections
+## 4. Diagnostic Telemetry and Crash Reports
+
+Official builds of Torrent Free may send limited diagnostic data to **Sentry** when the app crashes, throws an unexpected error, or records a performance trace. This data is used only to diagnose bugs, crashes, and app reliability issues.
+
+Diagnostic events can include:
+
+- App version and build number
+- Operating system version and device or runtime details
+- Stack traces and exception messages
+- Breadcrumbs and logs around the failure
+- Performance timings for app operations
+
+We configure Sentry to avoid default personally identifiable information collection and we do **not** enable screenshot capture.
+
+Torrent payload files and downloaded content are **not** uploaded to Sentry by the app.
+
+## 5. Internet Access and Peer-to-Peer Connections
 
 Torrent Free requires internet access **solely** to perform torrent downloads. When you add a torrent, the app:
 
@@ -54,7 +68,7 @@ The app does **not** contact any server owned or operated by the Torrent Free de
 
 ---
 
-## 5. Android Permissions Explained
+## 6. Android Permissions Explained
 
 The Android version of the app requests the following permissions:
 
@@ -70,25 +84,30 @@ No permission is used for any purpose other than what is described above.
 
 ---
 
-## 6. Third-Party Libraries
+## 7. Third-Party Libraries
 
-Torrent Free uses [MonoTorrent](https://github.com/alanmcgovern/monotorrent), an open-source BitTorrent library, to handle torrent protocol operations. MonoTorrent does not collect or transmit personal data. No advertising SDKs or analytics frameworks are included in the app.
+Torrent Free uses the following notable third-party libraries:
+
+- [MonoTorrent](https://github.com/alanmcgovern/monotorrent) for BitTorrent protocol operations
+- [Sentry](https://sentry.io/) for crash reporting and performance diagnostics in official builds
+
+MonoTorrent does not collect or transmit personal data on our behalf. Sentry receives only the diagnostic data described in Section 4. No advertising SDKs are included in the app.
 
 ---
 
-## 7. Children's Privacy
+## 8. Children's Privacy
 
 Torrent Free is not directed at children under the age of 13 (or the applicable age of digital consent in your jurisdiction). We do not knowingly collect any information from children.
 
 ---
 
-## 8. Changes to This Policy
+## 9. Changes to This Policy
 
 We may update this Privacy Policy from time to time. When we do, we will update the **Last updated** date at the top of this document. Continued use of the app after any changes constitutes acceptance of the updated policy.
 
 ---
 
-## 9. Open Source
+## 10. Open Source
 
 Torrent Free is open source. You are welcome to inspect the full source code to verify the claims made in this policy:
 
@@ -96,7 +115,7 @@ Torrent Free is open source. You are welcome to inspect the full source code to 
 
 ---
 
-## 10. Contact
+## 11. Contact
 
 If you have any questions or concerns about this Privacy Policy, please open an issue in the GitHub repository:
 

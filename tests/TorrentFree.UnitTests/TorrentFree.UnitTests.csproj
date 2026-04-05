@@ -30,6 +30,7 @@
     <Compile Include="..\..\src\TorrentFree\Services\AsyncKeyedLocker.cs" Link="App\Services\AsyncKeyedLocker.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\MagnetTrackerBootstrapRules.cs" Link="App\Services\MagnetTrackerBootstrapRules.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\PathGuard.cs" Link="App\Services\PathGuard.cs" />
+    <Compile Include="..\..\src\TorrentFree\Services\SentryBuildOptionsParser.cs" Link="App\Services\SentryBuildOptionsParser.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\TorrentService.cs" Link="App\Services\TorrentService.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\TorrentManagerStateRules.cs" Link="App\Services\TorrentManagerStateRules.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\TorrentRestoreRules.cs" Link="App\Services\TorrentRestoreRules.cs" />
