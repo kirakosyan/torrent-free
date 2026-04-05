@@ -187,6 +187,7 @@ The app supports the following languages:
 | English | en | `AppResources.resx` |
 | Spanish | es | `AppResources.es.resx` |
 | French | fr | `AppResources.fr.resx` |
+| Arabic | ar | `AppResources.ar.resx` |
 | Turkish | tr | `AppResources.tr.resx` |
 | Hindi | hi | `AppResources.hi.resx` |
 | Russian | ru | `AppResources.ru.resx` |

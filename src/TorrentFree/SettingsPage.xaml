@@ -6,17 +6,48 @@
              x:Class="TorrentFree.SettingsPage"
              x:DataType="viewmodels:SettingsViewModel"
              BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}"
+             Shell.NavBarIsVisible="False"
              Title="{helpers:Translate SettingsTitle}">
 
        <ScrollView>
               <VerticalStackLayout Padding="16"
                                    Spacing="16">
+                     <Grid ColumnDefinitions="Auto,*"
+                           ColumnSpacing="12">
+                            <Button x:Name="BackButton"
+                                    Grid.Column="0"
+                                    Text="←"
+                                    Clicked="OnBackClicked"
+                                    SemanticProperties.Description="Go back"
+                                    FontSize="20"
+                                    WidthRequest="44"
+                                    HeightRequest="44"
+                                    CornerRadius="14"
+                                    Padding="0"
+                                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#17202D}"
+                                    TextColor="{AppThemeBinding Light=#55627A, Dark=#E2E8F0}"
+                                    BorderColor="{AppThemeBinding Light=#D6DEEA, Dark=#334155}"
+                                    BorderWidth="1"
+                                    HorizontalOptions="Start"
+                                    VerticalOptions="Start"/>
+                            <VerticalStackLayout Grid.Column="1"
+                                                 Spacing="4">
+                                   <Label Text="{helpers:Translate SettingsTitle, StringFormat='⚙️ {0}'}"
+                                          FontSize="22"
+                                          FontAttributes="Bold"/>
+                                   <Label Text="{helpers:Translate AutoSaveNote}"
+                                          FontSize="12"
+                                          TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                            </VerticalStackLayout>
+                     </Grid>
                      <Label Text="{helpers:Translate SettingsTitle, StringFormat='⚙️ {0}'}"
                             FontSize="22"
+                            IsVisible="False"
                             FontAttributes="Bold"/>
 
                      <Label Text="{helpers:Translate AutoSaveNote}"
                             FontSize="12"
+                            IsVisible="False"
                             TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
 
                      <!-- Language -->

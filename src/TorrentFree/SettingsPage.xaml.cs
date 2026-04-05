@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using TorrentFree.ViewModels;
 
@@ -14,11 +15,13 @@ public partial class SettingsPage : ContentPage
     {
         InitializeComponent();
         BindingContext = viewModel;
+        UpdateBackButtonGlyph();
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        UpdateBackButtonGlyph();
 
         if (BindingContext is SettingsViewModel vm)
         {
@@ -51,7 +54,8 @@ public partial class SettingsPage : ContentPage
 
         var text = entry.Text ?? string.Empty;
         var result = new System.Text.StringBuilder();
-        var dotSeen = false;
+        var separatorSeen = false;
+        var decimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
 
         foreach (var ch in text)
         {
@@ -59,10 +63,10 @@ public partial class SettingsPage : ContentPage
             {
                 result.Append(ch);
             }
-            else if (ch == '.' && !dotSeen)
+            else if (!separatorSeen && IsDecimalSeparator(ch))
             {
-                dotSeen = true;
-                result.Append(ch);
+                separatorSeen = true;
+                result.Append(decimalSeparator);
             }
         }
 
@@ -72,6 +76,42 @@ public partial class SettingsPage : ContentPage
             entry.Text = filtered;
         }
     }
+
+    protected override void OnPropertyChanged(string? propertyName = null)
+    {
+        base.OnPropertyChanged(propertyName);
+
+        if (propertyName == nameof(FlowDirection))
+        {
+            UpdateBackButtonGlyph();
+        }
+    }
+
+    private async void OnBackClicked(object? sender, EventArgs e)
+    {
+        if (Shell.Current is not null)
+        {
+            await Shell.Current.GoToAsync("..");
+            return;
+        }
+
+        if (Navigation.NavigationStack.Count > 1)
+        {
+            await Navigation.PopAsync();
+        }
+    }
+
+    private void UpdateBackButtonGlyph()
+    {
+        if (BackButton is null)
+        {
+            return;
+        }
+
+        BackButton.Text = FlowDirection == FlowDirection.RightToLeft ? "→" : "←";
+    }
+
+    private static bool IsDecimalSeparator(char ch) => ch is '.' or ',' or '\u066B';
 
     private static T GetRequiredService<T>() where T : notnull
     {
