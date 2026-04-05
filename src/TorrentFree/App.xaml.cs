@@ -20,6 +20,9 @@ public partial class App : Application
     protected override Window CreateWindow(IActivationState? activationState)
     {
         var window = new Window(_appShell);
+        window.Page!.FlowDirection = _localizationService.CurrentCulture.TextInfo.IsRightToLeft
+            ? FlowDirection.RightToLeft
+            : FlowDirection.LeftToRight;
         window.Created += OnWindowCreated;
         return window;
     }

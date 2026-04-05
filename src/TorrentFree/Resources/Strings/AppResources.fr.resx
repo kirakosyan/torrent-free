@@ -419,4 +419,10 @@
   <data name="ValidationSelectFolder" xml:space="preserve">
     <value>Impossible de sélectionner un dossier.</value>
   </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>Retour</value>
+  </data>
+  <data name="SelectTorrentFile" xml:space="preserve">
+    <value>Sélectionner un fichier .torrent</value>
+  </data>
 </root>

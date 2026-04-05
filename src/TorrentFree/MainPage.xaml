@@ -11,7 +11,7 @@
              x:Class="TorrentFree.MainPage"
              x:DataType="viewmodels:MainViewModel"
              BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}"
-             Title="Dashboard">
+             Title="{helpers:Translate DownloadsTitle}">
 
        <ContentPage.Resources>
               <ResourceDictionary>
@@ -175,7 +175,7 @@
                                    WidthRequest="28"
                                    HeightRequest="28"/>
                             <VerticalStackLayout Spacing="2">
-                                   <Label Text="Torrent Free · Hub"
+                                   <Label Text="{helpers:Translate AppTitle}"
                                           FontSize="24"
                                           FontAttributes="Bold"
                                           TextColor="{StaticResource AccentColor}"

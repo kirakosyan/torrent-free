@@ -419,4 +419,10 @@
   <data name="ValidationSelectFolder" xml:space="preserve">
     <value>Не удалось выбрать папку.</value>
   </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>Назад</value>
+  </data>
+  <data name="SelectTorrentFile" xml:space="preserve">
+    <value>Выберите файл .torrent</value>
+  </data>
 </root>
