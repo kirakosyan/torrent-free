@@ -108,7 +108,38 @@ public partial class SettingsPage : ContentPage
             return;
         }
 
-        BackButton.Text = FlowDirection == FlowDirection.RightToLeft ? "→" : "←";
+        BackButton.Text = GetEffectiveFlowDirection() == FlowDirection.RightToLeft ? "→" : "←";
+    }
+
+    private FlowDirection GetEffectiveFlowDirection()
+    {
+        if (FlowDirection != FlowDirection.MatchParent)
+        {
+            return FlowDirection;
+        }
+
+        Element? current = Parent;
+        while (current is not null)
+        {
+            if (current is VisualElement visualElement &&
+                visualElement.FlowDirection != FlowDirection.MatchParent)
+            {
+                return visualElement.FlowDirection;
+            }
+
+            current = current.Parent;
+        }
+
+        if (Window?.Page is VisualElement rootPage &&
+            rootPage != this &&
+            rootPage.FlowDirection != FlowDirection.MatchParent)
+        {
+            return rootPage.FlowDirection;
+        }
+
+        return CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft
+            ? FlowDirection.RightToLeft
+            : FlowDirection.LeftToRight;
     }
 
     private static bool IsDecimalSeparator(char ch) => ch is '.' or ',' or '\u066B';

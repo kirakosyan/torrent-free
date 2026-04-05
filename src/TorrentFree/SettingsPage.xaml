@@ -18,7 +18,7 @@
                                     Grid.Column="0"
                                     Text="←"
                                     Clicked="OnBackClicked"
-                                    SemanticProperties.Description="Go back"
+                                    SemanticProperties.Description="{helpers:Translate GoBack}"
                                     FontSize="20"
                                     WidthRequest="44"
                                     HeightRequest="44"
@@ -40,15 +40,6 @@
                                           TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                             </VerticalStackLayout>
                      </Grid>
-                     <Label Text="{helpers:Translate SettingsTitle, StringFormat='⚙️ {0}'}"
-                            FontSize="22"
-                            IsVisible="False"
-                            FontAttributes="Bold"/>
-
-                     <Label Text="{helpers:Translate AutoSaveNote}"
-                            FontSize="12"
-                            IsVisible="False"
-                            TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
 
                      <!-- Language -->
                      <Border Padding="16"

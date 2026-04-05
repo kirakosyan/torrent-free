@@ -391,4 +391,10 @@
   <data name="ValidationSelectFolder" xml:space="preserve">
     <value>تعذر تحديد مجلد.</value>
   </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>رجوع</value>
+  </data>
+  <data name="SelectTorrentFile" xml:space="preserve">
+    <value>اختر ملف .torrent</value>
+  </data>
 </root>
