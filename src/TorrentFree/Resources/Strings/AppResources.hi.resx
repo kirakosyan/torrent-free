@@ -405,4 +405,10 @@
   <data name="ValidationSelectFolder" xml:space="preserve">
     <value>फोल्डर चुना नहीं जा सका।</value>
   </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>वापस जाएं</value>
+  </data>
+  <data name="SelectTorrentFile" xml:space="preserve">
+    <value>.torrent फ़ाइल चुनें</value>
+  </data>
 </root>

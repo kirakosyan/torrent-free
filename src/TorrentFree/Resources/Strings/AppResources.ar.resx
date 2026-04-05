@@ -58,357 +58,343 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <!-- App Title -->
   <data name="AppTitle" xml:space="preserve">
     <value>Torrent Free</value>
   </data>
-  <!-- Main Page -->
   <data name="AddTorrentPlaceholder" xml:space="preserve">
-    <value>Enter magnet link here...</value>
+    <value>أدخل رابط المغناطيس هنا...</value>
   </data>
   <data name="AddButton" xml:space="preserve">
-    <value>Download</value>
+    <value>تنزيل</value>
   </data>
   <data name="StartButton" xml:space="preserve">
-    <value>Start</value>
+    <value>بدء</value>
   </data>
   <data name="PauseButton" xml:space="preserve">
-    <value>Pause</value>
+    <value>إيقاف مؤقت</value>
   </data>
   <data name="StopButton" xml:space="preserve">
-    <value>Stop</value>
+    <value>إيقاف</value>
   </data>
   <data name="RemoveButton" xml:space="preserve">
-    <value>Remove</value>
+    <value>إزالة</value>
   </data>
   <data name="DownloadsTitle" xml:space="preserve">
-    <value>Downloads</value>
+    <value>التنزيلات</value>
   </data>
   <data name="NoDownloads" xml:space="preserve">
-    <value>No downloads yet. Add a magnet link to get started!</value>
+    <value>لا توجد تنزيلات بعد. أضف رابط مغناطيس للبدء!</value>
   </data>
-  <!-- Status -->
   <data name="StatusQueued" xml:space="preserve">
-    <value>Queued</value>
+    <value>في الانتظار</value>
   </data>
   <data name="StatusDownloading" xml:space="preserve">
-    <value>Downloading</value>
+    <value>جارٍ التنزيل</value>
   </data>
   <data name="StatusPaused" xml:space="preserve">
-    <value>Paused</value>
+    <value>متوقف مؤقتًا</value>
   </data>
   <data name="StatusCompleted" xml:space="preserve">
-    <value>Completed</value>
+    <value>مكتمل</value>
   </data>
   <data name="StatusFailed" xml:space="preserve">
-    <value>Failed</value>
+    <value>فشل</value>
   </data>
   <data name="StatusStopped" xml:space="preserve">
-    <value>Stopped</value>
+    <value>متوقف</value>
   </data>
-  <!-- Labels -->
   <data name="Seeders" xml:space="preserve">
-    <value>Seeders</value>
+    <value>الباذرون</value>
   </data>
   <data name="Leechers" xml:space="preserve">
-    <value>Leechers</value>
+    <value>النظراء</value>
   </data>
   <data name="DownloadSpeed" xml:space="preserve">
-    <value>Download</value>
+    <value>التنزيل</value>
   </data>
   <data name="UploadSpeed" xml:space="preserve">
-    <value>Upload</value>
+    <value>الرفع</value>
   </data>
   <data name="Size" xml:space="preserve">
-    <value>Size</value>
+    <value>الحجم</value>
   </data>
-  <!-- Errors -->
   <data name="InvalidMagnetLink" xml:space="preserve">
-    <value>Invalid magnet link. Please enter a valid magnet:? URL.</value>
+    <value>رابط المغناطيس غير صالح. يرجى إدخال عنوان magnet:? صالح.</value>
   </data>
-  <!-- Status (additional) -->
   <data name="StatusSeeding" xml:space="preserve">
-    <value>Seeding</value>
+    <value>جارٍ البذر</value>
   </data>
-  <!-- Main Page (additional) -->
   <data name="AppSubtitle" xml:space="preserve">
-    <value>Fast and simple torrent downloads</value>
+    <value>تنزيلات تورنت سريعة وبسيطة</value>
   </data>
   <data name="BrowseButton" xml:space="preserve">
-    <value>Browse</value>
+    <value>استعراض</value>
   </data>
   <data name="PasteButton" xml:space="preserve">
-    <value>Paste</value>
+    <value>لصق</value>
   </data>
   <data name="Bandwidth" xml:space="preserve">
-    <value>Bandwidth</value>
+    <value>النطاق الترددي</value>
   </data>
   <data name="DownloadKBs" xml:space="preserve">
-    <value>Download KB/s</value>
+    <value>التنزيل كيلوبايت/ث</value>
   </data>
   <data name="UploadKBs" xml:space="preserve">
-    <value>Upload KB/s</value>
+    <value>الرفع كيلوبايت/ث</value>
   </data>
   <data name="DownloadingOnTop" xml:space="preserve">
-    <value>Downloading on top</value>
+    <value>التنزيلات النشطة في الأعلى</value>
   </data>
   <data name="Details" xml:space="preserve">
-    <value>Details</value>
+    <value>التفاصيل</value>
   </data>
   <data name="SelectedTorrentLimits" xml:space="preserve">
-    <value>Selected torrent limits</value>
+    <value>حدود التورنت المحدد</value>
   </data>
   <data name="MaxSeedRatio" xml:space="preserve">
-    <value>Max seed ratio</value>
+    <value>الحد الأقصى لنسبة البذر</value>
   </data>
   <data name="MaxSeedMinutes" xml:space="preserve">
-    <value>Max seed minutes</value>
+    <value>الحد الأقصى لدقائق البذر</value>
   </data>
   <data name="NoDownloadsYet" xml:space="preserve">
-    <value>No downloads yet</value>
+    <value>لا توجد تنزيلات بعد</value>
   </data>
   <data name="AddMagnetHint" xml:space="preserve">
-    <value>Add a magnet link to get started.</value>
+    <value>أضف رابط مغناطيس للبدء.</value>
   </data>
   <data name="Down" xml:space="preserve">
-    <value>Down</value>
+    <value>تنزيل</value>
   </data>
   <data name="Up" xml:space="preserve">
-    <value>Up</value>
+    <value>رفع</value>
   </data>
   <data name="Seeds" xml:space="preserve">
-    <value>Seeds</value>
+    <value>البذور</value>
   </data>
   <data name="Peers" xml:space="preserve">
-    <value>Peers</value>
+    <value>النظراء</value>
   </data>
   <data name="ETA" xml:space="preserve">
-    <value>ETA</value>
+    <value>الوقت المتبقي</value>
   </data>
   <data name="Health" xml:space="preserve">
-    <value>Health</value>
+    <value>الصحة</value>
   </data>
   <data name="Availability" xml:space="preserve">
-    <value>Availability</value>
+    <value>التوفر</value>
   </data>
-  <!-- Settings Page -->
   <data name="SettingsTitle" xml:space="preserve">
-    <value>Settings</value>
+    <value>الإعدادات</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>Changes are saved automatically.</value>
+    <value>يتم حفظ التغييرات تلقائيًا.</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
-    <value>Download Location</value>
+    <value>موقع التنزيل</value>
   </data>
   <data name="DownloadToTorrentFolderLabel" xml:space="preserve">
-    <value>Save .torrent downloads next to the original .torrent file</value>
+    <value>احفظ تنزيلات .torrent بجانب ملف .torrent الأصلي</value>
   </data>
   <data name="SpecificDownloadFolderLabel" xml:space="preserve">
-    <value>Specific download folder</value>
+    <value>مجلد تنزيل محدد</value>
   </data>
   <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
-    <value>Enter a folder path</value>
+    <value>أدخل مسار مجلد</value>
   </data>
   <data name="SpeedLimits" xml:space="preserve">
-    <value>Speed Limits</value>
+    <value>حدود السرعة</value>
   </data>
   <data name="FileAssociations" xml:space="preserve">
-    <value>File Associations</value>
+    <value>اقترانات الملفات</value>
   </data>
   <data name="AssociateTorrentFiles" xml:space="preserve">
-    <value>Associate .torrent files</value>
+    <value>ربط ملفات .torrent</value>
   </data>
   <data name="QueueLimits" xml:space="preserve">
-    <value>Queue Limits</value>
+    <value>حدود قائمة الانتظار</value>
   </data>
   <data name="MaxActiveDownloads" xml:space="preserve">
-    <value>Max Active Downloads</value>
+    <value>الحد الأقصى للتنزيلات النشطة</value>
   </data>
   <data name="MaxActiveSeeds" xml:space="preserve">
-    <value>Max Active Seeds</value>
+    <value>الحد الأقصى لعمليات البذر النشطة</value>
   </data>
   <data name="SeedingLimits" xml:space="preserve">
-    <value>Seeding Limits</value>
+    <value>حدود البذر</value>
   </data>
   <data name="Socks5Proxy" xml:space="preserve">
-    <value>SOCKS5 Proxy</value>
+    <value>وكيل SOCKS5</value>
   </data>
   <data name="EnableProxy" xml:space="preserve">
-    <value>Enable Proxy</value>
+    <value>تمكين الوكيل</value>
   </data>
   <data name="Host" xml:space="preserve">
-    <value>Host</value>
+    <value>المضيف</value>
   </data>
   <data name="Port" xml:space="preserve">
-    <value>Port</value>
+    <value>المنفذ</value>
   </data>
   <data name="Username" xml:space="preserve">
-    <value>Username</value>
+    <value>اسم المستخدم</value>
   </data>
   <data name="Password" xml:space="preserve">
-    <value>Password</value>
+    <value>كلمة المرور</value>
   </data>
   <data name="LanguageLabel" xml:space="preserve">
-    <value>Language</value>
+    <value>اللغة</value>
   </data>
-  <!-- Delete Dialog -->
   <data name="RemoveTorrent" xml:space="preserve">
-    <value>Remove torrent</value>
+    <value>إزالة التورنت</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>Optionally delete associated files:</value>
+    <value>احذف الملفات المرتبطة اختياريًا:</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
-    <value>Delete .torrent file from disk</value>
+    <value>حذف ملف .torrent من القرص</value>
   </data>
   <data name="DeleteDownloadedFiles" xml:space="preserve">
-    <value>Delete downloaded files</value>
+    <value>حذف الملفات التي تم تنزيلها</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>إلغاء</value>
   </data>
-  <!-- Hints -->
   <data name="UnlimitedHint" xml:space="preserve">
-    <value>0 = unlimited</value>
+    <value>0 = غير محدود</value>
   </data>
   <data name="GlobalHint" xml:space="preserve">
-    <value>0 = global</value>
+    <value>0 = عام</value>
   </data>
-  <!-- Dialogs -->
   <data name="StopAndResetTitle" xml:space="preserve">
-    <value>Stop torrent</value>
+    <value>إيقاف التورنت</value>
   </data>
   <data name="StopAndResetMessage" xml:space="preserve">
-    <value>Stopping will keep your downloaded data so you can resume later. Are you sure?</value>
+    <value>سيؤدي الإيقاف إلى الاحتفاظ بالبيانات التي تم تنزيلها حتى تتمكن من الاستئناف لاحقًا. هل أنت متأكد؟</value>
   </data>
   <data name="AssociateTorrentTitle" xml:space="preserve">
-    <value>Associate .torrent files</value>
+    <value>ربط ملفات .torrent</value>
   </data>
   <data name="AssociateTorrentMessage" xml:space="preserve">
-    <value>Do you want to open .torrent files with Torrent Free by default?</value>
+    <value>هل تريد فتح ملفات .torrent باستخدام Torrent Free افتراضيًا؟</value>
   </data>
   <data name="Yes" xml:space="preserve">
-    <value>Yes</value>
+    <value>نعم</value>
   </data>
   <data name="No" xml:space="preserve">
-    <value>No</value>
+    <value>لا</value>
   </data>
   <data name="AboutTitle" xml:space="preserve">
-    <value>About Torrent Free</value>
+    <value>حول Torrent Free</value>
   </data>
   <data name="AboutMessage" xml:space="preserve">
-    <value>Torrent Free is free to use.</value>
+    <value>استخدام Torrent Free مجاني.</value>
   </data>
   <data name="AboutVersionLabel" xml:space="preserve">
-    <value>Version</value>
+    <value>الإصدار</value>
   </data>
   <data name="AboutBuildLabel" xml:space="preserve">
-    <value>Build</value>
+    <value>البنية</value>
   </data>
   <data name="AboutFileVersionLabel" xml:space="preserve">
-    <value>File version</value>
+    <value>إصدار الملف</value>
   </data>
   <data name="AboutSourceLabel" xml:space="preserve">
-    <value>Source</value>
+    <value>المصدر</value>
   </data>
   <data name="AboutUnavailable" xml:space="preserve">
-    <value>n/a</value>
+    <value>غير متاح</value>
   </data>
   <data name="OpenSource" xml:space="preserve">
-    <value>Open Source</value>
+    <value>الشيفرة المصدرية</value>
   </data>
   <data name="OK" xml:space="preserve">
-    <value>OK</value>
+    <value>موافق</value>
   </data>
-  <!-- Error Messages -->
   <data name="ErrorOpenFolder" xml:space="preserve">
-    <value>Failed to open folder for the download.</value>
+    <value>تعذر فتح مجلد التنزيل.</value>
   </data>
   <data name="ErrorImportTorrent" xml:space="preserve">
-    <value>Failed to import .torrent file. Please try again.</value>
+    <value>تعذر استيراد ملف .torrent. يرجى المحاولة مرة أخرى.</value>
   </data>
   <data name="ErrorLoadDownloads" xml:space="preserve">
-    <value>Failed to load your downloads. Please restart the app.</value>
+    <value>تعذر تحميل تنزيلاتك. يرجى إعادة تشغيل التطبيق.</value>
   </data>
   <data name="ErrorDuplicateTorrent" xml:space="preserve">
-    <value>This torrent is already in your list.</value>
+    <value>هذا التورنت موجود بالفعل في قائمتك.</value>
   </data>
   <data name="ErrorInvalidTorrentFile" xml:space="preserve">
-    <value>Invalid .torrent file. Unable to extract an info hash.</value>
+    <value>ملف .torrent غير صالح. تعذر استخراج قيمة تجزئة المعلومات.</value>
   </data>
   <data name="ErrorInvalidMagnet" xml:space="preserve">
-    <value>Invalid magnet link. Please ensure your link starts with 'magnet:?' and contains an info hash (xt= parameter).</value>
+    <value>رابط المغناطيس غير صالح. تأكد من أن الرابط يبدأ بـ 'magnet:?' ويحتوي على تجزئة معلومات (معامل xt=).</value>
   </data>
   <data name="ErrorAddTorrent" xml:space="preserve">
-    <value>Failed to add torrent. Please try again.</value>
+    <value>تعذر إضافة التورنت. يرجى المحاولة مرة أخرى.</value>
   </data>
   <data name="ErrorClipboardEmpty" xml:space="preserve">
-    <value>Clipboard is empty. Copy a magnet link first.</value>
+    <value>الحافظة فارغة. انسخ رابط مغناطيس أولاً.</value>
   </data>
   <data name="ErrorPasteClipboard" xml:space="preserve">
-    <value>Failed to read the clipboard. Please try again.</value>
+    <value>تعذر قراءة الحافظة. يرجى المحاولة مرة أخرى.</value>
   </data>
   <data name="ErrorStartTorrent" xml:space="preserve">
-    <value>Failed to start torrent. Please try again.</value>
+    <value>تعذر بدء التورنت. يرجى المحاولة مرة أخرى.</value>
   </data>
   <data name="ErrorPauseTorrent" xml:space="preserve">
-    <value>Failed to pause torrent. Please try again.</value>
+    <value>تعذر إيقاف التورنت مؤقتًا. يرجى المحاولة مرة أخرى.</value>
   </data>
   <data name="ErrorStopTorrent" xml:space="preserve">
-    <value>Failed to stop torrent. Please try again.</value>
+    <value>تعذر إيقاف التورنت. يرجى المحاولة مرة أخرى.</value>
   </data>
   <data name="ErrorRemoveTorrent" xml:space="preserve">
-    <value>Failed to remove torrent. Please try again.</value>
+    <value>تعذر إزالة التورنت. يرجى المحاولة مرة أخرى.</value>
   </data>
-  <!-- Status Hints -->
   <data name="HintDownloadFailed" xml:space="preserve">
-    <value>Download failed.</value>
+    <value>فشل التنزيل.</value>
   </data>
   <data name="HintQueued" xml:space="preserve">
-    <value>Queued. Waiting for an active slot.</value>
+    <value>في الانتظار. بانتظار توفر خانة نشطة.</value>
   </data>
   <data name="HintPaused" xml:space="preserve">
-    <value>Paused.</value>
+    <value>متوقف مؤقتًا.</value>
   </data>
   <data name="HintStopped" xml:space="preserve">
-    <value>Stopped.</value>
+    <value>متوقف.</value>
   </data>
   <data name="HintSearchingPeers" xml:space="preserve">
-    <value>Searching for peers.</value>
+    <value>جارٍ البحث عن النظراء.</value>
   </data>
   <data name="HintWaitingSeeds" xml:space="preserve">
-    <value>Waiting for seeds.</value>
+    <value>بانتظار البذور.</value>
   </data>
   <data name="HintConnectingPeers" xml:space="preserve">
-    <value>Connecting to peers.</value>
+    <value>جارٍ الاتصال بالنظراء.</value>
   </data>
-  <!-- Settings Validation -->
   <data name="ValidationFileAssociation" xml:space="preserve">
-    <value>Unable to update file association.</value>
+    <value>تعذر تحديث اقتران الملفات.</value>
   </data>
   <data name="ValidationAdjustedLimits" xml:space="preserve">
-    <value>Some settings were adjusted to safe limits.</value>
+    <value>تم تعديل بعض الإعدادات إلى حدود آمنة.</value>
   </data>
   <data name="ValidationSeedRatioInvalid" xml:space="preserve">
-    <value>Seed ratio must be a valid non-negative number. Reset to 0.</value>
+    <value>يجب أن تكون نسبة البذر رقمًا صالحًا غير سالب. تمت إعادة التعيين إلى 0.</value>
   </data>
   <data name="ValidationSeedRatioHigh" xml:space="preserve">
-    <value>Seed ratio is too high. Capped at {0}.</value>
+    <value>نسبة البذر مرتفعة جدًا. تم تحديدها عند {0}.</value>
   </data>
   <data name="ValidationNegative" xml:space="preserve">
-    <value>{0} cannot be negative. Set to {1}{2}.</value>
+    <value>لا يمكن أن يكون {0} سالبًا. تم ضبطه على {1}{2}.</value>
   </data>
   <data name="ValidationTooHigh" xml:space="preserve">
-    <value>{0} is too high. Capped at {1}{2}.</value>
+    <value>قيمة {0} مرتفعة جدًا. تم تحديدها عند {1}{2}.</value>
   </data>
   <data name="ValidationSelectFolder" xml:space="preserve">
-    <value>Unable to select a folder.</value>
+    <value>تعذر تحديد مجلد.</value>
   </data>
   <data name="GoBack" xml:space="preserve">
-    <value>Go back</value>
+    <value>رجوع</value>
   </data>
   <data name="SelectTorrentFile" xml:space="preserve">
-    <value>Select a .torrent file</value>
+    <value>اختر ملف .torrent</value>
   </data>
 </root>

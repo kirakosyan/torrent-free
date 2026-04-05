@@ -130,6 +130,7 @@ public partial class SettingsViewModel : ObservableObject
     [
         new("System Default", ""),
         new("English", "en"),
+        new("\u0627\u0644\u0639\u0631\u0628\u064A\u0629", "ar"),
         new("Español", "es"),
         new("Français", "fr"),
         new("Türkçe", "tr"),

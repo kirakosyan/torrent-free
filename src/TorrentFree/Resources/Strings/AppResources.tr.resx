@@ -405,4 +405,10 @@
   <data name="ValidationSelectFolder" xml:space="preserve">
     <value>Klasör seçilemedi.</value>
   </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>Geri</value>
+  </data>
+  <data name="SelectTorrentFile" xml:space="preserve">
+    <value>.torrent dosyası seçin</value>
+  </data>
 </root>
