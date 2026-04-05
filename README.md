@@ -26,7 +26,7 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 - **Save path** prefers the picked `.torrent` folder (if available) otherwise the default path
 - **Persistent storage** of torrent list and settings
 
-## � Release Notes
+## 📝 Release Notes
 
 ### v1.6
 
@@ -42,7 +42,7 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 - **Atomic storage writes** — Settings and torrent data are written atomically to prevent corruption on crash.
 - **Full backward compatibility** — Upgrading from v1.1 preserves all existing settings.
 
-## �📱 Supported Platforms
+## 📱 Supported Platforms
 
 | Platform | Status |
 |----------|--------|
