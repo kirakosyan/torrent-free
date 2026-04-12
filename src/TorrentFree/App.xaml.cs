@@ -1,14 +1,13 @@
 ﻿using System.Globalization;
+using Microsoft.Maui.Storage;
 using TorrentFree.Services;
 
 namespace TorrentFree;
 
 public partial class App : Application
 {
-    private static readonly string CrashLogPath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "TorrentFree",
-        "crash.log");
+    private static readonly object CrashLogLock = new();
+    private static readonly string CrashLogPath = GetCrashLogPath();
 
     private readonly AppShell _appShell;
     private readonly IStorageService _storageService;
@@ -19,11 +18,11 @@ public partial class App : Application
         InitializeComponent();
 
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
-            LogCrash("AppDomain.UnhandledException", e.ExceptionObject as Exception);
+            LogCrash("AppDomain.UnhandledException", e.ExceptionObject as Exception, e.ExceptionObject);
 
         TaskScheduler.UnobservedTaskException += (_, e) =>
         {
-            LogCrash("TaskScheduler.UnobservedTaskException", e.Exception);
+            LogCrash("TaskScheduler.UnobservedTaskException", e.Exception, e.Exception);
             e.SetObserved();
         };
 
@@ -32,7 +31,16 @@ public partial class App : Application
         _localizationService = localizationService;
     }
 
-    private static void LogCrash(string source, Exception? ex)
+    private static string GetCrashLogPath()
+    {
+        var appDataDirectory = OperatingSystem.IsWindows()
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TorrentFree")
+            : FileSystem.AppDataDirectory;
+
+        return Path.Combine(appDataDirectory, "crash.log");
+    }
+
+    private static void LogCrash(string source, Exception? ex, object? rawValue)
     {
         try
         {
@@ -42,13 +50,17 @@ public partial class App : Application
                 Directory.CreateDirectory(dir);
             }
 
+            var details = ex?.ToString() ?? rawValue?.ToString() ?? "(no exception information)";
             var entry = $"""
                 [{DateTime.UtcNow:O}] {source}
-                {ex}
+                {details}
                 ---
 
                 """;
-            File.AppendAllText(CrashLogPath, entry);
+            lock (CrashLogLock)
+            {
+                File.AppendAllText(CrashLogPath, entry);
+            }
         }
         catch
         {
