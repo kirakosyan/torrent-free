@@ -164,17 +164,15 @@ public partial class App : MauiWinUIApplication
 			return;
 		}
 
-		var timeout = TimeSpan.FromSeconds(5);
-
 		if (redirectOperation is Task task)
 		{
-			task.Wait(timeout);
+			task.GetAwaiter().GetResult();
 			return;
 		}
 
 		if (redirectOperation is IAsyncAction asyncAction)
 		{
-			asyncAction.AsTask().Wait(timeout);
+			asyncAction.AsTask().GetAwaiter().GetResult();
 		}
 	}
 }

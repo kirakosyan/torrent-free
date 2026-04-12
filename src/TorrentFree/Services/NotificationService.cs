@@ -13,14 +13,8 @@ public sealed class NotificationService : INotificationService
 
     /// <summary>
     /// Check if local notifications are supported on this platform.
-    /// The current Plugin.LocalNotification package only supports Android and iOS.
     /// </summary>
-    private static bool IsSupported =>
-#if ANDROID || IOS
-        LocalNotificationCenter.Current is not null;
-#else
-        false;
-#endif
+    private static bool IsSupported => LocalNotificationCenter.Current is not null;
 
     public async Task EnsurePermissionAsync()
     {
