@@ -31,6 +31,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private CancellationTokenSource? _statsTimerCts;
     private CancellationTokenSource? _magnetAutoStartCts;
     private bool _statsTimerStarted;
+    private bool _isInitializing;
+    private bool _hasInitialized;
 
     /// <summary>
     /// Collection of all torrent items.
@@ -699,6 +701,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task InitializeAsync()
     {
+        if (_hasInitialized || _isInitializing)
+        {
+            return;
+        }
+
+        _isInitializing = true;
         IsBusy = true;
         try
         {
@@ -714,12 +722,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
             SortByStatus = settings.SortByStatus;
 
             ApplyGlobalSettings();
-            await _notificationService.EnsurePermissionAsync();
             await _torrentService.InitializeAsync();
-
-            await PromptFileAssociationAsync();
-            await ProcessCommandLineArgumentsAsync();
             StartStatsTimer();
+            _hasInitialized = true;
+
+            SafeFireAndForget(_notificationService.EnsurePermissionAsync());
+            SafeFireAndForget(PromptFileAssociationAsync());
+            SafeFireAndForget(ProcessCommandLineArgumentsAsync());
         }
         catch (Exception ex)
         {
@@ -730,6 +739,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             _isLoadingSettings = false;
             IsBusy = false;
+            _isInitializing = false;
         }
     }
 

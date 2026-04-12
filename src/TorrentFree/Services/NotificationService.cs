@@ -10,7 +10,12 @@ namespace TorrentFree.Services;
 public sealed class NotificationService : INotificationService
 {
     private bool _permissionRequested;
-    private static bool IsSupported => LocalNotificationCenter.Current is not null;
+    private static bool IsSupported =>
+#if ANDROID || IOS
+        LocalNotificationCenter.Current is not null;
+#else
+        false;
+#endif
 
     public async Task EnsurePermissionAsync()
     {
