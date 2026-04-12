@@ -36,14 +36,20 @@ public partial class App : MauiWinUIApplication
 		_mainInstance = AppInstance.FindOrRegisterForKey(InstanceKey);
 		if (!_mainInstance.IsCurrent)
 		{
+			var redirectCompleted = false;
 			try
 			{
 				var redirectOperation = _mainInstance.RedirectActivationToAsync(AppInstance.GetCurrent().GetActivatedEventArgs());
-				WaitForRedirectCompletion(redirectOperation);
+				redirectCompleted = WaitForRedirectCompletion(redirectOperation);
 			}
 			catch (Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine($"Activation redirection failed: {ex}");
+			}
+			if (!redirectCompleted)
+			{
+				System.Diagnostics.Debug.WriteLine("Activation redirection did not complete; continuing without exit to avoid losing activation.");
+				return;
 			}
 			Environment.Exit(0);
 			return;
@@ -157,23 +163,52 @@ public partial class App : MauiWinUIApplication
 		}
 	}
 
-	private static void WaitForRedirectCompletion(object? redirectOperation)
+	private static bool WaitForRedirectCompletion(object? redirectOperation)
 	{
 		if (redirectOperation is null)
 		{
-			return;
+			return true;
 		}
 
-		if (redirectOperation is Task task)
+		const int initialTimeoutMs = 5000;
+		const int fallbackTimeoutMs = 25000;
+
+		try
 		{
-			task.GetAwaiter().GetResult();
-			return;
+			if (redirectOperation is Task task)
+			{
+				return WaitWithTimeouts(task, initialTimeoutMs, fallbackTimeoutMs);
+			}
+
+			if (redirectOperation is IAsyncAction asyncAction)
+			{
+				return WaitWithTimeouts(asyncAction.AsTask(), initialTimeoutMs, fallbackTimeoutMs);
+			}
+		}
+		catch (Exception ex)
+		{
+			System.Diagnostics.Debug.WriteLine($"Activation redirection wait failed: {ex}");
 		}
 
-		if (redirectOperation is IAsyncAction asyncAction)
+		return false;
+	}
+
+	private static bool WaitWithTimeouts(Task task, int initialTimeoutMs, int fallbackTimeoutMs)
+	{
+		if (task.Wait(initialTimeoutMs))
 		{
-			asyncAction.AsTask().GetAwaiter().GetResult();
+			return true;
 		}
+
+		System.Diagnostics.Debug.WriteLine($"Activation redirection did not complete within {initialTimeoutMs / 1000} seconds; waiting up to {fallbackTimeoutMs / 1000} seconds longer.");
+
+		if (task.Wait(fallbackTimeoutMs))
+		{
+			return true;
+		}
+
+		System.Diagnostics.Debug.WriteLine("Activation redirection still pending; waiting for completion to avoid dropping activation.");
+		task.Wait();
+		return true;
 	}
 }
-
