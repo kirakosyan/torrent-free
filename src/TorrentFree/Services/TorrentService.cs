@@ -903,6 +903,11 @@ public class TorrentService : ITorrentService
         {
             SafeFireAndForget(UpdateTorrentManagerSettingsAsync(torrent));
         }
+
+        if (e.PropertyName is nameof(TorrentItem.TorrentFilePath) or nameof(TorrentItem.TorrentFileName) or nameof(TorrentItem.SavePath))
+        {
+            _pendingSave = true;
+        }
     }
 
     private async Task UpdateTorrentManagerSettingsAsync(TorrentItem torrent)
@@ -1540,10 +1545,17 @@ public class TorrentService : ITorrentService
 
     private async Task SaveIfPendingAsync()
     {
-        if (_pendingSave)
+        try
         {
-            _pendingSave = false;
-            await SaveAsync();
+            if (_pendingSave)
+            {
+                _pendingSave = false;
+                await SaveAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Debounced save error: {ex.Message}");
         }
     }
 

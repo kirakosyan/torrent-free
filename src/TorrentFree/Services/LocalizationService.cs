@@ -65,5 +65,26 @@ public class LocalizationService : ILocalizationService
         CultureInfo.CurrentUICulture = culture;
         CultureInfo.CurrentCulture = culture;
         LocalizationResourceManager.Instance.SetCulture(culture);
+        ApplyFlowDirection(culture);
+    }
+
+    private static void ApplyFlowDirection(CultureInfo culture)
+    {
+        if (Application.Current is null)
+        {
+            return;
+        }
+
+        var flowDirection = culture.TextInfo.IsRightToLeft
+            ? FlowDirection.RightToLeft
+            : FlowDirection.LeftToRight;
+
+        foreach (var window in Application.Current.Windows)
+        {
+            if (window.Page is not null)
+            {
+                window.Page.FlowDirection = flowDirection;
+            }
+        }
     }
 }

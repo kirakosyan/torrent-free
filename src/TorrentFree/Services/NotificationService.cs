@@ -1,4 +1,5 @@
 using Plugin.LocalNotification;
+using Plugin.LocalNotification.Core.Models;
 using TorrentFree.Models;
 
 namespace TorrentFree.Services;
@@ -9,10 +10,6 @@ namespace TorrentFree.Services;
 public sealed class NotificationService : INotificationService
 {
     private bool _permissionRequested;
-
-    /// <summary>
-    /// Check if local notifications are supported on this platform.
-    /// </summary>
     private static bool IsSupported => LocalNotificationCenter.Current is not null;
 
     public async Task EnsurePermissionAsync()
@@ -28,6 +25,8 @@ public sealed class NotificationService : INotificationService
 
     public async Task ShowDownloadCompletedAsync(TorrentItem torrent)
     {
+        ArgumentNullException.ThrowIfNull(torrent);
+
         if (!IsSupported)
         {
             return;

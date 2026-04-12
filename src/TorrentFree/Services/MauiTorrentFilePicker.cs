@@ -14,7 +14,7 @@ public sealed class MauiTorrentFilePicker : ITorrentFilePicker
 
         var pickOptions = new PickOptions
         {
-            PickerTitle = "Select a .torrent file",
+            PickerTitle = LocalizationResourceManager.Instance["SelectTorrentFile"],
             FileTypes = torrentFileType
         };
 

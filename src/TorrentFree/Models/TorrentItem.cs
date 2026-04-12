@@ -12,6 +12,7 @@ namespace TorrentFree.Models;
 public partial class TorrentItem : ObservableObject
 {
     private const int MaxSpeedSamples = 60;
+    private static readonly HashSet<char> InvalidFileNameChars = new(Path.GetInvalidFileNameChars());
     /// <summary>
     /// Unique identifier for the torrent item.
     /// </summary>
@@ -231,7 +232,7 @@ public partial class TorrentItem : ObservableObject
         {
             var basePath = SavePath ?? string.Empty;
             var safeName = string.IsNullOrWhiteSpace(Name) ? "unnamed_torrent" : Name;
-            safeName = string.Concat(safeName.Where(c => !Path.GetInvalidFileNameChars().Contains(c))).Trim();
+            safeName = string.Concat(safeName.Where(c => !InvalidFileNameChars.Contains(c))).Trim();
             if (string.IsNullOrWhiteSpace(safeName))
             {
                 safeName = "unnamed_torrent";

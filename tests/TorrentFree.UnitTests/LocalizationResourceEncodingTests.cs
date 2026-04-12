@@ -64,6 +64,17 @@ public sealed class LocalizationResourceEncodingTests
         Assert.Contains("हाँ", content, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void ArabicResourceFile_ContainsExpectedTranslations()
+    {
+        var content = ReadResource("AppResources.ar.resx");
+
+        Assert.Contains("التنزيلات", content, StringComparison.Ordinal);
+        Assert.Contains("الإعدادات", content, StringComparison.Ordinal);
+        Assert.Contains("نعم", content, StringComparison.Ordinal);
+        Assert.Contains("الشيفرة المصدرية", content, StringComparison.Ordinal);
+    }
+
     private static string ReadResource(string fileName)
     {
         var repoRoot = Path.GetFullPath(Path.Combine(

@@ -29,8 +29,8 @@
 		<ApplicationId>com.torrentfree.app</ApplicationId>
 
 		<!-- Versions -->
-		<AppDisplayVersion>1.6</AppDisplayVersion>
-		<AppBuildNumber>6</AppBuildNumber>
+		<AppDisplayVersion>17.0</AppDisplayVersion>
+		<AppBuildNumber>17</AppBuildNumber>
 		<ApplicationDisplayVersion>$(AppDisplayVersion)</ApplicationDisplayVersion>
 		<ApplicationVersion>$(AppBuildNumber)</ApplicationVersion>
 		<AndroidVersionName>$(AppDisplayVersion)</AndroidVersionName>
@@ -41,17 +41,13 @@
 		<InformationalVersion>$(AppDisplayVersion)</InformationalVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
-		<!-- Debug builds run unpackaged so the output .exe can be launched directly without MSIX deployment. -->
-		<!-- Release builds use MSIX packaging for Store submission. -->
-		<WindowsPackageType Condition="'$(Configuration)' == 'Debug'">None</WindowsPackageType>
-		<WindowsPackageType Condition="'$(Configuration)' == 'Release'">MSIX</WindowsPackageType>
+		<WindowsPackageType>MSIX</WindowsPackageType>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
-		<WindowsPackageType>MSIX</WindowsPackageType>
 		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
 		<AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
 		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
@@ -60,6 +56,7 @@
 		<GenerateTestArtifacts>True</GenerateTestArtifacts>
 		<GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+		<DefaultLanguage>en-US</DefaultLanguage>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -92,11 +89,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.40" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.3" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.51" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.5" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="MonoTorrent" Version="3.0.2" />
-		<PackageReference Include="Plugin.LocalNotification" Version="13.0.0" />
+		<PackageReference Include="Plugin.LocalNotification" Version="14.1.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">

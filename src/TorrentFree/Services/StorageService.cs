@@ -37,7 +37,7 @@ public interface IStorageService
 /// <summary>
 /// Service for persisting torrent data to JSON file.
 /// </summary>
-public class StorageService : IStorageService
+public class StorageService : IStorageService, IDisposable
 {
     private const string TorrentsFileName = "torrents.json";
     private readonly string _dataPath;
@@ -284,6 +284,11 @@ public class StorageService : IStorageService
         var tempPath = _dataPath + ".tmp";
         await File.WriteAllTextAsync(tempPath, json);
         File.Move(tempPath, _dataPath, overwrite: true);
+    }
+
+    public void Dispose()
+    {
+        _saveLock.Dispose();
     }
 }
 
