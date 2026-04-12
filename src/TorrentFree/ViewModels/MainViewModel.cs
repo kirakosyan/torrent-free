@@ -714,12 +714,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
             SortByStatus = settings.SortByStatus;
 
             ApplyGlobalSettings();
-            await _notificationService.EnsurePermissionAsync();
             await _torrentService.InitializeAsync();
 
             await PromptFileAssociationAsync();
             await ProcessCommandLineArgumentsAsync();
             StartStatsTimer();
+
+            // Notification permission must not block the first page load.
+            SafeFireAndForget(_notificationService.EnsurePermissionAsync());
         }
         catch (Exception ex)
         {

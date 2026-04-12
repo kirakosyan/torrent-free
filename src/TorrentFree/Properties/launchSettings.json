@@ -1,6 +1,10 @@
 {
   "profiles": {
     "Windows Machine": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    },
+    "Windows Packaged": {
       "commandName": "MsixPackage",
       "nativeDebugging": false
     }
