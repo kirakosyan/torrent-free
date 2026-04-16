@@ -141,6 +141,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// </summary>
     public bool IsEmpty => Torrents.Count == 0;
 
+    /// <summary>
+    /// Indicates whether any torrent can be started or resumed.
+    /// </summary>
+    public bool CanStartAllTorrents => !IsBusy && Torrents.Any(torrent => torrent.CanStart);
+
+    /// <summary>
+    /// Indicates whether any torrent can be stopped.
+    /// </summary>
+    public bool CanStopAllTorrents => !IsBusy && Torrents.Any(torrent => torrent.CanStop);
+
     public MainViewModel(ITorrentService torrentService, ITorrentFilePicker torrentFilePicker, ITorrentFileParser torrentFileParser, IStorageService storageService, IFileAssociationService fileAssociationService, INotificationService notificationService)
     {
         _torrentService = torrentService;
@@ -177,6 +187,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         SyncDisplayTorrents();
         SafeFireAndForget(PersistSettingsAsync());
+    }
+
+    partial void OnIsBusyChanged(bool value)
+    {
+        UpdateBulkActionState();
     }
 
     partial void OnGlobalDownloadLimitKbpsChanged(int value)
@@ -555,6 +570,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(IsEmpty));
         UpdateTorrentHandlers(e);
         SyncDisplayTorrents();
+        UpdateBulkActionState();
     }
 
     private void InitializeDisplayTorrents()
@@ -632,10 +648,23 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void OnTorrentPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
+        if (e.PropertyName == nameof(TorrentItem.Status))
+        {
+            UpdateBulkActionState();
+        }
+
         if (e.PropertyName == nameof(TorrentItem.Status) && SortByStatus)
         {
             SyncDisplayTorrents();
         }
+    }
+
+    private void UpdateBulkActionState()
+    {
+        OnPropertyChanged(nameof(CanStartAllTorrents));
+        OnPropertyChanged(nameof(CanStopAllTorrents));
+        StartAllTorrentsCommand.NotifyCanExecuteChanged();
+        StopAllTorrentsCommand.NotifyCanExecuteChanged();
     }
 
     private void SyncDisplayTorrents()
@@ -987,6 +1016,95 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         return !string.IsNullOrWhiteSpace(MagnetLinkInput) &&
                _torrentService.IsValidMagnetLink(MagnetLinkInput.Trim());
+    }
+
+    /// <summary>
+    /// Starts or resumes the selected torrent download.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanStartAllTorrents))]
+    private async Task StartAllTorrentsAsync()
+    {
+        var torrentsToStart = Torrents.Where(torrent => torrent.CanStart).ToList();
+        if (torrentsToStart.Count == 0)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        ErrorMessage = null;
+
+        try
+        {
+            var failed = false;
+            foreach (var torrent in torrentsToStart)
+            {
+                try
+                {
+                    await _torrentService.StartTorrentAsync(torrent);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Start all torrents error for '{torrent.Name}': {ex}");
+                    failed = true;
+                }
+            }
+
+            if (failed)
+            {
+                ErrorMessage = LocalizationResourceManager.Instance["ErrorStartTorrent"];
+            }
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    /// <summary>
+    /// Stops all active torrents.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanStopAllTorrents))]
+    private async Task StopAllTorrentsAsync()
+    {
+        var torrentsToStop = Torrents.Where(torrent => torrent.CanStop).ToList();
+        if (torrentsToStop.Count == 0)
+        {
+            return;
+        }
+
+        if (!await ConfirmStopAsync())
+        {
+            return;
+        }
+
+        IsBusy = true;
+        ErrorMessage = null;
+
+        try
+        {
+            var failed = false;
+            foreach (var torrent in torrentsToStop)
+            {
+                try
+                {
+                    await _torrentService.StopTorrentAsync(torrent);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Stop all torrents error for '{torrent.Name}': {ex}");
+                    failed = true;
+                }
+            }
+
+            if (failed)
+            {
+                ErrorMessage = LocalizationResourceManager.Instance["ErrorStopTorrent"];
+            }
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     /// <summary>

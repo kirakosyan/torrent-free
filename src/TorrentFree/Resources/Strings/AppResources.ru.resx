@@ -74,11 +74,17 @@
   <data name="StartButton" xml:space="preserve">
     <value>Старт</value>
   </data>
+  <data name="StartAllButton" xml:space="preserve">
+    <value>Запустить все</value>
+  </data>
   <data name="PauseButton" xml:space="preserve">
     <value>Пауза</value>
   </data>
   <data name="StopButton" xml:space="preserve">
     <value>Стоп</value>
+  </data>
+  <data name="StopAllButton" xml:space="preserve">
+    <value>Остановить все</value>
   </data>
   <data name="RemoveButton" xml:space="preserve">
     <value>Удалить</value>

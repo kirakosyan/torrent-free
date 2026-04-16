@@ -91,9 +91,9 @@ namespace TorrentFree.Models
         public double AvailabilityPercent { get; set; }
         public string AvailabilityLabel { get; set; } = string.Empty;
 
-        public bool CanStart => Status is DownloadStatus.Queued or DownloadStatus.Paused or DownloadStatus.Stopped or DownloadStatus.Failed;
+        public bool CanStart => Status is DownloadStatus.Queued or DownloadStatus.Paused or DownloadStatus.Stopped or DownloadStatus.Failed or DownloadStatus.Completed;
         public bool CanPause => Status is DownloadStatus.Downloading or DownloadStatus.Seeding;
-        public bool CanStop => Status is DownloadStatus.Downloading or DownloadStatus.Paused or DownloadStatus.Queued;
+        public bool CanStop => Status is DownloadStatus.Downloading or DownloadStatus.Paused or DownloadStatus.Queued or DownloadStatus.Seeding;
 
         public void AddSpeedSample(long downloadBytesPerSecond, long uploadBytesPerSecond)
         {

@@ -70,11 +70,17 @@
   <data name="StartButton" xml:space="preserve">
     <value>بدء</value>
   </data>
+  <data name="StartAllButton" xml:space="preserve">
+    <value>بدء الكل</value>
+  </data>
   <data name="PauseButton" xml:space="preserve">
     <value>إيقاف مؤقت</value>
   </data>
   <data name="StopButton" xml:space="preserve">
     <value>إيقاف</value>
+  </data>
+  <data name="StopAllButton" xml:space="preserve">
+    <value>إيقاف الكل</value>
   </data>
   <data name="RemoveButton" xml:space="preserve">
     <value>إزالة</value>

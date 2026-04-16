@@ -333,7 +333,7 @@ public partial class TorrentItem : ObservableObject
     /// Indicates whether the download can be started or resumed.
     /// </summary>
     [JsonIgnore]
-    public bool CanStart => Status is DownloadStatus.Queued or DownloadStatus.Paused or DownloadStatus.Stopped or DownloadStatus.Failed;
+    public bool CanStart => Status is DownloadStatus.Queued or DownloadStatus.Paused or DownloadStatus.Stopped or DownloadStatus.Failed or DownloadStatus.Completed;
 
     /// <summary>
     /// Indicates whether the download can be paused.
@@ -345,7 +345,7 @@ public partial class TorrentItem : ObservableObject
     /// Indicates whether the download can be stopped.
     /// </summary>
     [JsonIgnore]
-    public bool CanStop => Status is DownloadStatus.Downloading or DownloadStatus.Paused or DownloadStatus.Queued;
+    public bool CanStop => Status is DownloadStatus.Downloading or DownloadStatus.Paused or DownloadStatus.Queued or DownloadStatus.Seeding;
 
     private static string FormatBytes(long bytes)
     {

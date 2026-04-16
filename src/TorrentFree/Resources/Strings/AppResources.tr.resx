@@ -72,11 +72,17 @@
   <data name="StartButton" xml:space="preserve">
     <value>Başlat</value>
   </data>
+  <data name="StartAllButton" xml:space="preserve">
+    <value>Tümünü başlat</value>
+  </data>
   <data name="PauseButton" xml:space="preserve">
     <value>Duraklat</value>
   </data>
   <data name="StopButton" xml:space="preserve">
     <value>Durdur</value>
+  </data>
+  <data name="StopAllButton" xml:space="preserve">
+    <value>Tümünü durdur</value>
   </data>
   <data name="RemoveButton" xml:space="preserve">
     <value>Kaldır</value>

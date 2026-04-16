@@ -121,6 +121,28 @@ public sealed class TorrentServiceBehaviorTests
     }
 
     [Fact]
+    public void TorrentItem_CanStop_ReturnsTrue_WhenStatusIsSeeding()
+    {
+        var torrent = new TorrentItem
+        {
+            Status = DownloadStatus.Seeding
+        };
+
+        Assert.True(torrent.CanStop);
+    }
+
+    [Fact]
+    public void TorrentItem_CanStart_ReturnsTrue_WhenStatusIsCompleted()
+    {
+        var torrent = new TorrentItem
+        {
+            Status = DownloadStatus.Completed
+        };
+
+        Assert.True(torrent.CanStart);
+    }
+
+    [Fact]
     public async Task UpdateQueueLimits_NormalizesNegativeValuesToZero()
     {
         var storage = new RecordingStorageService();

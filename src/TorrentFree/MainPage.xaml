@@ -296,7 +296,7 @@
               <Grid Grid.Row="2"
                     RowDefinitions="Auto,Auto,*">
                      <Grid Grid.Row="0"
-                           ColumnDefinitions="*,Auto,Auto"
+                           ColumnDefinitions="*,Auto,Auto,Auto"
                            ColumnSpacing="12"
                            Margin="0,0,0,12">
                             <Label Grid.Column="0"
@@ -304,6 +304,24 @@
                                    FontSize="18"
                                    FontAttributes="Bold"/>
                             <HorizontalStackLayout Grid.Column="1"
+                                                   Spacing="8"
+                                                   VerticalOptions="Center">
+                                    <Button Text="{helpers:Translate StartAllButton}"
+                                            SemanticProperties.Description="Start all torrents"
+                                            Style="{StaticResource ActionButton}"
+                                            BackgroundColor="#ECFDF3"
+                                            TextColor="#16A34A"
+                                            Command="{Binding StartAllTorrentsCommand}"
+                                            IsEnabled="{Binding CanStartAllTorrents}"/>
+                                    <Button Text="{helpers:Translate StopAllButton}"
+                                            SemanticProperties.Description="Stop all torrents"
+                                            Style="{StaticResource ActionButton}"
+                                            BackgroundColor="#FEF2F2"
+                                            TextColor="#DC2626"
+                                            Command="{Binding StopAllTorrentsCommand}"
+                                            IsEnabled="{Binding CanStopAllTorrents}"/>
+                             </HorizontalStackLayout>
+                             <HorizontalStackLayout Grid.Column="2"
                                                    Spacing="6"
                                                    VerticalOptions="Center">
                                    <CheckBox IsChecked="{Binding SortByStatus}"
@@ -314,7 +332,7 @@
                                           TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                           VerticalOptions="Center"/>
                             </HorizontalStackLayout>
-                            <Button Grid.Column="2"
+                             <Button Grid.Column="3"
                                     Text="{helpers:Translate Details}"
                                     SemanticProperties.Description="Toggle selected torrent details"
                                     Style="{StaticResource ActionButton}"
