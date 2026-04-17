@@ -110,10 +110,11 @@ public class TorrentService : ITorrentService
     private readonly object _torrentsLock = new();
     private readonly Timer _saveTimer;
     private ClientEngine? _engine;
-    private bool _initialized;
-    private bool _pendingSave;
+    private Task? _initTask;
+    private readonly object _initGate = new();
+    private volatile bool _pendingSave;
     private bool _disposed;
-    private bool _backgroundTransferActive;
+    private volatile bool _backgroundTransferActive;
 
     private int _maxActiveDownloads = 2;
     private int _maxActiveSeeds = 2;
@@ -140,15 +141,17 @@ public class TorrentService : ITorrentService
     }
 
     /// <inheritdoc />
-    public async Task InitializeAsync()
+    public Task InitializeAsync()
     {
-        if (_initialized)
+        lock (_initGate)
         {
-            return;
+            _initTask ??= InitializeCoreAsync();
+            return _initTask;
         }
+    }
 
-        _initialized = true;
-
+    private async Task InitializeCoreAsync()
+    {
         try
         {
             var savedTorrents = await _storageService.LoadTorrentsAsync();
@@ -203,7 +206,11 @@ public class TorrentService : ITorrentService
         }
         catch
         {
-            _initialized = false;
+            // Allow a future caller to retry initialization.
+            lock (_initGate)
+            {
+                _initTask = null;
+            }
             throw;
         }
     }
@@ -402,6 +409,10 @@ public class TorrentService : ITorrentService
 
             await SaveAsync();
             UpdateBackgroundTransferState();
+
+            // The download slot this torrent was occupying is now free — let queued
+            // torrents take it instead of waiting for the next user action.
+            await TryStartQueuedTorrentsAsync();
             throw;
         }
     }
@@ -729,18 +740,139 @@ public class TorrentService : ITorrentService
     /// <inheritdoc />
     public void UpdateProxySettings(bool enabled, string host, int port, string username, string password)
     {
-        _proxyEnabled = enabled;
-        _proxyHost = host ?? string.Empty;
-        _proxyPort = port is > 0 and <= 65535 ? port : 1080;
-        _proxyUsername = username ?? string.Empty;
-        _proxyPassword = password ?? string.Empty;
+        var newHost = host ?? string.Empty;
+        var newPort = port is > 0 and <= 65535 ? port : 1080;
+        var newUsername = username ?? string.Empty;
+        var newPassword = password ?? string.Empty;
 
-        // Proxy settings are applied when the engine is created (EnsureEngineAsync).
-        // If the engine is already running, the new proxy will take effect on next restart.
-        // Log for transparency.
+        var changed = _proxyEnabled != enabled
+                      || !string.Equals(_proxyHost, newHost, StringComparison.Ordinal)
+                      || _proxyPort != newPort
+                      || !string.Equals(_proxyUsername, newUsername, StringComparison.Ordinal)
+                      || !string.Equals(_proxyPassword, newPassword, StringComparison.Ordinal);
+
+        _proxyEnabled = enabled;
+        _proxyHost = newHost;
+        _proxyPort = newPort;
+        _proxyUsername = newUsername;
+        _proxyPassword = newPassword;
+
         System.Diagnostics.Debug.WriteLine(_proxyEnabled
-            ? $"Proxy settings updated: {_proxyHost}:{_proxyPort} (will apply on next engine start)"
-            : "Proxy disabled (will apply on next engine start)");
+            ? $"Proxy settings updated: {_proxyHost}:{_proxyPort}"
+            : "Proxy disabled");
+
+        if (changed && _engine is not null)
+        {
+            SafeFireAndForget(RebuildEngineAsync());
+        }
+    }
+
+    /// <summary>
+    /// Tears down the current engine and its managers so that a fresh engine is created
+    /// on the next torrent start (picking up the new proxy settings). Torrents that were
+    /// actively downloading or seeding are restarted automatically.
+    /// </summary>
+    private async Task RebuildEngineAsync()
+    {
+        List<string> idsToResume;
+        lock (_torrentsLock)
+        {
+            idsToResume = Torrents
+                .Where(t => t.Status is DownloadStatus.Downloading or DownloadStatus.Seeding)
+                .Select(t => t.Id)
+                .ToList();
+        }
+
+        // Cancel any active monitors and stop their managers.
+        foreach (var kvp in _downloadTokens.ToArray())
+        {
+            try
+            {
+                kvp.Value.Cancel();
+                kvp.Value.Dispose();
+            }
+            catch
+            {
+                // best-effort
+            }
+            _downloadTokens.TryRemove(kvp.Key, out _);
+        }
+
+        foreach (var kvp in _managers.ToArray())
+        {
+            try
+            {
+                await StopManagerAsync(kvp.Value);
+                if (_engine is not null)
+                {
+                    await _engine.RemoveAsync(kvp.Value);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Proxy rebuild: stop manager error for {kvp.Key}: {ex.Message}");
+            }
+            _managers.TryRemove(kvp.Key, out _);
+        }
+
+        var engineToDispose = _engine;
+        _engine = null;
+
+        if (engineToDispose is not null)
+        {
+            try
+            {
+                await engineToDispose.StopAllAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Proxy rebuild: engine stop error: {ex.Message}");
+            }
+
+            try
+            {
+                if (engineToDispose is IAsyncDisposable asyncDisposable)
+                {
+                    await asyncDisposable.DisposeAsync();
+                }
+                else if (engineToDispose is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Proxy rebuild: engine dispose error: {ex.Message}");
+            }
+        }
+
+        // Move previously-running torrents back to a restartable state and kick them off.
+        foreach (var id in idsToResume)
+        {
+            if (!TryGetTorrentById(id, out var torrent) || torrent is null)
+            {
+                continue;
+            }
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                if (torrent.Status is DownloadStatus.Downloading or DownloadStatus.Seeding)
+                {
+                    torrent.Status = DownloadStatus.Queued;
+                    torrent.DownloadSpeed = 0;
+                    torrent.UploadSpeed = 0;
+                }
+            });
+
+            try
+            {
+                await StartTorrentAsync(torrent);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Proxy rebuild: restart error for '{torrent.Name}': {ex.Message}");
+            }
+        }
     }
 
     /// <summary>
@@ -1158,8 +1290,11 @@ public class TorrentService : ITorrentService
                 var leechesObj = leechProp?.GetValue(peers);
                 var leeches = leechesObj != null ? System.Convert.ToInt32(leechesObj) : 0;
 
-                // Fallback: infer from connected peers collection if direct counts unavailable
-                if ((seeds == 0 || leeches == 0) && connectedProp?.GetValue(peers) is System.Collections.IEnumerable peerList)
+                // Fallback: infer from connected peers collection only when the direct counts
+                // are completely missing. Filling in a zero value from the peer list is fine,
+                // but overwriting a non-zero reliable count with a (possibly lower) iteration
+                // result loses information.
+                if (seeds == 0 && leeches == 0 && connectedProp?.GetValue(peers) is System.Collections.IEnumerable peerList)
                 {
                     int seedCount = 0;
                     int leechCount = 0;
@@ -1177,11 +1312,8 @@ public class TorrentService : ITorrentService
                         }
                     }
 
-                    if (seedCount > 0 || leechCount > 0)
-                    {
-                        seeds = seedCount;
-                        leeches = leechCount;
-                    }
+                    seeds = seedCount;
+                    leeches = leechCount;
                 }
 
                 // Availability / health – heavy reflection, done on background thread

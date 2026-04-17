@@ -1323,11 +1323,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
             {
                 while (_statsTimer is not null && await _statsTimer.WaitForNextTickAsync(_statsTimerCts.Token))
                 {
-                    var totalDownload = Torrents.Sum(t => t.DownloadSpeed);
-                    var totalUpload = Torrents.Sum(t => t.UploadSpeed);
-
+                    // Torrents is an ObservableCollection owned by the UI thread; summing it
+                    // on a background thread can observe mid-Add/Remove state and throw.
+                    // Snapshot and sum on the main thread where the collection is mutated.
                     await MainThread.InvokeOnMainThreadAsync(() =>
                     {
+                        long totalDownload = 0;
+                        long totalUpload = 0;
+                        foreach (var t in Torrents)
+                        {
+                            totalDownload += t.DownloadSpeed;
+                            totalUpload += t.UploadSpeed;
+                        }
+
                         AppendSample(GlobalDownloadHistory, totalDownload / 1024d);
                         AppendSample(GlobalUploadHistory, totalUpload / 1024d);
                     });

@@ -242,8 +242,13 @@ public partial class TorrentItem : ObservableObject
         }
     }
 
+    private bool? _cachedCanOpenDownloadedFile;
+    private string? _cachedCanOpenPath;
+
     /// <summary>
     /// Indicates whether the downloaded file or folder can be opened from the UI.
+    /// Cached because this property is read by XAML bindings on every property-change
+    /// notification and each miss did a disk stat.
     /// </summary>
     [JsonIgnore]
     public bool CanOpenDownloadedFile
@@ -259,8 +264,23 @@ public partial class TorrentItem : ObservableObject
             }
 
             var path = DownloadedFilePath;
-            return File.Exists(path) || Directory.Exists(path);
+            if (_cachedCanOpenDownloadedFile.HasValue
+                && string.Equals(_cachedCanOpenPath, path, StringComparison.Ordinal))
+            {
+                return _cachedCanOpenDownloadedFile.Value;
+            }
+
+            var result = File.Exists(path) || Directory.Exists(path);
+            _cachedCanOpenDownloadedFile = result;
+            _cachedCanOpenPath = path;
+            return result;
         }
+    }
+
+    private void InvalidateCanOpenDownloadedFileCache()
+    {
+        _cachedCanOpenDownloadedFile = null;
+        _cachedCanOpenPath = null;
     }
 
     /// <summary>
@@ -377,6 +397,7 @@ public partial class TorrentItem : ObservableObject
 
     partial void OnStatusChanged(DownloadStatus value)
     {
+        InvalidateCanOpenDownloadedFileCache();
         OnPropertyChanged(nameof(StatusText));
         OnPropertyChanged(nameof(StatusHint));
         OnPropertyChanged(nameof(CanStart));
@@ -397,12 +418,14 @@ public partial class TorrentItem : ObservableObject
 
     partial void OnSavePathChanged(string value)
     {
+        InvalidateCanOpenDownloadedFileCache();
         OnPropertyChanged(nameof(DownloadedFilePath));
         OnPropertyChanged(nameof(CanOpenDownloadedFile));
     }
 
     partial void OnNameChanged(string value)
     {
+        InvalidateCanOpenDownloadedFileCache();
         OnPropertyChanged(nameof(DownloadedFilePath));
         OnPropertyChanged(nameof(CanOpenDownloadedFile));
     }

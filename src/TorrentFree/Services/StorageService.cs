@@ -282,8 +282,30 @@ public class StorageService : IStorageService, IDisposable
         }
 
         var tempPath = _dataPath + ".tmp";
-        await File.WriteAllTextAsync(tempPath, json);
-        File.Move(tempPath, _dataPath, overwrite: true);
+        var moved = false;
+        try
+        {
+            await File.WriteAllTextAsync(tempPath, json);
+            File.Move(tempPath, _dataPath, overwrite: true);
+            moved = true;
+        }
+        finally
+        {
+            if (!moved)
+            {
+                try
+                {
+                    if (File.Exists(tempPath))
+                    {
+                        File.Delete(tempPath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to clean up temp file {tempPath}: {ex.Message}");
+                }
+            }
+        }
     }
 
     public void Dispose()
