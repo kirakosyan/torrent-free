@@ -30,9 +30,9 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 
 ### v1.7
 
-- Added Arabic localization with right-to-left layout support.
-- Added **Start All** and **Stop All** actions for faster torrent management.
-- Improved startup reliability, proxy handling, and overall torrent stability.
+- Added Arabic localization with right-to-left UI support.
+- Added bulk `Start All` / `Stop All` actions for torrents.
+- Improved startup reliability, notifications, proxy handling, and torrent stability.
 
 ### v1.6
 
