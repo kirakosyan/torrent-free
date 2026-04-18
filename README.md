@@ -16,7 +16,7 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 - **Import `.torrent` files** via native file picker (magnet links supported internally)
 - **Open `.torrent` files with the app** (file association on Windows)
 - **Real torrent engine (MonoTorrent)** for downloads
-- **Start / Pause / Stop / Remove** controls
+- **Start / Pause / Stop / Remove / Start All / Stop All** controls
 - **Live stats**: progress, download/upload speed, seeds, peers, ETA
 - **Seeding state** with pause support
 - **Global limits**: upload/download speed caps, max active downloads/seeds, seeding ratio/time
@@ -27,6 +27,12 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 - **Persistent storage** of torrent list and settings
 
 ## 📝 Release Notes
+
+### v1.7
+
+- Added Arabic localization with right-to-left layout support.
+- Added **Start All** and **Stop All** actions for faster torrent management.
+- Improved startup reliability, proxy handling, and overall torrent stability.
 
 ### v1.6
 
