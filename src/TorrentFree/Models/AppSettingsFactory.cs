@@ -37,7 +37,8 @@ public static class AppSettingsFactory
             ProxyPort = existing.ProxyPort is > 0 and <= 65535 ? existing.ProxyPort : 1080,
             ProxyUsername = existing.ProxyUsername ?? string.Empty,
             ProxyPassword = existing.ProxyPassword ?? string.Empty,
-            Language = existing.Language
+            Language = existing.Language,
+            DesktopWasMaximized = existing.DesktopWasMaximized
         };
     }
 
@@ -79,7 +80,8 @@ public static class AppSettingsFactory
             ProxyPort = proxyPort is > 0 and <= 65535 ? proxyPort : 1080,
             ProxyUsername = proxyUsername ?? string.Empty,
             ProxyPassword = proxyPassword ?? string.Empty,
-            Language = language
+            Language = language,
+            DesktopWasMaximized = existing.DesktopWasMaximized
         };
     }
 }

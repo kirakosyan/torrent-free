@@ -80,4 +80,10 @@ public class AppSettings
     /// Null or empty means follow system language.
     /// </summary>
     public string? Language { get; set; }
+
+    /// <summary>
+    /// Remembers whether the desktop window was maximized when it last closed.
+    /// Null means the state has not been recorded yet or the platform does not support it.
+    /// </summary>
+    public bool? DesktopWasMaximized { get; set; }
 }

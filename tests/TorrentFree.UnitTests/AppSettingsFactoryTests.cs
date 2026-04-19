@@ -12,7 +12,8 @@ public sealed class AppSettingsFactoryTests
     {
         var existing = new AppSettings
         {
-            SortByStatus = true
+            SortByStatus = true,
+            DesktopWasMaximized = true
         };
 
         var updated = AppSettingsFactory.CreateForSettingsPage(
@@ -46,6 +47,7 @@ public sealed class AppSettingsFactoryTests
         Assert.Equal(9050, updated.ProxyPort);
         Assert.Equal("user", updated.ProxyUsername);
         Assert.Equal("pass", updated.ProxyPassword);
+        Assert.True(updated.DesktopWasMaximized);
     }
 
     [Fact]
@@ -55,7 +57,8 @@ public sealed class AppSettingsFactoryTests
         {
             SortByStatus = false,
             DownloadToTorrentFolder = true,
-            SpecificDownloadFolder = @"C:\Existing"
+            SpecificDownloadFolder = @"C:\Existing",
+            DesktopWasMaximized = false
         };
 
         var updated = AppSettingsFactory.CreateForSettingsPage(
@@ -79,6 +82,7 @@ public sealed class AppSettingsFactoryTests
         Assert.True(updated.DownloadToTorrentFolder);
         Assert.Equal(string.Empty, updated.SpecificDownloadFolder);
         Assert.False(updated.ProxyEnabled);
+        Assert.False(updated.DesktopWasMaximized);
     }
 
     [Fact]
@@ -123,7 +127,8 @@ public sealed class AppSettingsFactoryTests
             ProxyPort = 9050,
             ProxyUsername = "user",
             ProxyPassword = "pass",
-            Language = "fr"
+            Language = "fr",
+            DesktopWasMaximized = true
         };
 
         var updated = AppSettingsFactory.CreateForMainPage(
@@ -152,6 +157,7 @@ public sealed class AppSettingsFactoryTests
         Assert.Equal("user", updated.ProxyUsername);
         Assert.Equal("pass", updated.ProxyPassword);
         Assert.Equal("fr", updated.Language);
+        Assert.True(updated.DesktopWasMaximized);
     }
 
     [Fact]
@@ -193,5 +199,7 @@ public sealed class AppSettingsFactoryTests
         Assert.Equal(string.Empty, settings.ProxyPassword);
         // Language falls back to null (system default) when missing from old JSON
         Assert.Null(settings.Language);
+        // Desktop window state falls back to null when missing from old JSON
+        Assert.Null(settings.DesktopWasMaximized);
     }
 }

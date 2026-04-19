@@ -29,6 +29,11 @@ public interface IStorageService
     Task SaveSettingsAsync(AppSettings settings);
 
     /// <summary>
+    /// Updates the persisted desktop window maximized state without overwriting other settings.
+    /// </summary>
+    Task UpdateDesktopWindowStateAsync(bool? desktopWasMaximized);
+
+    /// <summary>
     /// Gets the default download path.
     /// </summary>
     string GetDefaultDownloadPath();
@@ -222,6 +227,44 @@ public class StorageService : IStorageService, IDisposable
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error saving settings: {ex.Message}");
+        }
+        finally
+        {
+            _saveLock.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task UpdateDesktopWindowStateAsync(bool? desktopWasMaximized)
+    {
+        await _saveLock.WaitAsync();
+        try
+        {
+            var data = await LoadDataAsync();
+            var settings = data.Settings ?? new AppSettings();
+            if (settings.DesktopWasMaximized == desktopWasMaximized)
+            {
+                _cachedSettings = settings;
+                return;
+            }
+
+            settings.DesktopWasMaximized = desktopWasMaximized;
+            data.Settings = settings;
+            data.Torrents ??= [];
+            data.Version = "1.0";
+            data.LastUpdated = DateTime.UtcNow;
+
+            _cachedSettings = settings;
+
+            await WriteDataAsync(data);
+        }
+        catch (IOException ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error saving desktop window state (I/O error): {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error saving desktop window state: {ex.Message}");
         }
         finally
         {

@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using Microsoft.Maui.Storage;
+using TorrentFree.Models;
 using TorrentFree.Services;
 
 namespace TorrentFree;
@@ -75,25 +76,48 @@ public partial class App : Application
             ? FlowDirection.RightToLeft
             : FlowDirection.LeftToRight;
         window.Created += OnWindowCreated;
+        ConfigurePlatformWindow(window);
         return window;
     }
 
     private async void OnWindowCreated(object? sender, EventArgs e)
     {
-        if (sender is Window w)
-            w.Created -= OnWindowCreated;
+        if (sender is not Window window)
+        {
+            return;
+        }
+
+        window.Created -= OnWindowCreated;
+
+        AppSettings settings;
+        try
+        {
+            settings = await _storageService.LoadSettingsAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to load saved settings: {ex.Message}");
+            return;
+        }
+
+        ApplyPlatformWindowSettings(window, settings);
+
+        if (string.IsNullOrEmpty(settings.Language))
+        {
+            return;
+        }
 
         try
         {
-            var settings = await _storageService.LoadSettingsAsync();
-            if (!string.IsNullOrEmpty(settings.Language))
-            {
-                _localizationService.SetCulture(new CultureInfo(settings.Language));
-            }
+            _localizationService.SetCulture(new CultureInfo(settings.Language));
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Failed to apply saved language: {ex.Message}");
         }
     }
+
+    partial void ConfigurePlatformWindow(Window window);
+
+    partial void ApplyPlatformWindowSettings(Window window, AppSettings settings);
 }
