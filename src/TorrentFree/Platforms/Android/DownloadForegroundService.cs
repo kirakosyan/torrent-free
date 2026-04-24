@@ -3,6 +3,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using AndroidX.Core.App;
+using TorrentFree.Services;
 
 namespace TorrentFree;
 
@@ -11,7 +12,6 @@ public sealed class DownloadForegroundService : Service
 {
     private const int NotificationId = 1001;
     private const string ChannelId = "torrentfree_downloads";
-    private const string ChannelName = "Download activity";
 
     public override void OnCreate()
     {
@@ -57,8 +57,8 @@ public sealed class DownloadForegroundService : Service
     private Notification BuildNotification()
     {
         var builder = new NotificationCompat.Builder(this, ChannelId);
-        builder.SetContentTitle("Torrent Free");
-        builder.SetContentText("Downloads running in the background");
+        builder.SetContentTitle(LocalizationResourceManager.Instance["AppTitle"]);
+        builder.SetContentText(LocalizationResourceManager.Instance["BackgroundDownloadNotificationText"]);
         builder.SetSmallIcon(Resource.Mipmap.appicon);
         builder.SetOngoing(true);
         builder.SetOnlyAlertOnce(true);
@@ -77,9 +77,12 @@ public sealed class DownloadForegroundService : Service
         }
 
 #pragma warning disable CA1416
-        var channel = new NotificationChannel(ChannelId, ChannelName, NotificationImportance.Low)
+        var channel = new NotificationChannel(
+            ChannelId,
+            LocalizationResourceManager.Instance["BackgroundDownloadChannelName"],
+            NotificationImportance.Low)
         {
-            Description = "Keeps torrent downloads running while the app is minimized"
+            Description = LocalizationResourceManager.Instance["BackgroundDownloadChannelDescription"]
         };
 
         var manager = (NotificationManager?)GetSystemService(NotificationService);

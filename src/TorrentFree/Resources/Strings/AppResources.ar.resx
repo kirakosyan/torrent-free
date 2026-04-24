@@ -403,4 +403,70 @@
   <data name="SelectTorrentFile" xml:space="preserve">
     <value>اختر ملف .torrent</value>
   </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>الصق رابط magnet أو URL، ثم اضغط Enter أو لصق أو استعراض.</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>عند التفعيل، تظهر التنزيلات النشطة في الأعلى.</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>إظهار في المجلد</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>تقدم التنزيل</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>جارٍ تحميل بيانات التورنت</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>اختر لغة النظام الافتراضية أو لغة محددة.</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>أدخل مضيف البروكسي أو عنوان IP.</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>مثال: 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>أدخل رقم منفذ البروكسي.</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>اسم مستخدم اختياري للمصادقة.</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>كلمة مرور اختيارية للمصادقة.</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>اختياري</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>رسالة التحقق من الإعدادات</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>عند التحديد، يتم حذف ملف .torrent المصدر من القرص.</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>عند التحديد، يتم حذف ملفات المحتوى التي تم تنزيلها نهائيًا.</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>يزيل التورنت ويطبق خيارات حذف الملفات المحددة.</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>اكتمل التنزيل</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>تنزيلك</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>اكتمل تنزيل {0}.</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>التنزيلات تعمل في الخلفية</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>نشاط التنزيل</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>يبقي تنزيلات التورنت قيد التشغيل عند تصغير التطبيق.</value>
+  </data>
 </root>

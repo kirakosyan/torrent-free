@@ -417,4 +417,70 @@
   <data name="SelectTorrentFile" xml:space="preserve">
     <value>.torrent dosyası seçin</value>
   </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>Bir magnet URI'si veya URL yapıştırın, ardından Enter, Yapıştır veya Gözat'a basın.</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>Etkinleştirildiğinde, indirilen öğeler üstte görünür.</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>Klasörde göster</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>İndirme ilerlemesi</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>Torrent verileri yükleniyor</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>Sistem varsayılanını veya belirli bir dili seçin.</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>Proxy sunucusu veya IP adresi girin.</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>örn. 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>Proxy port numarasını girin.</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>İsteğe bağlı kimlik doğrulama kullanıcı adı.</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>İsteğe bağlı kimlik doğrulama parolası.</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>isteğe bağlı</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>Ayar doğrulama mesajı</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>İşaretlendiğinde, kaynak .torrent dosyası diskten silinir.</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>İşaretlendiğinde, indirilen içerik dosyaları kalıcı olarak silinir.</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>Torrenti kaldırır ve seçilen dosya silme seçeneklerini uygular.</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>İndirme tamamlandı</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>İndirmeniz</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>{0} indirmeyi tamamladı.</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>İndirmeler arka planda çalışıyor</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>İndirme etkinliği</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>Uygulama küçültüldüğünde torrent indirmelerini çalışır durumda tutar.</value>
+  </data>
 </root>

@@ -6,7 +6,7 @@ namespace TorrentFree.UnitTests;
 public sealed class VersionMetadataConsistencyTests
 {
     [Fact]
-    public void ProjectAndWindowsManifest_AreAlignedOnVersion180Build18()
+    public void ProjectAndWindowsManifest_AreAlignedOnVersion18Build8()
     {
         var repoRoot = Path.GetFullPath(Path.Combine(
             AppContext.BaseDirectory,
@@ -41,7 +41,7 @@ public sealed class VersionMetadataConsistencyTests
         var identity = manifest.Root?.Element(manifestNs + "Identity");
 
         Assert.NotNull(identity);
-        Assert.Equal("1.18.0.0", (string?)identity!.Attribute("Version"));
+        Assert.Equal("1.8.0.0", (string?)identity!.Attribute("Version"));
     }
 
     private static string GetProjectProperty(XDocument document, string propertyName)

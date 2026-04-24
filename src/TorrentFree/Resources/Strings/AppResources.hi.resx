@@ -417,4 +417,70 @@
   <data name="SelectTorrentFile" xml:space="preserve">
     <value>.torrent फ़ाइल चुनें</value>
   </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>magnet URI या URL चिपकाएं, फिर Enter, चिपकाएं या ब्राउज़ दबाएं।</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>चालू होने पर सक्रिय डाउनलोड ऊपर दिखाई देते हैं।</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>फोल्डर में दिखाएं</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>डाउनलोड प्रगति</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>टोरेंट डेटा लोड हो रहा है</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>सिस्टम डिफॉल्ट या कोई विशेष भाषा चुनें।</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>प्रॉक्सी होस्ट या IP दर्ज करें।</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>जैसे 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>प्रॉक्सी पोर्ट नंबर दर्ज करें।</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>वैकल्पिक प्रमाणीकरण उपयोगकर्ता नाम।</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>वैकल्पिक प्रमाणीकरण पासवर्ड।</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>वैकल्पिक</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>सेटिंग्स सत्यापन संदेश</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>चेक होने पर स्रोत .torrent फ़ाइल डिस्क से हटा दी जाती है।</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>चेक होने पर डाउनलोड की गई सामग्री स्थायी रूप से हटा दी जाती है।</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>टोरेंट हटाता है और चुने गए फ़ाइल हटाने के विकल्प लागू करता है।</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>डाउनलोड पूरा हुआ</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>आपका डाउनलोड</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>{0} डाउनलोड पूरा हो गया है।</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>डाउनलोड पृष्ठभूमि में चल रहे हैं</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>डाउनलोड गतिविधि</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>ऐप को छोटा करने पर टोरेंट डाउनलोड चालू रखता है।</value>
+  </data>
 </root>

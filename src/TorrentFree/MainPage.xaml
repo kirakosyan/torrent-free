@@ -186,18 +186,18 @@
                                           HorizontalOptions="Start"/>
                             </VerticalStackLayout>
                      </HorizontalStackLayout>
-                     <Button Grid.Row="0"
-                             Grid.Column="1"
-                             Text="ⓘ"
-                             SemanticProperties.Description="About"
-                             Style="{StaticResource HeaderIconButton}"
-                             Clicked="OnAboutClicked"/>
-                     <Button Grid.Row="0"
-                             Grid.Column="2"
-                             Text="⚙️"
-                             SemanticProperties.Description="Settings"
-                             Style="{StaticResource HeaderIconButton}"
-                             Command="{Binding OpenSettingsCommand}"/>
+                      <Button Grid.Row="0"
+                              Grid.Column="1"
+                              Text="ⓘ"
+                              SemanticProperties.Description="{helpers:Translate AboutTitle}"
+                              Style="{StaticResource HeaderIconButton}"
+                              Clicked="OnAboutClicked"/>
+                      <Button Grid.Row="0"
+                              Grid.Column="2"
+                              Text="⚙️"
+                              SemanticProperties.Description="{helpers:Translate SettingsTitle}"
+                              Style="{StaticResource HeaderIconButton}"
+                              Command="{Binding OpenSettingsCommand}"/>
               </Grid>
 
               <!-- Input Section -->
@@ -212,21 +212,21 @@
                             </Border.StrokeShape>
                             <Grid ColumnDefinitions="*,Auto,Auto"
                                   ColumnSpacing="8">
-                                   <Entry Grid.Column="0"
-                                          Placeholder="{helpers:Translate AddTorrentPlaceholder}"
-                                          SemanticProperties.Description="Magnet link input"
-                                          SemanticProperties.Hint="Paste a magnet URI or URL, then press Enter, Paste, or Browse"
-                                          Text="{Binding MagnetLinkInput}"
+                                    <Entry Grid.Column="0"
+                                           Placeholder="{helpers:Translate AddTorrentPlaceholder}"
+                                           SemanticProperties.Description="{helpers:Translate AddTorrentPlaceholder}"
+                                          SemanticProperties.Hint="{helpers:Translate MagnetInputHint}"
+                                           Text="{Binding MagnetLinkInput}"
                                           ReturnCommand="{Binding AddTorrentCommand}"
                                           FontSize="14"
                                           ClearButtonVisibility="WhileEditing"
                                           Keyboard="Url"
                                           MaxLength="4000"/>
 
-                                   <Button Grid.Column="1"
-                                           Text="{helpers:Translate PasteButton}"
-                                           SemanticProperties.Description="Paste clipboard text into magnet link input"
-                                           Command="{Binding PasteMagnetLinkCommand}"
+                                    <Button Grid.Column="1"
+                                            Text="{helpers:Translate PasteButton}"
+                                           SemanticProperties.Description="{helpers:Translate PasteButton}"
+                                            Command="{Binding PasteMagnetLinkCommand}"
                                            BackgroundColor="#EEF2FF"
                                            TextColor="#4F46E5"
                                            FontSize="14"
@@ -235,10 +235,10 @@
                                            Padding="12,8"
                                            HeightRequest="44"/>
 
-                                   <Button Grid.Column="2"
-                                           Text="{helpers:Translate BrowseButton}"
-                                           SemanticProperties.Description="Browse for torrent file"
-                                           Command="{Binding BrowseTorrentFileCommand}"
+                                    <Button Grid.Column="2"
+                                            Text="{helpers:Translate BrowseButton}"
+                                           SemanticProperties.Description="{helpers:Translate SelectTorrentFile}"
+                                            Command="{Binding BrowseTorrentFileCommand}"
                                            BackgroundColor="{StaticResource AccentColor}"
                                            TextColor="White"
                                            FontSize="14"
@@ -306,16 +306,16 @@
                             <HorizontalStackLayout Grid.Column="1"
                                                    Spacing="8"
                                                    VerticalOptions="Center">
-                                    <Button Text="{helpers:Translate StartAllButton}"
-                                            SemanticProperties.Description="Start all torrents"
-                                            Style="{StaticResource ActionButton}"
+                                     <Button Text="{helpers:Translate StartAllButton}"
+                                             SemanticProperties.Description="{helpers:Translate StartAllButton}"
+                                             Style="{StaticResource ActionButton}"
                                             BackgroundColor="#ECFDF3"
                                             TextColor="#16A34A"
                                             Command="{Binding StartAllTorrentsCommand}"
                                             IsEnabled="{Binding CanStartAllTorrents}"/>
-                                    <Button Text="{helpers:Translate StopAllButton}"
-                                            SemanticProperties.Description="Stop all torrents"
-                                            Style="{StaticResource ActionButton}"
+                                     <Button Text="{helpers:Translate StopAllButton}"
+                                             SemanticProperties.Description="{helpers:Translate StopAllButton}"
+                                             Style="{StaticResource ActionButton}"
                                             BackgroundColor="#FEF2F2"
                                             TextColor="#DC2626"
                                             Command="{Binding StopAllTorrentsCommand}"
@@ -324,18 +324,18 @@
                              <HorizontalStackLayout Grid.Column="2"
                                                    Spacing="6"
                                                    VerticalOptions="Center">
-                                   <CheckBox IsChecked="{Binding SortByStatus}"
-                                             SemanticProperties.Description="Sort downloads by status"
-                                             SemanticProperties.Hint="When enabled, downloading items appear at the top"/>
+                                    <CheckBox IsChecked="{Binding SortByStatus}"
+                                             SemanticProperties.Description="{helpers:Translate DownloadingOnTop}"
+                                             SemanticProperties.Hint="{helpers:Translate DownloadingOnTopHint}"/>
                                    <Label Text="{helpers:Translate DownloadingOnTop}"
                                           FontSize="12"
                                           TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                           VerticalOptions="Center"/>
                             </HorizontalStackLayout>
-                             <Button Grid.Column="3"
-                                    Text="{helpers:Translate Details}"
-                                    SemanticProperties.Description="Toggle selected torrent details"
-                                    Style="{StaticResource ActionButton}"
+                              <Button Grid.Column="3"
+                                     Text="{helpers:Translate Details}"
+                                     SemanticProperties.Description="{helpers:Translate Details}"
+                                     Style="{StaticResource ActionButton}"
                                     BackgroundColor="#EEF2FF"
                                     TextColor="#4F46E5"
                                     Command="{Binding ToggleSelectedTorrentDetailsCommand}"
@@ -366,9 +366,9 @@
                                           <Label Text="{helpers:Translate DownloadKBs}"
                                                  FontSize="10"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                          <Entry Text="{Binding SelectedTorrent.DownloadLimitKbps}"
-                                                 SemanticProperties.Description="Selected torrent download limit in kilobytes per second"
-                                                 SemanticProperties.Hint="Enter zero to use global limit"
+                                           <Entry Text="{Binding SelectedTorrent.DownloadLimitKbps}"
+                                                 SemanticProperties.Description="{helpers:Translate DownloadKBs}"
+                                                 SemanticProperties.Hint="{helpers:Translate GlobalHint}"
                                                  Keyboard="Numeric"
                                                  Placeholder="{helpers:Translate GlobalHint}"/>
                                    </VerticalStackLayout>
@@ -379,9 +379,9 @@
                                           <Label Text="{helpers:Translate UploadKBs}"
                                                  FontSize="10"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                          <Entry Text="{Binding SelectedTorrent.UploadLimitKbps}"
-                                                 SemanticProperties.Description="Selected torrent upload limit in kilobytes per second"
-                                                 SemanticProperties.Hint="Enter zero to use global limit"
+                                           <Entry Text="{Binding SelectedTorrent.UploadLimitKbps}"
+                                                 SemanticProperties.Description="{helpers:Translate UploadKBs}"
+                                                 SemanticProperties.Hint="{helpers:Translate GlobalHint}"
                                                  Keyboard="Numeric"
                                                  Placeholder="{helpers:Translate GlobalHint}"/>
                                    </VerticalStackLayout>
@@ -392,9 +392,9 @@
                                           <Label Text="{helpers:Translate MaxSeedRatio}"
                                                  FontSize="10"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                          <Entry Text="{Binding SelectedTorrent.MaxSeedRatio}"
-                                                 SemanticProperties.Description="Selected torrent maximum seed ratio"
-                                                 SemanticProperties.Hint="Enter zero for unlimited seeding ratio"
+                                           <Entry Text="{Binding SelectedTorrent.MaxSeedRatio}"
+                                                 SemanticProperties.Description="{helpers:Translate MaxSeedRatio}"
+                                                 SemanticProperties.Hint="{helpers:Translate UnlimitedHint}"
                                                  Keyboard="Numeric"
                                                  Placeholder="{helpers:Translate GlobalHint}"/>
                                    </VerticalStackLayout>
@@ -405,9 +405,9 @@
                                           <Label Text="{helpers:Translate MaxSeedMinutes}"
                                                  FontSize="10"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                          <Entry Text="{Binding SelectedTorrent.MaxSeedMinutes}"
-                                                 SemanticProperties.Description="Selected torrent maximum seed minutes"
-                                                 SemanticProperties.Hint="Enter zero for unlimited seeding time"
+                                           <Entry Text="{Binding SelectedTorrent.MaxSeedMinutes}"
+                                                 SemanticProperties.Description="{helpers:Translate MaxSeedMinutes}"
+                                                 SemanticProperties.Hint="{helpers:Translate UnlimitedHint}"
                                                  Keyboard="Numeric"
                                                  Placeholder="{helpers:Translate GlobalHint}"/>
                                    </VerticalStackLayout>
@@ -431,10 +431,10 @@
                      </VerticalStackLayout>
 
                      <!-- Downloads List -->
-                     <CollectionView Grid.Row="2"
-                                     ItemsSource="{Binding DisplayTorrents}"
-                                     SemanticProperties.Description="Torrent downloads list"
-                                     SelectionMode="Single"
+                      <CollectionView Grid.Row="2"
+                                      ItemsSource="{Binding DisplayTorrents}"
+                                      SemanticProperties.Description="{helpers:Translate DownloadsTitle}"
+                                      SelectionMode="Single"
                                      SelectedItem="{Binding SelectedTorrent}"
                                      IsVisible="{Binding IsEmpty, Converter={StaticResource InverseBoolConverter}}">
                             <CollectionView.ItemTemplate>
@@ -483,7 +483,7 @@
                                                                </VerticalStackLayout>
                                                                <Button Grid.Column="1"
                                                                        Text="📂"
-                                                                       SemanticProperties.Description="Show in folder"
+                                                                       SemanticProperties.Description="{helpers:Translate ShowInFolder}"
                                                                        Style="{StaticResource FolderButton}"
                                                                        Command="{Binding ShowInFolderCommand}"
                                                                        CommandParameter="{Binding .}"
@@ -516,10 +516,10 @@
                                                         <Grid Grid.Row="1"
                                                               ColumnDefinitions="*,Auto"
                                                               ColumnSpacing="8">
-                                                               <ProgressBar Grid.Column="0"
-                                                                            Progress="{Binding Progress, Converter={StaticResource ProgressConverter}}"
-                                                                            SemanticProperties.Description="Download progress"
-                                                                            ProgressColor="{StaticResource AccentColor}"
+                                                                 <ProgressBar Grid.Column="0"
+                                                                             Progress="{Binding Progress, Converter={StaticResource ProgressConverter}}"
+                                                                             SemanticProperties.Description="{helpers:Translate DownloadProgress}"
+                                                                             ProgressColor="{StaticResource AccentColor}"
                                                                             HeightRequest="6"/>
                                                                <Label Grid.Column="1"
                                                                       Text="{Binding Progress, StringFormat='{0:F0}%'}"
@@ -657,27 +657,27 @@
                                                                                Spacing="8"
                                                                                HorizontalOptions="End"
                                                                                Margin="0,8,0,0">
-                                                               <Button Text="▶️"
-                                                                       SemanticProperties.Description="Start download"
-                                                                       Style="{StaticResource StartButton}"
+                                                                <Button Text="▶️"
+                                                                        SemanticProperties.Description="{helpers:Translate StartButton}"
+                                                                        Style="{StaticResource StartButton}"
                                                                        Command="{Binding StartSpecificTorrentCommand}"
                                                                        CommandParameter="{Binding .}"
                                                                        IsVisible="{Binding CanStart}"/>
-                                                               <Button Text="⏸️"
-                                                                       SemanticProperties.Description="Pause download"
-                                                                       Style="{StaticResource PauseButton}"
+                                                                <Button Text="⏸️"
+                                                                        SemanticProperties.Description="{helpers:Translate PauseButton}"
+                                                                        Style="{StaticResource PauseButton}"
                                                                        Command="{Binding PauseSpecificTorrentCommand}"
                                                                        CommandParameter="{Binding .}"
                                                                        IsVisible="{Binding CanPause}"/>
-                                                               <Button Text="⏹️"
-                                                                        SemanticProperties.Description="Stop download"
-                                                                       Style="{StaticResource StopButton}"
+                                                                <Button Text="⏹️"
+                                                                         SemanticProperties.Description="{helpers:Translate StopButton}"
+                                                                        Style="{StaticResource StopButton}"
                                                                        Command="{Binding StopSpecificTorrentCommand}"
                                                                        CommandParameter="{Binding .}"
                                                                        IsVisible="{Binding CanStop}"/>
-                                                               <Button Text="🗑️"
-                                                                       SemanticProperties.Description="Remove torrent"
-                                                                       Style="{StaticResource RemoveButton}"
+                                                                <Button Text="🗑️"
+                                                                        SemanticProperties.Description="{helpers:Translate RemoveButton}"
+                                                                        Style="{StaticResource RemoveButton}"
                                                                        Command="{Binding RemoveSpecificTorrentCommand}"
                                                                        CommandParameter="{Binding .}"/>
                                                         </HorizontalStackLayout>
@@ -689,11 +689,11 @@
               </Grid>
 
               <!-- Loading Indicator -->
-              <ActivityIndicator Grid.RowSpan="3"
-                                 IsRunning="{Binding IsBusy}"
-                                 IsVisible="{Binding IsBusy}"
-                                 SemanticProperties.Description="Loading torrent data"
-                                 Color="{StaticResource AccentColor}"
+               <ActivityIndicator Grid.RowSpan="3"
+                                  IsRunning="{Binding IsBusy}"
+                                  IsVisible="{Binding IsBusy}"
+                                  SemanticProperties.Description="{helpers:Translate LoadingTorrentData}"
+                                  Color="{StaticResource AccentColor}"
                                  VerticalOptions="Center"
                                  HorizontalOptions="Center"/>
        </Grid>

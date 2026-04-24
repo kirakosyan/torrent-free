@@ -28,32 +28,32 @@
                                    FontSize="14"
                                    FontAttributes="Bold"/>
 
-                            <HorizontalStackLayout Spacing="8">
-                                   <CheckBox IsChecked="{Binding DeleteTorrentFile}"
-                                             SemanticProperties.Description="Delete torrent file"
-                                             SemanticProperties.Hint="When checked, the source .torrent file is deleted from disk"/>
-                                   <Label Text="{helpers:Translate DeleteTorrentFile}"
-                                          VerticalOptions="Center"/>
+                             <HorizontalStackLayout Spacing="8">
+                                    <CheckBox IsChecked="{Binding DeleteTorrentFile}"
+                                             SemanticProperties.Description="{helpers:Translate DeleteTorrentFile}"
+                                             SemanticProperties.Hint="{helpers:Translate DeleteTorrentFileHint}"/>
+                                    <Label Text="{helpers:Translate DeleteTorrentFile}"
+                                           VerticalOptions="Center"/>
                             </HorizontalStackLayout>
 
-                            <HorizontalStackLayout Spacing="8">
-                                   <CheckBox IsChecked="{Binding DeleteDownloadedFiles}"
-                                             SemanticProperties.Description="Delete downloaded files"
-                                             SemanticProperties.Hint="When checked, downloaded content files are permanently deleted"/>
-                                   <Label Text="{helpers:Translate DeleteDownloadedFiles}"
-                                          VerticalOptions="Center"/>
+                             <HorizontalStackLayout Spacing="8">
+                                    <CheckBox IsChecked="{Binding DeleteDownloadedFiles}"
+                                             SemanticProperties.Description="{helpers:Translate DeleteDownloadedFiles}"
+                                             SemanticProperties.Hint="{helpers:Translate DeleteDownloadedFilesHint}"/>
+                                    <Label Text="{helpers:Translate DeleteDownloadedFiles}"
+                                           VerticalOptions="Center"/>
                             </HorizontalStackLayout>
 
                             <HorizontalStackLayout Spacing="12"
                                                    HorizontalOptions="End">
-                                   <Button Text="{helpers:Translate Cancel}"
-                                           SemanticProperties.Description="Cancel remove torrent"
+                                    <Button Text="{helpers:Translate Cancel}"
+                                           SemanticProperties.Description="{helpers:Translate Cancel}"
                                            BackgroundColor="#BDBDBD"
                                            TextColor="White"
                                            Clicked="OnCancelClicked"/>
-                                   <Button Text="{helpers:Translate RemoveButton}"
-                                           SemanticProperties.Description="Confirm remove torrent"
-                                           SemanticProperties.Hint="Removes the torrent and applies selected file deletion options"
+                                    <Button Text="{helpers:Translate RemoveButton}"
+                                           SemanticProperties.Description="{helpers:Translate RemoveButton}"
+                                           SemanticProperties.Hint="{helpers:Translate RemoveTorrentHint}"
                                            BackgroundColor="#E53935"
                                            TextColor="White"
                                            Clicked="OnDeleteClicked"/>

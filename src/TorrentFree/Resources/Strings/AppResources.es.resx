@@ -431,4 +431,70 @@
   <data name="SelectTorrentFile" xml:space="preserve">
     <value>Seleccionar archivo .torrent</value>
   </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>Pega un URI magnet o una URL y pulsa Entrar, Pegar o Examinar.</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>Cuando está activado, las descargas activas aparecen arriba.</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>Mostrar en carpeta</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>Progreso de descarga</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>Cargando datos de torrents</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>Elige el idioma del sistema o un idioma específico.</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>Introduce el host o la IP del proxy.</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>p. ej. 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>Introduce el número de puerto del proxy.</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>Nombre de usuario de autenticación opcional.</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>Contraseña de autenticación opcional.</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>opcional</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>Mensaje de validación de ajustes</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>Si está marcado, el archivo .torrent de origen se elimina del disco.</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>Si está marcado, el contenido descargado se elimina permanentemente.</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>Elimina el torrent y aplica las opciones de eliminación seleccionadas.</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>Descarga completada</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>Tu descarga</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>{0} ha terminado de descargarse.</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>Descargas ejecutándose en segundo plano</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>Actividad de descarga</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>Mantiene las descargas de torrents activas mientras la aplicación está minimizada.</value>
+  </data>
 </root>

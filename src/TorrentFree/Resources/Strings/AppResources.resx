@@ -417,4 +417,70 @@
   <data name="SelectTorrentFile" xml:space="preserve">
     <value>Select a .torrent file</value>
   </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>Paste a magnet URI or URL, then press Enter, Paste, or Browse.</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>When enabled, downloading items appear at the top.</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>Show in folder</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>Download progress</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>Loading torrent data</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>Choose system default or a specific language.</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>Enter proxy host or IP.</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>e.g. 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>Enter proxy port number.</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>Optional authentication username.</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>Optional authentication password.</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>optional</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>Settings validation message</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>When checked, the source .torrent file is deleted from disk.</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>When checked, downloaded content files are permanently deleted.</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>Removes the torrent and applies selected file deletion options.</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>Download complete</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>Your download</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>{0} has finished downloading.</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>Downloads running in the background</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>Download activity</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>Keeps torrent downloads running while the app is minimized.</value>
+  </data>
 </root>

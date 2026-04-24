@@ -431,4 +431,70 @@
   <data name="SelectTorrentFile" xml:space="preserve">
     <value>Выберите файл .torrent</value>
   </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>Вставьте magnet URI или URL, затем нажмите Enter, Вставить или Обзор.</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>Если включено, активные загрузки отображаются сверху.</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>Показать в папке</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>Ход загрузки</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>Загрузка данных торрента</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>Выберите системный язык или конкретный язык.</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>Введите хост или IP-адрес прокси.</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>например, 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>Введите номер порта прокси.</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>Необязательное имя пользователя для аутентификации.</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>Необязательный пароль для аутентификации.</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>необязательно</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>Сообщение проверки настроек</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>Если включено, исходный файл .torrent удаляется с диска.</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>Если включено, загруженные файлы будут удалены безвозвратно.</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>Удаляет торрент и применяет выбранные параметры удаления файлов.</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>Загрузка завершена</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>Ваша загрузка</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>{0} завершена.</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>Загрузки выполняются в фоновом режиме</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>Активность загрузок</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>Сохраняет загрузки торрентов активными, пока приложение свернуто.</value>
+  </data>
 </root>

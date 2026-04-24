@@ -937,6 +937,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 ErrorMessage = LocalizationResourceManager.Instance["ErrorInvalidMagnet"];
             }
         }
+        catch (DuplicateTorrentException)
+        {
+            ErrorMessage = LocalizationResourceManager.Instance["ErrorDuplicateTorrent"];
+        }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Add torrent error: {ex}");

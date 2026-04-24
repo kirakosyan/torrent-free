@@ -431,4 +431,70 @@
   <data name="SelectTorrentFile" xml:space="preserve">
     <value>Sélectionner un fichier .torrent</value>
   </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>Collez un URI magnet ou une URL, puis appuyez sur Entrée, Coller ou Parcourir.</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>Lorsque cette option est activée, les téléchargements actifs apparaissent en haut.</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>Afficher dans le dossier</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>Progression du téléchargement</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>Chargement des données du torrent</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>Choisissez la langue du système ou une langue spécifique.</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>Saisissez l'hôte ou l'adresse IP du proxy.</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>par ex. 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>Saisissez le numéro de port du proxy.</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>Nom d'utilisateur d'authentification facultatif.</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>Mot de passe d'authentification facultatif.</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>facultatif</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>Message de validation des paramètres</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>Si cette option est cochée, le fichier .torrent source est supprimé du disque.</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>Si cette option est cochée, les fichiers téléchargés sont supprimés définitivement.</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>Supprime le torrent et applique les options de suppression sélectionnées.</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>Téléchargement terminé</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>Votre téléchargement</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>{0} a terminé son téléchargement.</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>Téléchargements en cours en arrière-plan</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>Activité de téléchargement</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>Maintient les téléchargements torrent actifs lorsque l'application est réduite.</value>
+  </data>
 </root>

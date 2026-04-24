@@ -55,11 +55,11 @@
                                           Text="{helpers:Translate LanguageLabel, StringFormat='🌐 {0}'}"
                                           FontSize="14"
                                           FontAttributes="Bold"/>
-                                   <Picker Grid.Row="1"
-                                           ItemsSource="{Binding AvailableLanguages}"
-                                           SelectedItem="{Binding SelectedLanguage}"
-                                           SemanticProperties.Description="Select application language"
-                                           SemanticProperties.Hint="Choose system default or a specific language"/>
+                                    <Picker Grid.Row="1"
+                                            ItemsSource="{Binding AvailableLanguages}"
+                                            SelectedItem="{Binding SelectedLanguage}"
+                                            SemanticProperties.Description="{helpers:Translate LanguageLabel}"
+                                            SemanticProperties.Hint="{helpers:Translate LanguagePickerHint}"/>
                             </Grid>
                      </Border>
 
@@ -79,10 +79,10 @@
                                           FontSize="14"
                                           FontAttributes="Bold"/>
 
-                                   <CheckBox Grid.Row="1"
-                                             Grid.Column="0"
-                                             IsChecked="{Binding DownloadToTorrentFolder}"
-                                             SemanticProperties.Description="Use the original torrent file folder for downloads"/>
+                                    <CheckBox Grid.Row="1"
+                                              Grid.Column="0"
+                                              IsChecked="{Binding DownloadToTorrentFolder}"
+                                             SemanticProperties.Description="{helpers:Translate DownloadToTorrentFolderLabel}"/>
                                    <Label Grid.Row="1"
                                           Grid.Column="1"
                                           Text="{helpers:Translate DownloadToTorrentFolderLabel}"
@@ -99,16 +99,16 @@
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
                                           <Grid ColumnDefinitions="*,Auto"
                                                 ColumnSpacing="8">
-                                                 <Entry Grid.Column="0"
-                                                        Text="{Binding SpecificDownloadFolder}"
-                                                        SemanticProperties.Description="Custom download folder path"
-                                                        SemanticProperties.Hint="Enter the folder where new downloads should be saved"
+                                                  <Entry Grid.Column="0"
+                                                         Text="{Binding SpecificDownloadFolder}"
+                                                        SemanticProperties.Description="{helpers:Translate SpecificDownloadFolderLabel}"
+                                                        SemanticProperties.Hint="{helpers:Translate SpecificDownloadFolderPlaceholder}"
                                                         Placeholder="{helpers:Translate SpecificDownloadFolderPlaceholder}"/>
-                                                 <Button Grid.Column="1"
-                                                         Text="{helpers:Translate BrowseButton}"
-                                                         Command="{Binding BrowseDownloadFolderCommand}"
-                                                         IsVisible="{Binding IsFolderPickerSupported}"
-                                                         SemanticProperties.Description="Browse for a custom download folder"/>
+                                                  <Button Grid.Column="1"
+                                                          Text="{helpers:Translate BrowseButton}"
+                                                          Command="{Binding BrowseDownloadFolderCommand}"
+                                                          IsVisible="{Binding IsFolderPickerSupported}"
+                                                         SemanticProperties.Description="{helpers:Translate BrowseButton}"/>
                                           </Grid>
                                    </VerticalStackLayout>
                             </Grid>
@@ -136,10 +136,10 @@
                                           <Label Text="{helpers:Translate DownloadKBs, StringFormat='⬇️ {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                          <Entry Text="{Binding GlobalDownloadLimitKbps}"
-                                                 SemanticProperties.Description="Global download speed limit in kilobytes per second"
-                                                 SemanticProperties.Hint="Enter zero for unlimited"
-                                                 Keyboard="Numeric"
+                                           <Entry Text="{Binding GlobalDownloadLimitKbps}"
+                                                 SemanticProperties.Description="{helpers:Translate DownloadKBs}"
+                                                 SemanticProperties.Hint="{helpers:Translate UnlimitedHint}"
+                                                  Keyboard="Numeric"
                                                  Placeholder="{helpers:Translate UnlimitedHint}"
                                                  TextChanged="OnNumericTextChanged"/>
                                    </VerticalStackLayout>
@@ -150,10 +150,10 @@
                                           <Label Text="{helpers:Translate UploadKBs, StringFormat='⬆️ {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                          <Entry Text="{Binding GlobalUploadLimitKbps}"
-                                                 SemanticProperties.Description="Global upload speed limit in kilobytes per second"
-                                                 SemanticProperties.Hint="Enter zero for unlimited"
-                                                 Keyboard="Numeric"
+                                           <Entry Text="{Binding GlobalUploadLimitKbps}"
+                                                 SemanticProperties.Description="{helpers:Translate UploadKBs}"
+                                                 SemanticProperties.Hint="{helpers:Translate UnlimitedHint}"
+                                                  Keyboard="Numeric"
                                                  Placeholder="{helpers:Translate UnlimitedHint}"
                                                  TextChanged="OnNumericTextChanged"/>
                                    </VerticalStackLayout>
@@ -181,11 +181,11 @@
                                           Text="{helpers:Translate AssociateTorrentFiles}"
                                           FontSize="12"
                                           TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                   <Switch Grid.Row="1"
-                                           Grid.Column="1"
-                                           IsToggled="{Binding IsTorrentAssociated}"
-                                           SemanticProperties.Description="Associate torrent files with Torrent Free"
-                                           SemanticProperties.Hint="Turn on to open .torrent files with this app"/>
+                                    <Switch Grid.Row="1"
+                                            Grid.Column="1"
+                                            IsToggled="{Binding IsTorrentAssociated}"
+                                           SemanticProperties.Description="{helpers:Translate AssociateTorrentFiles}"
+                                           SemanticProperties.Hint="{helpers:Translate AssociateTorrentMessage}"/>
                             </Grid>
                      </Border>
 
@@ -211,10 +211,10 @@
                                           <Label Text="{helpers:Translate MaxActiveDownloads, StringFormat='⬇️ {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                          <Entry Text="{Binding MaxActiveDownloads}"
-                                                 SemanticProperties.Description="Maximum number of active downloads"
-                                                 SemanticProperties.Hint="Enter zero for unlimited"
-                                                 Keyboard="Numeric"
+                                           <Entry Text="{Binding MaxActiveDownloads}"
+                                                 SemanticProperties.Description="{helpers:Translate MaxActiveDownloads}"
+                                                 SemanticProperties.Hint="{helpers:Translate UnlimitedHint}"
+                                                  Keyboard="Numeric"
                                                  Placeholder="{helpers:Translate UnlimitedHint}"
                                                  TextChanged="OnNumericTextChanged"/>
                                    </VerticalStackLayout>
@@ -225,10 +225,10 @@
                                           <Label Text="{helpers:Translate MaxActiveSeeds, StringFormat='🌱 {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                          <Entry Text="{Binding MaxActiveSeeds}"
-                                                 SemanticProperties.Description="Maximum number of active seed jobs"
-                                                 SemanticProperties.Hint="Enter zero for unlimited"
-                                                 Keyboard="Numeric"
+                                           <Entry Text="{Binding MaxActiveSeeds}"
+                                                 SemanticProperties.Description="{helpers:Translate MaxActiveSeeds}"
+                                                 SemanticProperties.Hint="{helpers:Translate UnlimitedHint}"
+                                                  Keyboard="Numeric"
                                                  Placeholder="{helpers:Translate UnlimitedHint}"
                                                  TextChanged="OnNumericTextChanged"/>
                                    </VerticalStackLayout>
@@ -257,10 +257,10 @@
                                           <Label Text="{helpers:Translate MaxSeedRatio, StringFormat='📊 {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                          <Entry Text="{Binding GlobalMaxSeedRatio}"
-                                                 SemanticProperties.Description="Global maximum seed ratio"
-                                                 SemanticProperties.Hint="Enter zero for unlimited"
-                                                 Keyboard="Numeric"
+                                           <Entry Text="{Binding GlobalMaxSeedRatio}"
+                                                 SemanticProperties.Description="{helpers:Translate MaxSeedRatio}"
+                                                 SemanticProperties.Hint="{helpers:Translate UnlimitedHint}"
+                                                  Keyboard="Numeric"
                                                  Placeholder="{helpers:Translate UnlimitedHint}"
                                                  TextChanged="OnDecimalTextChanged"/>
                                    </VerticalStackLayout>
@@ -271,10 +271,10 @@
                                           <Label Text="{helpers:Translate MaxSeedMinutes, StringFormat='⏱️ {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                          <Entry Text="{Binding GlobalMaxSeedMinutes}"
-                                                 SemanticProperties.Description="Global maximum seed minutes"
-                                                 SemanticProperties.Hint="Enter zero for unlimited"
-                                                 Keyboard="Numeric"
+                                           <Entry Text="{Binding GlobalMaxSeedMinutes}"
+                                                 SemanticProperties.Description="{helpers:Translate MaxSeedMinutes}"
+                                                 SemanticProperties.Hint="{helpers:Translate UnlimitedHint}"
+                                                  Keyboard="Numeric"
                                                  Placeholder="{helpers:Translate UnlimitedHint}"
                                                  TextChanged="OnNumericTextChanged"/>
                                    </VerticalStackLayout>
@@ -301,8 +301,8 @@
                                    <HorizontalStackLayout Grid.Row="1"
                                                           Grid.ColumnSpan="2"
                                                           Spacing="8">
-                                          <Switch IsToggled="{Binding ProxyEnabled}"
-                                                  SemanticProperties.Description="Enable SOCKS5 proxy"/>
+                                           <Switch IsToggled="{Binding ProxyEnabled}"
+                                                  SemanticProperties.Description="{helpers:Translate EnableProxy}"/>
                                           <Label Text="{helpers:Translate EnableProxy}"
                                                  VerticalOptions="Center"
                                                  FontSize="13"/>
@@ -314,10 +314,10 @@
                                           <Label Text="{helpers:Translate Host, StringFormat='🌐 {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                          <Entry Text="{Binding ProxyHost}"
-                                                 SemanticProperties.Description="SOCKS5 proxy host address"
-                                                 SemanticProperties.Hint="Enter proxy host or IP"
-                                                 Placeholder="e.g. 127.0.0.1"
+                                           <Entry Text="{Binding ProxyHost}"
+                                                 SemanticProperties.Description="{helpers:Translate Host}"
+                                                 SemanticProperties.Hint="{helpers:Translate ProxyHostHint}"
+                                                 Placeholder="{helpers:Translate ProxyHostPlaceholder}"
                                                  IsEnabled="{Binding ProxyEnabled}"/>
                                    </VerticalStackLayout>
 
@@ -327,9 +327,9 @@
                                           <Label Text="{helpers:Translate Port, StringFormat='🔌 {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                          <Entry Text="{Binding ProxyPort}"
-                                                 SemanticProperties.Description="SOCKS5 proxy port"
-                                                 SemanticProperties.Hint="Enter proxy port number"
+                                           <Entry Text="{Binding ProxyPort}"
+                                                 SemanticProperties.Description="{helpers:Translate Port}"
+                                                 SemanticProperties.Hint="{helpers:Translate ProxyPortHint}"
                                                  Keyboard="Numeric"
                                                  Placeholder="1080"
                                                  IsEnabled="{Binding ProxyEnabled}"
@@ -342,10 +342,10 @@
                                           <Label Text="{helpers:Translate Username, StringFormat='👤 {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                          <Entry Text="{Binding ProxyUsername}"
-                                                 SemanticProperties.Description="SOCKS5 proxy username"
-                                                 SemanticProperties.Hint="Optional authentication username"
-                                                 Placeholder="optional"
+                                           <Entry Text="{Binding ProxyUsername}"
+                                                 SemanticProperties.Description="{helpers:Translate Username}"
+                                                 SemanticProperties.Hint="{helpers:Translate ProxyUsernameHint}"
+                                                 Placeholder="{helpers:Translate OptionalPlaceholder}"
                                                  IsEnabled="{Binding ProxyEnabled}"/>
                                    </VerticalStackLayout>
 
@@ -355,19 +355,19 @@
                                           <Label Text="{helpers:Translate Password, StringFormat='🔒 {0}'}"
                                                  FontSize="11"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                          <Entry Text="{Binding ProxyPassword}"
-                                                 SemanticProperties.Description="SOCKS5 proxy password"
-                                                 SemanticProperties.Hint="Optional authentication password"
-                                                 Placeholder="optional"
+                                           <Entry Text="{Binding ProxyPassword}"
+                                                 SemanticProperties.Description="{helpers:Translate Password}"
+                                                 SemanticProperties.Hint="{helpers:Translate ProxyPasswordHint}"
+                                                 Placeholder="{helpers:Translate OptionalPlaceholder}"
                                                  IsPassword="True"
                                                  IsEnabled="{Binding ProxyEnabled}"/>
                                    </VerticalStackLayout>
                             </Grid>
                      </Border>
 
-                     <Label Text="{Binding ValidationMessage}"
-                            SemanticProperties.Description="Settings validation message"
-                            TextColor="{StaticResource StatusFailed}"
+                      <Label Text="{Binding ValidationMessage}"
+                             SemanticProperties.Description="{helpers:Translate SettingsValidationMessage}"
+                             TextColor="{StaticResource StatusFailed}"
                             IsVisible="{Binding ValidationMessage, Converter={StaticResource StringNotEmptyConverter}}"
                             FontSize="12"/>
               </VerticalStackLayout>

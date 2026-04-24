@@ -39,9 +39,13 @@ public sealed class NotificationService : INotificationService
 
         await EnsurePermissionAsync();
 
-        var title = "Download complete";
-        var name = string.IsNullOrWhiteSpace(torrent.Name) ? "Your download" : torrent.Name;
-        var body = $"{name} has finished downloading.";
+        var title = LocalizationResourceManager.Instance["NotificationDownloadComplete"];
+        var name = string.IsNullOrWhiteSpace(torrent.Name)
+            ? LocalizationResourceManager.Instance["NotificationYourDownload"]
+            : torrent.Name;
+        var body = string.Format(
+            LocalizationResourceManager.Instance["NotificationDownloadCompletedBody"],
+            name);
 
         var request = new NotificationRequest
         {
