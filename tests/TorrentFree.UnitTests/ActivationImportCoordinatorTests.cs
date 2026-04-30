@@ -22,7 +22,8 @@ public sealed class ActivationImportCoordinatorTests
             {
                 events.Add($"import:{path}");
                 await Task.Yield();
-            });
+            },
+            TestContext.Current.CancellationToken);
 
         Assert.Equal(
             new[]
@@ -47,7 +48,8 @@ public sealed class ActivationImportCoordinatorTests
             {
                 importedPaths.Add(path);
                 return Task.CompletedTask;
-            });
+            },
+            TestContext.Current.CancellationToken);
 
         Assert.Equal(new[] { "same.torrent", "other.torrent" }, importedPaths);
     }
@@ -69,7 +71,8 @@ public sealed class ActivationImportCoordinatorTests
             {
                 importCalled = true;
                 return Task.CompletedTask;
-            });
+            },
+            TestContext.Current.CancellationToken);
 
         Assert.False(initializeCalled);
         Assert.False(importCalled);

@@ -6,6 +6,7 @@ namespace TorrentFree.Helpers;
 /// The binding auto-refreshes when <see cref="Services.LocalizationResourceManager.SetCulture"/> is called.
 /// </summary>
 [ContentProperty(nameof(Key))]
+[AcceptEmptyServiceProvider]
 public sealed class TranslateExtension : IMarkupExtension<BindingBase>
 {
     public string Key { get; set; } = string.Empty;

@@ -16,20 +16,22 @@ public sealed class AsyncKeyedLockerTests
 
         var firstTask = Task.Run(async () =>
         {
-            await using var firstHandle = await locker.AcquireAsync("torrent-1");
+            await using var firstHandle = await locker.AcquireAsync("torrent-1", TestContext.Current.CancellationToken);
             firstAcquired.SetResult();
             await releaseFirst.Task;
-        });
+        }, TestContext.Current.CancellationToken);
 
         await firstAcquired.Task;
 
         var secondTask = Task.Run(async () =>
         {
-            await using var secondHandle = await locker.AcquireAsync("torrent-1");
+            await using var secondHandle = await locker.AcquireAsync("torrent-1", TestContext.Current.CancellationToken);
             secondAcquired.SetResult();
-        });
+        }, TestContext.Current.CancellationToken);
 
-        var acquiredBeforeRelease = await Task.WhenAny(secondAcquired.Task, Task.Delay(100));
+        var acquiredBeforeRelease = await Task.WhenAny(
+            secondAcquired.Task,
+            Task.Delay(100, TestContext.Current.CancellationToken));
         Assert.NotSame(secondAcquired.Task, acquiredBeforeRelease);
 
         releaseFirst.SetResult();
