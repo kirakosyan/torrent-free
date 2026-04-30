@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Maui.ApplicationModel;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 using TorrentFree.Services;
@@ -23,7 +23,10 @@ namespace TorrentFree.WinUI;
 public partial class App : MauiWinUIApplication
 {
 	private const string InstanceKey = "TorrentFreeMain";
+	private const int ActivationProcessingAttempts = 20;
+	private static readonly TimeSpan ActivationProcessingRetryDelay = TimeSpan.FromMilliseconds(250);
 	private readonly AppInstance _mainInstance;
+	private readonly DispatcherQueue? _dispatcherQueue;
 
 	/// <summary>
 	/// Initializes the singleton application object.  This is the first line of authored code
@@ -33,6 +36,7 @@ public partial class App : MauiWinUIApplication
 	{
 		this.InitializeComponent();
 
+		_dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 		_mainInstance = AppInstance.FindOrRegisterForKey(InstanceKey);
 		if (!_mainInstance.IsCurrent)
 		{
@@ -60,7 +64,7 @@ public partial class App : MauiWinUIApplication
 
 	protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 
-	private async void OnActivated(object? sender, AppActivationArguments args)
+	private void OnActivated(object? sender, AppActivationArguments args)
 	{
 		var paths = ExtractTorrentPaths(args);
 		if (paths.Count == 0)
@@ -68,21 +72,58 @@ public partial class App : MauiWinUIApplication
 			return;
 		}
 
-		await MainThread.InvokeOnMainThreadAsync(async () =>
+		DispatchActivation(paths);
+	}
+
+	private void DispatchActivation(IReadOnlyList<string> paths)
+	{
+		if (_dispatcherQueue?.HasThreadAccess == true)
 		{
-			var viewModel = MauiProgram.Services.GetService<MainViewModel>();
-			if (viewModel is null)
+			_ = ProcessActivationPathsSafelyAsync(paths);
+			return;
+		}
+
+		if (_dispatcherQueue?.TryEnqueue(async () => await ProcessActivationPathsSafelyAsync(paths)) == true)
+		{
+			return;
+		}
+
+		System.Diagnostics.Debug.WriteLine("Unable to dispatch activation to the WinUI UI thread.");
+	}
+
+	private static async Task ProcessActivationPathsSafelyAsync(IReadOnlyList<string> paths)
+	{
+		try
+		{
+			await ProcessActivationPathsAsync(paths);
+		}
+		catch (Exception ex)
+		{
+			System.Diagnostics.Debug.WriteLine($"Activation import failed: {ex}");
+		}
+	}
+
+	private static async Task ProcessActivationPathsAsync(IReadOnlyList<string> paths)
+	{
+		for (var attempt = 1; attempt <= ActivationProcessingAttempts; attempt++)
+		{
+			var services = MauiProgram.Services;
+			var viewModel = services?.GetService<MainViewModel>();
+			if (viewModel is not null)
 			{
+				await ActivationImportCoordinator.ImportAsync(
+					paths,
+					() => viewModel.InitializeCommand.ExecuteAsync(null),
+					viewModel.ImportTorrentFileFromPathAsync);
+
+				ActivateMainWindow();
 				return;
 			}
 
-			await ActivationImportCoordinator.ImportAsync(
-				paths,
-				() => viewModel.InitializeCommand.ExecuteAsync(null),
-				viewModel.ImportTorrentFileFromPathAsync);
+			await Task.Delay(ActivationProcessingRetryDelay);
+		}
 
-			ActivateMainWindow();
-		});
+		System.Diagnostics.Debug.WriteLine("Activation import skipped because the main view model was not ready.");
 	}
 
 	private static IReadOnlyList<string> ExtractTorrentPaths(AppActivationArguments args)
