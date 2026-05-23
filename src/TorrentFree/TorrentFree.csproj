@@ -23,7 +23,7 @@
 		<LangVersion>preview</LangVersion>
 
 		<!-- Display name -->
-		<ApplicationTitle>Torrent Free</ApplicationTitle>
+		<ApplicationTitle>Torrent Client App</ApplicationTitle>
 
 		<!-- App Identifier -->
 		<ApplicationId>com.torrentfree.app</ApplicationId>
@@ -52,7 +52,7 @@
 		<AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
 		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
 		<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
-		<AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+		<AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
 		<GenerateTestArtifacts>True</GenerateTestArtifacts>
 		<GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>

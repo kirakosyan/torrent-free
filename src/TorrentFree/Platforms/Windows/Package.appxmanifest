@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
@@ -11,7 +11,7 @@
   <mp:PhoneIdentity PhoneProductId="cbf247c2-cd4b-4bf9-8116-a76ef2d050d7" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>Torrent Free</DisplayName>
+    <DisplayName>Torrent Client App</DisplayName>
     <PublisherDisplayName>Armen Kirakosyan</PublisherDisplayName>
     <Logo>$placeholder$.png</Logo>
   </Properties>
@@ -28,7 +28,7 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="Torrent Free"
+        DisplayName="Torrent Client App"
         Description="$placeholder$"
         Square150x150Logo="$placeholder$.png"
         Square44x44Logo="$placeholder$.png"
@@ -39,7 +39,7 @@
       <Extensions>
         <uap:Extension Category="windows.fileTypeAssociation">
           <uap:FileTypeAssociation Name="torrentfree">
-            <uap:DisplayName>Torrent Free</uap:DisplayName>
+            <uap:DisplayName>Torrent Client App</uap:DisplayName>
             <uap:SupportedFileTypes>
               <uap:FileType>.torrent</uap:FileType>
             </uap:SupportedFileTypes>
@@ -54,4 +54,5 @@
   </Capabilities>
 
 </Package>
+
 
