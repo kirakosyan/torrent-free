@@ -11,6 +11,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorrentFree.UnitTests", "tests\TorrentFree.UnitTests\TorrentFree.UnitTests.csproj", "{DFE17623-6320-4356-886B-FC2D85ECFFDF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".codex", ".codex", "{E2BFB395-F4E3-4D43-8CA8-FD5A06671E4F}"
+	ProjectSection(SolutionItems) = preProject
+		.codex\AGENTS.md = .codex\AGENTS.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".claude", ".claude", "{264CCEF6-CC31-4D96-89E7-45B7D3341853}"
+	ProjectSection(SolutionItems) = preProject
+		.claude\settings.local.json = .claude\settings.local.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,5 +64,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{821BDC9B-6568-47FC-A456-0BB830AACDD1} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{DFE17623-6320-4356-886B-FC2D85ECFFDF} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {98F3310B-5A6D-49E8-BF33-657AD8BC4252}
 	EndGlobalSection
 EndGlobal
