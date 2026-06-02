@@ -86,4 +86,19 @@ public class AppSettings
     /// Null means the state has not been recorded yet or the platform does not support it.
     /// </summary>
     public bool? DesktopWasMaximized { get; set; }
+
+    /// <summary>
+    /// Number of successful downloads recorded for the app rating prompt.
+    /// </summary>
+    public int SuccessfulDownloadsForRatingPrompt { get; set; }
+
+    /// <summary>
+    /// Last UTC date when the user declined the app rating prompt.
+    /// </summary>
+    public DateTime? LastRatingPromptDeclinedUtc { get; set; }
+
+    /// <summary>
+    /// Indicates that the user accepted the app rating prompt.
+    /// </summary>
+    public bool HasAcceptedRatingPrompt { get; set; }
 }

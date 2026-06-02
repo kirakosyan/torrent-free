@@ -13,7 +13,10 @@ public sealed class AppSettingsFactoryTests
         var existing = new AppSettings
         {
             SortByStatus = true,
-            DesktopWasMaximized = true
+            DesktopWasMaximized = true,
+            SuccessfulDownloadsForRatingPrompt = 4,
+            LastRatingPromptDeclinedUtc = new DateTime(2026, 5, 1, 0, 0, 0, DateTimeKind.Utc),
+            HasAcceptedRatingPrompt = true
         };
 
         var updated = AppSettingsFactory.CreateForSettingsPage(
@@ -48,6 +51,9 @@ public sealed class AppSettingsFactoryTests
         Assert.Equal("user", updated.ProxyUsername);
         Assert.Equal("pass", updated.ProxyPassword);
         Assert.True(updated.DesktopWasMaximized);
+        Assert.Equal(4, updated.SuccessfulDownloadsForRatingPrompt);
+        Assert.Equal(existing.LastRatingPromptDeclinedUtc, updated.LastRatingPromptDeclinedUtc);
+        Assert.True(updated.HasAcceptedRatingPrompt);
     }
 
     [Fact]
@@ -128,7 +134,10 @@ public sealed class AppSettingsFactoryTests
             ProxyUsername = "user",
             ProxyPassword = "pass",
             Language = "fr",
-            DesktopWasMaximized = true
+            DesktopWasMaximized = true,
+            SuccessfulDownloadsForRatingPrompt = 2,
+            LastRatingPromptDeclinedUtc = new DateTime(2026, 5, 1, 0, 0, 0, DateTimeKind.Utc),
+            HasAcceptedRatingPrompt = false
         };
 
         var updated = AppSettingsFactory.CreateForMainPage(
@@ -158,6 +167,9 @@ public sealed class AppSettingsFactoryTests
         Assert.Equal("pass", updated.ProxyPassword);
         Assert.Equal("fr", updated.Language);
         Assert.True(updated.DesktopWasMaximized);
+        Assert.Equal(2, updated.SuccessfulDownloadsForRatingPrompt);
+        Assert.Equal(existing.LastRatingPromptDeclinedUtc, updated.LastRatingPromptDeclinedUtc);
+        Assert.False(updated.HasAcceptedRatingPrompt);
     }
 
     [Fact]
@@ -201,5 +213,8 @@ public sealed class AppSettingsFactoryTests
         Assert.Null(settings.Language);
         // Desktop window state falls back to null when missing from old JSON
         Assert.Null(settings.DesktopWasMaximized);
+        Assert.Equal(0, settings.SuccessfulDownloadsForRatingPrompt);
+        Assert.Null(settings.LastRatingPromptDeclinedUtc);
+        Assert.False(settings.HasAcceptedRatingPrompt);
     }
 }

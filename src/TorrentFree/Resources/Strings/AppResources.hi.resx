@@ -327,6 +327,18 @@
   <data name="OK" xml:space="preserve">
     <value>ठीक है</value>
   </data>
+  <data name="RateAppTitle" xml:space="preserve">
+    <value>Enjoying Torrent Free?</value>
+  </data>
+  <data name="RateAppMessage" xml:space="preserve">
+    <value>If Torrent Free is working well for you, please take a moment to rate it.</value>
+  </data>
+  <data name="RateAppButton" xml:space="preserve">
+    <value>Rate app</value>
+  </data>
+  <data name="NotNow" xml:space="preserve">
+    <value>Not now</value>
+  </data>
   <!-- Error Messages -->
   <data name="ErrorOpenFolder" xml:space="preserve">
     <value>डाउनलोड फोल्डर नहीं खुल सका।</value>

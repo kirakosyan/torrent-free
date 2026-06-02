@@ -38,7 +38,10 @@ public static class AppSettingsFactory
             ProxyUsername = existing.ProxyUsername ?? string.Empty,
             ProxyPassword = existing.ProxyPassword ?? string.Empty,
             Language = existing.Language,
-            DesktopWasMaximized = existing.DesktopWasMaximized
+            DesktopWasMaximized = existing.DesktopWasMaximized,
+            SuccessfulDownloadsForRatingPrompt = existing.SuccessfulDownloadsForRatingPrompt,
+            LastRatingPromptDeclinedUtc = existing.LastRatingPromptDeclinedUtc,
+            HasAcceptedRatingPrompt = existing.HasAcceptedRatingPrompt
         };
     }
 
@@ -81,7 +84,10 @@ public static class AppSettingsFactory
             ProxyUsername = proxyUsername ?? string.Empty,
             ProxyPassword = proxyPassword ?? string.Empty,
             Language = language,
-            DesktopWasMaximized = existing.DesktopWasMaximized
+            DesktopWasMaximized = existing.DesktopWasMaximized,
+            SuccessfulDownloadsForRatingPrompt = existing.SuccessfulDownloadsForRatingPrompt,
+            LastRatingPromptDeclinedUtc = existing.LastRatingPromptDeclinedUtc,
+            HasAcceptedRatingPrompt = existing.HasAcceptedRatingPrompt
         };
     }
 }

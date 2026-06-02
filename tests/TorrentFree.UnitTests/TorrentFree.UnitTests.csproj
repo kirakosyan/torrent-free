@@ -27,6 +27,7 @@
     <Compile Include="..\..\src\TorrentFree\Models\DownloadLocationResolver.cs" Link="App\Models\DownloadLocationResolver.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\AboutDialogMessageBuilder.cs" Link="App\Services\AboutDialogMessageBuilder.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\ActivationImportCoordinator.cs" Link="App\Services\ActivationImportCoordinator.cs" />
+    <Compile Include="..\..\src\TorrentFree\Services\AppRatingPromptRules.cs" Link="App\Services\AppRatingPromptRules.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\AsyncKeyedLocker.cs" Link="App\Services\AsyncKeyedLocker.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\MagnetTrackerBootstrapRules.cs" Link="App\Services\MagnetTrackerBootstrapRules.cs" />
     <Compile Include="..\..\src\TorrentFree\Services\PathGuard.cs" Link="App\Services\PathGuard.cs" />

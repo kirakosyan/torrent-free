@@ -31,6 +31,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<ITorrentFilePicker, MauiTorrentFilePicker>();
         builder.Services.AddSingleton<ITorrentFileParser, TorrentFileParser>();
         builder.Services.AddSingleton<IFileAssociationService, FileAssociationService>();
+        builder.Services.AddSingleton<IStoreReviewLauncher, StoreReviewLauncher>();
+        builder.Services.AddSingleton<IAppRatingPromptService, AppRatingPromptService>();
         builder.Services.AddSingleton<TorrentFree.Services.INotificationService, NotificationService>();
     #if ANDROID
         builder.Services.AddSingleton<IBackgroundDownloadService, AndroidBackgroundDownloadService>();

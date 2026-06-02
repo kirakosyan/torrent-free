@@ -104,6 +104,7 @@ public class TorrentService : ITorrentService
     private readonly IStorageService _storageService;
     private readonly INotificationService _notificationService;
     private readonly IBackgroundDownloadService _backgroundDownloadService;
+    private readonly IAppRatingPromptService _appRatingPromptService;
     private readonly AsyncKeyedLocker _torrentOperationLock = new();
     private readonly ConcurrentDictionary<string, CancellationTokenSource> _downloadTokens = new();
     private readonly ConcurrentDictionary<string, TorrentManager> _managers = new();
@@ -131,11 +132,16 @@ public class TorrentService : ITorrentService
 
     public ObservableCollection<TorrentItem> Torrents { get; } = [];
 
-    public TorrentService(IStorageService storageService, INotificationService notificationService, IBackgroundDownloadService backgroundDownloadService)
+    public TorrentService(
+        IStorageService storageService,
+        INotificationService notificationService,
+        IBackgroundDownloadService backgroundDownloadService,
+        IAppRatingPromptService? appRatingPromptService = null)
     {
         _storageService = storageService;
         _notificationService = notificationService;
         _backgroundDownloadService = backgroundDownloadService;
+        _appRatingPromptService = appRatingPromptService ?? NoOpAppRatingPromptService.Instance;
         // Debounced save timer - saves at most every 5 seconds
         _saveTimer = new Timer(async _ => await SaveIfPendingAsync(), null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
     }
@@ -1427,6 +1433,7 @@ public class TorrentService : ITorrentService
                 if (!wasComplete && isComplete)
                 {
                     await _notificationService.ShowDownloadCompletedAsync(torrent);
+                    await _appRatingPromptService.NotifySuccessfulDownloadAsync();
                 }
 
                 _pendingSave = true;
@@ -1945,5 +1952,16 @@ public class TorrentService : ITorrentService
         {
             System.Diagnostics.Debug.WriteLine($"Fire-and-forget error: {ex}");
         }
+    }
+
+    private sealed class NoOpAppRatingPromptService : IAppRatingPromptService
+    {
+        public static NoOpAppRatingPromptService Instance { get; } = new();
+
+        private NoOpAppRatingPromptService()
+        {
+        }
+
+        public Task NotifySuccessfulDownloadAsync() => Task.CompletedTask;
     }
 }

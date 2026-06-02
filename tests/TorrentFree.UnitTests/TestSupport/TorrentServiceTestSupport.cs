@@ -39,6 +39,11 @@ namespace TorrentFree.Services
         void Stop();
     }
 
+    public interface IAppRatingPromptService
+    {
+        Task NotifySuccessfulDownloadAsync();
+    }
+
     public sealed record TorrentMetadata(string? Name, string? InfoHashHex, IReadOnlyList<string> Trackers);
 
     public sealed class DuplicateTorrentException(string message) : InvalidOperationException(message);
