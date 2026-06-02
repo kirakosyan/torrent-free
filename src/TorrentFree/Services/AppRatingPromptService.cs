@@ -26,13 +26,13 @@ public sealed class AppRatingPromptService : IAppRatingPromptService
         await _promptLock.WaitAsync();
         try
         {
-            var utcNow = DateTime.UtcNow;
-            var settings = await _storageService.LoadSettingsAsync();
+            var settings = await _storageService.UpdateRatingPromptStateAsync(current =>
+            {
+                AppRatingPromptRules.RecordSuccessfulDownload(current);
+                return current;
+            });
 
-            AppRatingPromptRules.RecordSuccessfulDownload(settings);
-            await _storageService.SaveSettingsAsync(settings);
-
-            if (!_storeReviewLauncher.IsSupported || !AppRatingPromptRules.ShouldPrompt(settings, utcNow))
+            if (!_storeReviewLauncher.IsSupported || !AppRatingPromptRules.ShouldPrompt(settings, DateTime.UtcNow))
             {
                 return;
             }
@@ -43,25 +43,32 @@ public sealed class AppRatingPromptService : IAppRatingPromptService
                 return;
             }
 
-            settings = await _storageService.LoadSettingsAsync();
             if (shouldRate.Value)
             {
-                AppRatingPromptRules.RecordPromptAccepted(settings);
-                await _storageService.SaveSettingsAsync(settings);
+                await _storageService.UpdateRatingPromptStateAsync(current =>
+                {
+                    AppRatingPromptRules.RecordPromptAccepted(current);
+                    return current;
+                });
 
                 var opened = await _storeReviewLauncher.OpenReviewPageAsync();
                 if (!opened)
                 {
-                    settings = await _storageService.LoadSettingsAsync();
-                    settings.HasAcceptedRatingPrompt = false;
-                    AppRatingPromptRules.RecordPromptDeclined(settings, utcNow);
-                    await _storageService.SaveSettingsAsync(settings);
+                    await _storageService.UpdateRatingPromptStateAsync(current =>
+                    {
+                        current.HasAcceptedRatingPrompt = false;
+                        AppRatingPromptRules.RecordPromptDeclined(current, DateTime.UtcNow);
+                        return current;
+                    });
                 }
             }
             else
             {
-                AppRatingPromptRules.RecordPromptDeclined(settings, utcNow);
-                await _storageService.SaveSettingsAsync(settings);
+                await _storageService.UpdateRatingPromptStateAsync(current =>
+                {
+                    AppRatingPromptRules.RecordPromptDeclined(current, DateTime.UtcNow);
+                    return current;
+                });
             }
         }
         catch (Exception ex)

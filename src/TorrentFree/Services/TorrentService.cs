@@ -1433,7 +1433,7 @@ public class TorrentService : ITorrentService
                 if (!wasComplete && isComplete)
                 {
                     await _notificationService.ShowDownloadCompletedAsync(torrent);
-                    await _appRatingPromptService.NotifySuccessfulDownloadAsync();
+                    SafeFireAndForget(_appRatingPromptService.NotifySuccessfulDownloadAsync());
                 }
 
                 _pendingSave = true;

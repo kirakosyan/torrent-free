@@ -34,6 +34,11 @@ public interface IStorageService
     Task UpdateDesktopWindowStateAsync(bool? desktopWasMaximized);
 
     /// <summary>
+    /// Updates persisted app rating prompt state without overwriting other settings.
+    /// </summary>
+    Task<AppSettings> UpdateRatingPromptStateAsync(Func<AppSettings, AppSettings> update);
+
+    /// <summary>
     /// Gets the default download path.
     /// </summary>
     string GetDefaultDownloadPath();
@@ -211,6 +216,7 @@ public class StorageService : IStorageService, IDisposable
             // Read current data under the lock so concurrent SaveTorrentsAsync
             // cannot interleave between our read and write.
             var data = await LoadDataAsync();
+            PreserveRatingPromptState(settings, data.Settings);
             data.Settings = settings;
             data.Torrents ??= [];
             data.Version = "1.0";
@@ -265,6 +271,44 @@ public class StorageService : IStorageService, IDisposable
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error saving desktop window state: {ex.Message}");
+        }
+        finally
+        {
+            _saveLock.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<AppSettings> UpdateRatingPromptStateAsync(Func<AppSettings, AppSettings> update)
+    {
+        ArgumentNullException.ThrowIfNull(update);
+
+        await _saveLock.WaitAsync();
+        try
+        {
+            var data = await LoadDataAsync();
+            var settings = data.Settings ?? new AppSettings();
+
+            settings = update(settings);
+            data.Settings = settings;
+            data.Torrents ??= [];
+            data.Version = "1.0";
+            data.LastUpdated = DateTime.UtcNow;
+
+            _cachedSettings = settings;
+
+            await WriteDataAsync(data);
+            return settings;
+        }
+        catch (IOException ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error saving app rating prompt state (I/O error): {ex.Message}");
+            return _cachedSettings;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error saving app rating prompt state: {ex.Message}");
+            return _cachedSettings;
         }
         finally
         {
@@ -349,6 +393,18 @@ public class StorageService : IStorageService, IDisposable
                 }
             }
         }
+    }
+
+    private static void PreserveRatingPromptState(AppSettings target, AppSettings? source)
+    {
+        if (source is null)
+        {
+            return;
+        }
+
+        target.SuccessfulDownloadsForRatingPrompt = source.SuccessfulDownloadsForRatingPrompt;
+        target.LastRatingPromptDeclinedUtc = source.LastRatingPromptDeclinedUtc;
+        target.HasAcceptedRatingPrompt = source.HasAcceptedRatingPrompt;
     }
 
     public void Dispose()
