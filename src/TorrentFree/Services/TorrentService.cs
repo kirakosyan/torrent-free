@@ -110,6 +110,7 @@ public class TorrentService : ITorrentService
     private readonly object _torrentsLock = new();
     private readonly Timer _saveTimer;
     private ClientEngine? _engine;
+    private readonly SemaphoreSlim _engineLock = new(1, 1);
     private Task? _initTask;
     private readonly object _initGate = new();
     private volatile bool _pendingSave;
@@ -815,14 +816,27 @@ public class TorrentService : ITorrentService
             _managers.TryRemove(kvp.Key, out _);
         }
 
-        var engineToDispose = _engine;
-        _engine = null;
+        // Tear down the engine under the same lock that guards creation so a concurrent
+        // start cannot create a fresh engine while we are disposing the old one. The lock
+        // is released before the restart loop below, which recreates the engine via
+        // EnsureEngineAsync.
+        ClientEngine? engineToDispose;
+        await _engineLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            engineToDispose = _engine;
+            _engine = null;
+        }
+        finally
+        {
+            _engineLock.Release();
+        }
 
         if (engineToDispose is not null)
         {
             try
             {
-                await engineToDispose.StopAllAsync();
+                await engineToDispose.StopAllAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -833,7 +847,7 @@ public class TorrentService : ITorrentService
             {
                 if (engineToDispose is IAsyncDisposable asyncDisposable)
                 {
-                    await asyncDisposable.DisposeAsync();
+                    await asyncDisposable.DisposeAsync().ConfigureAwait(false);
                 }
                 else if (engineToDispose is IDisposable disposable)
                 {
@@ -1260,7 +1274,11 @@ public class TorrentService : ITorrentService
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                await Task.Delay(1000, cancellationToken);
+                // ConfigureAwait(false) keeps the loop body off the UI thread. The only
+                // work that must touch the UI thread is the explicit
+                // MainThread.InvokeOnMainThreadAsync block below; everything else
+                // (reflection, peer/piece scanning) runs on the thread pool.
+                await Task.Delay(1000, cancellationToken).ConfigureAwait(false);
 
                 // ---- Collect all data on the background thread ----
                 var metadataSize = manager.Torrent?.Size;
@@ -1414,7 +1432,7 @@ public class TorrentService : ITorrentService
                     }
 
                     currentStatus = torrent.Status;
-                });
+                }).ConfigureAwait(false);
 
                 var wasComplete = previousStatus is DownloadStatus.Completed or DownloadStatus.Seeding;
                 var isComplete = currentStatus is DownloadStatus.Completed or DownloadStatus.Seeding;
@@ -1426,19 +1444,19 @@ public class TorrentService : ITorrentService
 
                 if (!wasComplete && isComplete)
                 {
-                    await _notificationService.ShowDownloadCompletedAsync(torrent);
+                    await _notificationService.ShowDownloadCompletedAsync(torrent).ConfigureAwait(false);
                 }
 
                 _pendingSave = true;
 
                 if (previousStatus == DownloadStatus.Downloading && currentStatus != DownloadStatus.Downloading)
                 {
-                    await TryStartQueuedTorrentsAsync();
+                    await TryStartQueuedTorrentsAsync().ConfigureAwait(false);
                 }
 
                 if (currentStatus == DownloadStatus.Seeding)
                 {
-                    await EnforceSeedingLimitsAsync(torrent, manager);
+                    await EnforceSeedingLimitsAsync(torrent, manager).ConfigureAwait(false);
                 }
 
                 if (managerState == TorrentState.Stopped && progress >= 100)
@@ -1458,7 +1476,7 @@ public class TorrentService : ITorrentService
             {
                 torrent.Status = DownloadStatus.Failed;
                 torrent.ErrorMessage = ex.Message;
-            });
+            }).ConfigureAwait(false);
         }
         finally
         {
@@ -1708,6 +1726,27 @@ public class TorrentService : ITorrentService
             return _engine;
         }
 
+        await _engineLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            // Re-check after acquiring the lock: another caller may have created the
+            // engine while we were waiting. Without this, concurrent starts could each
+            // build a ClientEngine and orphan all but the last one.
+            if (_engine is not null)
+            {
+                return _engine;
+            }
+
+            return _engine = CreateEngine();
+        }
+        finally
+        {
+            _engineLock.Release();
+        }
+    }
+
+    private ClientEngine CreateEngine()
+    {
         var builder = new EngineSettingsBuilder
         {
             CacheDirectory = _storageService.GetDefaultDownloadPath(),
@@ -1735,11 +1774,11 @@ public class TorrentService : ITorrentService
 
         var engineSettings = builder.ToSettings();
 
-        _engine = new ClientEngine(engineSettings);
+        var engine = new ClientEngine(engineSettings);
 
-        ApplySpeedLimitsToEngine(_engine, _globalDownloadLimitBytesPerSec, _globalUploadLimitBytesPerSec);
+        ApplySpeedLimitsToEngine(engine, _globalDownloadLimitBytesPerSec, _globalUploadLimitBytesPerSec);
 
-        return _engine;
+        return engine;
     }
 
 
@@ -1887,11 +1926,14 @@ public class TorrentService : ITorrentService
         _pendingSave = false;
         _torrentOperationLock.Dispose();
 
+        // ConfigureAwait(false) is required here: Dispose() blocks on this method via
+        // GetAwaiter().GetResult(). If a continuation resumed on the (blocked) UI thread,
+        // shutdown would deadlock.
         foreach (var kvp in _managers)
         {
             try
             {
-                await kvp.Value.StopAsync();
+                await kvp.Value.StopAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -1905,7 +1947,7 @@ public class TorrentService : ITorrentService
         {
             try
             {
-                await _engine.StopAllAsync();
+                await _engine.StopAllAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -1916,7 +1958,7 @@ public class TorrentService : ITorrentService
             {
                 if (_engine is IAsyncDisposable asyncDisposableEngine)
                 {
-                    await asyncDisposableEngine.DisposeAsync();
+                    await asyncDisposableEngine.DisposeAsync().ConfigureAwait(false);
                 }
                 else if (_engine is IDisposable disposableEngine)
                 {
@@ -1930,6 +1972,8 @@ public class TorrentService : ITorrentService
 
             _engine = null;
         }
+
+        _engineLock.Dispose();
     }
 
     /// <summary>
