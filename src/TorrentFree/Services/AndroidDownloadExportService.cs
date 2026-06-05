@@ -84,7 +84,14 @@ public static class AndroidDownloadExportService
     {
 #if ANDROID
         var path = GetPublicDownloadsPath(childFolder);
-        return !string.IsNullOrWhiteSpace(path) && TryOpenFolder(path);
+        if (!string.IsNullOrWhiteSpace(path) && TryOpenFolder(path))
+        {
+            return true;
+        }
+
+        return TryOpenRoot("com.android.providers.downloads.documents", "downloads")
+               || TryOpenRoot("com.android.externalstorage.documents", "primary")
+               || TryOpenFolderPicker(BuildExternalStorageTreeUri(Path.Combine(Android.OS.Environment.ExternalStorageDirectory?.AbsolutePath ?? string.Empty, AndroidDownloadsDirectory)));
 #else
         return false;
 #endif
@@ -93,33 +100,44 @@ public static class AndroidDownloadExportService
     public static bool TryOpenFolder(string folderPath)
     {
 #if ANDROID
-        var folderUri = BuildExternalStorageDocumentUri(folderPath);
-        if (folderUri is null)
+        var documentUri = BuildExternalStorageDocumentUri(folderPath);
+        var treeUri = BuildExternalStorageTreeUri(folderPath);
+        if (documentUri is null && treeUri is null)
         {
             return false;
         }
 
-        var context = Platform.CurrentActivity ?? Android.App.Application.Context;
-        var packageManager = context.PackageManager;
-        if (packageManager is null)
+        if (documentUri is not null && TryOpenDirectoryUri(documentUri))
         {
-            return false;
-        }
-
-        var viewIntent = new Android.Content.Intent(Android.Content.Intent.ActionView);
-        viewIntent.SetDataAndType(folderUri, Android.Provider.DocumentsContract.Document.MimeTypeDir);
-        viewIntent.AddFlags(Android.Content.ActivityFlags.GrantReadUriPermission | Android.Content.ActivityFlags.NewTask);
-
-        if (viewIntent.ResolveActivity(packageManager) is not null)
-        {
-            context.StartActivity(viewIntent);
             return true;
         }
 
-        var treeIntent = new Android.Content.Intent(Android.Content.Intent.ActionOpenDocumentTree);
-        if (OperatingSystem.IsAndroidVersionAtLeast(26))
+        if (treeUri is not null && TryOpenDirectoryUri(treeUri))
         {
-            treeIntent.PutExtra(Android.Provider.DocumentsContract.ExtraInitialUri, folderUri);
+            return true;
+        }
+
+        return TryOpenFolderPicker(treeUri ?? documentUri);
+#else
+        return false;
+#endif
+    }
+
+#if ANDROID
+    private static bool TryOpenDirectoryUri(Android.Net.Uri folderUri)
+    {
+        var viewIntent = new Android.Content.Intent(Android.Content.Intent.ActionView);
+        viewIntent.SetDataAndType(folderUri, Android.Provider.DocumentsContract.Document.MimeTypeDir);
+        viewIntent.AddFlags(Android.Content.ActivityFlags.GrantReadUriPermission | Android.Content.ActivityFlags.NewTask);
+        return TryStartActivity(viewIntent);
+    }
+
+    private static bool TryOpenFolderPicker(Android.Net.Uri? initialUri)
+    {
+        var treeIntent = new Android.Content.Intent(Android.Content.Intent.ActionOpenDocumentTree);
+        if (initialUri is not null && OperatingSystem.IsAndroidVersionAtLeast(26))
+        {
+            treeIntent.PutExtra(Android.Provider.DocumentsContract.ExtraInitialUri, initialUri);
         }
 
         treeIntent.AddFlags(
@@ -128,19 +146,39 @@ public static class AndroidDownloadExportService
             Android.Content.ActivityFlags.GrantPersistableUriPermission |
             Android.Content.ActivityFlags.NewTask);
 
-        if (treeIntent.ResolveActivity(packageManager) is null)
+        return TryStartActivity(treeIntent);
+    }
+
+    private static bool TryOpenRoot(string authority, string rootId)
+    {
+        var rootUri = Android.Provider.DocumentsContract.BuildRootUri(authority, rootId);
+        if (rootUri is null)
         {
             return false;
         }
 
-        context.StartActivity(treeIntent);
-        return true;
-#else
-        return false;
-#endif
+        var viewIntent = new Android.Content.Intent(Android.Content.Intent.ActionView);
+        viewIntent.SetData(rootUri);
+        viewIntent.AddFlags(Android.Content.ActivityFlags.GrantReadUriPermission | Android.Content.ActivityFlags.NewTask);
+
+        return TryStartActivity(viewIntent) || TryOpenFolderPicker(rootUri);
     }
 
-#if ANDROID
+    private static bool TryStartActivity(Android.Content.Intent intent)
+    {
+        try
+        {
+            var context = Platform.CurrentActivity ?? Android.App.Application.Context;
+            context.StartActivity(intent);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Android folder intent failed: {ex}");
+            return false;
+        }
+    }
+
     private static string BuildAndroidDownloadsRelativePath(string? childFolder = null, string? relativeDirectory = null)
     {
         var parts = new List<string>
@@ -298,6 +336,27 @@ public static class AndroidDownloadExportService
 
     private static Android.Net.Uri? BuildExternalStorageDocumentUri(string folderPath)
     {
+        var documentId = BuildExternalStorageDocumentId(folderPath);
+        return documentId is null
+            ? null
+            : Android.Provider.DocumentsContract.BuildDocumentUri("com.android.externalstorage.documents", documentId);
+    }
+
+    private static Android.Net.Uri? BuildExternalStorageTreeUri(string folderPath)
+    {
+        var documentId = BuildExternalStorageDocumentId(folderPath);
+        return documentId is null
+            ? null
+            : Android.Provider.DocumentsContract.BuildTreeDocumentUri("com.android.externalstorage.documents", documentId);
+    }
+
+    private static string? BuildExternalStorageDocumentId(string folderPath)
+    {
+        if (string.IsNullOrWhiteSpace(folderPath))
+        {
+            return null;
+        }
+
         var externalRoot = Android.OS.Environment.ExternalStorageDirectory?.AbsolutePath;
         if (string.IsNullOrWhiteSpace(externalRoot))
         {
@@ -314,11 +373,9 @@ public static class AndroidDownloadExportService
             .Replace(Path.DirectorySeparatorChar, '/')
             .Replace(Path.AltDirectorySeparatorChar, '/');
 
-        var documentId = relativePath == "."
+        return relativePath == "."
             ? "primary:"
             : $"primary:{relativePath}";
-
-        return Android.Net.Uri.Parse($"content://com.android.externalstorage.documents/document/{Android.Net.Uri.Encode(documentId)}");
     }
 
     private static string GetMimeType(string fileName)

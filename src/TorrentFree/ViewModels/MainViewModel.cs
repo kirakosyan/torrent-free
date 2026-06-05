@@ -402,10 +402,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
 #if ANDROID
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
-                if (await TryOpenAndroidFolderAsync(downloadPath, folderPath, isDirectory))
+                if (!await TryOpenAndroidFolderAsync(downloadPath, folderPath, isDirectory))
                 {
-                    return;
+                    ErrorMessage = LocalizationResourceManager.Instance["ErrorOpenFolder"];
                 }
+
+                return;
             }
 #endif
 
@@ -432,20 +434,29 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return false;
         }
 
+        var exported = false;
+        string? publicFolder = null;
         try
         {
-            var publicFolder = await AndroidDownloadExportService.ExportToPublicDownloadsAsync(downloadPath, isDirectory);
-            if (!string.IsNullOrWhiteSpace(publicFolder) && AndroidDownloadExportService.TryOpenFolder(publicFolder))
-            {
-                return true;
-            }
+            publicFolder = await AndroidDownloadExportService.ExportToPublicDownloadsAsync(downloadPath, isDirectory);
+            exported = !string.IsNullOrWhiteSpace(publicFolder);
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Android public Downloads export error: {ex}");
         }
 
-        if (AndroidDownloadExportService.TryOpenFolder(targetFolder))
+        if (exported && AndroidDownloadExportService.TryOpenFolder(publicFolder!))
+        {
+            return true;
+        }
+
+        if (AndroidDownloadExportService.TryOpenPublicDownloadsFolder())
+        {
+            return true;
+        }
+
+        if (exported)
         {
             return true;
         }
