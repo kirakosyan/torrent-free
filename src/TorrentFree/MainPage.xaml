@@ -295,52 +295,53 @@
               <!-- Downloads Section -->
               <Grid Grid.Row="2"
                     RowDefinitions="Auto,Auto,*">
-                     <Grid Grid.Row="0"
-                           ColumnDefinitions="*,Auto,Auto,Auto"
-                           ColumnSpacing="12"
-                           Margin="0,0,0,12">
-                            <Label Grid.Column="0"
-                                   Text="{helpers:Translate DownloadsTitle}"
+                     <VerticalStackLayout Grid.Row="0"
+                                          Spacing="8"
+                                          Margin="0,0,0,12">
+                            <Label Text="{helpers:Translate DownloadsTitle}"
                                    FontSize="18"
                                    FontAttributes="Bold"/>
-                            <HorizontalStackLayout Grid.Column="1"
-                                                   Spacing="8"
-                                                   VerticalOptions="Center">
-                                     <Button Text="{helpers:Translate StartAllButton}"
-                                             SemanticProperties.Description="{helpers:Translate StartAllButton}"
-                                             Style="{StaticResource ActionButton}"
-                                            BackgroundColor="#ECFDF3"
-                                            TextColor="#16A34A"
-                                            Command="{Binding StartAllTorrentsCommand}"
-                                            IsEnabled="{Binding CanStartAllTorrents}"/>
-                                     <Button Text="{helpers:Translate StopAllButton}"
-                                             SemanticProperties.Description="{helpers:Translate StopAllButton}"
-                                             Style="{StaticResource ActionButton}"
-                                            BackgroundColor="#FEF2F2"
-                                            TextColor="#DC2626"
-                                            Command="{Binding StopAllTorrentsCommand}"
-                                            IsEnabled="{Binding CanStopAllTorrents}"/>
-                             </HorizontalStackLayout>
-                             <HorizontalStackLayout Grid.Column="2"
-                                                   Spacing="6"
-                                                   VerticalOptions="Center">
-                                    <CheckBox IsChecked="{Binding SortByStatus}"
-                                             SemanticProperties.Description="{helpers:Translate DownloadingOnTop}"
-                                             SemanticProperties.Hint="{helpers:Translate DownloadingOnTopHint}"/>
-                                   <Label Text="{helpers:Translate DownloadingOnTop}"
-                                          FontSize="12"
-                                          TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
-                                          VerticalOptions="Center"/>
-                            </HorizontalStackLayout>
-                              <Button Grid.Column="3"
-                                     Text="{helpers:Translate Details}"
-                                     SemanticProperties.Description="{helpers:Translate Details}"
-                                     Style="{StaticResource ActionButton}"
-                                    BackgroundColor="#EEF2FF"
-                                    TextColor="#4F46E5"
-                                    Command="{Binding ToggleSelectedTorrentDetailsCommand}"
-                                    IsEnabled="{Binding SelectedTorrent, Converter={StaticResource ObjectNotNullConverter}}"/>
-                     </Grid>
+                            <FlexLayout Direction="Row"
+                                        Wrap="Wrap"
+                                        AlignItems="Center"
+                                        JustifyContent="Start">
+                                   <Button Text="{helpers:Translate StartAllButton}"
+                                           SemanticProperties.Description="{helpers:Translate StartAllButton}"
+                                           Style="{StaticResource ActionButton}"
+                                           BackgroundColor="#ECFDF3"
+                                           TextColor="#16A34A"
+                                           Command="{Binding StartAllTorrentsCommand}"
+                                           IsEnabled="{Binding CanStartAllTorrents}"
+                                           Margin="0,0,8,8"/>
+                                   <Button Text="{helpers:Translate StopAllButton}"
+                                           SemanticProperties.Description="{helpers:Translate StopAllButton}"
+                                           Style="{StaticResource ActionButton}"
+                                           BackgroundColor="#FEF2F2"
+                                           TextColor="#DC2626"
+                                           Command="{Binding StopAllTorrentsCommand}"
+                                           IsEnabled="{Binding CanStopAllTorrents}"
+                                           Margin="0,0,12,8"/>
+                                   <HorizontalStackLayout Spacing="6"
+                                                          VerticalOptions="Center"
+                                                          Margin="0,0,12,8">
+                                          <CheckBox IsChecked="{Binding SortByStatus}"
+                                                    SemanticProperties.Description="{helpers:Translate DownloadingOnTop}"
+                                                    SemanticProperties.Hint="{helpers:Translate DownloadingOnTopHint}"/>
+                                          <Label Text="{helpers:Translate DownloadingOnTop}"
+                                                 FontSize="12"
+                                                 TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
+                                                 VerticalOptions="Center"/>
+                                   </HorizontalStackLayout>
+                                   <Button Text="{helpers:Translate Details}"
+                                           SemanticProperties.Description="{helpers:Translate Details}"
+                                           Style="{StaticResource ActionButton}"
+                                           BackgroundColor="#EEF2FF"
+                                           TextColor="#4F46E5"
+                                           Command="{Binding ToggleSelectedTorrentDetailsCommand}"
+                                           IsEnabled="{Binding SelectedTorrent, Converter={StaticResource ObjectNotNullConverter}}"
+                                           Margin="0,0,0,8"/>
+                            </FlexLayout>
+                     </VerticalStackLayout>
 
                      <Border Grid.Row="1"
                              Padding="12"

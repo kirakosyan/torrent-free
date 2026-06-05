@@ -216,6 +216,12 @@
   <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
     <value>Enter a folder path</value>
   </data>
+  <data name="AndroidDownloadFolderHelp" xml:space="preserve">
+    <value>On Android, use the folder button on a completed download to export files to Download/TorrentFree.</value>
+  </data>
+  <data name="OpenDownloadsFolder" xml:space="preserve">
+    <value>Open Downloads folder</value>
+  </data>
   <data name="SpeedLimits" xml:space="preserve">
     <value>Speed Limits</value>
   </data>

@@ -154,6 +154,21 @@ public partial class SettingsViewModel : ObservableObject
     /// </summary>
     public bool IsFolderPickerSupported => _folderPickerService.IsSupported;
 
+    /// <summary>
+    /// Indicates whether the settings page is running on Android.
+    /// </summary>
+    public bool IsAndroid
+    {
+        get
+        {
+#if ANDROID
+            return true;
+#else
+            return false;
+#endif
+        }
+    }
+
     public SettingsViewModel(IStorageService storageService, ITorrentService torrentService, IFileAssociationService fileAssociationService, ILocalizationService localizationService, IFolderPickerService folderPickerService)
     {
         _storageService = storageService;
@@ -306,6 +321,27 @@ public partial class SettingsViewModel : ObservableObject
             System.Diagnostics.Debug.WriteLine($"Folder picker error: {ex}");
             ValidationMessage = LocalizationResourceManager.Instance["ValidationSelectFolder"];
         }
+    }
+
+    [RelayCommand]
+    private Task OpenAndroidDownloadsFolderAsync()
+    {
+#if ANDROID
+        try
+        {
+            AndroidDownloadExportService.EnsurePublicDownloadsFolder();
+            if (!AndroidDownloadExportService.TryOpenPublicDownloadsFolder())
+            {
+                ValidationMessage = LocalizationResourceManager.Instance["ErrorOpenFolder"];
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Open Android downloads folder error: {ex}");
+            ValidationMessage = LocalizationResourceManager.Instance["ErrorOpenFolder"];
+        }
+#endif
+        return Task.CompletedTask;
     }
 
     partial void OnProxyEnabledChanged(bool value)

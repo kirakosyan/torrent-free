@@ -69,7 +69,7 @@
                             <Border.StrokeShape>
                                    <RoundRectangle CornerRadius="12"/>
                             </Border.StrokeShape>
-                            <Grid RowDefinitions="Auto,Auto,Auto"
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto"
                                   ColumnDefinitions="Auto,*"
                                   ColumnSpacing="12"
                                   RowSpacing="8">
@@ -110,6 +110,19 @@
                                                           IsVisible="{Binding IsFolderPickerSupported}"
                                                          SemanticProperties.Description="{helpers:Translate BrowseButton}"/>
                                           </Grid>
+                                   </VerticalStackLayout>
+
+                                   <VerticalStackLayout Grid.Row="3"
+                                                        Grid.ColumnSpan="2"
+                                                        Spacing="8"
+                                                        IsVisible="{Binding IsAndroid}">
+                                          <Label Text="{helpers:Translate AndroidDownloadFolderHelp}"
+                                                 FontSize="11"
+                                                 TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                          <Button Text="{helpers:Translate OpenDownloadsFolder}"
+                                                  Command="{Binding OpenAndroidDownloadsFolderCommand}"
+                                                  HorizontalOptions="Start"
+                                                  SemanticProperties.Description="{helpers:Translate OpenDownloadsFolder}"/>
                                    </VerticalStackLayout>
                             </Grid>
                      </Border>
