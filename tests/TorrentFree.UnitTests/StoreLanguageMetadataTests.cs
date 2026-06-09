@@ -1,3 +1,4 @@
+using System.Text;
 using System.Xml.Linq;
 using Xunit;
 
@@ -121,6 +122,118 @@ public sealed class StoreLanguageMetadataTests
     }
 
     [Fact]
+    public void MicrosoftStoreListingImport_DeclaresAllImplementedLanguages()
+    {
+        var listingsPath = Path.Combine(
+            GetRepoRoot(),
+            "store", "microsoft-store", "listings.csv");
+
+        Assert.True(File.Exists(listingsPath), $"{listingsPath} does not exist.");
+
+        var rows = ReadCsvRows(listingsPath);
+        Assert.NotEmpty(rows);
+
+        var header = rows[0];
+        Assert.Equal("Field", header[0]);
+        Assert.Equal("ID", header[1]);
+        Assert.Equal("Type (Type)", header[2]);
+        Assert.Equal("default", header[3]);
+
+        var listingLanguages = header
+            .Skip(4)
+            .ToArray();
+
+        Assert.Equal(ExpectedMicrosoftStoreListingLanguages(), listingLanguages);
+    }
+
+    [Fact]
+    public void MicrosoftStoreListingImport_HasRequiredTextForEveryLanguage()
+    {
+        var listingsPath = Path.Combine(
+            GetRepoRoot(),
+            "store", "microsoft-store", "listings.csv");
+
+        var rows = ReadCsvRows(listingsPath);
+        var header = rows[0];
+        var languageColumns = ExpectedMicrosoftStoreListingLanguages()
+            .ToDictionary(
+                language => language,
+                language => Array.IndexOf(header, language));
+
+        foreach (var requiredField in ExpectedMicrosoftStoreListingTextFields())
+        {
+            var row = rows.SingleOrDefault(columns => columns[0] == requiredField);
+            Assert.NotNull(row);
+
+            foreach (var (language, columnIndex) in languageColumns)
+            {
+                Assert.True(columnIndex >= 0, $"{language} is missing from the Store listing import.");
+                Assert.True(
+                    columnIndex < row.Length && !string.IsNullOrWhiteSpace(row[columnIndex]),
+                    $"{requiredField} is missing Store listing text for {language}.");
+            }
+        }
+    }
+
+    [Fact]
+    public void MicrosoftStoreListingImport_ReferencesExpectedStoreLogoAssets()
+    {
+        var listingsPath = Path.Combine(
+            GetRepoRoot(),
+            "store", "microsoft-store", "listings.csv");
+
+        var rows = ReadCsvRows(listingsPath);
+        var header = rows[0];
+        var languageColumns = ExpectedMicrosoftStoreListingLanguages()
+            .Prepend("default")
+            .ToDictionary(
+                language => language,
+                language => Array.IndexOf(header, language));
+
+        foreach (var (field, width, height) in ExpectedMicrosoftStoreLogoAssets())
+        {
+            var row = rows.SingleOrDefault(columns => columns[0] == field);
+            Assert.NotNull(row);
+
+            foreach (var (language, columnIndex) in languageColumns)
+            {
+                Assert.True(columnIndex >= 0, $"{language} is missing from the Store listing import.");
+                Assert.True(
+                    columnIndex < row.Length && !string.IsNullOrWhiteSpace(row[columnIndex]),
+                    $"{field} is missing a Store logo path for {language}.");
+
+                var assetPath = ResolveStoreListingAssetPath(row[columnIndex]);
+                Assert.True(File.Exists(assetPath), $"{assetPath} does not exist.");
+
+                var (actualWidth, actualHeight) = PngSize(assetPath);
+                Assert.Equal(width, actualWidth);
+                Assert.Equal(height, actualHeight);
+            }
+        }
+    }
+
+    [Fact]
+    public void StoreDescriptionDocument_HasLocalizedDescriptionsAndTenFeatures()
+    {
+        var descriptionPath = Path.Combine(GetRepoRoot(), "STORE_DESCRIPTION.md");
+        var description = File.ReadAllText(descriptionPath);
+
+        foreach (var language in ExpectedWindowsStoreLanguages())
+        {
+            var section = MarkdownSection(description, $"## {language}");
+
+            Assert.Contains("### Short description", section);
+            Assert.Contains("### Full description", section);
+            Assert.Contains("### Features", section);
+
+            foreach (var featureIndex in Enumerable.Range(1, 10))
+            {
+                Assert.Contains($"{featureIndex}. ", section);
+            }
+        }
+    }
+
+    [Fact]
     public void ProjectDefaultLanguage_MatchesStoreMetadataFallbackLanguage()
     {
         var csprojPath = Path.Combine(GetRepoRoot(), "src", "TorrentFree", "TorrentFree.csproj");
@@ -142,7 +255,6 @@ public sealed class StoreLanguageMetadataTests
         var document = XDocument.Load(csprojPath);
 
         Assert.Equal("Scale|DXFeatureLevel", ProjectProperty(document, "AppxBundleAutoResourcePackageQualifiers"));
-        Assert.Equal("False", ProjectProperty(document, "AppxSymbolPackageEnabled"));
         Assert.Equal("False", ProjectProperty(document, "GenerateTemporaryStoreCertificate"));
     }
 
@@ -151,6 +263,21 @@ public sealed class StoreLanguageMetadataTests
 
     private static string[] ExpectedWindowsStoreLanguages()
         => ExpectedAndroidStoreLanguages();
+
+    private static string[] ExpectedMicrosoftStoreListingLanguages()
+        => ExpectedWindowsStoreLanguages()
+            .Select(language => language.ToLowerInvariant())
+            .ToArray();
+
+    private static string[] ExpectedMicrosoftStoreListingTextFields()
+        => ["Title", "Description", "ShortDescription", .. Enumerable.Range(1, 10).Select(index => $"Feature{index}")];
+
+    private static (string Field, int Width, int Height)[] ExpectedMicrosoftStoreLogoAssets() =>
+        [
+            ("StoreLogo300x300", 300, 300),
+            ("StoreLogoOverride150x150", 150, 150),
+            ("StoreLogoOverride71x71", 71, 71),
+        ];
 
     private static string[] ImplementedLocales()
     {
@@ -184,6 +311,101 @@ public sealed class StoreLanguageMetadataTests
             .FirstOrDefault()
             ?.Value
             .Trim();
+
+    private static string[][] ReadCsvRows(string path)
+    {
+        var text = File.ReadAllText(path);
+        var rows = new List<string[]>();
+        var row = new List<string>();
+        var field = new StringBuilder();
+        var inQuotes = false;
+
+        for (var index = 0; index < text.Length; index++)
+        {
+            var current = text[index];
+
+            if (current == '"')
+            {
+                if (inQuotes && index + 1 < text.Length && text[index + 1] == '"')
+                {
+                    field.Append('"');
+                    index++;
+                }
+                else
+                {
+                    inQuotes = !inQuotes;
+                }
+
+                continue;
+            }
+
+            if (!inQuotes && current == ',')
+            {
+                row.Add(field.ToString());
+                field.Clear();
+                continue;
+            }
+
+            if (!inQuotes && current is '\r' or '\n')
+            {
+                if (current == '\r' && index + 1 < text.Length && text[index + 1] == '\n')
+                {
+                    index++;
+                }
+
+                row.Add(field.ToString());
+                field.Clear();
+                rows.Add(row.ToArray());
+                row.Clear();
+                continue;
+            }
+
+            field.Append(current);
+        }
+
+        if (field.Length > 0 || row.Count > 0)
+        {
+            row.Add(field.ToString());
+            rows.Add(row.ToArray());
+        }
+
+        return rows.ToArray();
+    }
+
+    private static string ResolveStoreListingAssetPath(string csvPath) =>
+        Path.Combine(GetRepoRoot(), "store", csvPath.Replace('/', Path.DirectorySeparatorChar));
+
+    private static (int Width, int Height) PngSize(string path)
+    {
+        var bytes = File.ReadAllBytes(path);
+
+        Assert.True(bytes.Length >= 24, $"{path} is not a valid PNG.");
+        Assert.Equal(0x89, bytes[0]);
+        Assert.Equal((byte)'P', bytes[1]);
+        Assert.Equal((byte)'N', bytes[2]);
+        Assert.Equal((byte)'G', bytes[3]);
+
+        var width = ReadBigEndianInt32(bytes, 16);
+        var height = ReadBigEndianInt32(bytes, 20);
+        return (width, height);
+    }
+
+    private static int ReadBigEndianInt32(byte[] bytes, int offset) =>
+        bytes[offset] << 24
+        | bytes[offset + 1] << 16
+        | bytes[offset + 2] << 8
+        | bytes[offset + 3];
+
+    private static string MarkdownSection(string markdown, string heading)
+    {
+        var start = markdown.IndexOf(heading, StringComparison.Ordinal);
+        Assert.True(start >= 0, $"{heading} is missing.");
+
+        var next = markdown.IndexOf("\n## ", start + heading.Length, StringComparison.Ordinal);
+        return next < 0
+            ? markdown[start..]
+            : markdown[start..next];
+    }
 
     private static string GetRepoRoot() =>
         Path.GetFullPath(Path.Combine(

@@ -52,10 +52,10 @@
 		<AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
 		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
 		<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
-		<AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+		<AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
 		<!-- Keep language resources in the main MSIX so Store metadata advertises every implemented locale. -->
 		<AppxBundleAutoResourcePackageQualifiers>Scale|DXFeatureLevel</AppxBundleAutoResourcePackageQualifiers>
-		<GenerateTestArtifacts>True</GenerateTestArtifacts>
+		<GenerateTestArtifacts>False</GenerateTestArtifacts>
 		<GenerateTemporaryStoreCertificate>False</GenerateTemporaryStoreCertificate>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 		<DefaultLanguage>en-US</DefaultLanguage>
