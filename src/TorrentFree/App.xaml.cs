@@ -13,8 +13,9 @@ public partial class App : Application
     private readonly AppShell _appShell;
     private readonly IStorageService _storageService;
     private readonly ILocalizationService _localizationService;
+    private readonly IThemeService _themeService;
 
-    public App(AppShell appShell, IStorageService storageService, ILocalizationService localizationService)
+    public App(AppShell appShell, IStorageService storageService, ILocalizationService localizationService, IThemeService themeService)
     {
         InitializeComponent();
 
@@ -30,6 +31,7 @@ public partial class App : Application
         _appShell = appShell;
         _storageService = storageService;
         _localizationService = localizationService;
+        _themeService = themeService;
     }
 
     private static string GetCrashLogPath()
@@ -101,6 +103,7 @@ public partial class App : Application
         }
 
         ApplyPlatformWindowSettings(window, settings);
+        _themeService.Apply(settings.Theme);
 
         if (string.IsNullOrEmpty(settings.Language))
         {

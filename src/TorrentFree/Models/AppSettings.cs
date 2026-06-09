@@ -82,6 +82,12 @@ public class AppSettings
     public string? Language { get; set; }
 
     /// <summary>
+    /// User-selected theme preference: "system" (follow OS), "light", or "dark".
+    /// Defaults to following the system theme.
+    /// </summary>
+    public string Theme { get; set; } = ThemeSettings.System;
+
+    /// <summary>
     /// Remembers whether the desktop window was maximized when it last closed.
     /// Null means the state has not been recorded yet or the platform does not support it.
     /// </summary>

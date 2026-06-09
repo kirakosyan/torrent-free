@@ -489,4 +489,19 @@
   <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
     <value>ऐप को छोटा करने पर टोरेंट डाउनलोड चालू रखता है।</value>
   </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>थीम</value>
+  </data>
+  <data name="ThemeFollowSystem" xml:space="preserve">
+    <value>सिस्टम के अनुसार</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>लाइट</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>डार्क</value>
+  </data>
+  <data name="ThemePickerHint" xml:space="preserve">
+    <value>ऐप का स्वरूप चुनें।</value>
+  </data>
 </root>

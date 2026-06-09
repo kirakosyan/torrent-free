@@ -38,6 +38,7 @@ public static class AppSettingsFactory
             ProxyUsername = existing.ProxyUsername ?? string.Empty,
             ProxyPassword = existing.ProxyPassword ?? string.Empty,
             Language = existing.Language,
+            Theme = ThemeSettings.Normalize(existing.Theme),
             DesktopWasMaximized = existing.DesktopWasMaximized
         };
     }
@@ -60,7 +61,8 @@ public static class AppSettingsFactory
         int proxyPort,
         string proxyUsername,
         string proxyPassword,
-        string? language)
+        string? language,
+        string? theme)
     {
         ArgumentNullException.ThrowIfNull(existing);
 
@@ -81,6 +83,7 @@ public static class AppSettingsFactory
             ProxyUsername = proxyUsername ?? string.Empty,
             ProxyPassword = proxyPassword ?? string.Empty,
             Language = language,
+            Theme = ThemeSettings.Normalize(theme),
             DesktopWasMaximized = existing.DesktopWasMaximized
         };
     }

@@ -475,4 +475,19 @@
   <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
     <value>يبقي تنزيلات التورنت قيد التشغيل عند تصغير التطبيق.</value>
   </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>المظهر</value>
+  </data>
+  <data name="ThemeFollowSystem" xml:space="preserve">
+    <value>اتّباع النظام</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>فاتح</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>داكن</value>
+  </data>
+  <data name="ThemePickerHint" xml:space="preserve">
+    <value>اختر شكل التطبيق.</value>
+  </data>
 </root>

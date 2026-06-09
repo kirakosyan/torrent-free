@@ -503,4 +503,19 @@
   <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
     <value>Сохраняет загрузки торрентов активными, пока приложение свернуто.</value>
   </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>Тема</value>
+  </data>
+  <data name="ThemeFollowSystem" xml:space="preserve">
+    <value>Как в системе</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Светлая</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Тёмная</value>
+  </data>
+  <data name="ThemePickerHint" xml:space="preserve">
+    <value>Выберите внешний вид приложения.</value>
+  </data>
 </root>

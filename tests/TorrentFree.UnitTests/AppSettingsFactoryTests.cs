@@ -31,9 +31,11 @@ public sealed class AppSettingsFactoryTests
             proxyPort: 9050,
             proxyUsername: "user",
             proxyPassword: "pass",
-            language: "fr");
+            language: "fr",
+            theme: "dark");
 
         Assert.True(updated.SortByStatus);
+        Assert.Equal("dark", updated.Theme);
         Assert.Equal(1200, updated.GlobalDownloadLimitKbps);
         Assert.Equal(300, updated.GlobalUploadLimitKbps);
         Assert.Equal(5, updated.MaxActiveDownloads);
@@ -76,13 +78,16 @@ public sealed class AppSettingsFactoryTests
             proxyPort: 1080,
             proxyUsername: "",
             proxyPassword: "",
-            language: null);
+            language: null,
+            theme: null);
 
         Assert.False(updated.SortByStatus);
         Assert.True(updated.DownloadToTorrentFolder);
         Assert.Equal(string.Empty, updated.SpecificDownloadFolder);
         Assert.False(updated.ProxyEnabled);
         Assert.False(updated.DesktopWasMaximized);
+        // Null/unknown theme normalizes to "follow system".
+        Assert.Equal(ThemeSettings.System, updated.Theme);
     }
 
     [Fact]
@@ -105,7 +110,8 @@ public sealed class AppSettingsFactoryTests
             proxyPort: 0,
             proxyUsername: null!,
             proxyPassword: null!,
-            language: "es");
+            language: "es",
+            theme: "LIGHT");
 
         Assert.False(updated.DownloadToTorrentFolder);
         Assert.Equal(string.Empty, updated.SpecificDownloadFolder);
@@ -113,6 +119,8 @@ public sealed class AppSettingsFactoryTests
         Assert.Equal(1080, updated.ProxyPort);
         Assert.Equal(string.Empty, updated.ProxyUsername);
         Assert.Equal(string.Empty, updated.ProxyPassword);
+        // Mixed-case input is normalized to a canonical theme code.
+        Assert.Equal(ThemeSettings.Light, updated.Theme);
     }
 
     [Fact]
@@ -128,6 +136,7 @@ public sealed class AppSettingsFactoryTests
             ProxyUsername = "user",
             ProxyPassword = "pass",
             Language = "fr",
+            Theme = "dark",
             DesktopWasMaximized = true
         };
 
@@ -157,6 +166,7 @@ public sealed class AppSettingsFactoryTests
         Assert.Equal("user", updated.ProxyUsername);
         Assert.Equal("pass", updated.ProxyPassword);
         Assert.Equal("fr", updated.Language);
+        Assert.Equal("dark", updated.Theme);
         Assert.True(updated.DesktopWasMaximized);
     }
 
@@ -199,6 +209,8 @@ public sealed class AppSettingsFactoryTests
         Assert.Equal(string.Empty, settings.ProxyPassword);
         // Language falls back to null (system default) when missing from old JSON
         Assert.Null(settings.Language);
+        // Theme falls back to "follow system" when missing from old JSON
+        Assert.Equal(ThemeSettings.System, settings.Theme);
         // Desktop window state falls back to null when missing from old JSON
         Assert.Null(settings.DesktopWasMaximized);
     }

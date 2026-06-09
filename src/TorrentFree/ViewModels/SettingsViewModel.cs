@@ -17,10 +17,12 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IFileAssociationService _fileAssociationService;
     private readonly ILocalizationService _localizationService;
     private readonly IFolderPickerService _folderPickerService;
+    private readonly IThemeService _themeService;
     private AppSettings _loadedSettings = new();
     private bool _isLoadingSettings = true;
     private bool _isNormalizing;
     private bool _isUpdatingAssociation;
+    private bool _isSyncingThemeOptions;
 
     private const int MaxKbpsLimit = 1_000_000;
     private const int MaxActiveLimit = 200;
@@ -145,6 +147,17 @@ public partial class SettingsViewModel : ObservableObject
     public partial LanguageOption SelectedLanguage { get; set; } = null!;
 
     /// <summary>
+    /// Available theme options: follow system, light, or dark.
+    /// </summary>
+    public ObservableCollection<ThemeOption> AvailableThemes { get; } = [];
+
+    /// <summary>
+    /// The currently selected theme option.
+    /// </summary>
+    [ObservableProperty]
+    public partial ThemeOption SelectedTheme { get; set; } = null!;
+
+    /// <summary>
     /// Indicates whether the custom download folder field should be shown.
     /// </summary>
     public bool UseSpecificDownloadFolder => !DownloadToTorrentFolder;
@@ -169,15 +182,48 @@ public partial class SettingsViewModel : ObservableObject
         }
     }
 
-    public SettingsViewModel(IStorageService storageService, ITorrentService torrentService, IFileAssociationService fileAssociationService, ILocalizationService localizationService, IFolderPickerService folderPickerService)
+    public SettingsViewModel(IStorageService storageService, ITorrentService torrentService, IFileAssociationService fileAssociationService, ILocalizationService localizationService, IFolderPickerService folderPickerService, IThemeService themeService)
     {
         _storageService = storageService;
         _torrentService = torrentService;
         _fileAssociationService = fileAssociationService;
         _localizationService = localizationService;
         _folderPickerService = folderPickerService;
+        _themeService = themeService;
         IsFileAssociationSupported = _fileAssociationService.IsSupported;
         SelectedLanguage = AvailableLanguages[0];
+        RebuildThemeOptions(ThemeSettings.System);
+
+        // Theme option labels are localized, so rebuild them when the language changes.
+        LocalizationResourceManager.Instance.PropertyChanged += OnLocalizationChanged;
+    }
+
+    private void OnLocalizationChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        RebuildThemeOptions(SelectedTheme?.Code ?? ThemeSettings.System);
+    }
+
+    /// <summary>
+    /// Rebuilds the theme picker items so their (localized) display names refresh,
+    /// preserving the current selection by code. The picker re-renders because its
+    /// items source changes.
+    /// </summary>
+    private void RebuildThemeOptions(string selectedCode)
+    {
+        _isSyncingThemeOptions = true;
+        try
+        {
+            AvailableThemes.Clear();
+            AvailableThemes.Add(new ThemeOption(ThemeSettings.System, "ThemeFollowSystem"));
+            AvailableThemes.Add(new ThemeOption(ThemeSettings.Light, "ThemeLight"));
+            AvailableThemes.Add(new ThemeOption(ThemeSettings.Dark, "ThemeDark"));
+            SelectedTheme = AvailableThemes.FirstOrDefault(option => option.Code == selectedCode)
+                            ?? AvailableThemes[0];
+        }
+        finally
+        {
+            _isSyncingThemeOptions = false;
+        }
     }
 
     [RelayCommand]
@@ -203,6 +249,9 @@ public partial class SettingsViewModel : ObservableObject
 
         SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == (settings.Language ?? ""))
                            ?? AvailableLanguages[0];
+
+        SelectedTheme = AvailableThemes.FirstOrDefault(t => t.Code == ThemeSettings.Normalize(settings.Theme))
+                        ?? AvailableThemes[0];
 
         _isLoadingSettings = false;
         await RefreshFileAssociationAsync();
@@ -407,6 +456,14 @@ public partial class SettingsViewModel : ObservableObject
         SafeFireAndForget(PersistSettingsAsync());
     }
 
+    partial void OnSelectedThemeChanged(ThemeOption value)
+    {
+        if (_isLoadingSettings || _isSyncingThemeOptions || value is null) return;
+
+        _themeService.Apply(value.Code);
+        SafeFireAndForget(PersistSettingsAsync());
+    }
+
     private void ApplySettingsToService()
     {
         ApplySpeedLimits();
@@ -457,7 +514,8 @@ public partial class SettingsViewModel : ObservableObject
             ProxyPort,
             ProxyUsername,
             ProxyPassword,
-            SelectedLanguage?.Code);
+            SelectedLanguage?.Code,
+            SelectedTheme?.Code);
 
         _loadedSettings = settings;
         await _storageService.SaveSettingsAsync(settings);
@@ -632,5 +690,18 @@ public partial class SettingsViewModel : ObservableObject
 /// </summary>
 public record LanguageOption(string DisplayName, string Code)
 {
+    public override string ToString() => DisplayName;
+}
+
+/// <summary>
+/// Represents a selectable theme in the settings picker. The display name is resolved
+/// from localized resources so it follows the active language.
+/// </summary>
+public sealed class ThemeOption(string code, string resourceKey)
+{
+    public string Code { get; } = code;
+
+    public string DisplayName => LocalizationResourceManager.Instance[resourceKey];
+
     public override string ToString() => DisplayName;
 }

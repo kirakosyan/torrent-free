@@ -489,4 +489,19 @@
   <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
     <value>Uygulama küçültüldüğünde torrent indirmelerini çalışır durumda tutar.</value>
   </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="ThemeFollowSystem" xml:space="preserve">
+    <value>Sistemi izle</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Açık</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Koyu</value>
+  </data>
+  <data name="ThemePickerHint" xml:space="preserve">
+    <value>Uygulamanın görünümünü seçin.</value>
+  </data>
 </root>

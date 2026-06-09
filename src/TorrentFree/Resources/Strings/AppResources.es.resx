@@ -503,4 +503,19 @@
   <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
     <value>Mantiene las descargas de torrents activas mientras la aplicación está minimizada.</value>
   </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="ThemeFollowSystem" xml:space="preserve">
+    <value>Seguir el sistema</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Claro</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Oscuro</value>
+  </data>
+  <data name="ThemePickerHint" xml:space="preserve">
+    <value>Elige la apariencia de la aplicación.</value>
+  </data>
 </root>
