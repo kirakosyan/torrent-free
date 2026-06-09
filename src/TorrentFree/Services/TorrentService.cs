@@ -109,7 +109,9 @@ public class TorrentService : ITorrentService
     private readonly ConcurrentDictionary<string, TorrentManager> _managers = new();
     private readonly object _torrentsLock = new();
     private readonly Timer _saveTimer;
-    private ClientEngine? _engine;
+    // Read on several threads outside _engineLock (fast-path checks); volatile guarantees
+    // each reader sees the latest write (e.g. after RebuildEngineAsync nulls it).
+    private volatile ClientEngine? _engine;
     private readonly SemaphoreSlim _engineLock = new(1, 1);
     private Task? _initTask;
     private readonly object _initGate = new();
@@ -196,7 +198,7 @@ public class TorrentService : ITorrentService
                 }
 
                 AttachTorrentSettingsHandlers(torrent);
-                Torrents.Add(torrent);
+                await MainThread.InvokeOnMainThreadAsync(() => Torrents.Add(torrent));
             }
 
             // Persist the cleaned-up list so stale or duplicate entries are not reloaded next time.
@@ -260,7 +262,7 @@ public class TorrentService : ITorrentService
         };
 
         AttachTorrentSettingsHandlers(torrent);
-        Torrents.Add(torrent);
+        await MainThread.InvokeOnMainThreadAsync(() => Torrents.Add(torrent));
         await SaveAsync();
 
         return torrent;
@@ -355,7 +357,7 @@ public class TorrentService : ITorrentService
         try
         {
             manager = await GetOrCreateManagerAsync(torrent);
-            ApplySpeedLimitsToManager(manager, torrent);
+            await ApplySpeedLimitsToManagerAsync(manager, torrent);
 
             // Cancel any existing download for this torrent
             if (_downloadTokens.TryRemove(torrent.Id, out var existingCts))
@@ -689,16 +691,22 @@ public class TorrentService : ITorrentService
         _globalDownloadLimitBytesPerSec = KbpsToBytes(downloadLimitKbps);
         _globalUploadLimitBytesPerSec = KbpsToBytes(uploadLimitKbps);
 
-        if (_engine is not null)
+        SafeFireAndForget(ApplyGlobalSpeedLimitsAsync());
+    }
+
+    private async Task ApplyGlobalSpeedLimitsAsync()
+    {
+        var engine = _engine;
+        if (engine is not null)
         {
-            ApplySpeedLimitsToEngine(_engine, _globalDownloadLimitBytesPerSec, _globalUploadLimitBytesPerSec);
+            await ApplySpeedLimitsToEngineAsync(engine, _globalDownloadLimitBytesPerSec, _globalUploadLimitBytesPerSec);
         }
 
         foreach (var kvp in _managers)
         {
             if (TryGetTorrentById(kvp.Key, out var torrent) && torrent is not null)
             {
-                ApplySpeedLimitsToManager(kvp.Value, torrent);
+                await ApplySpeedLimitsToManagerAsync(kvp.Value, torrent);
             }
         }
     }
@@ -890,40 +898,6 @@ public class TorrentService : ITorrentService
     }
 
     /// <summary>
-    /// Attempts to set the proxy URI on the EngineSettingsBuilder via reflection.
-    /// MonoTorrent may or may not expose a proxy property depending on the version.
-    /// </summary>
-    private static void TryApplyProxy(EngineSettingsBuilder builder, string host, int port, string username, string password)
-    {
-        try
-        {
-            // Build the SOCKS5 proxy URI
-            var hasCredentials = !string.IsNullOrEmpty(username);
-            var userInfo = hasCredentials ? $"{Uri.EscapeDataString(username)}:{Uri.EscapeDataString(password)}@" : "";
-            var proxyUri = new Uri($"socks5://{userInfo}{host}:{port}");
-
-            // Try known property names used by various MonoTorrent versions
-            var proxyNames = new[] { "ProxyUri", "Proxy", "ProxyEndPoint" };
-            foreach (var name in proxyNames)
-            {
-                var prop = builder.GetType().GetProperty(name);
-                if (prop is not null && prop.CanWrite && prop.PropertyType == typeof(Uri))
-                {
-                    prop.SetValue(builder, proxyUri);
-                    System.Diagnostics.Debug.WriteLine($"Applied proxy via {name}: {host}:{port}");
-                    return;
-                }
-            }
-
-            System.Diagnostics.Debug.WriteLine("MonoTorrent version does not expose a proxy property on EngineSettingsBuilder. Proxy not applied at engine level.");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Failed to apply proxy settings: {ex.Message}");
-        }
-    }
-
-    /// <summary>
     /// Sanitizes a file name by removing or replacing invalid characters.
     /// </summary>
     private static string SanitizeFileName(string fileName)
@@ -1062,7 +1036,7 @@ public class TorrentService : ITorrentService
         {
             try
             {
-                ApplySpeedLimitsToManager(manager, torrent);
+                await ApplySpeedLimitsToManagerAsync(manager, torrent);
             }
             catch (Exception ex)
             {
@@ -1172,12 +1146,35 @@ public class TorrentService : ITorrentService
         }
     }
 
-    private void ApplySpeedLimitsToEngine(ClientEngine engine, long downloadLimitBytesPerSec, long uploadLimitBytesPerSec)
+    private static async Task ApplySpeedLimitsToEngineAsync(ClientEngine engine, long downloadLimitBytesPerSec, long uploadLimitBytesPerSec)
     {
-        _ = TryApplySpeedLimitsToSettings(engine.Settings, downloadLimitBytesPerSec, uploadLimitBytesPerSec);
+        var settings = new EngineSettingsBuilder(engine.Settings)
+        {
+            MaximumDownloadRate = ToRate(downloadLimitBytesPerSec),
+            MaximumUploadRate = ToRate(uploadLimitBytesPerSec),
+        }.ToSettings();
+
+        await engine.UpdateSettingsAsync(settings);
     }
 
-    private void ApplySpeedLimitsToManager(TorrentManager manager, TorrentItem torrent)
+    private async Task ApplySpeedLimitsToManagerAsync(TorrentManager manager, TorrentItem torrent)
+    {
+        var (downloadLimit, uploadLimit) = ResolveManagerLimits(torrent);
+
+        var settings = new TorrentSettingsBuilder(manager.Settings)
+        {
+            MaximumDownloadRate = ToRate(downloadLimit),
+            MaximumUploadRate = ToRate(uploadLimit),
+        }.ToSettings();
+
+        await manager.UpdateSettingsAsync(settings);
+    }
+
+    /// <summary>
+    /// Resolves the effective download/upload byte-per-second limits for a torrent,
+    /// preferring its per-torrent override and falling back to the global limit (0 = unlimited).
+    /// </summary>
+    private (long Download, long Upload) ResolveManagerLimits(TorrentItem torrent)
     {
         var downloadLimit = torrent.DownloadLimitKbps > 0
             ? KbpsToBytes(torrent.DownloadLimitKbps)
@@ -1187,84 +1184,11 @@ public class TorrentService : ITorrentService
             ? KbpsToBytes(torrent.UploadLimitKbps)
             : _globalUploadLimitBytesPerSec;
 
-        _ = TryApplySpeedLimitsToSettings(manager.Settings, downloadLimit, uploadLimit);
+        return (downloadLimit, uploadLimit);
     }
 
-    private static object? TryApplySpeedLimitsToSettings(object settings, long downloadLimitBytesPerSec, long uploadLimitBytesPerSec)
-    {
-        var working = settings;
-
-        var downloadNames = new[] { "MaximumDownloadSpeed", "MaximumDownloadRate", "DownloadRateLimit", "DownloadSpeedLimit" };
-        var uploadNames = new[] { "MaximumUploadSpeed", "MaximumUploadRate", "UploadRateLimit", "UploadSpeedLimit" };
-
-        working = TryApplySetting(working, downloadNames, downloadLimitBytesPerSec) ?? working;
-        working = TryApplySetting(working, uploadNames, uploadLimitBytesPerSec) ?? working;
-
-        return working;
-    }
-
-    private static object? TryApplySetting(object settings, string[] names, long value)
-    {
-        foreach (var name in names)
-        {
-            if (TrySetNumericProperty(settings, name, value))
-            {
-                return settings;
-            }
-
-            var updated = TryInvokeWithNumeric(settings, name, value);
-            if (updated is not null)
-            {
-                return updated;
-            }
-        }
-
-        return null;
-    }
-
-    private static bool TrySetNumericProperty(object target, string propertyName, long value)
-    {
-        var prop = target.GetType().GetProperty(propertyName);
-        if (prop is null || !prop.CanWrite)
-        {
-            return false;
-        }
-
-        try
-        {
-            var converted = Convert.ChangeType(value, prop.PropertyType);
-            prop.SetValue(target, converted);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    private static object? TryInvokeWithNumeric(object target, string baseName, long value)
-    {
-        var methodName = $"With{baseName}";
-        var method = target.GetType().GetMethod(methodName, new[] { typeof(int) })
-                     ?? target.GetType().GetMethod(methodName, new[] { typeof(long) });
-
-        if (method is null)
-        {
-            return null;
-        }
-
-        try
-        {
-            var parameter = method.GetParameters()[0].ParameterType == typeof(int)
-                ? (object)Math.Clamp(value, int.MinValue, int.MaxValue)
-                : value;
-            return method.Invoke(target, new[] { parameter });
-        }
-        catch
-        {
-            return null;
-        }
-    }
+    // MonoTorrent expresses rate limits as a 32-bit bytes/second value (0 = unlimited).
+    private static int ToRate(long bytesPerSecond) => (int)Math.Clamp(bytesPerSecond, 0, int.MaxValue);
 
     private async Task MonitorTorrentAsync(TorrentItem torrent, TorrentManager manager, CancellationToken cancellationToken)
     {
@@ -1759,6 +1683,9 @@ public class TorrentService : ITorrentService
             // Increase maximum connections for better download speeds
             MaximumConnections = 200,
             MaximumHalfOpenConnections = 50,
+            // Apply global speed limits up front (0 = unlimited).
+            MaximumDownloadRate = ToRate(_globalDownloadLimitBytesPerSec),
+            MaximumUploadRate = ToRate(_globalUploadLimitBytesPerSec),
             // Set a listen endpoint to accept incoming connections
             ListenEndPoints = new Dictionary<string, System.Net.IPEndPoint>
             {
@@ -1766,19 +1693,22 @@ public class TorrentService : ITorrentService
             }
         };
 
-        // Apply SOCKS5 proxy if configured
-        if (_proxyEnabled && !string.IsNullOrWhiteSpace(_proxyHost))
-        {
-            TryApplyProxy(builder, _proxyHost, _proxyPort, _proxyUsername, _proxyPassword);
-        }
-
         var engineSettings = builder.ToSettings();
 
-        var engine = new ClientEngine(engineSettings);
+        // Route outbound peer (TCP) connections through a SOCKS5 proxy when configured.
+        // MonoTorrent exposes no proxy setting, so we swap the socket connector via Factories.
+        if (_proxyEnabled && !string.IsNullOrWhiteSpace(_proxyHost))
+        {
+            var host = _proxyHost;
+            var port = _proxyPort;
+            var username = _proxyUsername;
+            var password = _proxyPassword;
+            var factories = Factories.Default.WithSocketConnectorCreator(
+                () => new Socks5SocketConnector(host, port, username, password));
+            return new ClientEngine(engineSettings, factories);
+        }
 
-        ApplySpeedLimitsToEngine(engine, _globalDownloadLimitBytesPerSec, _globalUploadLimitBytesPerSec);
-
-        return engine;
+        return new ClientEngine(engineSettings);
     }
 
 
@@ -1794,12 +1724,16 @@ public class TorrentService : ITorrentService
         Directory.CreateDirectory(downloadPath);
         torrent.SavePath = downloadPath;
 
+        var (downloadLimit, uploadLimit) = ResolveManagerLimits(torrent);
         var torrentSettings = new TorrentSettingsBuilder
         {
             // Increase maximum connections per torrent
             MaximumConnections = 100,
             // Limit upload slots to prioritize downloads
             UploadSlots = 4,
+            // Apply per-torrent (or global) speed limits up front (0 = unlimited).
+            MaximumDownloadRate = ToRate(downloadLimit),
+            MaximumUploadRate = ToRate(uploadLimit),
         }.ToSettings();
 
         TorrentManager manager;
@@ -1824,8 +1758,6 @@ public class TorrentService : ITorrentService
             manager = await engine.AddAsync(magnet, downloadPath, torrentSettings);
             await AddPublicTrackersIfNeededAsync(manager, torrent.MagnetLink);
         }
-
-        ApplySpeedLimitsToManager(manager, torrent);
 
         _managers[torrent.Id] = manager;
         return manager;
