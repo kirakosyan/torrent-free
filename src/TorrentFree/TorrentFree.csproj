@@ -29,8 +29,8 @@
 		<ApplicationId>com.torrentfree.app</ApplicationId>
 
 		<!-- Versions -->
-		<AppDisplayVersion>1.8</AppDisplayVersion>
-		<AppBuildNumber>11</AppBuildNumber>
+		<AppDisplayVersion>1.9</AppDisplayVersion>
+		<AppBuildNumber>12</AppBuildNumber>
 		<ApplicationDisplayVersion>$(AppDisplayVersion)</ApplicationDisplayVersion>
 		<ApplicationVersion>$(AppBuildNumber)</ApplicationVersion>
 		<AndroidVersionName>$(AppDisplayVersion)</AndroidVersionName>
@@ -52,9 +52,11 @@
 		<AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
 		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
 		<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
-		<AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
+		<AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+		<!-- Keep language resources in the main MSIX so Store metadata advertises every implemented locale. -->
+		<AppxBundleAutoResourcePackageQualifiers>Scale|DXFeatureLevel</AppxBundleAutoResourcePackageQualifiers>
 		<GenerateTestArtifacts>True</GenerateTestArtifacts>
-		<GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
+		<GenerateTemporaryStoreCertificate>False</GenerateTemporaryStoreCertificate>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 		<DefaultLanguage>en-US</DefaultLanguage>
 	</PropertyGroup>
@@ -98,6 +100,12 @@
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
 		<AndroidLibrary Remove="**\playservicesbasement-18.2.0.aar" />
+	</ItemGroup>
+
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+		<!-- The app UI uses .resx satellite assemblies; these language-qualified
+		     package resources make MSIX/Store metadata advertise the same locales. -->
+		<Content Include="Platforms\Windows\PackageLanguages\*.txt" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<!-- Resource files for multilanguage support -->
