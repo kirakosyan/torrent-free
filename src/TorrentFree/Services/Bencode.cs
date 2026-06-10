@@ -11,21 +11,58 @@ internal sealed record BDictionary(IReadOnlyDictionary<string, BElement> Values)
 
 internal static class Bencode
 {
+    // Hostile .torrent files can nest lists/dictionaries thousands of levels deep to blow the
+    // stack (the decoder recurses per level). Cap the depth so such input throws a catchable
+    // FormatException instead of crashing the process with a StackOverflowException.
+    private const int MaxDepth = 100;
+
     public static BElement Decode(ReadOnlySpan<byte> data)
     {
         var position = 0;
-        var element = DecodeElement(data, ref position);
-
-        if (position != data.Length)
-        {
-            // trailing bytes are allowed in some files but not expected here
-        }
-
-        return element;
+        return DecodeElement(data, ref position, 0);
     }
 
-    private static BElement DecodeElement(ReadOnlySpan<byte> data, ref int position)
+    /// <summary>
+    /// Returns the raw, unmodified bytes of a top-level dictionary entry's value, exactly as
+    /// they appear in <paramref name="data"/>. Used to compute the info-hash from the original
+    /// bytes of the "info" dictionary instead of a decoded-and-re-encoded copy, which can
+    /// differ (key ordering, non-UTF-8 keys/values) and would yield the wrong info-hash.
+    /// </summary>
+    public static bool TryGetTopLevelRawValue(ReadOnlySpan<byte> data, string key, out byte[] value)
     {
+        value = [];
+
+        var position = 0;
+        if ((uint)position >= (uint)data.Length || data[position] != (byte)'d')
+        {
+            return false;
+        }
+
+        position++; // d
+        while (position < data.Length && data[position] != (byte)'e')
+        {
+            var keyElement = DecodeString(data, ref position);
+            var valueStart = position;
+            DecodeElement(data, ref position, 1);
+            var valueEnd = position;
+
+            if (string.Equals(Encoding.UTF8.GetString(keyElement.Bytes), key, StringComparison.Ordinal))
+            {
+                value = data[valueStart..valueEnd].ToArray();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static BElement DecodeElement(ReadOnlySpan<byte> data, ref int position, int depth)
+    {
+        if (depth > MaxDepth)
+        {
+            throw new FormatException("Bencode nesting exceeds the maximum supported depth.");
+        }
+
         if ((uint)position >= (uint)data.Length)
         {
             throw new FormatException("Unexpected end of data.");
@@ -35,8 +72,8 @@ internal static class Bencode
         return current switch
         {
             (byte)'i' => DecodeInteger(data, ref position),
-            (byte)'l' => DecodeList(data, ref position),
-            (byte)'d' => DecodeDictionary(data, ref position),
+            (byte)'l' => DecodeList(data, ref position, depth),
+            (byte)'d' => DecodeDictionary(data, ref position, depth),
             >= (byte)'0' and <= (byte)'9' => DecodeString(data, ref position),
             _ => throw new FormatException("Invalid bencode prefix.")
         };
@@ -137,13 +174,13 @@ internal static class Bencode
         return new BString(bytes);
     }
 
-    private static BList DecodeList(ReadOnlySpan<byte> data, ref int position)
+    private static BList DecodeList(ReadOnlySpan<byte> data, ref int position, int depth)
     {
         position++; // l
         var items = new List<BElement>();
         while (position < data.Length && data[position] != (byte)'e')
         {
-            items.Add(DecodeElement(data, ref position));
+            items.Add(DecodeElement(data, ref position, depth + 1));
         }
 
         if (position >= data.Length)
@@ -155,7 +192,7 @@ internal static class Bencode
         return new BList(items);
     }
 
-    private static BDictionary DecodeDictionary(ReadOnlySpan<byte> data, ref int position)
+    private static BDictionary DecodeDictionary(ReadOnlySpan<byte> data, ref int position, int depth)
     {
         position++; // d
         var dict = new Dictionary<string, BElement>(StringComparer.Ordinal);
@@ -163,7 +200,7 @@ internal static class Bencode
         {
             var keyElement = DecodeString(data, ref position);
             var key = Encoding.UTF8.GetString(keyElement.Bytes);
-            var value = DecodeElement(data, ref position);
+            var value = DecodeElement(data, ref position, depth + 1);
             dict[key] = value;
         }
 

@@ -61,7 +61,7 @@ public sealed class TorrentFileParser : ITorrentFileParser
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        var infoHashHex = TryComputeInfoHashHex(dict);
+        var infoHashHex = TryComputeInfoHashHex(torrentFileContent, dict);
 
         return new TorrentMetadata(name, infoHashHex, trackers);
     }
@@ -85,17 +85,39 @@ public sealed class TorrentFileParser : ITorrentFileParser
         return string.IsNullOrWhiteSpace(value) ? null : value;
     }
 
-    private static string? TryComputeInfoHashHex(BDictionary dict)
+    private static string? TryComputeInfoHashHex(byte[] torrentFileContent, BDictionary root)
     {
-        if (!TryGetValue(dict, "info", out var info) || info is not BDictionary infoDict)
+        // Hash the exact bytes of the "info" dictionary as they appear in the file. Decoding
+        // and re-encoding can change the bytes (key ordering, non-UTF-8 content) and produce
+        // an info-hash that does not match the one peers and trackers use.
+        if (!Bencode.TryGetTopLevelRawValue(torrentFileContent, "info", out var infoBytes) || infoBytes.Length == 0)
         {
             return null;
         }
 
-        // Re-encode the info dictionary in canonical bencode form.
-        // This is required to compute the same info-hash peers use.
-        var infoBytes = TorrentFileWriter.EncodeCanonical(infoDict);
-        var hash = SHA1.HashData(infoBytes);
-        return Convert.ToHexString(hash).ToLowerInvariant();
+        // A v2-only torrent (BEP 52: "meta version" >= 2 with no v1 "pieces") is identified by
+        // the SHA-256 of its info dictionary; v1 and hybrid torrents use SHA-1. BuildMagnetLink
+        // selects the matching URN scheme from the resulting hex length (40 = v1, 64 = v2).
+        if (IsV2OnlyInfoDictionary(root))
+        {
+            return Convert.ToHexString(SHA256.HashData(infoBytes)).ToLowerInvariant();
+        }
+
+        return Convert.ToHexString(SHA1.HashData(infoBytes)).ToLowerInvariant();
+    }
+
+    private static bool IsV2OnlyInfoDictionary(BDictionary root)
+    {
+        if (!TryGetValue(root, "info", out var info) || info is not BDictionary infoDict)
+        {
+            return false;
+        }
+
+        var hasV1Pieces = infoDict.Values.ContainsKey("pieces");
+        var metaVersion = infoDict.Values.TryGetValue("meta version", out var version) && version is BInteger metaInteger
+            ? metaInteger.Value
+            : 0;
+
+        return metaVersion >= 2 && !hasV1Pieces;
     }
 }

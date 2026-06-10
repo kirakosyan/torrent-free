@@ -132,6 +132,19 @@ public class TorrentService : ITorrentService
     private string _proxyUsername = string.Empty;
     private string _proxyPassword = string.Empty;
 
+    // Proxy changes (e.g. typing a hostname) arrive one keystroke at a time; debounce the
+    // expensive engine rebuild and serialize rebuilds so they cannot overlap.
+    private readonly SemaphoreSlim _engineRebuildLock = new(1, 1);
+    private readonly object _proxyRebuildGate = new();
+    private CancellationTokenSource? _proxyRebuildCts;
+    private static readonly TimeSpan ProxyRebuildDebounce = TimeSpan.FromMilliseconds(800);
+
+    // A SOCKS5 proxy can only tunnel outbound TCP, so when it is active we disable every
+    // channel that would otherwise expose the user's real IP (DHT, LPD, UPnP, the inbound
+    // listener, and UDP trackers). Centralised here so engine creation and tracker
+    // bootstrap stay in agreement.
+    private bool ProxyActive => _proxyEnabled && !string.IsNullOrWhiteSpace(_proxyHost);
+
     public ObservableCollection<TorrentItem> Torrents { get; } = [];
 
     public TorrentService(IStorageService storageService, INotificationService notificationService, IBackgroundDownloadService backgroundDownloadService)
@@ -198,7 +211,13 @@ public class TorrentService : ITorrentService
                 }
 
                 AttachTorrentSettingsHandlers(torrent);
-                await MainThread.InvokeOnMainThreadAsync(() => Torrents.Add(torrent));
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    lock (_torrentsLock)
+                    {
+                        Torrents.Add(torrent);
+                    }
+                });
             }
 
             // Persist the cleaned-up list so stale or duplicate entries are not reloaded next time.
@@ -262,7 +281,13 @@ public class TorrentService : ITorrentService
         };
 
         AttachTorrentSettingsHandlers(torrent);
-        await MainThread.InvokeOnMainThreadAsync(() => Torrents.Add(torrent));
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            lock (_torrentsLock)
+            {
+                Torrents.Add(torrent);
+            }
+        });
         await SaveAsync();
 
         return torrent;
@@ -286,8 +311,19 @@ public class TorrentService : ITorrentService
     {
         var sb = new System.Text.StringBuilder();
         sb.Append("magnet:?");
-        sb.Append("xt=urn:btih:");
-        sb.Append(infoHashHex.ToLowerInvariant());
+
+        var normalizedHash = infoHashHex.ToLowerInvariant();
+        if (normalizedHash.Length == 64)
+        {
+            // BitTorrent v2 info-hash: SHA-256 multihash (0x12 = sha2-256, 0x20 = 32 bytes).
+            sb.Append("xt=urn:btmh:1220");
+            sb.Append(normalizedHash);
+        }
+        else
+        {
+            sb.Append("xt=urn:btih:");
+            sb.Append(normalizedHash);
+        }
 
         if (!string.IsNullOrWhiteSpace(displayName))
         {
@@ -530,7 +566,13 @@ public class TorrentService : ITorrentService
         }
 
         DetachTorrentSettingsHandlers(torrent);
-        await MainThread.InvokeOnMainThreadAsync(() => Torrents.Remove(torrent));
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            lock (_torrentsLock)
+            {
+                Torrents.Remove(torrent);
+            }
+        });
         await SaveAsync();
         UpdateBackgroundTransferState();
 
@@ -772,7 +814,56 @@ public class TorrentService : ITorrentService
 
         if (changed && _engine is not null)
         {
-            SafeFireAndForget(RebuildEngineAsync());
+            ScheduleEngineRebuild();
+        }
+    }
+
+    /// <summary>
+    /// Debounces proxy-triggered engine rebuilds: each call cancels the previously scheduled
+    /// rebuild and restarts the timer, so a burst of setting changes (e.g. typing a hostname
+    /// one character at a time) collapses into a single rebuild once the user stops.
+    /// </summary>
+    private void ScheduleEngineRebuild()
+    {
+        CancellationToken token;
+        lock (_proxyRebuildGate)
+        {
+            _proxyRebuildCts?.Cancel();
+            _proxyRebuildCts?.Dispose();
+            _proxyRebuildCts = new CancellationTokenSource();
+            token = _proxyRebuildCts.Token;
+        }
+
+        SafeFireAndForget(DebouncedEngineRebuildAsync(token));
+    }
+
+    private async Task DebouncedEngineRebuildAsync(CancellationToken token)
+    {
+        try
+        {
+            await Task.Delay(ProxyRebuildDebounce, token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        // Serialize rebuilds: a rebuild stops every manager, disposes the engine, and
+        // restarts torrents, which takes seconds. A second rebuild starting meanwhile would
+        // race on _engine and double-stop the same managers.
+        await _engineRebuildLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            await RebuildEngineAsync().ConfigureAwait(false);
+        }
+        finally
+        {
+            _engineRebuildLock.Release();
         }
     }
 
@@ -1098,7 +1189,18 @@ public class TorrentService : ITorrentService
 
         foreach (var torrent in queued)
         {
-            await StartTorrentAsync(torrent);
+            try
+            {
+                await StartTorrentAsync(torrent);
+            }
+            catch (Exception ex)
+            {
+                // StartTorrentAsync already marked this torrent Failed before rethrowing.
+                // Swallow here so one bad torrent cannot corrupt the status/error of the
+                // operation that drained the queue (a completing download, a pause/stop/
+                // remove, or a settings change).
+                System.Diagnostics.Debug.WriteLine($"Queued start error for '{torrent.Name}' ({torrent.Id}): {ex}");
+            }
         }
     }
 
@@ -1219,47 +1321,14 @@ public class TorrentService : ITorrentService
                     ? (manager.Error?.Exception?.Message ?? "Unknown error occurred")
                     : null;
 
-                // Peer stats via reflection – all done off the UI thread
+                // Peer counts come straight from MonoTorrent's typed API (note it spells the
+                // leecher count "Leechs"). The old reflection probed property names that do
+                // not exist in MonoTorrent 3.x, so leechers were always reported as zero.
                 var peers = manager.Peers;
-                var seedsProp = peers.GetType().GetProperty("Seeds") ?? peers.GetType().GetProperty("Seeding");
-                var leechProp = peers.GetType().GetProperty("Leeches") ?? peers.GetType().GetProperty("Leeching");
-                var connectedProp = peers.GetType().GetProperty("ConnectedPeers")
-                                    ?? peers.GetType().GetProperty("ActivePeers")
-                                    ?? peers.GetType().GetProperty("AvailablePeers");
+                var seeds = peers?.Seeds ?? 0;
+                var leeches = peers?.Leechs ?? 0;
 
-                var seedsObj = seedsProp?.GetValue(peers);
-                var seeds = seedsObj != null ? System.Convert.ToInt32(seedsObj) : 0;
-                var leechesObj = leechProp?.GetValue(peers);
-                var leeches = leechesObj != null ? System.Convert.ToInt32(leechesObj) : 0;
-
-                // Fallback: infer from connected peers collection only when the direct counts
-                // are completely missing. Filling in a zero value from the peer list is fine,
-                // but overwriting a non-zero reliable count with a (possibly lower) iteration
-                // result loses information.
-                if (seeds == 0 && leeches == 0 && connectedProp?.GetValue(peers) is System.Collections.IEnumerable peerList)
-                {
-                    int seedCount = 0;
-                    int leechCount = 0;
-                    foreach (var peer in peerList)
-                    {
-                        var isSeederProp = peer?.GetType().GetProperty("IsSeeder") ?? peer?.GetType().GetProperty("AmSeeder");
-                        var isSeeder = (bool?)(isSeederProp?.GetValue(peer)) == true;
-                        if (isSeeder)
-                        {
-                            seedCount++;
-                        }
-                        else
-                        {
-                            leechCount++;
-                        }
-                    }
-
-                    seeds = seedCount;
-                    leeches = leechCount;
-                }
-
-                // Availability / health – heavy reflection, done on background thread
-                var availabilityInfo = GetAvailabilityInfo(manager, seeds, leeches);
+                var availabilityInfo = GetAvailabilityInfo(seeds, leeches);
                 var healthScore = ComputeHealthScore(seeds, leeches, availabilityInfo.Percent);
 
                 // Metadata from torrent file (if available)
@@ -1418,22 +1487,23 @@ public class TorrentService : ITorrentService
 
     private readonly record struct AvailabilityInfo(double Percent, string Label);
 
-    private static AvailabilityInfo GetAvailabilityInfo(TorrentManager manager, int seeds, int leeches)
+    /// <summary>
+    /// Reports swarm availability from the connected peer counts. Each seed is one full copy
+    /// of the torrent; the partial copies held by leechers cannot be measured because peer
+    /// bitfields are not exposed by MonoTorrent's public API, so the seed count is the
+    /// guaranteed-availability figure and the swarm size is the secondary signal.
+    /// </summary>
+    private static AvailabilityInfo GetAvailabilityInfo(int seeds, int leeches)
     {
-        if (TryComputePieceAvailability(manager, out var percent))
+        if (seeds > 0)
         {
-            return new AvailabilityInfo(percent, $"{percent:0}%");
+            var meterPercent = Math.Clamp(seeds / 2d, 0, 1) * 100;
+            return new AvailabilityInfo(meterPercent, $"{seeds:0.0}x");
         }
 
-        if (TryGetAvailabilityCopies(manager, out var copies))
+        if (leeches > 0)
         {
-            var meterPercent = Math.Clamp(copies / 2d, 0, 1) * 100;
-            return new AvailabilityInfo(meterPercent, $"{copies:0.0}x");
-        }
-
-        if (seeds + leeches > 0)
-        {
-            var swarmPercent = Math.Clamp((seeds + leeches) / 20d, 0, 1) * 100;
+            var swarmPercent = Math.Clamp(leeches / 20d, 0, 1) * 100;
             return new AvailabilityInfo(swarmPercent, $"{seeds}S/{leeches}L");
         }
 
@@ -1446,175 +1516,6 @@ public class TorrentService : ITorrentService
         var seedScore = Math.Min(1, seeds / 10d) * 30; // up to 30 points
         var peerScore = Math.Min(1, (seeds + leeches) / 20d) * 20; // up to 20 points
         return (int)Math.Round(availabilityScore + seedScore + peerScore, MidpointRounding.AwayFromZero);
-    }
-
-    private static bool TryGetAvailabilityCopies(TorrentManager manager, out double copies)
-    {
-        copies = 0;
-
-        if (TryGetNumericProperty(manager, "Availability", out copies))
-        {
-            return true;
-        }
-
-        if (manager.Peers is not null && TryGetNumericProperty(manager.Peers, "Availability", out copies))
-        {
-            return true;
-        }
-
-        if (manager.Peers is not null && TryGetNumericProperty(manager.Peers, "Available", out copies))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private static bool TryGetNumericProperty(object target, string propertyName, out double value)
-    {
-        value = 0;
-        var prop = target.GetType().GetProperty(propertyName);
-        if (prop is null)
-        {
-            return false;
-        }
-
-        var raw = prop.GetValue(target);
-        if (raw is null)
-        {
-            return false;
-        }
-
-        try
-        {
-            value = Convert.ToDouble(raw);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    private static bool TryComputePieceAvailability(TorrentManager manager, out double percent)
-    {
-        percent = 0;
-
-        if (manager.Torrent is null)
-        {
-            return false;
-        }
-
-        var pieceCount = TryGetPieceCount(manager.Torrent);
-        if (pieceCount <= 0)
-        {
-            return false;
-        }
-
-        var sampleStep = pieceCount > 2000 ? (int)Math.Ceiling(pieceCount / 2000d) : 1;
-        var sampleCount = (int)Math.Ceiling(pieceCount / (double)sampleStep);
-        var availableSamples = new bool[sampleCount];
-
-        MarkAvailablePieces(manager, availableSamples, sampleStep, pieceCount);
-
-        if (manager.Peers is not null)
-        {
-            foreach (var peer in GetConnectedPeers(manager.Peers))
-            {
-                MarkAvailablePieces(peer, availableSamples, sampleStep, pieceCount);
-            }
-        }
-
-        var availableCount = availableSamples.Count(static x => x);
-        if (availableCount == 0)
-        {
-            return false;
-        }
-
-        percent = availableCount / (double)sampleCount * 100d;
-        return true;
-    }
-
-    private static void MarkAvailablePieces(object? source, bool[] availableSamples, int sampleStep, int pieceCount)
-    {
-        if (source is null)
-        {
-            return;
-        }
-
-        var bitfield = source.GetType().GetProperty("BitField")?.GetValue(source)
-                       ?? source.GetType().GetProperty("Bitfield")?.GetValue(source);
-
-        if (bitfield is null)
-        {
-            return;
-        }
-
-        var indexer = bitfield.GetType().GetProperty("Item");
-        if (indexer is null)
-        {
-            return;
-        }
-
-        var sampleIndex = 0;
-        for (var i = 0; i < pieceCount; i += sampleStep)
-        {
-            if (!availableSamples[sampleIndex])
-            {
-                var hasPiece = (bool?)(indexer.GetValue(bitfield, new object[] { i })) == true;
-                if (hasPiece)
-                {
-                    availableSamples[sampleIndex] = true;
-                }
-            }
-            sampleIndex++;
-            if (sampleIndex >= availableSamples.Length)
-            {
-                break;
-            }
-        }
-    }
-
-    private static int TryGetPieceCount(object torrent)
-    {
-        var pieceCountProp = torrent.GetType().GetProperty("PieceCount");
-        if (pieceCountProp?.GetValue(torrent) is int count && count > 0)
-        {
-            return count;
-        }
-
-        var piecesProp = torrent.GetType().GetProperty("Pieces") ?? torrent.GetType().GetProperty("PieceHashes");
-        var pieces = piecesProp?.GetValue(torrent);
-        if (pieces is null)
-        {
-            return 0;
-        }
-
-        var countProp = pieces.GetType().GetProperty("Count");
-        if (countProp?.GetValue(pieces) is int piecesCount)
-        {
-            return piecesCount;
-        }
-
-        return 0;
-    }
-
-    private static IEnumerable<object> GetConnectedPeers(object peers)
-    {
-        var connectedProp = peers.GetType().GetProperty("ConnectedPeers")
-                             ?? peers.GetType().GetProperty("ActivePeers")
-                             ?? peers.GetType().GetProperty("AvailablePeers");
-
-        if (connectedProp?.GetValue(peers) is System.Collections.IEnumerable peerList)
-        {
-            foreach (var peer in peerList)
-            {
-                if (peer is not null)
-                {
-                    yield return peer;
-                }
-            }
-        }
     }
 
     private async Task SaveIfPendingAsync()
@@ -1671,44 +1572,76 @@ public class TorrentService : ITorrentService
 
     private ClientEngine CreateEngine()
     {
+        // When a SOCKS5 proxy is active we can only tunnel outbound TCP (peer connections and
+        // HTTP/HTTPS tracker + web-seed requests). Every other discovery channel below either
+        // uses UDP (DHT) or exposes a directly reachable endpoint (inbound listener,
+        // UPnP/NAT-PMP, local peer discovery), none of which the proxy covers — leaving them
+        // enabled would broadcast the user's real IP and defeat the purpose of the proxy. So
+        // in proxy mode we shut them all down and rely on proxied peer + HTTP-tracker traffic
+        // only. UDP bootstrap trackers are likewise skipped (see GetOrCreateManagerAsync).
+        var useProxy = ProxyActive;
+
         var builder = new EngineSettingsBuilder
         {
             CacheDirectory = _storageService.GetDefaultDownloadPath(),
-            // Enable UPnP/NAT-PMP port forwarding so peers can connect to us
-            AllowPortForwarding = true,
-            // Enable DHT for peer discovery (critical for finding more peers)
-            DhtEndPoint = new System.Net.IPEndPoint(System.Net.IPAddress.Any, 0),
-            // Enable Local Peer Discovery to find peers on the same network
-            AllowLocalPeerDiscovery = true,
+            // UPnP/NAT-PMP opens an inbound port on the router and advertises our address.
+            AllowPortForwarding = !useProxy,
+            // DHT is UDP and announces our IP to the swarm; disable it (and its cache) when proxied.
+            DhtEndPoint = useProxy ? null : new System.Net.IPEndPoint(System.Net.IPAddress.Any, 0),
+            AutoSaveLoadDhtCache = !useProxy,
+            // Local Peer Discovery multicasts our LAN address.
+            AllowLocalPeerDiscovery = !useProxy,
             // Increase maximum connections for better download speeds
             MaximumConnections = 200,
             MaximumHalfOpenConnections = 50,
             // Apply global speed limits up front (0 = unlimited).
             MaximumDownloadRate = ToRate(_globalDownloadLimitBytesPerSec),
             MaximumUploadRate = ToRate(_globalUploadLimitBytesPerSec),
-            // Set a listen endpoint to accept incoming connections
-            ListenEndPoints = new Dictionary<string, System.Net.IPEndPoint>
-            {
-                { "ipv4", new System.Net.IPEndPoint(System.Net.IPAddress.Any, 0) }
-            }
+            // Accept incoming connections only when not proxied; an inbound listener would
+            // expose our real address to any peer that dials in.
+            ListenEndPoints = useProxy
+                ? new Dictionary<string, System.Net.IPEndPoint>()
+                : new Dictionary<string, System.Net.IPEndPoint>
+                {
+                    { "ipv4", new System.Net.IPEndPoint(System.Net.IPAddress.Any, 0) }
+                }
         };
 
         var engineSettings = builder.ToSettings();
 
-        // Route outbound peer (TCP) connections through a SOCKS5 proxy when configured.
-        // MonoTorrent exposes no proxy setting, so we swap the socket connector via Factories.
-        if (_proxyEnabled && !string.IsNullOrWhiteSpace(_proxyHost))
+        if (!useProxy)
         {
-            var host = _proxyHost;
-            var port = _proxyPort;
-            var username = _proxyUsername;
-            var password = _proxyPassword;
-            var factories = Factories.Default.WithSocketConnectorCreator(
-                () => new Socks5SocketConnector(host, port, username, password));
-            return new ClientEngine(engineSettings, factories);
+            return new ClientEngine(engineSettings);
         }
 
-        return new ClientEngine(engineSettings);
+        // Route outbound peer (TCP) connections and HTTP(S) tracker / web-seed requests
+        // through the SOCKS5 proxy. MonoTorrent exposes no proxy setting, so we swap the
+        // socket connector and the HTTP client via Factories.
+        var host = _proxyHost;
+        var port = _proxyPort;
+        var username = _proxyUsername;
+        var password = _proxyPassword;
+        var factories = Factories.Default
+            .WithSocketConnectorCreator(() => new Socks5SocketConnector(host, port, username, password))
+            .WithHttpClientCreator(_ => CreateProxiedHttpClient(host, port, username, password));
+        return new ClientEngine(engineSettings, factories);
+    }
+
+    private static System.Net.Http.HttpClient CreateProxiedHttpClient(string host, int port, string username, string password)
+    {
+        var proxy = new System.Net.WebProxy($"socks5://{host}:{port}");
+        if (!string.IsNullOrEmpty(username))
+        {
+            proxy.Credentials = new System.Net.NetworkCredential(username, password);
+        }
+
+        var handler = new System.Net.Http.SocketsHttpHandler
+        {
+            Proxy = proxy,
+            UseProxy = true
+        };
+
+        return new System.Net.Http.HttpClient(handler, disposeHandler: true);
     }
 
 
@@ -1749,14 +1682,22 @@ public class TorrentService : ITorrentService
                 System.Diagnostics.Debug.WriteLine($"Failed to load .torrent file: {ex.Message}. Falling back to magnet link.");
                 var magnet = MagnetLink.Parse(torrent.MagnetLink);
                 manager = await engine.AddAsync(magnet, downloadPath, torrentSettings);
-                await AddPublicTrackersIfNeededAsync(manager, torrent.MagnetLink);
+                if (!ProxyActive)
+                {
+                    await AddPublicTrackersIfNeededAsync(manager, torrent.MagnetLink);
+                }
             }
         }
         else
         {
             var magnet = MagnetLink.Parse(torrent.MagnetLink);
             manager = await engine.AddAsync(magnet, downloadPath, torrentSettings);
-            await AddPublicTrackersIfNeededAsync(manager, torrent.MagnetLink);
+            if (!ProxyActive)
+            {
+                // The bootstrap trackers are all UDP, which the SOCKS5 proxy cannot tunnel;
+                // adding them in proxy mode would leak the real IP via tracker announces.
+                await AddPublicTrackersIfNeededAsync(manager, torrent.MagnetLink);
+            }
         }
 
         _managers[torrent.Id] = manager;
@@ -1858,6 +1799,14 @@ public class TorrentService : ITorrentService
         _pendingSave = false;
         _torrentOperationLock.Dispose();
 
+        // Cancel any pending/debounced proxy rebuild so it does not run after disposal.
+        lock (_proxyRebuildGate)
+        {
+            _proxyRebuildCts?.Cancel();
+            _proxyRebuildCts?.Dispose();
+            _proxyRebuildCts = null;
+        }
+
         // ConfigureAwait(false) is required here: Dispose() blocks on this method via
         // GetAwaiter().GetResult(). If a continuation resumed on the (blocked) UI thread,
         // shutdown would deadlock.
@@ -1906,6 +1855,16 @@ public class TorrentService : ITorrentService
         }
 
         _engineLock.Dispose();
+
+        try
+        {
+            _engineRebuildLock.Dispose();
+        }
+        catch (Exception ex)
+        {
+            // A debounced rebuild may still hold the lock during shutdown; ignore.
+            System.Diagnostics.Debug.WriteLine($"Engine rebuild lock dispose error: {ex.Message}");
+        }
     }
 
     /// <summary>
