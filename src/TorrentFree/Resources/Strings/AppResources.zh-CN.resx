@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <!-- App Title -->
+  <data name="AppTitle" xml:space="preserve">
+    <value>Torrent Free</value>
+  </data>
+  <!-- Main Page -->
+  <data name="AddTorrentPlaceholder" xml:space="preserve">
+    <value>在此输入磁力链接...</value>
+  </data>
+  <data name="AddButton" xml:space="preserve">
+    <value>下载</value>
+  </data>
+  <data name="StartButton" xml:space="preserve">
+    <value>开始</value>
+  </data>
+  <data name="StartAllButton" xml:space="preserve">
+    <value>全部开始</value>
+  </data>
+  <data name="PauseButton" xml:space="preserve">
+    <value>暂停</value>
+  </data>
+  <data name="StopButton" xml:space="preserve">
+    <value>停止</value>
+  </data>
+  <data name="StopAllButton" xml:space="preserve">
+    <value>全部停止</value>
+  </data>
+  <data name="RemoveButton" xml:space="preserve">
+    <value>移除</value>
+  </data>
+  <data name="DownloadsTitle" xml:space="preserve">
+    <value>下载</value>
+  </data>
+  <data name="NoDownloads" xml:space="preserve">
+    <value>还没有下载。添加磁力链接即可开始！</value>
+  </data>
+  <!-- Status -->
+  <data name="StatusQueued" xml:space="preserve">
+    <value>排队</value>
+  </data>
+  <data name="StatusDownloading" xml:space="preserve">
+    <value>正在下载</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>已暂停</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>已完成</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>失败</value>
+  </data>
+  <data name="StatusStopped" xml:space="preserve">
+    <value>已停止</value>
+  </data>
+  <!-- Labels -->
+  <data name="Seeders" xml:space="preserve">
+    <value>做种者</value>
+  </data>
+  <data name="Leechers" xml:space="preserve">
+    <value>下载者</value>
+  </data>
+  <data name="DownloadSpeed" xml:space="preserve">
+    <value>下载</value>
+  </data>
+  <data name="UploadSpeed" xml:space="preserve">
+    <value>上传</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>大小</value>
+  </data>
+  <!-- Errors -->
+  <data name="InvalidMagnetLink" xml:space="preserve">
+    <value>磁力链接无效。请输入有效的 magnet:? URL。</value>
+  </data>
+  <!-- Status (additional) -->
+  <data name="StatusSeeding" xml:space="preserve">
+    <value>做种</value>
+  </data>
+  <!-- Main Page (additional) -->
+  <data name="AppSubtitle" xml:space="preserve">
+    <value>快速简单的 torrent 下载</value>
+  </data>
+  <data name="BrowseButton" xml:space="preserve">
+    <value>浏览</value>
+  </data>
+  <data name="PasteButton" xml:space="preserve">
+    <value>粘贴</value>
+  </data>
+  <data name="Bandwidth" xml:space="preserve">
+    <value>带宽</value>
+  </data>
+  <data name="DownloadKBs" xml:space="preserve">
+    <value>下载KB/s</value>
+  </data>
+  <data name="UploadKBs" xml:space="preserve">
+    <value>上传KB/s</value>
+  </data>
+  <data name="DownloadingOnTop" xml:space="preserve">
+    <value>在上面下载</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>详情</value>
+  </data>
+  <data name="SelectedTorrentLimits" xml:space="preserve">
+    <value>选定的种子限制</value>
+  </data>
+  <data name="MaxSeedRatio" xml:space="preserve">
+    <value>最大做种比例</value>
+  </data>
+  <data name="MaxSeedMinutes" xml:space="preserve">
+    <value>最大种子分钟数</value>
+  </data>
+  <data name="NoDownloadsYet" xml:space="preserve">
+    <value>还没有下载</value>
+  </data>
+  <data name="AddMagnetHint" xml:space="preserve">
+    <value>添加磁力链接以开始使用。</value>
+  </data>
+  <data name="Down" xml:space="preserve">
+    <value>下载</value>
+  </data>
+  <data name="Up" xml:space="preserve">
+    <value>上传</value>
+  </data>
+  <data name="Seeds" xml:space="preserve">
+    <value>种子</value>
+  </data>
+  <data name="Peers" xml:space="preserve">
+    <value>节点</value>
+  </data>
+  <data name="ETA" xml:space="preserve">
+    <value>预计到达时间</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>健康</value>
+  </data>
+  <data name="Availability" xml:space="preserve">
+    <value>可用性</value>
+  </data>
+  <!-- Settings Page -->
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="AutoSaveNote" xml:space="preserve">
+    <value>更改会自动保存。</value>
+  </data>
+  <data name="DownloadLocation" xml:space="preserve">
+    <value>下载位置</value>
+  </data>
+  <data name="DownloadToTorrentFolderLabel" xml:space="preserve">
+    <value>将 .torrent 下载保存到原始 .torrent 文件旁边</value>
+  </data>
+  <data name="SpecificDownloadFolderLabel" xml:space="preserve">
+    <value>具体下载文件夹</value>
+  </data>
+  <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
+    <value>输入文件夹路径</value>
+  </data>
+  <data name="AndroidDownloadFolderHelp" xml:space="preserve">
+    <value>在 Android 上，使用已完成下载上的文件夹按钮将文件导出到 Download/TorrentFree。</value>
+  </data>
+  <data name="OpenDownloadsFolder" xml:space="preserve">
+    <value>打开下载文件夹</value>
+  </data>
+  <data name="SpeedLimits" xml:space="preserve">
+    <value>速度限制</value>
+  </data>
+  <data name="FileAssociations" xml:space="preserve">
+    <value>文件关联</value>
+  </data>
+  <data name="AssociateTorrentFiles" xml:space="preserve">
+    <value>关联 .torrent 文件</value>
+  </data>
+  <data name="QueueLimits" xml:space="preserve">
+    <value>队列限制</value>
+  </data>
+  <data name="MaxActiveDownloads" xml:space="preserve">
+    <value>最大活跃下载量</value>
+  </data>
+  <data name="MaxActiveSeeds" xml:space="preserve">
+    <value>最大活跃种子数</value>
+  </data>
+  <data name="SeedingLimits" xml:space="preserve">
+    <value>做种限制</value>
+  </data>
+  <data name="Socks5Proxy" xml:space="preserve">
+    <value>SOCKS5 代理</value>
+  </data>
+  <data name="EnableProxy" xml:space="preserve">
+    <value>启用代理</value>
+  </data>
+  <data name="Host" xml:space="preserve">
+    <value>主机</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>端口</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>用户名</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>密码</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <!-- Delete Dialog -->
+  <data name="RemoveTorrent" xml:space="preserve">
+    <value>删除种子</value>
+  </data>
+  <data name="DeleteFilesOptional" xml:space="preserve">
+    <value>（可选）删除关联文件：</value>
+  </data>
+  <data name="DeleteTorrentFile" xml:space="preserve">
+    <value>从磁盘删除 .torrent 文件</value>
+  </data>
+  <data name="DeleteDownloadedFiles" xml:space="preserve">
+    <value>删除下载的文件</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <!-- Hints -->
+  <data name="UnlimitedHint" xml:space="preserve">
+    <value>0 = 无限制</value>
+  </data>
+  <data name="GlobalHint" xml:space="preserve">
+    <value>0 = 全局</value>
+  </data>
+  <!-- Dialogs -->
+  <data name="StopAndResetTitle" xml:space="preserve">
+    <value>停止种子</value>
+  </data>
+  <data name="StopAndResetMessage" xml:space="preserve">
+    <value>停止将保留您下载的数据，以便您稍后可以继续。你确定吗？</value>
+  </data>
+  <data name="AssociateTorrentTitle" xml:space="preserve">
+    <value>关联 .torrent 文件</value>
+  </data>
+  <data name="AssociateTorrentMessage" xml:space="preserve">
+    <value>您想默认使用 Torrent Free 打开 .torrent 文件吗？</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>是</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>否</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>关于Torrent Free</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>Torrent Free 可免费使用。</value>
+  </data>
+  <data name="AboutVersionLabel" xml:space="preserve">
+    <value>版本</value>
+  </data>
+  <data name="AboutBuildLabel" xml:space="preserve">
+    <value>构建</value>
+  </data>
+  <data name="AboutFileVersionLabel" xml:space="preserve">
+    <value>文件版本</value>
+  </data>
+  <data name="AboutSourceLabel" xml:space="preserve">
+    <value>来源</value>
+  </data>
+  <data name="AboutUnavailable" xml:space="preserve">
+    <value>n/a</value>
+  </data>
+  <data name="OpenSource" xml:space="preserve">
+    <value>开源</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>好的</value>
+  </data>
+  <!-- Error Messages -->
+  <data name="ErrorOpenFolder" xml:space="preserve">
+    <value>无法打开下载文件夹。</value>
+  </data>
+  <data name="ErrorImportTorrent" xml:space="preserve">
+    <value>无法导入 .torrent 文件。请再试一次。</value>
+  </data>
+  <data name="ErrorLoadDownloads" xml:space="preserve">
+    <value>无法加载您的下载内容。请重新启动应用程序。</value>
+  </data>
+  <data name="ErrorDuplicateTorrent" xml:space="preserve">
+    <value>该种子已在您的列表中。</value>
+  </data>
+  <data name="ErrorInvalidTorrentFile" xml:space="preserve">
+    <value>.torrent 文件无效。无法提取信息哈希。</value>
+  </data>
+  <data name="ErrorInvalidMagnet" xml:space="preserve">
+    <value>磁力链接无效。请确保您的链接以“magnet:?”开头并包含信息哈希（xt= 参数）。</value>
+  </data>
+  <data name="ErrorAddTorrent" xml:space="preserve">
+    <value>添加 torrent 失败。请再试一次。</value>
+  </data>
+  <data name="ErrorClipboardEmpty" xml:space="preserve">
+    <value>剪贴板是空的。先复制一个磁力链接。</value>
+  </data>
+  <data name="ErrorPasteClipboard" xml:space="preserve">
+    <value>无法读取剪贴板。请再试一次。</value>
+  </data>
+  <data name="ErrorStartTorrent" xml:space="preserve">
+    <value>无法启动 torrent。请再试一次。</value>
+  </data>
+  <data name="ErrorPauseTorrent" xml:space="preserve">
+    <value>无法暂停 torrent。请再试一次。</value>
+  </data>
+  <data name="ErrorStopTorrent" xml:space="preserve">
+    <value>无法停止洪流。请再试一次。</value>
+  </data>
+  <data name="ErrorRemoveTorrent" xml:space="preserve">
+    <value>无法删除 torrent。请再试一次。</value>
+  </data>
+  <!-- Status Hints -->
+  <data name="HintDownloadFailed" xml:space="preserve">
+    <value>下载失败。</value>
+  </data>
+  <data name="HintQueued" xml:space="preserve">
+    <value>排队。等待活动插槽。</value>
+  </data>
+  <data name="HintPaused" xml:space="preserve">
+    <value>暂停了。</value>
+  </data>
+  <data name="HintStopped" xml:space="preserve">
+    <value>停了。</value>
+  </data>
+  <data name="HintSearchingPeers" xml:space="preserve">
+    <value>正在搜索节点。</value>
+  </data>
+  <data name="HintWaitingSeeds" xml:space="preserve">
+    <value>等待种子。</value>
+  </data>
+  <data name="HintConnectingPeers" xml:space="preserve">
+    <value>正在连接节点。</value>
+  </data>
+  <!-- Settings Validation -->
+  <data name="ValidationFileAssociation" xml:space="preserve">
+    <value>无法更新文件关联。</value>
+  </data>
+  <data name="ValidationAdjustedLimits" xml:space="preserve">
+    <value>一些设置已调整至安全限制。</value>
+  </data>
+  <data name="ValidationSeedRatioInvalid" xml:space="preserve">
+    <value>种子比率必须是有效的非负数。重置为 0。</value>
+  </data>
+  <data name="ValidationSeedRatioHigh" xml:space="preserve">
+    <value>种子比例太高。上限为 {0}。</value>
+  </data>
+  <data name="ValidationNegative" xml:space="preserve">
+    <value>{0} 不能为负数。设置为 {1}{2}。</value>
+  </data>
+  <data name="ValidationTooHigh" xml:space="preserve">
+    <value>{0} 太高。上限为 {1}{2}。</value>
+  </data>
+  <data name="ValidationSelectFolder" xml:space="preserve">
+    <value>无法选择文件夹。</value>
+  </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>回去</value>
+  </data>
+  <data name="SelectTorrentFile" xml:space="preserve">
+    <value>选择 .torrent 文件</value>
+  </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>粘贴磁力 URI 或 URL，然后按 Enter、粘贴或浏览。</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>启用后，下载项目将显示在顶部。</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>在文件夹中显示</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>下载进度</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>加载种子数据</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>选择系统默认语言或特定语言。</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>输入代理主机或 IP。</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>例如 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>输入代理端口号。</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>可选的身份验证用户名。</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>可选的身份验证密码。</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>选修的</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>设置验证消息</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>选中后，源 .torrent 文件将从磁盘中删除。</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>选中后，下载的内容文件将被永久删除。</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>删除 torrent 并应用选定的文件删除选项。</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>下载完成</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>您的下载</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>{0} 已完成下载。</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>下载在后台运行</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>下载活动</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>在应用程序最小化时保持 torrent 下载运行。</value>
+  </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>主题</value>
+  </data>
+  <data name="ThemeFollowSystem" xml:space="preserve">
+    <value>跟随系统</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>浅色</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>深色</value>
+  </data>
+  <data name="ThemePickerHint" xml:space="preserve">
+    <value>选择应用程序的外观。</value>
+  </data>
+</root>

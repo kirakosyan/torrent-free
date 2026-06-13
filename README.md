@@ -191,12 +191,29 @@ The app supports the following languages:
 | Language | Code | File |
 |----------|------|------|
 | English | en | `AppResources.resx` |
-| Spanish | es | `AppResources.es.resx` |
-| French | fr | `AppResources.fr.resx` |
 | Arabic | ar | `AppResources.ar.resx` |
-| Turkish | tr | `AppResources.tr.resx` |
+| Chinese (Simplified) | zh-CN | `AppResources.zh-CN.resx` |
+| Czech | cs-CZ | `AppResources.cs-CZ.resx` |
+| Danish | da-DK | `AppResources.da-DK.resx` |
+| Dutch | nl-NL | `AppResources.nl-NL.resx` |
+| Finnish | fi-FI | `AppResources.fi-FI.resx` |
+| French | fr | `AppResources.fr.resx` |
+| German | de-DE | `AppResources.de-DE.resx` |
 | Hindi | hi | `AppResources.hi.resx` |
+| Hungarian | hu-HU | `AppResources.hu-HU.resx` |
+| Indonesian | id | `AppResources.id.resx` |
+| Italian | it-IT | `AppResources.it-IT.resx` |
+| Japanese | ja-JP | `AppResources.ja-JP.resx` |
+| Korean | ko-KR | `AppResources.ko-KR.resx` |
+| Norwegian | no-NO | `AppResources.no-NO.resx` |
+| Polish | pl-PL | `AppResources.pl-PL.resx` |
+| Portuguese (Brazil) | pt-BR | `AppResources.pt-BR.resx` |
+| Romanian | ro | `AppResources.ro.resx` |
 | Russian | ru | `AppResources.ru.resx` |
+| Spanish | es | `AppResources.es.resx` |
+| Thai | th | `AppResources.th.resx` |
+| Turkish | tr | `AppResources.tr.resx` |
+| Vietnamese | vi | `AppResources.vi.resx` |
 
 The app automatically uses the system language. To add more languages, create a new resource file following the naming pattern `AppResources.{culture-code}.resx`.
 

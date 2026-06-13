@@ -225,10 +225,10 @@
     <value>Ingrese una ruta de carpeta</value>
   </data>
   <data name="AndroidDownloadFolderHelp" xml:space="preserve">
-    <value>On Android, use the folder button on a completed download to export files to Download/TorrentFree.</value>
+    <value>En Android, usa el botón de carpeta en una descarga completada para exportar archivos a Download/TorrentFree.</value>
   </data>
   <data name="OpenDownloadsFolder" xml:space="preserve">
-    <value>Open Downloads folder</value>
+    <value>Abrir la carpeta Descargas</value>
   </data>
   <data name="SpeedLimits" xml:space="preserve">
     <value>Límites de velocidad</value>

@@ -110,10 +110,10 @@
     <value>متوقف</value>
   </data>
   <data name="Seeders" xml:space="preserve">
-    <value>الباذرون</value>
+    <value>الموزّعون</value>
   </data>
   <data name="Leechers" xml:space="preserve">
-    <value>النظراء</value>
+    <value>المُحمّلون</value>
   </data>
   <data name="DownloadSpeed" xml:space="preserve">
     <value>التنزيل</value>
@@ -209,10 +209,10 @@
     <value>أدخل مسار مجلد</value>
   </data>
   <data name="AndroidDownloadFolderHelp" xml:space="preserve">
-    <value>On Android, use the folder button on a completed download to export files to Download/TorrentFree.</value>
+    <value>في نظام Android، استخدم زر المجلد في التنزيل المكتمل لتصدير الملفات إلى Download/TorrentFree.</value>
   </data>
   <data name="OpenDownloadsFolder" xml:space="preserve">
-    <value>Open Downloads folder</value>
+    <value>فتح مجلد التنزيلات</value>
   </data>
   <data name="SpeedLimits" xml:space="preserve">
     <value>حدود السرعة</value>

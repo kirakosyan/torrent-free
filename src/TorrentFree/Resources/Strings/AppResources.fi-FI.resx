@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <!-- App Title -->
+  <data name="AppTitle" xml:space="preserve">
+    <value>Torrent Free</value>
+  </data>
+  <!-- Main Page -->
+  <data name="AddTorrentPlaceholder" xml:space="preserve">
+    <value>Kirjoita magneettilinkki tähän...</value>
+  </data>
+  <data name="AddButton" xml:space="preserve">
+    <value>Lataa</value>
+  </data>
+  <data name="StartButton" xml:space="preserve">
+    <value>Aloita</value>
+  </data>
+  <data name="StartAllButton" xml:space="preserve">
+    <value>Aloita kaikki</value>
+  </data>
+  <data name="PauseButton" xml:space="preserve">
+    <value>Tauko</value>
+  </data>
+  <data name="StopButton" xml:space="preserve">
+    <value>Pysäytä</value>
+  </data>
+  <data name="StopAllButton" xml:space="preserve">
+    <value>Pysäytä kaikki</value>
+  </data>
+  <data name="RemoveButton" xml:space="preserve">
+    <value>Poista</value>
+  </data>
+  <data name="DownloadsTitle" xml:space="preserve">
+    <value>Lataukset</value>
+  </data>
+  <data name="NoDownloads" xml:space="preserve">
+    <value>Ei vielä latauksia. Lisää magneettilinkki aloittaaksesi!</value>
+  </data>
+  <!-- Status -->
+  <data name="StatusQueued" xml:space="preserve">
+    <value>Jonossa</value>
+  </data>
+  <data name="StatusDownloading" xml:space="preserve">
+    <value>Ladataan</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>Keskeytetty</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>Valmis</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>Epäonnistui</value>
+  </data>
+  <data name="StatusStopped" xml:space="preserve">
+    <value>Pysähtynyt</value>
+  </data>
+  <!-- Labels -->
+  <data name="Seeders" xml:space="preserve">
+    <value>Jakajat</value>
+  </data>
+  <data name="Leechers" xml:space="preserve">
+    <value>Lataajat</value>
+  </data>
+  <data name="DownloadSpeed" xml:space="preserve">
+    <value>Lataus</value>
+  </data>
+  <data name="UploadSpeed" xml:space="preserve">
+    <value>Lähetys</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Koko</value>
+  </data>
+  <!-- Errors -->
+  <data name="InvalidMagnetLink" xml:space="preserve">
+    <value>Virheellinen magneettilinkki. Anna kelvollinen magnet:? URL-osoite.</value>
+  </data>
+  <!-- Status (additional) -->
+  <data name="StatusSeeding" xml:space="preserve">
+    <value>Jaetaan</value>
+  </data>
+  <!-- Main Page (additional) -->
+  <data name="AppSubtitle" xml:space="preserve">
+    <value>Nopeat ja yksinkertaiset torrent-lataukset</value>
+  </data>
+  <data name="BrowseButton" xml:space="preserve">
+    <value>Selaa</value>
+  </data>
+  <data name="PasteButton" xml:space="preserve">
+    <value>Liitä</value>
+  </data>
+  <data name="Bandwidth" xml:space="preserve">
+    <value>Kaistanleveys</value>
+  </data>
+  <data name="DownloadKBs" xml:space="preserve">
+    <value>Lataus KB/s</value>
+  </data>
+  <data name="UploadKBs" xml:space="preserve">
+    <value>Lähetys KB/s</value>
+  </data>
+  <data name="DownloadingOnTop" xml:space="preserve">
+    <value>Lataus päällä</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Yksityiskohdat</value>
+  </data>
+  <data name="SelectedTorrentLimits" xml:space="preserve">
+    <value>Valitut torrent-rajat</value>
+  </data>
+  <data name="MaxSeedRatio" xml:space="preserve">
+    <value>Suurin jakosuhde</value>
+  </data>
+  <data name="MaxSeedMinutes" xml:space="preserve">
+    <value>Maks. jakominuutit</value>
+  </data>
+  <data name="NoDownloadsYet" xml:space="preserve">
+    <value>Ei vielä latauksia</value>
+  </data>
+  <data name="AddMagnetHint" xml:space="preserve">
+    <value>Aloita lisäämällä magneettilinkki.</value>
+  </data>
+  <data name="Down" xml:space="preserve">
+    <value>Lataus</value>
+  </data>
+  <data name="Up" xml:space="preserve">
+    <value>Lähetys</value>
+  </data>
+  <data name="Seeds" xml:space="preserve">
+    <value>Lähteet</value>
+  </data>
+  <data name="Peers" xml:space="preserve">
+    <value>Vertaiset</value>
+  </data>
+  <data name="ETA" xml:space="preserve">
+    <value>ETA</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>Terveys</value>
+  </data>
+  <data name="Availability" xml:space="preserve">
+    <value>Saatavuus</value>
+  </data>
+  <!-- Settings Page -->
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Asetukset</value>
+  </data>
+  <data name="AutoSaveNote" xml:space="preserve">
+    <value>Muutokset tallennetaan automaattisesti.</value>
+  </data>
+  <data name="DownloadLocation" xml:space="preserve">
+    <value>Lataa sijainti</value>
+  </data>
+  <data name="DownloadToTorrentFolderLabel" xml:space="preserve">
+    <value>Tallenna .torrent latausta alkuperäisen .torrent-tiedoston viereen</value>
+  </data>
+  <data name="SpecificDownloadFolderLabel" xml:space="preserve">
+    <value>Tietty latauskansio</value>
+  </data>
+  <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
+    <value>Anna kansion polku</value>
+  </data>
+  <data name="AndroidDownloadFolderHelp" xml:space="preserve">
+    <value>Androidissa voit viedä tiedostot kohteeseen Download/TorrentFree latauksen kansiopainikkeella.</value>
+  </data>
+  <data name="OpenDownloadsFolder" xml:space="preserve">
+    <value>Avaa Lataukset-kansio</value>
+  </data>
+  <data name="SpeedLimits" xml:space="preserve">
+    <value>Nopeusrajoitukset</value>
+  </data>
+  <data name="FileAssociations" xml:space="preserve">
+    <value>Tiedostojen assosiaatiot</value>
+  </data>
+  <data name="AssociateTorrentFiles" xml:space="preserve">
+    <value>Yhdistä .torrent tiedostoa</value>
+  </data>
+  <data name="QueueLimits" xml:space="preserve">
+    <value>Jonon rajoitukset</value>
+  </data>
+  <data name="MaxActiveDownloads" xml:space="preserve">
+    <value>Aktiivisten latausten enimmäismäärä</value>
+  </data>
+  <data name="MaxActiveSeeds" xml:space="preserve">
+    <value>Maks. aktiivisia jakoja</value>
+  </data>
+  <data name="SeedingLimits" xml:space="preserve">
+    <value>Jakorajoitukset</value>
+  </data>
+  <data name="Socks5Proxy" xml:space="preserve">
+    <value>SOCKS5 Välityspalvelin</value>
+  </data>
+  <data name="EnableProxy" xml:space="preserve">
+    <value>Ota välityspalvelin käyttöön</value>
+  </data>
+  <data name="Host" xml:space="preserve">
+    <value>Isäntä</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>Portti</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Käyttäjätunnus</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Salasana</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>Kieli</value>
+  </data>
+  <!-- Delete Dialog -->
+  <data name="RemoveTorrent" xml:space="preserve">
+    <value>Poista torrent</value>
+  </data>
+  <data name="DeleteFilesOptional" xml:space="preserve">
+    <value>Valinnaisesti poista liittyvät tiedostot:</value>
+  </data>
+  <data name="DeleteTorrentFile" xml:space="preserve">
+    <value>Poista .torrent-tiedosto levyltä</value>
+  </data>
+  <data name="DeleteDownloadedFiles" xml:space="preserve">
+    <value>Poista ladatut tiedostot</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Peruuta</value>
+  </data>
+  <!-- Hints -->
+  <data name="UnlimitedHint" xml:space="preserve">
+    <value>0 = rajoittamaton</value>
+  </data>
+  <data name="GlobalHint" xml:space="preserve">
+    <value>0 = globaali</value>
+  </data>
+  <!-- Dialogs -->
+  <data name="StopAndResetTitle" xml:space="preserve">
+    <value>Lopeta torrent</value>
+  </data>
+  <data name="StopAndResetMessage" xml:space="preserve">
+    <value>Lopettaminen säilyttää ladatut tiedot, jotta voit jatkaa myöhemmin. Oletko varma?</value>
+  </data>
+  <data name="AssociateTorrentTitle" xml:space="preserve">
+    <value>Yhdistä .torrent tiedostoa</value>
+  </data>
+  <data name="AssociateTorrentMessage" xml:space="preserve">
+    <value>Haluatko avata .torrent tiedostoa sovelluksella Torrent Free oletuksena?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Kyllä</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Ei</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>Tietoja sovelluksesta Torrent Free</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>Torrent Free on ilmainen käyttää.</value>
+  </data>
+  <data name="AboutVersionLabel" xml:space="preserve">
+    <value>Versio</value>
+  </data>
+  <data name="AboutBuildLabel" xml:space="preserve">
+    <value>Koontiversio</value>
+  </data>
+  <data name="AboutFileVersionLabel" xml:space="preserve">
+    <value>Tiedoston versio</value>
+  </data>
+  <data name="AboutSourceLabel" xml:space="preserve">
+    <value>Lähde</value>
+  </data>
+  <data name="AboutUnavailable" xml:space="preserve">
+    <value>n/a</value>
+  </data>
+  <data name="OpenSource" xml:space="preserve">
+    <value>Avoin lähdekoodi</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <!-- Error Messages -->
+  <data name="ErrorOpenFolder" xml:space="preserve">
+    <value>Kansion avaaminen latausta varten epäonnistui.</value>
+  </data>
+  <data name="ErrorImportTorrent" xml:space="preserve">
+    <value>Tiedoston .torrent tuonti epäonnistui. Yritä uudelleen.</value>
+  </data>
+  <data name="ErrorLoadDownloads" xml:space="preserve">
+    <value>Latausten lataaminen epäonnistui. Käynnistä sovellus uudelleen.</value>
+  </data>
+  <data name="ErrorDuplicateTorrent" xml:space="preserve">
+    <value>Tämä torrent on jo luettelossasi.</value>
+  </data>
+  <data name="ErrorInvalidTorrentFile" xml:space="preserve">
+    <value>Virheellinen .torrent-tiedosto. Tietojen tiivistettä ei voi purkaa.</value>
+  </data>
+  <data name="ErrorInvalidMagnet" xml:space="preserve">
+    <value>Virheellinen magneettilinkki. Varmista, että linkkisi alussa on 'magnet:?' ja sisältää info-hajautusarvon (xt=-parametri).</value>
+  </data>
+  <data name="ErrorAddTorrent" xml:space="preserve">
+    <value>Torrentin lisääminen epäonnistui. Yritä uudelleen.</value>
+  </data>
+  <data name="ErrorClipboardEmpty" xml:space="preserve">
+    <value>Leikepöytä on tyhjä. Kopioi ensin magneettilinkki.</value>
+  </data>
+  <data name="ErrorPasteClipboard" xml:space="preserve">
+    <value>Leikepöydän lukeminen epäonnistui. Yritä uudelleen.</value>
+  </data>
+  <data name="ErrorStartTorrent" xml:space="preserve">
+    <value>Torrentin käynnistäminen epäonnistui. Yritä uudelleen.</value>
+  </data>
+  <data name="ErrorPauseTorrent" xml:space="preserve">
+    <value>Torrentin keskeyttäminen epäonnistui. Yritä uudelleen.</value>
+  </data>
+  <data name="ErrorStopTorrent" xml:space="preserve">
+    <value>Torrentin pysäyttäminen epäonnistui. Yritä uudelleen.</value>
+  </data>
+  <data name="ErrorRemoveTorrent" xml:space="preserve">
+    <value>Torrentin poistaminen epäonnistui. Yritä uudelleen.</value>
+  </data>
+  <!-- Status Hints -->
+  <data name="HintDownloadFailed" xml:space="preserve">
+    <value>Lataus epäonnistui.</value>
+  </data>
+  <data name="HintQueued" xml:space="preserve">
+    <value>Jonossa. Odotetaan aktiivista paikkaa.</value>
+  </data>
+  <data name="HintPaused" xml:space="preserve">
+    <value>Keskeytetty.</value>
+  </data>
+  <data name="HintStopped" xml:space="preserve">
+    <value>Pysähtynyt.</value>
+  </data>
+  <data name="HintSearchingPeers" xml:space="preserve">
+    <value>Etsitään vertaisia.</value>
+  </data>
+  <data name="HintWaitingSeeds" xml:space="preserve">
+    <value>Odotetaan lähteitä.</value>
+  </data>
+  <data name="HintConnectingPeers" xml:space="preserve">
+    <value>Yhteyden muodostaminen vertaisiin.</value>
+  </data>
+  <!-- Settings Validation -->
+  <data name="ValidationFileAssociation" xml:space="preserve">
+    <value>Tiedostoyhteyttä ei voi päivittää.</value>
+  </data>
+  <data name="ValidationAdjustedLimits" xml:space="preserve">
+    <value>Jotkut asetukset säädettiin turvallisiin rajoihin.</value>
+  </data>
+  <data name="ValidationSeedRatioInvalid" xml:space="preserve">
+    <value>Siemensuhteen on oltava kelvollinen ei-negatiivinen luku. Palauta 0.</value>
+  </data>
+  <data name="ValidationSeedRatioHigh" xml:space="preserve">
+    <value>Siemensuhde on liian korkea. Raja on {0}.</value>
+  </data>
+  <data name="ValidationNegative" xml:space="preserve">
+    <value>{0} ei voi olla negatiivinen. Aseta arvoon {1}{2}.</value>
+  </data>
+  <data name="ValidationTooHigh" xml:space="preserve">
+    <value>{0} on liian korkea. Raja on {1}{2}.</value>
+  </data>
+  <data name="ValidationSelectFolder" xml:space="preserve">
+    <value>Kansiota ei voi valita.</value>
+  </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>Mene takaisin</value>
+  </data>
+  <data name="SelectTorrentFile" xml:space="preserve">
+    <value>Valitse tiedosto .torrent</value>
+  </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>Liitä magneetti URI tai URL ja paina sitten Enter, Liitä tai Selaa.</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>Kun tämä on käytössä, ladattavat kohteet näkyvät yläreunassa.</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>Näytä kansiossa</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>Latauksen edistyminen</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>Ladataan torrent-tietoja</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>Valitse järjestelmän oletusarvo tai tietty kieli.</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>Anna välityspalvelimen isäntä tai IP.</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>esim. 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>Anna välityspalvelimen portin numero.</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>Valinnainen todennuskäyttäjätunnus.</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>Valinnainen todennussalasana.</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>valinnainen</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>Asetusten vahvistusviesti</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>Kun tämä on valittuna, lähdetiedosto .torrent poistetaan levyltä.</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>Kun tämä on valittuna, ladatut sisältötiedostot poistetaan pysyvästi.</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>Poistaa torrentin ja käyttää valittuja tiedostojen poistoasetuksia.</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>Lataus valmis</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>Sinun latauksesi</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>{0} on ladannut.</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>Lataukset käynnissä taustalla</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>Lataa toiminta</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>Pitää torrent-lataukset käynnissä, kun sovellus on minimoitu.</value>
+  </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>Teema</value>
+  </data>
+  <data name="ThemeFollowSystem" xml:space="preserve">
+    <value>Seuraa järjestelmää</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Vaalea</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Tumma</value>
+  </data>
+  <data name="ThemePickerHint" xml:space="preserve">
+    <value>Valitse, miltä sovellus näyttää.</value>
+  </data>
+</root>

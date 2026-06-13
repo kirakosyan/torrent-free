@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <!-- App Title -->
+  <data name="AppTitle" xml:space="preserve">
+    <value>Torrent Free</value>
+  </data>
+  <!-- Main Page -->
+  <data name="AddTorrentPlaceholder" xml:space="preserve">
+    <value>Voer hier de magneetlink in...</value>
+  </data>
+  <data name="AddButton" xml:space="preserve">
+    <value>Downloaden</value>
+  </data>
+  <data name="StartButton" xml:space="preserve">
+    <value>Begin</value>
+  </data>
+  <data name="StartAllButton" xml:space="preserve">
+    <value>Begin allemaal</value>
+  </data>
+  <data name="PauseButton" xml:space="preserve">
+    <value>Pauze</value>
+  </data>
+  <data name="StopButton" xml:space="preserve">
+    <value>Stoppen</value>
+  </data>
+  <data name="StopAllButton" xml:space="preserve">
+    <value>Stop alles</value>
+  </data>
+  <data name="RemoveButton" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="DownloadsTitle" xml:space="preserve">
+    <value>Downloadlijst</value>
+  </data>
+  <data name="NoDownloads" xml:space="preserve">
+    <value>Nog geen downloads. Voeg een magneetlink toe om aan de slag te gaan!</value>
+  </data>
+  <!-- Status -->
+  <data name="StatusQueued" xml:space="preserve">
+    <value>In de wachtrij</value>
+  </data>
+  <data name="StatusDownloading" xml:space="preserve">
+    <value>Downloaden</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>Gepauzeerd</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>Voltooid</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>Mislukt</value>
+  </data>
+  <data name="StatusStopped" xml:space="preserve">
+    <value>Gestopt</value>
+  </data>
+  <!-- Labels -->
+  <data name="Seeders" xml:space="preserve">
+    <value>Seeders</value>
+  </data>
+  <data name="Leechers" xml:space="preserve">
+    <value>Downloaders</value>
+  </data>
+  <data name="DownloadSpeed" xml:space="preserve">
+    <value>Downloaden</value>
+  </data>
+  <data name="UploadSpeed" xml:space="preserve">
+    <value>Uploaden</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Maat</value>
+  </data>
+  <!-- Errors -->
+  <data name="InvalidMagnetLink" xml:space="preserve">
+    <value>Ongeldige magneetlink. Voer een geldige magnet:? URL in.</value>
+  </data>
+  <!-- Status (additional) -->
+  <data name="StatusSeeding" xml:space="preserve">
+    <value>Seeding</value>
+  </data>
+  <!-- Main Page (additional) -->
+  <data name="AppSubtitle" xml:space="preserve">
+    <value>Snelle en eenvoudige torrent-downloads</value>
+  </data>
+  <data name="BrowseButton" xml:space="preserve">
+    <value>Blader</value>
+  </data>
+  <data name="PasteButton" xml:space="preserve">
+    <value>Plakken</value>
+  </data>
+  <data name="Bandwidth" xml:space="preserve">
+    <value>Bandbreedte</value>
+  </data>
+  <data name="DownloadKBs" xml:space="preserve">
+    <value>KB/s downloaden</value>
+  </data>
+  <data name="UploadKBs" xml:space="preserve">
+    <value>Uploadsnelheid KB/s</value>
+  </data>
+  <data name="DownloadingOnTop" xml:space="preserve">
+    <value>Bovenaan downloaden</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Gegevens</value>
+  </data>
+  <data name="SelectedTorrentLimits" xml:space="preserve">
+    <value>Geselecteerde torrent-limieten</value>
+  </data>
+  <data name="MaxSeedRatio" xml:space="preserve">
+    <value>Max. seedratio</value>
+  </data>
+  <data name="MaxSeedMinutes" xml:space="preserve">
+    <value>Max. seedminuten</value>
+  </data>
+  <data name="NoDownloadsYet" xml:space="preserve">
+    <value>Nog geen downloads</value>
+  </data>
+  <data name="AddMagnetHint" xml:space="preserve">
+    <value>Voeg een magneetlink toe om aan de slag te gaan.</value>
+  </data>
+  <data name="Down" xml:space="preserve">
+    <value>Omlaag</value>
+  </data>
+  <data name="Up" xml:space="preserve">
+    <value>Omhoog</value>
+  </data>
+  <data name="Seeds" xml:space="preserve">
+    <value>Seeds</value>
+  </data>
+  <data name="Peers" xml:space="preserve">
+    <value>Peers</value>
+  </data>
+  <data name="ETA" xml:space="preserve">
+    <value>verwachte aankomsttijd</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>Gezondheid</value>
+  </data>
+  <data name="Availability" xml:space="preserve">
+    <value>Beschikbaarheid</value>
+  </data>
+  <!-- Settings Page -->
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Instellingen</value>
+  </data>
+  <data name="AutoSaveNote" xml:space="preserve">
+    <value>Wijzigingen worden automatisch opgeslagen.</value>
+  </data>
+  <data name="DownloadLocation" xml:space="preserve">
+    <value>Locatie downloaden</value>
+  </data>
+  <data name="DownloadToTorrentFolderLabel" xml:space="preserve">
+    <value>Bewaar .torrent downloads naast het originele .torrent bestand</value>
+  </data>
+  <data name="SpecificDownloadFolderLabel" xml:space="preserve">
+    <value>Specifieke downloadmap</value>
+  </data>
+  <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
+    <value>Voer een mappad in</value>
+  </data>
+  <data name="AndroidDownloadFolderHelp" xml:space="preserve">
+    <value>Op Android gebruikt u de mapknop op een voltooide download om bestanden te exporteren naar Download/TorrentFree.</value>
+  </data>
+  <data name="OpenDownloadsFolder" xml:space="preserve">
+    <value>Open de map Downloads</value>
+  </data>
+  <data name="SpeedLimits" xml:space="preserve">
+    <value>Snelheidslimieten</value>
+  </data>
+  <data name="FileAssociations" xml:space="preserve">
+    <value>Bestandsassociaties</value>
+  </data>
+  <data name="AssociateTorrentFiles" xml:space="preserve">
+    <value>Koppel .torrent bestanden</value>
+  </data>
+  <data name="QueueLimits" xml:space="preserve">
+    <value>Wachtrijlimieten</value>
+  </data>
+  <data name="MaxActiveDownloads" xml:space="preserve">
+    <value>Max. actieve downloads</value>
+  </data>
+  <data name="MaxActiveSeeds" xml:space="preserve">
+    <value>Max. actieve seeds</value>
+  </data>
+  <data name="SeedingLimits" xml:space="preserve">
+    <value>Seedinglimieten</value>
+  </data>
+  <data name="Socks5Proxy" xml:space="preserve">
+    <value>SOCKS5 Proxy</value>
+  </data>
+  <data name="EnableProxy" xml:space="preserve">
+    <value>Schakel proxy in</value>
+  </data>
+  <data name="Host" xml:space="preserve">
+    <value>Host</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>Poort</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Gebruikersnaam</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Wachtwoord</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>Taal</value>
+  </data>
+  <!-- Delete Dialog -->
+  <data name="RemoveTorrent" xml:space="preserve">
+    <value>Torrent verwijderen</value>
+  </data>
+  <data name="DeleteFilesOptional" xml:space="preserve">
+    <value>Verwijder eventueel bijbehorende bestanden:</value>
+  </data>
+  <data name="DeleteTorrentFile" xml:space="preserve">
+    <value>Verwijder het .torrent bestand van schijf</value>
+  </data>
+  <data name="DeleteDownloadedFiles" xml:space="preserve">
+    <value>Verwijder gedownloade bestanden</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <!-- Hints -->
+  <data name="UnlimitedHint" xml:space="preserve">
+    <value>0 = onbeperkt</value>
+  </data>
+  <data name="GlobalHint" xml:space="preserve">
+    <value>0 = globaal</value>
+  </data>
+  <!-- Dialogs -->
+  <data name="StopAndResetTitle" xml:space="preserve">
+    <value>Torrent stoppen</value>
+  </data>
+  <data name="StopAndResetMessage" xml:space="preserve">
+    <value>Als u stopt, blijven uw gedownloade gegevens bewaard, zodat u later verder kunt gaan. Weet je het zeker?</value>
+  </data>
+  <data name="AssociateTorrentTitle" xml:space="preserve">
+    <value>Koppel .torrent bestanden</value>
+  </data>
+  <data name="AssociateTorrentMessage" xml:space="preserve">
+    <value>Wilt u standaard .torrent bestanden openen met Torrent Free?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Nee</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>Over Torrent Free</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>Torrent Free is gratis te gebruiken.</value>
+  </data>
+  <data name="AboutVersionLabel" xml:space="preserve">
+    <value>Versie</value>
+  </data>
+  <data name="AboutBuildLabel" xml:space="preserve">
+    <value>Build</value>
+  </data>
+  <data name="AboutFileVersionLabel" xml:space="preserve">
+    <value>Bestandsversie</value>
+  </data>
+  <data name="AboutSourceLabel" xml:space="preserve">
+    <value>Bron</value>
+  </data>
+  <data name="AboutUnavailable" xml:space="preserve">
+    <value>n/a</value>
+  </data>
+  <data name="OpenSource" xml:space="preserve">
+    <value>Open bron</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <!-- Error Messages -->
+  <data name="ErrorOpenFolder" xml:space="preserve">
+    <value>Kan de map voor de download niet openen.</value>
+  </data>
+  <data name="ErrorImportTorrent" xml:space="preserve">
+    <value>Kan bestand .torrent niet importeren. Probeer het opnieuw.</value>
+  </data>
+  <data name="ErrorLoadDownloads" xml:space="preserve">
+    <value>Kan uw downloads niet laden. Start de app opnieuw.</value>
+  </data>
+  <data name="ErrorDuplicateTorrent" xml:space="preserve">
+    <value>Deze torrent staat al in je lijst.</value>
+  </data>
+  <data name="ErrorInvalidTorrentFile" xml:space="preserve">
+    <value>Ongeldig .torrent bestand. Kan een info-hash niet extraheren.</value>
+  </data>
+  <data name="ErrorInvalidMagnet" xml:space="preserve">
+    <value>Ongeldige magneetlink. Zorg ervoor dat uw link begint met 'magnet:?' en een info-hash bevat (parameter xt=).</value>
+  </data>
+  <data name="ErrorAddTorrent" xml:space="preserve">
+    <value>Kan torrent niet toevoegen. Probeer het opnieuw.</value>
+  </data>
+  <data name="ErrorClipboardEmpty" xml:space="preserve">
+    <value>Klembord is leeg. Kopieer eerst een magneetlink.</value>
+  </data>
+  <data name="ErrorPasteClipboard" xml:space="preserve">
+    <value>Kan het klembord niet lezen. Probeer het opnieuw.</value>
+  </data>
+  <data name="ErrorStartTorrent" xml:space="preserve">
+    <value>Kan torrent niet starten. Probeer het opnieuw.</value>
+  </data>
+  <data name="ErrorPauseTorrent" xml:space="preserve">
+    <value>Kan torrent niet pauzeren. Probeer het opnieuw.</value>
+  </data>
+  <data name="ErrorStopTorrent" xml:space="preserve">
+    <value>Kan torrent niet stoppen. Probeer het opnieuw.</value>
+  </data>
+  <data name="ErrorRemoveTorrent" xml:space="preserve">
+    <value>Kan torrent niet verwijderen. Probeer het opnieuw.</value>
+  </data>
+  <!-- Status Hints -->
+  <data name="HintDownloadFailed" xml:space="preserve">
+    <value>Downloaden mislukt.</value>
+  </data>
+  <data name="HintQueued" xml:space="preserve">
+    <value>In de wachtrij. Wachten op een actief slot.</value>
+  </data>
+  <data name="HintPaused" xml:space="preserve">
+    <value>Gepauzeerd.</value>
+  </data>
+  <data name="HintStopped" xml:space="preserve">
+    <value>Gestopt.</value>
+  </data>
+  <data name="HintSearchingPeers" xml:space="preserve">
+    <value>Zoeken naar peers.</value>
+  </data>
+  <data name="HintWaitingSeeds" xml:space="preserve">
+    <value>Wachten op seeds.</value>
+  </data>
+  <data name="HintConnectingPeers" xml:space="preserve">
+    <value>Verbinden met peers.</value>
+  </data>
+  <!-- Settings Validation -->
+  <data name="ValidationFileAssociation" xml:space="preserve">
+    <value>Kan de bestandskoppeling niet bijwerken.</value>
+  </data>
+  <data name="ValidationAdjustedLimits" xml:space="preserve">
+    <value>Sommige instellingen zijn aangepast aan veilige limieten.</value>
+  </data>
+  <data name="ValidationSeedRatioInvalid" xml:space="preserve">
+    <value>Zaadverhouding moet een geldig, niet-negatief getal zijn. Opnieuw instellen op 0.</value>
+  </data>
+  <data name="ValidationSeedRatioHigh" xml:space="preserve">
+    <value>Zaadverhouding is te hoog. Gemaximeerd op {0}.</value>
+  </data>
+  <data name="ValidationNegative" xml:space="preserve">
+    <value>{0} kan niet negatief zijn. Stel in op {1}{2}.</value>
+  </data>
+  <data name="ValidationTooHigh" xml:space="preserve">
+    <value>{0} is te hoog. Gemaximeerd op {1}{2}.</value>
+  </data>
+  <data name="ValidationSelectFolder" xml:space="preserve">
+    <value>Kan geen map selecteren.</value>
+  </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>Ga terug</value>
+  </data>
+  <data name="SelectTorrentFile" xml:space="preserve">
+    <value>Selecteer een .torrent bestand</value>
+  </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>Plak een magneet-URI of URL en druk vervolgens op Enter, Plakken of Bladeren.</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>Indien ingeschakeld, verschijnen downloaditems bovenaan.</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>Weergeven in map</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>Voortgang downloaden</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>Torrent-gegevens laden</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>Kies de systeemstandaard of een specifieke taal.</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>Voer proxyhost of IP in.</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>bijv. 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>Voer het proxypoortnummer in.</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>Optionele gebruikersnaam voor authenticatie.</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>Optioneel authenticatiewachtwoord.</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>optioneel</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>Bevestigingsbericht instellingen</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>Indien aangevinkt, wordt het bronbestand .torrent van schijf verwijderd.</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>Indien aangevinkt, worden gedownloade inhoudsbestanden permanent verwijderd.</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>Verwijdert de torrent en past geselecteerde opties voor het verwijderen van bestanden toe.</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>Downloaden voltooid</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>Jouw download</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>{0} is klaar met downloaden.</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>Downloads worden op de achtergrond uitgevoerd</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>Activiteit downloaden</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>Zorgt ervoor dat torrent-downloads actief blijven terwijl de app is geminimaliseerd.</value>
+  </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>Thema</value>
+  </data>
+  <data name="ThemeFollowSystem" xml:space="preserve">
+    <value>Volg systeem</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Licht</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Donker</value>
+  </data>
+  <data name="ThemePickerHint" xml:space="preserve">
+    <value>Kies hoe de app eruit ziet.</value>
+  </data>
+</root>

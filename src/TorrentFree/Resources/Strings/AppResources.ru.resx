@@ -225,10 +225,10 @@
     <value>Введите путь к папке</value>
   </data>
   <data name="AndroidDownloadFolderHelp" xml:space="preserve">
-    <value>On Android, use the folder button on a completed download to export files to Download/TorrentFree.</value>
+    <value>На Android используйте кнопку папки на завершённой загрузке, чтобы экспортировать файлы в Download/TorrentFree.</value>
   </data>
   <data name="OpenDownloadsFolder" xml:space="preserve">
-    <value>Open Downloads folder</value>
+    <value>Открыть папку загрузок</value>
   </data>
   <data name="SpeedLimits" xml:space="preserve">
     <value>Ограничения скорости</value>

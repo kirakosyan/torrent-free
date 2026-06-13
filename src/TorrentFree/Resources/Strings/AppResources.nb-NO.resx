@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <!-- App Title -->
+  <data name="AppTitle" xml:space="preserve">
+    <value>Torrent Free</value>
+  </data>
+  <!-- Main Page -->
+  <data name="AddTorrentPlaceholder" xml:space="preserve">
+    <value>Skriv inn magnetlink her...</value>
+  </data>
+  <data name="AddButton" xml:space="preserve">
+    <value>Last ned</value>
+  </data>
+  <data name="StartButton" xml:space="preserve">
+    <value>Start nedlasting</value>
+  </data>
+  <data name="StartAllButton" xml:space="preserve">
+    <value>Start alle</value>
+  </data>
+  <data name="PauseButton" xml:space="preserve">
+    <value>Sett på pause</value>
+  </data>
+  <data name="StopButton" xml:space="preserve">
+    <value>Stopp</value>
+  </data>
+  <data name="StopAllButton" xml:space="preserve">
+    <value>Stopp alle</value>
+  </data>
+  <data name="RemoveButton" xml:space="preserve">
+    <value>Fjern</value>
+  </data>
+  <data name="DownloadsTitle" xml:space="preserve">
+    <value>Nedlastinger</value>
+  </data>
+  <data name="NoDownloads" xml:space="preserve">
+    <value>Ingen nedlastinger ennå. Legg til en magnetlenke for å komme i gang!</value>
+  </data>
+  <!-- Status -->
+  <data name="StatusQueued" xml:space="preserve">
+    <value>I kø</value>
+  </data>
+  <data name="StatusDownloading" xml:space="preserve">
+    <value>Laster ned</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>Fullført</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>Mislyktes</value>
+  </data>
+  <data name="StatusStopped" xml:space="preserve">
+    <value>Stoppet</value>
+  </data>
+  <!-- Labels -->
+  <data name="Seeders" xml:space="preserve">
+    <value>Seedere</value>
+  </data>
+  <data name="Leechers" xml:space="preserve">
+    <value>Nedlastere</value>
+  </data>
+  <data name="DownloadSpeed" xml:space="preserve">
+    <value>Last ned</value>
+  </data>
+  <data name="UploadSpeed" xml:space="preserve">
+    <value>Last opp</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Størrelse</value>
+  </data>
+  <!-- Errors -->
+  <data name="InvalidMagnetLink" xml:space="preserve">
+    <value>Ugyldig magnetkobling. Vennligst skriv inn en gyldig magnet:? URL.</value>
+  </data>
+  <!-- Status (additional) -->
+  <data name="StatusSeeding" xml:space="preserve">
+    <value>Deler</value>
+  </data>
+  <!-- Main Page (additional) -->
+  <data name="AppSubtitle" xml:space="preserve">
+    <value>Raske og enkle torrent-nedlastinger</value>
+  </data>
+  <data name="BrowseButton" xml:space="preserve">
+    <value>Bla gjennom</value>
+  </data>
+  <data name="PasteButton" xml:space="preserve">
+    <value>Lim inn</value>
+  </data>
+  <data name="Bandwidth" xml:space="preserve">
+    <value>Båndbredde</value>
+  </data>
+  <data name="DownloadKBs" xml:space="preserve">
+    <value>Last ned KB/s</value>
+  </data>
+  <data name="UploadKBs" xml:space="preserve">
+    <value>Last opp KB/s</value>
+  </data>
+  <data name="DownloadingOnTop" xml:space="preserve">
+    <value>Laster ned på toppen</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Detaljer</value>
+  </data>
+  <data name="SelectedTorrentLimits" xml:space="preserve">
+    <value>Valgte torrentgrenser</value>
+  </data>
+  <data name="MaxSeedRatio" xml:space="preserve">
+    <value>Maks. delingsforhold</value>
+  </data>
+  <data name="MaxSeedMinutes" xml:space="preserve">
+    <value>Maks. delingsminutter</value>
+  </data>
+  <data name="NoDownloadsYet" xml:space="preserve">
+    <value>Ingen nedlastinger ennå</value>
+  </data>
+  <data name="AddMagnetHint" xml:space="preserve">
+    <value>Legg til en magnetlenke for å komme i gang.</value>
+  </data>
+  <data name="Down" xml:space="preserve">
+    <value>Ned</value>
+  </data>
+  <data name="Up" xml:space="preserve">
+    <value>Opp</value>
+  </data>
+  <data name="Seeds" xml:space="preserve">
+    <value>Seeds</value>
+  </data>
+  <data name="Peers" xml:space="preserve">
+    <value>Noder</value>
+  </data>
+  <data name="ETA" xml:space="preserve">
+    <value>ETA</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>Helse</value>
+  </data>
+  <data name="Availability" xml:space="preserve">
+    <value>Tilgjengelighet</value>
+  </data>
+  <!-- Settings Page -->
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Innstillinger</value>
+  </data>
+  <data name="AutoSaveNote" xml:space="preserve">
+    <value>Endringer lagres automatisk.</value>
+  </data>
+  <data name="DownloadLocation" xml:space="preserve">
+    <value>Last ned plassering</value>
+  </data>
+  <data name="DownloadToTorrentFolderLabel" xml:space="preserve">
+    <value>Lagre .torrent-nedlastinger ved siden av den originale .torrent-filen</value>
+  </data>
+  <data name="SpecificDownloadFolderLabel" xml:space="preserve">
+    <value>Spesifikk nedlastingsmappe</value>
+  </data>
+  <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
+    <value>Skriv inn en mappebane</value>
+  </data>
+  <data name="AndroidDownloadFolderHelp" xml:space="preserve">
+    <value>På Android bruker du mappeknappen på en fullført nedlasting for å eksportere filer til Download/TorrentFree.</value>
+  </data>
+  <data name="OpenDownloadsFolder" xml:space="preserve">
+    <value>Åpne nedlastingsmappen</value>
+  </data>
+  <data name="SpeedLimits" xml:space="preserve">
+    <value>Fartsgrenser</value>
+  </data>
+  <data name="FileAssociations" xml:space="preserve">
+    <value>Filforeninger</value>
+  </data>
+  <data name="AssociateTorrentFiles" xml:space="preserve">
+    <value>Tilknytt .torrent filer</value>
+  </data>
+  <data name="QueueLimits" xml:space="preserve">
+    <value>Køgrenser</value>
+  </data>
+  <data name="MaxActiveDownloads" xml:space="preserve">
+    <value>Maks aktive nedlastinger</value>
+  </data>
+  <data name="MaxActiveSeeds" xml:space="preserve">
+    <value>Maks. aktive seeds</value>
+  </data>
+  <data name="SeedingLimits" xml:space="preserve">
+    <value>Delingsgrenser</value>
+  </data>
+  <data name="Socks5Proxy" xml:space="preserve">
+    <value>SOCKS5 Proxy</value>
+  </data>
+  <data name="EnableProxy" xml:space="preserve">
+    <value>Aktiver proxy</value>
+  </data>
+  <data name="Host" xml:space="preserve">
+    <value>Vert</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Brukernavn</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Passord</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>Språk</value>
+  </data>
+  <!-- Delete Dialog -->
+  <data name="RemoveTorrent" xml:space="preserve">
+    <value>Fjern torrent</value>
+  </data>
+  <data name="DeleteFilesOptional" xml:space="preserve">
+    <value>Slett eventuelt tilknyttede filer:</value>
+  </data>
+  <data name="DeleteTorrentFile" xml:space="preserve">
+    <value>Slett .torrent fil fra disken</value>
+  </data>
+  <data name="DeleteDownloadedFiles" xml:space="preserve">
+    <value>Slett nedlastede filer</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Avbryt</value>
+  </data>
+  <!-- Hints -->
+  <data name="UnlimitedHint" xml:space="preserve">
+    <value>0 = ubegrenset</value>
+  </data>
+  <data name="GlobalHint" xml:space="preserve">
+    <value>0 = globalt</value>
+  </data>
+  <!-- Dialogs -->
+  <data name="StopAndResetTitle" xml:space="preserve">
+    <value>Stopp torrent</value>
+  </data>
+  <data name="StopAndResetMessage" xml:space="preserve">
+    <value>Hvis du stopper, beholdes de nedlastede dataene dine slik at du kan fortsette senere. Er du sikker?</value>
+  </data>
+  <data name="AssociateTorrentTitle" xml:space="preserve">
+    <value>Tilknytt .torrent filer</value>
+  </data>
+  <data name="AssociateTorrentMessage" xml:space="preserve">
+    <value>Vil du åpne .torrent filer med Torrent Free som standard?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Nei</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>Om Torrent Free</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>Torrent Free er gratis å bruke.</value>
+  </data>
+  <data name="AboutVersionLabel" xml:space="preserve">
+    <value>Versjon</value>
+  </data>
+  <data name="AboutBuildLabel" xml:space="preserve">
+    <value>Build</value>
+  </data>
+  <data name="AboutFileVersionLabel" xml:space="preserve">
+    <value>Filversjon</value>
+  </data>
+  <data name="AboutSourceLabel" xml:space="preserve">
+    <value>Kilde</value>
+  </data>
+  <data name="AboutUnavailable" xml:space="preserve">
+    <value>n/a</value>
+  </data>
+  <data name="OpenSource" xml:space="preserve">
+    <value>Åpen kildekode</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <!-- Error Messages -->
+  <data name="ErrorOpenFolder" xml:space="preserve">
+    <value>Kunne ikke åpne mappen for nedlastingen.</value>
+  </data>
+  <data name="ErrorImportTorrent" xml:space="preserve">
+    <value>Kunne ikke importere filen .torrent. Vennligst prøv igjen.</value>
+  </data>
+  <data name="ErrorLoadDownloads" xml:space="preserve">
+    <value>Kunne ikke laste ned nedlastingene dine. Start appen på nytt.</value>
+  </data>
+  <data name="ErrorDuplicateTorrent" xml:space="preserve">
+    <value>Denne torrenten er allerede på listen din.</value>
+  </data>
+  <data name="ErrorInvalidTorrentFile" xml:space="preserve">
+    <value>Ugyldig .torrent fil. Kan ikke trekke ut en info-hash.</value>
+  </data>
+  <data name="ErrorInvalidMagnet" xml:space="preserve">
+    <value>Ugyldig magnetkobling. Sørg for at koblingen din starter med 'magnet:?' og inneholder en info-hash (xt= parameter).</value>
+  </data>
+  <data name="ErrorAddTorrent" xml:space="preserve">
+    <value>Kunne ikke legge til torrent. Vennligst prøv igjen.</value>
+  </data>
+  <data name="ErrorClipboardEmpty" xml:space="preserve">
+    <value>Utklippstavlen er tom. Kopier en magnetlenke først.</value>
+  </data>
+  <data name="ErrorPasteClipboard" xml:space="preserve">
+    <value>Kunne ikke lese utklippstavlen. Vennligst prøv igjen.</value>
+  </data>
+  <data name="ErrorStartTorrent" xml:space="preserve">
+    <value>Kunne ikke starte torrent. Vennligst prøv igjen.</value>
+  </data>
+  <data name="ErrorPauseTorrent" xml:space="preserve">
+    <value>Kunne ikke sette torrent på pause. Vennligst prøv igjen.</value>
+  </data>
+  <data name="ErrorStopTorrent" xml:space="preserve">
+    <value>Kunne ikke stoppe torrent. Vennligst prøv igjen.</value>
+  </data>
+  <data name="ErrorRemoveTorrent" xml:space="preserve">
+    <value>Kunne ikke fjerne torrent. Vennligst prøv igjen.</value>
+  </data>
+  <!-- Status Hints -->
+  <data name="HintDownloadFailed" xml:space="preserve">
+    <value>Nedlasting mislyktes.</value>
+  </data>
+  <data name="HintQueued" xml:space="preserve">
+    <value>I kø. Venter på en aktiv spilleautomat.</value>
+  </data>
+  <data name="HintPaused" xml:space="preserve">
+    <value>Pause.</value>
+  </data>
+  <data name="HintStopped" xml:space="preserve">
+    <value>Stoppet.</value>
+  </data>
+  <data name="HintSearchingPeers" xml:space="preserve">
+    <value>Søker etter noder.</value>
+  </data>
+  <data name="HintWaitingSeeds" xml:space="preserve">
+    <value>Venter på seeds.</value>
+  </data>
+  <data name="HintConnectingPeers" xml:space="preserve">
+    <value>Kobler til noder.</value>
+  </data>
+  <!-- Settings Validation -->
+  <data name="ValidationFileAssociation" xml:space="preserve">
+    <value>Kan ikke oppdatere filtilknytning.</value>
+  </data>
+  <data name="ValidationAdjustedLimits" xml:space="preserve">
+    <value>Noen innstillinger ble justert til sikre grenser.</value>
+  </data>
+  <data name="ValidationSeedRatioInvalid" xml:space="preserve">
+    <value>Frøforhold må være et gyldig ikke-negativt tall. Tilbakestill til 0.</value>
+  </data>
+  <data name="ValidationSeedRatioHigh" xml:space="preserve">
+    <value>Frøforholdet er for høyt. Begrenset til {0}.</value>
+  </data>
+  <data name="ValidationNegative" xml:space="preserve">
+    <value>{0} kan ikke være negativ. Sett til {1}{2}.</value>
+  </data>
+  <data name="ValidationTooHigh" xml:space="preserve">
+    <value>{0} er for høy. Avgrenset til {1}{2}.</value>
+  </data>
+  <data name="ValidationSelectFolder" xml:space="preserve">
+    <value>Kan ikke velge en mappe.</value>
+  </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>Gå tilbake</value>
+  </data>
+  <data name="SelectTorrentFile" xml:space="preserve">
+    <value>Velg en .torrent fil</value>
+  </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>Lim inn en magnet-URI eller URL, og trykk deretter på Enter, Lim inn eller Bla gjennom.</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>Når den er aktivert, vises nedlastingselementer øverst.</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>Vis i mappe</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>Last ned fremdrift</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>Laster inn torrentdata</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>Velg systemstandard eller et spesifikt språk.</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>Angi proxy-vert eller IP.</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>f.eks. 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>Skriv inn proxy-portnummer.</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>Valgfritt autentiseringsbrukernavn.</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>Valgfritt autentiseringspassord.</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>valgfri</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>Innstillingsvalideringsmelding</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>Når det er merket av, slettes kildefilen .torrent fra disken.</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>Når det er merket av, slettes nedlastede innholdsfiler permanent.</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>Fjerner torrenten og bruker valgte filslettingsalternativer.</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>Nedlasting fullført</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>Din nedlasting</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>{0} har fullført nedlastingen.</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>Nedlastinger kjører i bakgrunnen</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>Last ned aktivitet</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>Holder torrent-nedlastinger i gang mens appen er minimert.</value>
+  </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="ThemeFollowSystem" xml:space="preserve">
+    <value>Følg systemet</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Lys</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Mørk</value>
+  </data>
+  <data name="ThemePickerHint" xml:space="preserve">
+    <value>Velg hvordan appen skal se ut.</value>
+  </data>
+</root>

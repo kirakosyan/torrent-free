@@ -225,10 +225,10 @@
     <value>Entrez un chemin de dossier</value>
   </data>
   <data name="AndroidDownloadFolderHelp" xml:space="preserve">
-    <value>On Android, use the folder button on a completed download to export files to Download/TorrentFree.</value>
+    <value>Sous Android, utilisez le bouton de dossier sur un téléchargement terminé pour exporter les fichiers vers Download/TorrentFree.</value>
   </data>
   <data name="OpenDownloadsFolder" xml:space="preserve">
-    <value>Open Downloads folder</value>
+    <value>Ouvrir le dossier Téléchargements</value>
   </data>
   <data name="SpeedLimits" xml:space="preserve">
     <value>Limites de vitesse</value>

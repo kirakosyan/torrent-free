@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <!-- App Title -->
+  <data name="AppTitle" xml:space="preserve">
+    <value>Torrent Free</value>
+  </data>
+  <!-- Main Page -->
+  <data name="AddTorrentPlaceholder" xml:space="preserve">
+    <value>Sem zadejte odkaz na magnet...</value>
+  </data>
+  <data name="AddButton" xml:space="preserve">
+    <value>Stáhnout</value>
+  </data>
+  <data name="StartButton" xml:space="preserve">
+    <value>Spustit</value>
+  </data>
+  <data name="StartAllButton" xml:space="preserve">
+    <value>Spustit vše</value>
+  </data>
+  <data name="PauseButton" xml:space="preserve">
+    <value>Pauza</value>
+  </data>
+  <data name="StopButton" xml:space="preserve">
+    <value>Zastavit</value>
+  </data>
+  <data name="StopAllButton" xml:space="preserve">
+    <value>Zastavit vše</value>
+  </data>
+  <data name="RemoveButton" xml:space="preserve">
+    <value>Odstranit</value>
+  </data>
+  <data name="DownloadsTitle" xml:space="preserve">
+    <value>Stahování</value>
+  </data>
+  <data name="NoDownloads" xml:space="preserve">
+    <value>Zatím žádné stahování. Začněte přidáním magnetického odkazu!</value>
+  </data>
+  <!-- Status -->
+  <data name="StatusQueued" xml:space="preserve">
+    <value>Ve frontě</value>
+  </data>
+  <data name="StatusDownloading" xml:space="preserve">
+    <value>Stahování</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>Pozastaveno</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>Dokončeno</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>Nepodařilo se</value>
+  </data>
+  <data name="StatusStopped" xml:space="preserve">
+    <value>Zastaveno</value>
+  </data>
+  <!-- Labels -->
+  <data name="Seeders" xml:space="preserve">
+    <value>Sdílející</value>
+  </data>
+  <data name="Leechers" xml:space="preserve">
+    <value>Stahující</value>
+  </data>
+  <data name="DownloadSpeed" xml:space="preserve">
+    <value>Stáhnout</value>
+  </data>
+  <data name="UploadSpeed" xml:space="preserve">
+    <value>Nahrát</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Velikost</value>
+  </data>
+  <!-- Errors -->
+  <data name="InvalidMagnetLink" xml:space="preserve">
+    <value>Neplatný odkaz na magnet. Zadejte prosím platnou adresu URL magnet:?.</value>
+  </data>
+  <!-- Status (additional) -->
+  <data name="StatusSeeding" xml:space="preserve">
+    <value>Sdílení</value>
+  </data>
+  <!-- Main Page (additional) -->
+  <data name="AppSubtitle" xml:space="preserve">
+    <value>Rychlé a jednoduché stahování torrentů</value>
+  </data>
+  <data name="BrowseButton" xml:space="preserve">
+    <value>Prohlížet</value>
+  </data>
+  <data name="PasteButton" xml:space="preserve">
+    <value>Vložit</value>
+  </data>
+  <data name="Bandwidth" xml:space="preserve">
+    <value>Šířka pásma</value>
+  </data>
+  <data name="DownloadKBs" xml:space="preserve">
+    <value>Stáhnout KB/s</value>
+  </data>
+  <data name="UploadKBs" xml:space="preserve">
+    <value>Nahrát KB/s</value>
+  </data>
+  <data name="DownloadingOnTop" xml:space="preserve">
+    <value>Stahování nahoře</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Podrobnosti</value>
+  </data>
+  <data name="SelectedTorrentLimits" xml:space="preserve">
+    <value>Vybrané limity torrentu</value>
+  </data>
+  <data name="MaxSeedRatio" xml:space="preserve">
+    <value>Max. poměr sdílení</value>
+  </data>
+  <data name="MaxSeedMinutes" xml:space="preserve">
+    <value>Max. minut sdílení</value>
+  </data>
+  <data name="NoDownloadsYet" xml:space="preserve">
+    <value>Zatím žádné stahování</value>
+  </data>
+  <data name="AddMagnetHint" xml:space="preserve">
+    <value>Začněte přidáním magnetického odkazu.</value>
+  </data>
+  <data name="Down" xml:space="preserve">
+    <value>Příjem</value>
+  </data>
+  <data name="Up" xml:space="preserve">
+    <value>Odesílání</value>
+  </data>
+  <data name="Seeds" xml:space="preserve">
+    <value>Zdroje</value>
+  </data>
+  <data name="Peers" xml:space="preserve">
+    <value>Protějšky</value>
+  </data>
+  <data name="ETA" xml:space="preserve">
+    <value>ETA</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>Zdraví</value>
+  </data>
+  <data name="Availability" xml:space="preserve">
+    <value>Dostupnost</value>
+  </data>
+  <!-- Settings Page -->
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Nastavení</value>
+  </data>
+  <data name="AutoSaveNote" xml:space="preserve">
+    <value>Změny se ukládají automaticky.</value>
+  </data>
+  <data name="DownloadLocation" xml:space="preserve">
+    <value>Umístění ke stažení</value>
+  </data>
+  <data name="DownloadToTorrentFolderLabel" xml:space="preserve">
+    <value>Uložit .torrent stažené soubory vedle původního souboru .torrent</value>
+  </data>
+  <data name="SpecificDownloadFolderLabel" xml:space="preserve">
+    <value>Konkrétní složka ke stažení</value>
+  </data>
+  <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
+    <value>Zadejte cestu ke složce</value>
+  </data>
+  <data name="AndroidDownloadFolderHelp" xml:space="preserve">
+    <value>V systému Android použijte tlačítko složky na dokončeném stahování k exportu souborů do Download/TorrentFree.</value>
+  </data>
+  <data name="OpenDownloadsFolder" xml:space="preserve">
+    <value>Otevřete složku Stažené soubory</value>
+  </data>
+  <data name="SpeedLimits" xml:space="preserve">
+    <value>Rychlostní limity</value>
+  </data>
+  <data name="FileAssociations" xml:space="preserve">
+    <value>Asociace souborů</value>
+  </data>
+  <data name="AssociateTorrentFiles" xml:space="preserve">
+    <value>Přidružit .torrent soubory</value>
+  </data>
+  <data name="QueueLimits" xml:space="preserve">
+    <value>Limity fronty</value>
+  </data>
+  <data name="MaxActiveDownloads" xml:space="preserve">
+    <value>Maximální počet aktivních stažení</value>
+  </data>
+  <data name="MaxActiveSeeds" xml:space="preserve">
+    <value>Max. aktivních sdílení</value>
+  </data>
+  <data name="SeedingLimits" xml:space="preserve">
+    <value>Limity sdílení</value>
+  </data>
+  <data name="Socks5Proxy" xml:space="preserve">
+    <value>SOCKS5 Proxy</value>
+  </data>
+  <data name="EnableProxy" xml:space="preserve">
+    <value>Povolit proxy</value>
+  </data>
+  <data name="Host" xml:space="preserve">
+    <value>Hostitel</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Uživatelské jméno</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Heslo</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>Jazyk</value>
+  </data>
+  <!-- Delete Dialog -->
+  <data name="RemoveTorrent" xml:space="preserve">
+    <value>Odebrat torrent</value>
+  </data>
+  <data name="DeleteFilesOptional" xml:space="preserve">
+    <value>Volitelně smažte přidružené soubory:</value>
+  </data>
+  <data name="DeleteTorrentFile" xml:space="preserve">
+    <value>Smažte soubor .torrent z disku</value>
+  </data>
+  <data name="DeleteDownloadedFiles" xml:space="preserve">
+    <value>Odstraňte stažené soubory</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Zrušit</value>
+  </data>
+  <!-- Hints -->
+  <data name="UnlimitedHint" xml:space="preserve">
+    <value>0 = neomezeně</value>
+  </data>
+  <data name="GlobalHint" xml:space="preserve">
+    <value>0 = globální</value>
+  </data>
+  <!-- Dialogs -->
+  <data name="StopAndResetTitle" xml:space="preserve">
+    <value>Zastavit torrent</value>
+  </data>
+  <data name="StopAndResetMessage" xml:space="preserve">
+    <value>Zastavením se zachovají stažená data, abyste mohli pokračovat později. jsi si jistý?</value>
+  </data>
+  <data name="AssociateTorrentTitle" xml:space="preserve">
+    <value>Přidružit .torrent soubory</value>
+  </data>
+  <data name="AssociateTorrentMessage" xml:space="preserve">
+    <value>Chcete ve výchozím nastavení otevírat soubory .torrent pomocí aplikace Torrent Free?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ano</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Ne</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>O aplikaci Torrent Free</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>Torrent Free je zdarma k použití.</value>
+  </data>
+  <data name="AboutVersionLabel" xml:space="preserve">
+    <value>Verze</value>
+  </data>
+  <data name="AboutBuildLabel" xml:space="preserve">
+    <value>Sestavení</value>
+  </data>
+  <data name="AboutFileVersionLabel" xml:space="preserve">
+    <value>Verze souboru</value>
+  </data>
+  <data name="AboutSourceLabel" xml:space="preserve">
+    <value>Zdroj</value>
+  </data>
+  <data name="AboutUnavailable" xml:space="preserve">
+    <value>n/a</value>
+  </data>
+  <data name="OpenSource" xml:space="preserve">
+    <value>Otevřený zdroj</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <!-- Error Messages -->
+  <data name="ErrorOpenFolder" xml:space="preserve">
+    <value>Nepodařilo se otevřít složku pro stahování.</value>
+  </data>
+  <data name="ErrorImportTorrent" xml:space="preserve">
+    <value>Import souboru .torrent se nezdařil. Zkuste to prosím znovu.</value>
+  </data>
+  <data name="ErrorLoadDownloads" xml:space="preserve">
+    <value>Načtení stažených souborů se nezdařilo. Restartujte aplikaci.</value>
+  </data>
+  <data name="ErrorDuplicateTorrent" xml:space="preserve">
+    <value>Tento torrent je již ve vašem seznamu.</value>
+  </data>
+  <data name="ErrorInvalidTorrentFile" xml:space="preserve">
+    <value>Neplatný soubor .torrent. Nelze extrahovat hash informací.</value>
+  </data>
+  <data name="ErrorInvalidMagnet" xml:space="preserve">
+    <value>Neplatný odkaz na magnet. Ujistěte se, že váš odkaz začíná 'magnet:?' a obsahuje informační hash (parametr xt=).</value>
+  </data>
+  <data name="ErrorAddTorrent" xml:space="preserve">
+    <value>Nepodařilo se přidat torrent. Zkuste to prosím znovu.</value>
+  </data>
+  <data name="ErrorClipboardEmpty" xml:space="preserve">
+    <value>Schránka je prázdná. Nejprve zkopírujte odkaz na magnet.</value>
+  </data>
+  <data name="ErrorPasteClipboard" xml:space="preserve">
+    <value>Čtení schránky se nezdařilo. Zkuste to prosím znovu.</value>
+  </data>
+  <data name="ErrorStartTorrent" xml:space="preserve">
+    <value>Spuštění torrentu se nezdařilo. Zkuste to prosím znovu.</value>
+  </data>
+  <data name="ErrorPauseTorrent" xml:space="preserve">
+    <value>Pozastavení torrentu se nezdařilo. Zkuste to prosím znovu.</value>
+  </data>
+  <data name="ErrorStopTorrent" xml:space="preserve">
+    <value>Torrent se nepodařilo zastavit. Zkuste to prosím znovu.</value>
+  </data>
+  <data name="ErrorRemoveTorrent" xml:space="preserve">
+    <value>Odstranění torrentu se nezdařilo. Zkuste to prosím znovu.</value>
+  </data>
+  <!-- Status Hints -->
+  <data name="HintDownloadFailed" xml:space="preserve">
+    <value>Stahování se nezdařilo.</value>
+  </data>
+  <data name="HintQueued" xml:space="preserve">
+    <value>Ve frontě. Čekání na aktivní slot.</value>
+  </data>
+  <data name="HintPaused" xml:space="preserve">
+    <value>Pozastaveno.</value>
+  </data>
+  <data name="HintStopped" xml:space="preserve">
+    <value>Zastaveno.</value>
+  </data>
+  <data name="HintSearchingPeers" xml:space="preserve">
+    <value>Hledání protějšků.</value>
+  </data>
+  <data name="HintWaitingSeeds" xml:space="preserve">
+    <value>Čekání na zdroje.</value>
+  </data>
+  <data name="HintConnectingPeers" xml:space="preserve">
+    <value>Připojování k protějškům.</value>
+  </data>
+  <!-- Settings Validation -->
+  <data name="ValidationFileAssociation" xml:space="preserve">
+    <value>Nelze aktualizovat přidružení souboru.</value>
+  </data>
+  <data name="ValidationAdjustedLimits" xml:space="preserve">
+    <value>Některá nastavení byla upravena na bezpečné limity.</value>
+  </data>
+  <data name="ValidationSeedRatioInvalid" xml:space="preserve">
+    <value>Poměr osiva musí být platné nezáporné číslo. Resetovat na 0.</value>
+  </data>
+  <data name="ValidationSeedRatioHigh" xml:space="preserve">
+    <value>Poměr semen je příliš vysoký. Limitováno na {0}.</value>
+  </data>
+  <data name="ValidationNegative" xml:space="preserve">
+    <value>{0} nemůže být záporné. Nastavit na {1}{2}.</value>
+  </data>
+  <data name="ValidationTooHigh" xml:space="preserve">
+    <value>{0} je příliš vysoké. Limitováno na {1}{2}.</value>
+  </data>
+  <data name="ValidationSelectFolder" xml:space="preserve">
+    <value>Nelze vybrat složku.</value>
+  </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>Vraťte se</value>
+  </data>
+  <data name="SelectTorrentFile" xml:space="preserve">
+    <value>Vyberte soubor .torrent</value>
+  </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>Vložte magnet URI nebo URL a stiskněte Enter, Vložit nebo Procházet.</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>Když je tato možnost povolena, položky ke stahování se zobrazí nahoře.</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>Zobrazit ve složce</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>Průběh stahování</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>Načítání dat torrentu</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>Vyberte výchozí systém nebo konkrétní jazyk.</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>Zadejte hostitele proxy nebo IP.</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>např. 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>Zadejte číslo portu proxy.</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>Volitelné uživatelské jméno pro ověření.</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>Volitelné autentizační heslo.</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>volitelný</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>Zpráva o ověření nastavení</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>Po zaškrtnutí bude zdrojový soubor .torrent odstraněn z disku.</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>Po zaškrtnutí budou stažené soubory obsahu trvale odstraněny.</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>Odebere torrent a použije vybrané možnosti mazání souborů.</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>Stahování dokončeno</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>Vaše stahování</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>{0} dokončilo stahování.</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>Stahování běžící na pozadí</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>Aktivita stahování</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>Udržuje stahování torrentu spuštěné, zatímco je aplikace minimalizována.</value>
+  </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>Téma</value>
+  </data>
+  <data name="ThemeFollowSystem" xml:space="preserve">
+    <value>Sledujte systém</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Světlý</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Tmavý</value>
+  </data>
+  <data name="ThemePickerHint" xml:space="preserve">
+    <value>Vyberte, jak aplikace vypadá.</value>
+  </data>
+</root>

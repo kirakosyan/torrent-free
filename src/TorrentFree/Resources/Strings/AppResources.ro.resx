@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <!-- App Title -->
+  <data name="AppTitle" xml:space="preserve">
+    <value>Torrent Free</value>
+  </data>
+  <!-- Main Page -->
+  <data name="AddTorrentPlaceholder" xml:space="preserve">
+    <value>Introdu linkul magnet aici...</value>
+  </data>
+  <data name="AddButton" xml:space="preserve">
+    <value>Descarcă</value>
+  </data>
+  <data name="StartButton" xml:space="preserve">
+    <value>Pornește</value>
+  </data>
+  <data name="StartAllButton" xml:space="preserve">
+    <value>Pornește tot</value>
+  </data>
+  <data name="PauseButton" xml:space="preserve">
+    <value>Pauză</value>
+  </data>
+  <data name="StopButton" xml:space="preserve">
+    <value>Oprește</value>
+  </data>
+  <data name="StopAllButton" xml:space="preserve">
+    <value>Oprește totul</value>
+  </data>
+  <data name="RemoveButton" xml:space="preserve">
+    <value>Elimină</value>
+  </data>
+  <data name="DownloadsTitle" xml:space="preserve">
+    <value>Descărcări</value>
+  </data>
+  <data name="NoDownloads" xml:space="preserve">
+    <value>Nicio descărcare încă. Adăugați un link magnet pentru a începe!</value>
+  </data>
+  <!-- Status -->
+  <data name="StatusQueued" xml:space="preserve">
+    <value>În coadă</value>
+  </data>
+  <data name="StatusDownloading" xml:space="preserve">
+    <value>Descărcarea</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>Întrerupt</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>Terminat</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>A eșuat</value>
+  </data>
+  <data name="StatusStopped" xml:space="preserve">
+    <value>Oprit</value>
+  </data>
+  <!-- Labels -->
+  <data name="Seeders" xml:space="preserve">
+    <value>Seederi</value>
+  </data>
+  <data name="Leechers" xml:space="preserve">
+    <value>Leecheri</value>
+  </data>
+  <data name="DownloadSpeed" xml:space="preserve">
+    <value>Descărcați</value>
+  </data>
+  <data name="UploadSpeed" xml:space="preserve">
+    <value>Încărcați</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Dimensiune</value>
+  </data>
+  <!-- Errors -->
+  <data name="InvalidMagnetLink" xml:space="preserve">
+    <value>Link magnet nevalid. Introduceți o adresă URL validă magnet:?.</value>
+  </data>
+  <!-- Status (additional) -->
+  <data name="StatusSeeding" xml:space="preserve">
+    <value>Seeding</value>
+  </data>
+  <!-- Main Page (additional) -->
+  <data name="AppSubtitle" xml:space="preserve">
+    <value>Descărcări rapide și simple de torrent</value>
+  </data>
+  <data name="BrowseButton" xml:space="preserve">
+    <value>Răsfoiește</value>
+  </data>
+  <data name="PasteButton" xml:space="preserve">
+    <value>Lipește</value>
+  </data>
+  <data name="Bandwidth" xml:space="preserve">
+    <value>Lățimea de bandă</value>
+  </data>
+  <data name="DownloadKBs" xml:space="preserve">
+    <value>Descărcați KB/s</value>
+  </data>
+  <data name="UploadKBs" xml:space="preserve">
+    <value>Încărcați KB/s</value>
+  </data>
+  <data name="DownloadingOnTop" xml:space="preserve">
+    <value>Descărcare deasupra</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Detalii</value>
+  </data>
+  <data name="SelectedTorrentLimits" xml:space="preserve">
+    <value>Limitele de torrent selectate</value>
+  </data>
+  <data name="MaxSeedRatio" xml:space="preserve">
+    <value>Raport maxim de seeding</value>
+  </data>
+  <data name="MaxSeedMinutes" xml:space="preserve">
+    <value>Minute maxime de semințe</value>
+  </data>
+  <data name="NoDownloadsYet" xml:space="preserve">
+    <value>Nicio descărcare încă</value>
+  </data>
+  <data name="AddMagnetHint" xml:space="preserve">
+    <value>Adăugați un link magnet pentru a începe.</value>
+  </data>
+  <data name="Down" xml:space="preserve">
+    <value>Primit</value>
+  </data>
+  <data name="Up" xml:space="preserve">
+    <value>Trimis</value>
+  </data>
+  <data name="Seeds" xml:space="preserve">
+    <value>Seed-uri</value>
+  </data>
+  <data name="Peers" xml:space="preserve">
+    <value>Peeri</value>
+  </data>
+  <data name="ETA" xml:space="preserve">
+    <value>ETA</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>Sănătate</value>
+  </data>
+  <data name="Availability" xml:space="preserve">
+    <value>Disponibilitate</value>
+  </data>
+  <!-- Settings Page -->
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Setări</value>
+  </data>
+  <data name="AutoSaveNote" xml:space="preserve">
+    <value>Modificările sunt salvate automat.</value>
+  </data>
+  <data name="DownloadLocation" xml:space="preserve">
+    <value>Descărcați locația</value>
+  </data>
+  <data name="DownloadToTorrentFolderLabel" xml:space="preserve">
+    <value>Salvați .torrent descărcări lângă fișierul original .torrent</value>
+  </data>
+  <data name="SpecificDownloadFolderLabel" xml:space="preserve">
+    <value>Dosar specific de descărcare</value>
+  </data>
+  <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
+    <value>Introduceți o cale de folder</value>
+  </data>
+  <data name="AndroidDownloadFolderHelp" xml:space="preserve">
+    <value>Pe Android, utilizați butonul de folder la o descărcare finalizată pentru a exporta fișiere în Download/TorrentFree.</value>
+  </data>
+  <data name="OpenDownloadsFolder" xml:space="preserve">
+    <value>Deschideți dosarul Descărcări</value>
+  </data>
+  <data name="SpeedLimits" xml:space="preserve">
+    <value>Limite de viteză</value>
+  </data>
+  <data name="FileAssociations" xml:space="preserve">
+    <value>Asociații de fișiere</value>
+  </data>
+  <data name="AssociateTorrentFiles" xml:space="preserve">
+    <value>Asociați fișiere .torrent</value>
+  </data>
+  <data name="QueueLimits" xml:space="preserve">
+    <value>Limite de coadă</value>
+  </data>
+  <data name="MaxActiveDownloads" xml:space="preserve">
+    <value>Descărcări maxime active</value>
+  </data>
+  <data name="MaxActiveSeeds" xml:space="preserve">
+    <value>Max. seed-uri active</value>
+  </data>
+  <data name="SeedingLimits" xml:space="preserve">
+    <value>Limite de seeding</value>
+  </data>
+  <data name="Socks5Proxy" xml:space="preserve">
+    <value>SOCKS5 Proxy</value>
+  </data>
+  <data name="EnableProxy" xml:space="preserve">
+    <value>Activați proxy</value>
+  </data>
+  <data name="Host" xml:space="preserve">
+    <value>Gazdă</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>Număr port</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Nume de utilizator</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Parolă</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>Limbă</value>
+  </data>
+  <!-- Delete Dialog -->
+  <data name="RemoveTorrent" xml:space="preserve">
+    <value>Eliminați torrent</value>
+  </data>
+  <data name="DeleteFilesOptional" xml:space="preserve">
+    <value>Ștergeți opțional fișierele asociate:</value>
+  </data>
+  <data name="DeleteTorrentFile" xml:space="preserve">
+    <value>Ștergeți fișierul .torrent de pe disc</value>
+  </data>
+  <data name="DeleteDownloadedFiles" xml:space="preserve">
+    <value>Ștergeți fișierele descărcate</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Anulează</value>
+  </data>
+  <!-- Hints -->
+  <data name="UnlimitedHint" xml:space="preserve">
+    <value>0 = nelimitat</value>
+  </data>
+  <data name="GlobalHint" xml:space="preserve">
+    <value>0 = global</value>
+  </data>
+  <!-- Dialogs -->
+  <data name="StopAndResetTitle" xml:space="preserve">
+    <value>Opriți torrentul</value>
+  </data>
+  <data name="StopAndResetMessage" xml:space="preserve">
+    <value>Oprirea vă va păstra datele descărcate, astfel încât să puteți relua mai târziu. Ești sigur?</value>
+  </data>
+  <data name="AssociateTorrentTitle" xml:space="preserve">
+    <value>Asociați fișiere .torrent</value>
+  </data>
+  <data name="AssociateTorrentMessage" xml:space="preserve">
+    <value>Doriți să deschideți fișiere .torrent cu Torrent Free în mod prestabilit?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Da</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Nu</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>Despre Torrent Free</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>Utilizarea Torrent Free este gratuită.</value>
+  </data>
+  <data name="AboutVersionLabel" xml:space="preserve">
+    <value>Versiune</value>
+  </data>
+  <data name="AboutBuildLabel" xml:space="preserve">
+    <value>Build</value>
+  </data>
+  <data name="AboutFileVersionLabel" xml:space="preserve">
+    <value>Versiunea fișierului</value>
+  </data>
+  <data name="AboutSourceLabel" xml:space="preserve">
+    <value>Sursă</value>
+  </data>
+  <data name="AboutUnavailable" xml:space="preserve">
+    <value>n/a</value>
+  </data>
+  <data name="OpenSource" xml:space="preserve">
+    <value>Sursă deschisă</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <!-- Error Messages -->
+  <data name="ErrorOpenFolder" xml:space="preserve">
+    <value>Nu s-a putut deschide folderul pentru descărcare.</value>
+  </data>
+  <data name="ErrorImportTorrent" xml:space="preserve">
+    <value>Nu s-a putut importa fișierul .torrent. Vă rugăm să încercați din nou.</value>
+  </data>
+  <data name="ErrorLoadDownloads" xml:space="preserve">
+    <value>Descărcările dvs. nu s-au încărcat. Vă rugăm să reporniți aplicația.</value>
+  </data>
+  <data name="ErrorDuplicateTorrent" xml:space="preserve">
+    <value>Acest torrent este deja în lista ta.</value>
+  </data>
+  <data name="ErrorInvalidTorrentFile" xml:space="preserve">
+    <value>Fișier .torrent nevalid. Nu se poate extrage un hash de informații.</value>
+  </data>
+  <data name="ErrorInvalidMagnet" xml:space="preserve">
+    <value>Link magnet nevalid. Asigurați-vă că linkul începe cu „magnet:?” și conține un hash de informații (parametrul xt=).</value>
+  </data>
+  <data name="ErrorAddTorrent" xml:space="preserve">
+    <value>Nu s-a putut adăuga torrent. Vă rugăm să încercați din nou.</value>
+  </data>
+  <data name="ErrorClipboardEmpty" xml:space="preserve">
+    <value>Clipboard-ul este gol. Copiați mai întâi un link magnet.</value>
+  </data>
+  <data name="ErrorPasteClipboard" xml:space="preserve">
+    <value>Nu s-a putut citi clipboardul. Vă rugăm să încercați din nou.</value>
+  </data>
+  <data name="ErrorStartTorrent" xml:space="preserve">
+    <value>Nu s-a pornit torrent. Vă rugăm să încercați din nou.</value>
+  </data>
+  <data name="ErrorPauseTorrent" xml:space="preserve">
+    <value>Nu s-a putut întrerupe torrent. Vă rugăm să încercați din nou.</value>
+  </data>
+  <data name="ErrorStopTorrent" xml:space="preserve">
+    <value>Nu s-a oprit torrentul. Vă rugăm să încercați din nou.</value>
+  </data>
+  <data name="ErrorRemoveTorrent" xml:space="preserve">
+    <value>Nu s-a putut elimina torrent. Vă rugăm să încercați din nou.</value>
+  </data>
+  <!-- Status Hints -->
+  <data name="HintDownloadFailed" xml:space="preserve">
+    <value>Descărcarea a eșuat.</value>
+  </data>
+  <data name="HintQueued" xml:space="preserve">
+    <value>În coadă. Se așteaptă un slot activ.</value>
+  </data>
+  <data name="HintPaused" xml:space="preserve">
+    <value>Întrerupt.</value>
+  </data>
+  <data name="HintStopped" xml:space="preserve">
+    <value>Oprit.</value>
+  </data>
+  <data name="HintSearchingPeers" xml:space="preserve">
+    <value>Se caută peeri.</value>
+  </data>
+  <data name="HintWaitingSeeds" xml:space="preserve">
+    <value>În așteptarea seed-urilor.</value>
+  </data>
+  <data name="HintConnectingPeers" xml:space="preserve">
+    <value>Se conectează la peeri.</value>
+  </data>
+  <!-- Settings Validation -->
+  <data name="ValidationFileAssociation" xml:space="preserve">
+    <value>Nu se poate actualiza asocierea fișierelor.</value>
+  </data>
+  <data name="ValidationAdjustedLimits" xml:space="preserve">
+    <value>Unele setări au fost ajustate la limite sigure.</value>
+  </data>
+  <data name="ValidationSeedRatioInvalid" xml:space="preserve">
+    <value>Raportul de semințe trebuie să fie un număr valid nenegativ. Resetați la 0.</value>
+  </data>
+  <data name="ValidationSeedRatioHigh" xml:space="preserve">
+    <value>Raportul de semințe este prea mare. Limitat la {0}.</value>
+  </data>
+  <data name="ValidationNegative" xml:space="preserve">
+    <value>{0} nu poate fi negativ. Setați la {1}{2}.</value>
+  </data>
+  <data name="ValidationTooHigh" xml:space="preserve">
+    <value>{0} este prea mare. Limitat la {1}{2}.</value>
+  </data>
+  <data name="ValidationSelectFolder" xml:space="preserve">
+    <value>Nu se poate selecta un folder.</value>
+  </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>Întoarce-te</value>
+  </data>
+  <data name="SelectTorrentFile" xml:space="preserve">
+    <value>Selectați un fișier .torrent</value>
+  </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>Lipiți un URI sau o adresă URL magnet, apoi apăsați Enter, Paste sau Browse.</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>Când este activată, elementele de descărcare apar în partea de sus.</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>Afișați în dosar</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>Progresul descărcării</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>Se încarcă date torrent</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>Alegeți sistemul implicit sau o anumită limbă.</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>Introduceți gazdă proxy sau IP.</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>ex. 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>Introduceți numărul portului proxy.</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>Nume de utilizator de autentificare opțional.</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>Parolă de autentificare opțională.</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>opțional</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>Mesaj de validare a setărilor</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>Când este bifat, fișierul sursă .torrent este șters de pe disc.</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>Când sunt bifate, fișierele de conținut descărcate sunt șterse definitiv.</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>Elimină torrentul și aplică opțiunile de ștergere ale fișierelor selectate.</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>Descărcare finalizată</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>Descărcarea dvs</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>{0} a terminat descărcarea.</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>Descărcări care rulează în fundal</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>Descărcați activitatea</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>Păstrează descărcările torrent în timp ce aplicația este minimizată.</value>
+  </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>Temă</value>
+  </data>
+  <data name="ThemeFollowSystem" xml:space="preserve">
+    <value>Urmăriți sistemul</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Luminos</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Întunecat</value>
+  </data>
+  <data name="ThemePickerHint" xml:space="preserve">
+    <value>Alegeți cum arată aplicația.</value>
+  </data>
+</root>

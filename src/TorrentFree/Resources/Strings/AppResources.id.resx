@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <!-- App Title -->
+  <data name="AppTitle" xml:space="preserve">
+    <value>Torrent Free</value>
+  </data>
+  <!-- Main Page -->
+  <data name="AddTorrentPlaceholder" xml:space="preserve">
+    <value>Masukkan tautan magnet di sini...</value>
+  </data>
+  <data name="AddButton" xml:space="preserve">
+    <value>Unduh</value>
+  </data>
+  <data name="StartButton" xml:space="preserve">
+    <value>Mulai</value>
+  </data>
+  <data name="StartAllButton" xml:space="preserve">
+    <value>Mulai Semua</value>
+  </data>
+  <data name="PauseButton" xml:space="preserve">
+    <value>Berhenti sebentar</value>
+  </data>
+  <data name="StopButton" xml:space="preserve">
+    <value>Berhenti</value>
+  </data>
+  <data name="StopAllButton" xml:space="preserve">
+    <value>Hentikan Semua</value>
+  </data>
+  <data name="RemoveButton" xml:space="preserve">
+    <value>Menghapus</value>
+  </data>
+  <data name="DownloadsTitle" xml:space="preserve">
+    <value>Unduhan</value>
+  </data>
+  <data name="NoDownloads" xml:space="preserve">
+    <value>Belum ada unduhan. Tambahkan tautan magnet untuk memulai!</value>
+  </data>
+  <!-- Status -->
+  <data name="StatusQueued" xml:space="preserve">
+    <value>Mengantri</value>
+  </data>
+  <data name="StatusDownloading" xml:space="preserve">
+    <value>Mengunduh</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>Dijeda</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>Selesai</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>Gagal</value>
+  </data>
+  <data name="StatusStopped" xml:space="preserve">
+    <value>Berhenti</value>
+  </data>
+  <!-- Labels -->
+  <data name="Seeders" xml:space="preserve">
+    <value>Seeder</value>
+  </data>
+  <data name="Leechers" xml:space="preserve">
+    <value>Leecher</value>
+  </data>
+  <data name="DownloadSpeed" xml:space="preserve">
+    <value>Unduh</value>
+  </data>
+  <data name="UploadSpeed" xml:space="preserve">
+    <value>Mengunggah</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Ukuran</value>
+  </data>
+  <!-- Errors -->
+  <data name="InvalidMagnetLink" xml:space="preserve">
+    <value>Tautan magnet tidak valid. Silakan masukkan URL magnet:? yang valid.</value>
+  </data>
+  <!-- Status (additional) -->
+  <data name="StatusSeeding" xml:space="preserve">
+    <value>Menyebarkan</value>
+  </data>
+  <!-- Main Page (additional) -->
+  <data name="AppSubtitle" xml:space="preserve">
+    <value>Pengunduhan torrent yang cepat dan sederhana</value>
+  </data>
+  <data name="BrowseButton" xml:space="preserve">
+    <value>Jelajahi</value>
+  </data>
+  <data name="PasteButton" xml:space="preserve">
+    <value>Tempel</value>
+  </data>
+  <data name="Bandwidth" xml:space="preserve">
+    <value>Lebar pita</value>
+  </data>
+  <data name="DownloadKBs" xml:space="preserve">
+    <value>Unduh KB/s</value>
+  </data>
+  <data name="UploadKBs" xml:space="preserve">
+    <value>Unggah KB/s</value>
+  </data>
+  <data name="DownloadingOnTop" xml:space="preserve">
+    <value>Mengunduh di atas</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Detail</value>
+  </data>
+  <data name="SelectedTorrentLimits" xml:space="preserve">
+    <value>Batas torrent yang dipilih</value>
+  </data>
+  <data name="MaxSeedRatio" xml:space="preserve">
+    <value>Rasio seed maksimal</value>
+  </data>
+  <data name="MaxSeedMinutes" xml:space="preserve">
+    <value>Menit seed maksimal</value>
+  </data>
+  <data name="NoDownloadsYet" xml:space="preserve">
+    <value>Belum ada unduhan</value>
+  </data>
+  <data name="AddMagnetHint" xml:space="preserve">
+    <value>Tambahkan tautan magnet untuk memulai.</value>
+  </data>
+  <data name="Down" xml:space="preserve">
+    <value>Unduh</value>
+  </data>
+  <data name="Up" xml:space="preserve">
+    <value>Unggah</value>
+  </data>
+  <data name="Seeds" xml:space="preserve">
+    <value>Seed</value>
+  </data>
+  <data name="Peers" xml:space="preserve">
+    <value>Peer</value>
+  </data>
+  <data name="ETA" xml:space="preserve">
+    <value>ETA</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>Kesehatan</value>
+  </data>
+  <data name="Availability" xml:space="preserve">
+    <value>Tersedianya</value>
+  </data>
+  <!-- Settings Page -->
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Pengaturan</value>
+  </data>
+  <data name="AutoSaveNote" xml:space="preserve">
+    <value>Perubahan disimpan secara otomatis.</value>
+  </data>
+  <data name="DownloadLocation" xml:space="preserve">
+    <value>Lokasi Unduhan</value>
+  </data>
+  <data name="DownloadToTorrentFolderLabel" xml:space="preserve">
+    <value>Simpan unduhan .torrent di sebelah file .torrent asli</value>
+  </data>
+  <data name="SpecificDownloadFolderLabel" xml:space="preserve">
+    <value>Folder unduhan tertentu</value>
+  </data>
+  <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
+    <value>Masukkan jalur folder</value>
+  </data>
+  <data name="AndroidDownloadFolderHelp" xml:space="preserve">
+    <value>Di Android, gunakan tombol folder setelah unduhan selesai untuk mengekspor file ke Download/TorrentFree.</value>
+  </data>
+  <data name="OpenDownloadsFolder" xml:space="preserve">
+    <value>Buka folder Unduhan</value>
+  </data>
+  <data name="SpeedLimits" xml:space="preserve">
+    <value>Batas Kecepatan</value>
+  </data>
+  <data name="FileAssociations" xml:space="preserve">
+    <value>Asosiasi File</value>
+  </data>
+  <data name="AssociateTorrentFiles" xml:space="preserve">
+    <value>Kaitkan file .torrent</value>
+  </data>
+  <data name="QueueLimits" xml:space="preserve">
+    <value>Batas Antrian</value>
+  </data>
+  <data name="MaxActiveDownloads" xml:space="preserve">
+    <value>Unduhan Aktif Maks</value>
+  </data>
+  <data name="MaxActiveSeeds" xml:space="preserve">
+    <value>Seed Aktif Maks</value>
+  </data>
+  <data name="SeedingLimits" xml:space="preserve">
+    <value>Batas Seeding</value>
+  </data>
+  <data name="Socks5Proxy" xml:space="preserve">
+    <value>SOCKS5 Proksi</value>
+  </data>
+  <data name="EnableProxy" xml:space="preserve">
+    <value>Aktifkan Proksi</value>
+  </data>
+  <data name="Host" xml:space="preserve">
+    <value>Host</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Nama pengguna</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Kata sandi</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>Bahasa</value>
+  </data>
+  <!-- Delete Dialog -->
+  <data name="RemoveTorrent" xml:space="preserve">
+    <value>Hapus torrent</value>
+  </data>
+  <data name="DeleteFilesOptional" xml:space="preserve">
+    <value>Secara opsional, hapus file terkait:</value>
+  </data>
+  <data name="DeleteTorrentFile" xml:space="preserve">
+    <value>Hapus file .torrent dari disk</value>
+  </data>
+  <data name="DeleteDownloadedFiles" xml:space="preserve">
+    <value>Hapus file yang diunduh</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Membatalkan</value>
+  </data>
+  <!-- Hints -->
+  <data name="UnlimitedHint" xml:space="preserve">
+    <value>0 = tidak terbatas</value>
+  </data>
+  <data name="GlobalHint" xml:space="preserve">
+    <value>0 = global</value>
+  </data>
+  <!-- Dialogs -->
+  <data name="StopAndResetTitle" xml:space="preserve">
+    <value>Hentikan torrent</value>
+  </data>
+  <data name="StopAndResetMessage" xml:space="preserve">
+    <value>Menghentikan akan menyimpan data yang Anda unduh sehingga Anda dapat melanjutkannya nanti. Apa kamu yakin?</value>
+  </data>
+  <data name="AssociateTorrentTitle" xml:space="preserve">
+    <value>Kaitkan file .torrent</value>
+  </data>
+  <data name="AssociateTorrentMessage" xml:space="preserve">
+    <value>Apakah Anda ingin membuka file .torrent dengan Torrent Free secara default?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ya</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Tidak</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>Tentang Torrent Free</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>Torrent Free gratis untuk digunakan.</value>
+  </data>
+  <data name="AboutVersionLabel" xml:space="preserve">
+    <value>Versi</value>
+  </data>
+  <data name="AboutBuildLabel" xml:space="preserve">
+    <value>Build</value>
+  </data>
+  <data name="AboutFileVersionLabel" xml:space="preserve">
+    <value>Versi berkas</value>
+  </data>
+  <data name="AboutSourceLabel" xml:space="preserve">
+    <value>Sumber</value>
+  </data>
+  <data name="AboutUnavailable" xml:space="preserve">
+    <value>n/a</value>
+  </data>
+  <data name="OpenSource" xml:space="preserve">
+    <value>Sumber Terbuka</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <!-- Error Messages -->
+  <data name="ErrorOpenFolder" xml:space="preserve">
+    <value>Gagal membuka folder untuk pengunduhan.</value>
+  </data>
+  <data name="ErrorImportTorrent" xml:space="preserve">
+    <value>Gagal mengimpor berkas .torrent. Silakan coba lagi.</value>
+  </data>
+  <data name="ErrorLoadDownloads" xml:space="preserve">
+    <value>Gagal memuat unduhan Anda. Silakan mulai ulang aplikasinya.</value>
+  </data>
+  <data name="ErrorDuplicateTorrent" xml:space="preserve">
+    <value>Torrent ini sudah ada dalam daftar Anda.</value>
+  </data>
+  <data name="ErrorInvalidTorrentFile" xml:space="preserve">
+    <value>Berkas .torrent tidak valid. Tidak dapat mengekstrak hash info.</value>
+  </data>
+  <data name="ErrorInvalidMagnet" xml:space="preserve">
+    <value>Tautan magnet tidak valid. Harap pastikan tautan Anda dimulai dengan 'magnet:?' dan berisi hash info (parameter xt=).</value>
+  </data>
+  <data name="ErrorAddTorrent" xml:space="preserve">
+    <value>Gagal menambahkan torrent. Silakan coba lagi.</value>
+  </data>
+  <data name="ErrorClipboardEmpty" xml:space="preserve">
+    <value>Papan klip kosong. Salin tautan magnet terlebih dahulu.</value>
+  </data>
+  <data name="ErrorPasteClipboard" xml:space="preserve">
+    <value>Gagal membaca papan klip. Silakan coba lagi.</value>
+  </data>
+  <data name="ErrorStartTorrent" xml:space="preserve">
+    <value>Gagal memulai torrent. Silakan coba lagi.</value>
+  </data>
+  <data name="ErrorPauseTorrent" xml:space="preserve">
+    <value>Gagal menjeda torrent. Silakan coba lagi.</value>
+  </data>
+  <data name="ErrorStopTorrent" xml:space="preserve">
+    <value>Gagal menghentikan torrent. Silakan coba lagi.</value>
+  </data>
+  <data name="ErrorRemoveTorrent" xml:space="preserve">
+    <value>Gagal menghapus torrent. Silakan coba lagi.</value>
+  </data>
+  <!-- Status Hints -->
+  <data name="HintDownloadFailed" xml:space="preserve">
+    <value>Pengunduhan gagal.</value>
+  </data>
+  <data name="HintQueued" xml:space="preserve">
+    <value>Mengantri. Menunggu slot aktif.</value>
+  </data>
+  <data name="HintPaused" xml:space="preserve">
+    <value>Dijeda.</value>
+  </data>
+  <data name="HintStopped" xml:space="preserve">
+    <value>Berhenti.</value>
+  </data>
+  <data name="HintSearchingPeers" xml:space="preserve">
+    <value>Mencari peer.</value>
+  </data>
+  <data name="HintWaitingSeeds" xml:space="preserve">
+    <value>Menunggu seed.</value>
+  </data>
+  <data name="HintConnectingPeers" xml:space="preserve">
+    <value>Menghubungkan ke peer.</value>
+  </data>
+  <!-- Settings Validation -->
+  <data name="ValidationFileAssociation" xml:space="preserve">
+    <value>Tidak dapat memperbarui asosiasi file.</value>
+  </data>
+  <data name="ValidationAdjustedLimits" xml:space="preserve">
+    <value>Beberapa pengaturan disesuaikan dengan batas aman.</value>
+  </data>
+  <data name="ValidationSeedRatioInvalid" xml:space="preserve">
+    <value>Rasio benih harus berupa angka non-negatif yang valid. Setel ulang ke 0.</value>
+  </data>
+  <data name="ValidationSeedRatioHigh" xml:space="preserve">
+    <value>Rasio benih terlalu tinggi. Dibatasi pada {0}.</value>
+  </data>
+  <data name="ValidationNegative" xml:space="preserve">
+    <value>{0} tidak boleh negatif. Setel ke {1}{2}.</value>
+  </data>
+  <data name="ValidationTooHigh" xml:space="preserve">
+    <value>{0} terlalu tinggi. Dibatasi pada {1}{2}.</value>
+  </data>
+  <data name="ValidationSelectFolder" xml:space="preserve">
+    <value>Tidak dapat memilih folder.</value>
+  </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>Kembali</value>
+  </data>
+  <data name="SelectTorrentFile" xml:space="preserve">
+    <value>Pilih file .torrent</value>
+  </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>Tempelkan URI atau URL magnet, lalu tekan Enter, Tempel, atau Telusuri.</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>Saat diaktifkan, item pengunduhan muncul di bagian atas.</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>Tampilkan di folder</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>Unduh kemajuan</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>Memuat data torrent</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>Pilih default sistem atau bahasa tertentu.</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>Masukkan host atau IP proxy.</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>mis. 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>Masukkan nomor port proksi.</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>Nama pengguna autentikasi opsional.</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>Kata sandi otentikasi opsional.</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>opsional</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>Pesan validasi pengaturan</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>Jika dicentang, file sumber .torrent dihapus dari disk.</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>Jika dicentang, file konten yang diunduh akan dihapus secara permanen.</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>Menghapus torrent dan menerapkan opsi penghapusan file yang dipilih.</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>Pengunduhan selesai</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>Unduhan Anda</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>{0} telah selesai diunduh.</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>Unduhan berjalan di latar belakang</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>Unduh aktivitas</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>Menjaga unduhan torrent tetap berjalan saat aplikasi diminimalkan.</value>
+  </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="ThemeFollowSystem" xml:space="preserve">
+    <value>Ikuti sistem</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Terang</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Gelap</value>
+  </data>
+  <data name="ThemePickerHint" xml:space="preserve">
+    <value>Pilih tampilan aplikasi.</value>
+  </data>
+</root>

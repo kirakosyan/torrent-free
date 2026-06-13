@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <!-- App Title -->
+  <data name="AppTitle" xml:space="preserve">
+    <value>Torrent Free</value>
+  </data>
+  <!-- Main Page -->
+  <data name="AddTorrentPlaceholder" xml:space="preserve">
+    <value>여기에 마그넷 링크를 입력하세요...</value>
+  </data>
+  <data name="AddButton" xml:space="preserve">
+    <value>다운로드</value>
+  </data>
+  <data name="StartButton" xml:space="preserve">
+    <value>시작</value>
+  </data>
+  <data name="StartAllButton" xml:space="preserve">
+    <value>모두 시작</value>
+  </data>
+  <data name="PauseButton" xml:space="preserve">
+    <value>일시정지</value>
+  </data>
+  <data name="StopButton" xml:space="preserve">
+    <value>중지</value>
+  </data>
+  <data name="StopAllButton" xml:space="preserve">
+    <value>모두 중지</value>
+  </data>
+  <data name="RemoveButton" xml:space="preserve">
+    <value>제거</value>
+  </data>
+  <data name="DownloadsTitle" xml:space="preserve">
+    <value>다운로드</value>
+  </data>
+  <data name="NoDownloads" xml:space="preserve">
+    <value>아직 다운로드가 없습니다. 시작하려면 마그넷 링크를 추가하세요!</value>
+  </data>
+  <!-- Status -->
+  <data name="StatusQueued" xml:space="preserve">
+    <value>대기 중</value>
+  </data>
+  <data name="StatusDownloading" xml:space="preserve">
+    <value>다운로드 중</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>일시중지됨</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>완료</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>실패</value>
+  </data>
+  <data name="StatusStopped" xml:space="preserve">
+    <value>중지됨</value>
+  </data>
+  <!-- Labels -->
+  <data name="Seeders" xml:space="preserve">
+    <value>시더</value>
+  </data>
+  <data name="Leechers" xml:space="preserve">
+    <value>리처</value>
+  </data>
+  <data name="DownloadSpeed" xml:space="preserve">
+    <value>다운로드</value>
+  </data>
+  <data name="UploadSpeed" xml:space="preserve">
+    <value>업로드</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>크기</value>
+  </data>
+  <!-- Errors -->
+  <data name="InvalidMagnetLink" xml:space="preserve">
+    <value>잘못된 마그넷 링크입니다. 유효한 magnet:? URL을 입력하세요.</value>
+  </data>
+  <!-- Status (additional) -->
+  <data name="StatusSeeding" xml:space="preserve">
+    <value>시딩</value>
+  </data>
+  <!-- Main Page (additional) -->
+  <data name="AppSubtitle" xml:space="preserve">
+    <value>빠르고 간단한 토렌트 다운로드</value>
+  </data>
+  <data name="BrowseButton" xml:space="preserve">
+    <value>찾아보기</value>
+  </data>
+  <data name="PasteButton" xml:space="preserve">
+    <value>붙여넣기</value>
+  </data>
+  <data name="Bandwidth" xml:space="preserve">
+    <value>대역폭</value>
+  </data>
+  <data name="DownloadKBs" xml:space="preserve">
+    <value>KB/s 다운로드</value>
+  </data>
+  <data name="UploadKBs" xml:space="preserve">
+    <value>KB/s 업로드</value>
+  </data>
+  <data name="DownloadingOnTop" xml:space="preserve">
+    <value>상단에서 다운로드 중</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>세부정보</value>
+  </data>
+  <data name="SelectedTorrentLimits" xml:space="preserve">
+    <value>선택된 토렌트 제한</value>
+  </data>
+  <data name="MaxSeedRatio" xml:space="preserve">
+    <value>최대 시드 비율</value>
+  </data>
+  <data name="MaxSeedMinutes" xml:space="preserve">
+    <value>최대 시드 시간(분)</value>
+  </data>
+  <data name="NoDownloadsYet" xml:space="preserve">
+    <value>아직 다운로드가 없습니다.</value>
+  </data>
+  <data name="AddMagnetHint" xml:space="preserve">
+    <value>시작하려면 마그넷 링크를 추가하세요.</value>
+  </data>
+  <data name="Down" xml:space="preserve">
+    <value>받기</value>
+  </data>
+  <data name="Up" xml:space="preserve">
+    <value>보내기</value>
+  </data>
+  <data name="Seeds" xml:space="preserve">
+    <value>시드</value>
+  </data>
+  <data name="Peers" xml:space="preserve">
+    <value>피어</value>
+  </data>
+  <data name="ETA" xml:space="preserve">
+    <value>도착 예정 시간</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>건강</value>
+  </data>
+  <data name="Availability" xml:space="preserve">
+    <value>유효성</value>
+  </data>
+  <!-- Settings Page -->
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>설정</value>
+  </data>
+  <data name="AutoSaveNote" xml:space="preserve">
+    <value>변경 사항은 자동으로 저장됩니다.</value>
+  </data>
+  <data name="DownloadLocation" xml:space="preserve">
+    <value>다운로드 위치</value>
+  </data>
+  <data name="DownloadToTorrentFolderLabel" xml:space="preserve">
+    <value>.torrent 다운로드를 원본 .torrent 파일 옆에 저장하세요.</value>
+  </data>
+  <data name="SpecificDownloadFolderLabel" xml:space="preserve">
+    <value>특정 다운로드 폴더</value>
+  </data>
+  <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
+    <value>폴더 경로를 입력하세요.</value>
+  </data>
+  <data name="AndroidDownloadFolderHelp" xml:space="preserve">
+    <value>Android에서는 다운로드가 완료된 후 폴더 버튼을 사용하여 파일을 Download/TorrentFree로 내보냅니다.</value>
+  </data>
+  <data name="OpenDownloadsFolder" xml:space="preserve">
+    <value>다운로드 폴더 열기</value>
+  </data>
+  <data name="SpeedLimits" xml:space="preserve">
+    <value>속도 제한</value>
+  </data>
+  <data name="FileAssociations" xml:space="preserve">
+    <value>파일 연결</value>
+  </data>
+  <data name="AssociateTorrentFiles" xml:space="preserve">
+    <value>.torrent 파일 연결</value>
+  </data>
+  <data name="QueueLimits" xml:space="preserve">
+    <value>대기열 제한</value>
+  </data>
+  <data name="MaxActiveDownloads" xml:space="preserve">
+    <value>최대 활성 다운로드</value>
+  </data>
+  <data name="MaxActiveSeeds" xml:space="preserve">
+    <value>최대 활성 시드</value>
+  </data>
+  <data name="SeedingLimits" xml:space="preserve">
+    <value>시드 제한</value>
+  </data>
+  <data name="Socks5Proxy" xml:space="preserve">
+    <value>SOCKS5 프록시</value>
+  </data>
+  <data name="EnableProxy" xml:space="preserve">
+    <value>프록시 활성화</value>
+  </data>
+  <data name="Host" xml:space="preserve">
+    <value>호스트</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>포트</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>사용자 이름</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>비밀번호</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>언어</value>
+  </data>
+  <!-- Delete Dialog -->
+  <data name="RemoveTorrent" xml:space="preserve">
+    <value>토렌트 제거</value>
+  </data>
+  <data name="DeleteFilesOptional" xml:space="preserve">
+    <value>선택적으로 관련 파일을 삭제합니다.</value>
+  </data>
+  <data name="DeleteTorrentFile" xml:space="preserve">
+    <value>디스크에서 .torrent 파일 삭제</value>
+  </data>
+  <data name="DeleteDownloadedFiles" xml:space="preserve">
+    <value>다운로드한 파일 삭제</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>취소</value>
+  </data>
+  <!-- Hints -->
+  <data name="UnlimitedHint" xml:space="preserve">
+    <value>0 = 무제한</value>
+  </data>
+  <data name="GlobalHint" xml:space="preserve">
+    <value>0 = 전역</value>
+  </data>
+  <!-- Dialogs -->
+  <data name="StopAndResetTitle" xml:space="preserve">
+    <value>토렌트 중지</value>
+  </data>
+  <data name="StopAndResetMessage" xml:space="preserve">
+    <value>중지하면 다운로드한 데이터가 유지되므로 나중에 다시 시작할 수 있습니다. 확실합니까?</value>
+  </data>
+  <data name="AssociateTorrentTitle" xml:space="preserve">
+    <value>.torrent 파일 연결</value>
+  </data>
+  <data name="AssociateTorrentMessage" xml:space="preserve">
+    <value>기본적으로 Torrent Free을(를) 사용하여 .torrent 파일을 열시겠습니까?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>예</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>아니요</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>Torrent Free 정보</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>Torrent Free은(는) 무료로 사용할 수 있습니다.</value>
+  </data>
+  <data name="AboutVersionLabel" xml:space="preserve">
+    <value>버전</value>
+  </data>
+  <data name="AboutBuildLabel" xml:space="preserve">
+    <value>빌드</value>
+  </data>
+  <data name="AboutFileVersionLabel" xml:space="preserve">
+    <value>파일 버전</value>
+  </data>
+  <data name="AboutSourceLabel" xml:space="preserve">
+    <value>원천</value>
+  </data>
+  <data name="AboutUnavailable" xml:space="preserve">
+    <value>n/a</value>
+  </data>
+  <data name="OpenSource" xml:space="preserve">
+    <value>오픈 소스</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>확인</value>
+  </data>
+  <!-- Error Messages -->
+  <data name="ErrorOpenFolder" xml:space="preserve">
+    <value>다운로드할 폴더를 열지 못했습니다.</value>
+  </data>
+  <data name="ErrorImportTorrent" xml:space="preserve">
+    <value>.torrent 파일을 가져오지 못했습니다. 다시 시도해 주세요.</value>
+  </data>
+  <data name="ErrorLoadDownloads" xml:space="preserve">
+    <value>다운로드를 로드하지 못했습니다. 앱을 다시 시작하세요.</value>
+  </data>
+  <data name="ErrorDuplicateTorrent" xml:space="preserve">
+    <value>이 토렌트는 이미 목록에 있습니다.</value>
+  </data>
+  <data name="ErrorInvalidTorrentFile" xml:space="preserve">
+    <value>.torrent 파일이 잘못되었습니다. 정보 해시를 추출할 수 없습니다.</value>
+  </data>
+  <data name="ErrorInvalidMagnet" xml:space="preserve">
+    <value>잘못된 마그넷 링크입니다. 링크가 'magnet:?'로 시작하고 정보 해시(xt= 매개변수)를 포함하는지 확인하세요.</value>
+  </data>
+  <data name="ErrorAddTorrent" xml:space="preserve">
+    <value>토렌트를 추가하지 못했습니다. 다시 시도해 주세요.</value>
+  </data>
+  <data name="ErrorClipboardEmpty" xml:space="preserve">
+    <value>클립보드가 비어 있습니다. 먼저 마그넷 링크를 복사하세요.</value>
+  </data>
+  <data name="ErrorPasteClipboard" xml:space="preserve">
+    <value>클립보드를 읽지 못했습니다. 다시 시도해 주세요.</value>
+  </data>
+  <data name="ErrorStartTorrent" xml:space="preserve">
+    <value>토렌트를 시작하지 못했습니다. 다시 시도해 주세요.</value>
+  </data>
+  <data name="ErrorPauseTorrent" xml:space="preserve">
+    <value>토렌트를 일시중지하지 못했습니다. 다시 시도해 주세요.</value>
+  </data>
+  <data name="ErrorStopTorrent" xml:space="preserve">
+    <value>토렌트를 중지하지 못했습니다. 다시 시도해 주세요.</value>
+  </data>
+  <data name="ErrorRemoveTorrent" xml:space="preserve">
+    <value>토렌트를 제거하지 못했습니다. 다시 시도해 주세요.</value>
+  </data>
+  <!-- Status Hints -->
+  <data name="HintDownloadFailed" xml:space="preserve">
+    <value>다운로드에 실패했습니다.</value>
+  </data>
+  <data name="HintQueued" xml:space="preserve">
+    <value>대기 중입니다. 활성 슬롯을 기다리는 중입니다.</value>
+  </data>
+  <data name="HintPaused" xml:space="preserve">
+    <value>일시중지되었습니다.</value>
+  </data>
+  <data name="HintStopped" xml:space="preserve">
+    <value>중지되었습니다.</value>
+  </data>
+  <data name="HintSearchingPeers" xml:space="preserve">
+    <value>피어를 검색하는 중입니다.</value>
+  </data>
+  <data name="HintWaitingSeeds" xml:space="preserve">
+    <value>시드를 기다리는 중입니다.</value>
+  </data>
+  <data name="HintConnectingPeers" xml:space="preserve">
+    <value>피어에 연결하는 중입니다.</value>
+  </data>
+  <!-- Settings Validation -->
+  <data name="ValidationFileAssociation" xml:space="preserve">
+    <value>파일 연결을 업데이트할 수 없습니다.</value>
+  </data>
+  <data name="ValidationAdjustedLimits" xml:space="preserve">
+    <value>일부 설정은 안전한 한계로 조정되었습니다.</value>
+  </data>
+  <data name="ValidationSeedRatioInvalid" xml:space="preserve">
+    <value>시드 비율은 음수가 아닌 유효한 숫자여야 합니다. 0으로 재설정합니다.</value>
+  </data>
+  <data name="ValidationSeedRatioHigh" xml:space="preserve">
+    <value>종자 비율이 너무 높습니다. {0}으로 제한됩니다.</value>
+  </data>
+  <data name="ValidationNegative" xml:space="preserve">
+    <value>{0}은 음수일 수 없습니다. {1}{2}로 설정합니다.</value>
+  </data>
+  <data name="ValidationTooHigh" xml:space="preserve">
+    <value>{0}이(가) 너무 높습니다. {1}{2}로 제한됩니다.</value>
+  </data>
+  <data name="ValidationSelectFolder" xml:space="preserve">
+    <value>폴더를 선택할 수 없습니다.</value>
+  </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>돌아가기</value>
+  </data>
+  <data name="SelectTorrentFile" xml:space="preserve">
+    <value>.torrent 파일을 선택하세요</value>
+  </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>마그넷 URI 또는 ​​URL을 붙여넣은 다음 Enter, 붙여넣기 또는 찾아보기를 누르세요.</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>활성화되면 다운로드 항목이 상단에 나타납니다.</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>폴더에 표시</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>다운로드 진행 상황</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>토렌트 데이터 로드 중</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>시스템 기본값 또는 특정 언어를 선택하십시오.</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>프록시 호스트 또는 IP를 입력하세요.</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>예: 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>프록시 포트 번호를 입력하세요.</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>선택적 인증 사용자 이름입니다.</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>선택적 인증 비밀번호.</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>선택 과목</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>설정 확인 메시지</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>선택하면 소스 .torrent 파일이 디스크에서 삭제됩니다.</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>체크 시 다운로드한 콘텐츠 파일이 영구 삭제됩니다.</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>토렌트를 제거하고 선택한 파일 삭제 옵션을 적용합니다.</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>다운로드 완료</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>귀하의 다운로드</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>{0} 다운로드가 완료되었습니다.</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>백그라운드에서 실행 중인 다운로드</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>활동 다운로드</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>앱이 최소화된 동안 토렌트 다운로드를 계속 실행합니다.</value>
+  </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>테마</value>
+  </data>
+  <data name="ThemeFollowSystem" xml:space="preserve">
+    <value>시스템 설정 따르기</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>라이트</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>다크</value>
+  </data>
+  <data name="ThemePickerHint" xml:space="preserve">
+    <value>앱의 모양을 선택하세요.</value>
+  </data>
+</root>

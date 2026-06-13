@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <!-- App Title -->
+  <data name="AppTitle" xml:space="preserve">
+    <value>Torrent Free</value>
+  </data>
+  <!-- Main Page -->
+  <data name="AddTorrentPlaceholder" xml:space="preserve">
+    <value>Ide írd be a mágnes linkjét...</value>
+  </data>
+  <data name="AddButton" xml:space="preserve">
+    <value>Letöltés</value>
+  </data>
+  <data name="StartButton" xml:space="preserve">
+    <value>Indítás</value>
+  </data>
+  <data name="StartAllButton" xml:space="preserve">
+    <value>Összes indítása</value>
+  </data>
+  <data name="PauseButton" xml:space="preserve">
+    <value>Szünet</value>
+  </data>
+  <data name="StopButton" xml:space="preserve">
+    <value>Leállítás</value>
+  </data>
+  <data name="StopAllButton" xml:space="preserve">
+    <value>Összes leállítása</value>
+  </data>
+  <data name="RemoveButton" xml:space="preserve">
+    <value>Eltávolítás</value>
+  </data>
+  <data name="DownloadsTitle" xml:space="preserve">
+    <value>Letöltések</value>
+  </data>
+  <data name="NoDownloads" xml:space="preserve">
+    <value>Még nincsenek letöltések. A kezdéshez adjon hozzá egy mágneses linket!</value>
+  </data>
+  <!-- Status -->
+  <data name="StatusQueued" xml:space="preserve">
+    <value>Sorban</value>
+  </data>
+  <data name="StatusDownloading" xml:space="preserve">
+    <value>Letöltés</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>Szüneteltetve</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>Befejezve</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>Sikertelen</value>
+  </data>
+  <data name="StatusStopped" xml:space="preserve">
+    <value>Megállt</value>
+  </data>
+  <!-- Labels -->
+  <data name="Seeders" xml:space="preserve">
+    <value>Seederek</value>
+  </data>
+  <data name="Leechers" xml:space="preserve">
+    <value>Letöltők</value>
+  </data>
+  <data name="DownloadSpeed" xml:space="preserve">
+    <value>Letöltés</value>
+  </data>
+  <data name="UploadSpeed" xml:space="preserve">
+    <value>Feltöltés</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Méret</value>
+  </data>
+  <!-- Errors -->
+  <data name="InvalidMagnetLink" xml:space="preserve">
+    <value>Érvénytelen mágneses kapcsolat. Adjon meg egy érvényes magnet:? URL-t.</value>
+  </data>
+  <!-- Status (additional) -->
+  <data name="StatusSeeding" xml:space="preserve">
+    <value>Megosztás</value>
+  </data>
+  <!-- Main Page (additional) -->
+  <data name="AppSubtitle" xml:space="preserve">
+    <value>Gyors és egyszerű torrent letöltések</value>
+  </data>
+  <data name="BrowseButton" xml:space="preserve">
+    <value>Tallózás</value>
+  </data>
+  <data name="PasteButton" xml:space="preserve">
+    <value>Beillesztés</value>
+  </data>
+  <data name="Bandwidth" xml:space="preserve">
+    <value>Sávszélesség</value>
+  </data>
+  <data name="DownloadKBs" xml:space="preserve">
+    <value>Letöltés KB/s</value>
+  </data>
+  <data name="UploadKBs" xml:space="preserve">
+    <value>Feltöltés KB/s</value>
+  </data>
+  <data name="DownloadingOnTop" xml:space="preserve">
+    <value>Letöltés a tetején</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Részletek</value>
+  </data>
+  <data name="SelectedTorrentLimits" xml:space="preserve">
+    <value>Kiválasztott torrentkorlátok</value>
+  </data>
+  <data name="MaxSeedRatio" xml:space="preserve">
+    <value>Max. megosztási arány</value>
+  </data>
+  <data name="MaxSeedMinutes" xml:space="preserve">
+    <value>Max. megosztási percek</value>
+  </data>
+  <data name="NoDownloadsYet" xml:space="preserve">
+    <value>Még nincsenek letöltések</value>
+  </data>
+  <data name="AddMagnetHint" xml:space="preserve">
+    <value>A kezdéshez adjon hozzá egy mágneses linket.</value>
+  </data>
+  <data name="Down" xml:space="preserve">
+    <value>Letöltés</value>
+  </data>
+  <data name="Up" xml:space="preserve">
+    <value>Feltöltés</value>
+  </data>
+  <data name="Seeds" xml:space="preserve">
+    <value>Seedek</value>
+  </data>
+  <data name="Peers" xml:space="preserve">
+    <value>Partnerek</value>
+  </data>
+  <data name="ETA" xml:space="preserve">
+    <value>ETA</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>Egészség</value>
+  </data>
+  <data name="Availability" xml:space="preserve">
+    <value>Elérhetőség</value>
+  </data>
+  <!-- Settings Page -->
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Beállítások</value>
+  </data>
+  <data name="AutoSaveNote" xml:space="preserve">
+    <value>A változtatások automatikusan mentésre kerülnek.</value>
+  </data>
+  <data name="DownloadLocation" xml:space="preserve">
+    <value>Letöltés helye</value>
+  </data>
+  <data name="DownloadToTorrentFolderLabel" xml:space="preserve">
+    <value>.torrent letöltés mentése az eredeti .torrent fájl mellé</value>
+  </data>
+  <data name="SpecificDownloadFolderLabel" xml:space="preserve">
+    <value>Konkrét letöltési mappa</value>
+  </data>
+  <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
+    <value>Adja meg a mappa elérési útját</value>
+  </data>
+  <data name="AndroidDownloadFolderHelp" xml:space="preserve">
+    <value>Androidon használja a Mappa gombot a befejezett letöltésnél a fájlok exportálásához a Download/TorrentFree mappába.</value>
+  </data>
+  <data name="OpenDownloadsFolder" xml:space="preserve">
+    <value>Nyissa meg a Letöltések mappát</value>
+  </data>
+  <data name="SpeedLimits" xml:space="preserve">
+    <value>Sebességkorlátozások</value>
+  </data>
+  <data name="FileAssociations" xml:space="preserve">
+    <value>Fájltársítások</value>
+  </data>
+  <data name="AssociateTorrentFiles" xml:space="preserve">
+    <value>.torrent fájl társítása</value>
+  </data>
+  <data name="QueueLimits" xml:space="preserve">
+    <value>Sorkorlátok</value>
+  </data>
+  <data name="MaxActiveDownloads" xml:space="preserve">
+    <value>Maximális aktív letöltések</value>
+  </data>
+  <data name="MaxActiveSeeds" xml:space="preserve">
+    <value>Max. aktív seedek</value>
+  </data>
+  <data name="SeedingLimits" xml:space="preserve">
+    <value>Megosztási korlátok</value>
+  </data>
+  <data name="Socks5Proxy" xml:space="preserve">
+    <value>SOCKS5 Proxy</value>
+  </data>
+  <data name="EnableProxy" xml:space="preserve">
+    <value>Proxy engedélyezése</value>
+  </data>
+  <data name="Host" xml:space="preserve">
+    <value>Gazdagép</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Felhasználónév</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Jelszó</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>Nyelv</value>
+  </data>
+  <!-- Delete Dialog -->
+  <data name="RemoveTorrent" xml:space="preserve">
+    <value>Torrent eltávolítása</value>
+  </data>
+  <data name="DeleteFilesOptional" xml:space="preserve">
+    <value>Opcionálisan törölje a kapcsolódó fájlokat:</value>
+  </data>
+  <data name="DeleteTorrentFile" xml:space="preserve">
+    <value>Törölje a .torrent fájlt a lemezről</value>
+  </data>
+  <data name="DeleteDownloadedFiles" xml:space="preserve">
+    <value>Törölje a letöltött fájlokat</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Mégse</value>
+  </data>
+  <!-- Hints -->
+  <data name="UnlimitedHint" xml:space="preserve">
+    <value>0 = korlátlan</value>
+  </data>
+  <data name="GlobalHint" xml:space="preserve">
+    <value>0 = globális</value>
+  </data>
+  <!-- Dialogs -->
+  <data name="StopAndResetTitle" xml:space="preserve">
+    <value>Torrent leállítása</value>
+  </data>
+  <data name="StopAndResetMessage" xml:space="preserve">
+    <value>Ha leállítja, akkor a letöltött adatok megmaradnak, így később folytathatja. Biztos vagy benne?</value>
+  </data>
+  <data name="AssociateTorrentTitle" xml:space="preserve">
+    <value>.torrent fájl társítása</value>
+  </data>
+  <data name="AssociateTorrentMessage" xml:space="preserve">
+    <value>Alapértelmezés szerint meg szeretné nyitni a .torrent fájlt a Torrent Free alkalmazással?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Igen</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Nem</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>A Torrent Free alkalmazásról</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>A Torrent Free ingyenesen használható.</value>
+  </data>
+  <data name="AboutVersionLabel" xml:space="preserve">
+    <value>Változat</value>
+  </data>
+  <data name="AboutBuildLabel" xml:space="preserve">
+    <value>Build</value>
+  </data>
+  <data name="AboutFileVersionLabel" xml:space="preserve">
+    <value>Fájl verzió</value>
+  </data>
+  <data name="AboutSourceLabel" xml:space="preserve">
+    <value>Forrás</value>
+  </data>
+  <data name="AboutUnavailable" xml:space="preserve">
+    <value>n/a</value>
+  </data>
+  <data name="OpenSource" xml:space="preserve">
+    <value>Nyílt forráskód</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>Rendben</value>
+  </data>
+  <!-- Error Messages -->
+  <data name="ErrorOpenFolder" xml:space="preserve">
+    <value>Nem sikerült megnyitni a mappát a letöltéshez.</value>
+  </data>
+  <data name="ErrorImportTorrent" xml:space="preserve">
+    <value>Nem sikerült importálni a .torrent fájlt. Kérjük, próbálja újra.</value>
+  </data>
+  <data name="ErrorLoadDownloads" xml:space="preserve">
+    <value>Nem sikerült betölteni a letöltéseket. Kérjük, indítsa újra az alkalmazást.</value>
+  </data>
+  <data name="ErrorDuplicateTorrent" xml:space="preserve">
+    <value>Ez a torrent már szerepel a listán.</value>
+  </data>
+  <data name="ErrorInvalidTorrentFile" xml:space="preserve">
+    <value>Érvénytelen .torrent fájl. Nem sikerült kivonatolni az információs kivonatot.</value>
+  </data>
+  <data name="ErrorInvalidMagnet" xml:space="preserve">
+    <value>Érvénytelen mágneses kapcsolat. Kérjük, győződjön meg róla, hogy a link „magnet:?” karakterlánccal kezdődik, és tartalmaz egy információs hash-t (xt= paraméter).</value>
+  </data>
+  <data name="ErrorAddTorrent" xml:space="preserve">
+    <value>Nem sikerült hozzáadni a torrentet. Kérjük, próbálja újra.</value>
+  </data>
+  <data name="ErrorClipboardEmpty" xml:space="preserve">
+    <value>A vágólap üres. Először másoljon egy mágneses linket.</value>
+  </data>
+  <data name="ErrorPasteClipboard" xml:space="preserve">
+    <value>Nem sikerült beolvasni a vágólapot. Kérjük, próbálja újra.</value>
+  </data>
+  <data name="ErrorStartTorrent" xml:space="preserve">
+    <value>Nem sikerült elindítani a torrentet. Kérjük, próbálja újra.</value>
+  </data>
+  <data name="ErrorPauseTorrent" xml:space="preserve">
+    <value>Nem sikerült szüneteltetni a torrentet. Kérjük, próbálja újra.</value>
+  </data>
+  <data name="ErrorStopTorrent" xml:space="preserve">
+    <value>Nem sikerült leállítani a torrentet. Kérjük, próbálja újra.</value>
+  </data>
+  <data name="ErrorRemoveTorrent" xml:space="preserve">
+    <value>Nem sikerült eltávolítani a torrentet. Kérjük, próbálja újra.</value>
+  </data>
+  <!-- Status Hints -->
+  <data name="HintDownloadFailed" xml:space="preserve">
+    <value>Letöltés sikertelen.</value>
+  </data>
+  <data name="HintQueued" xml:space="preserve">
+    <value>Sorban. Várakozás az aktív slotra.</value>
+  </data>
+  <data name="HintPaused" xml:space="preserve">
+    <value>Szüneteltetve.</value>
+  </data>
+  <data name="HintStopped" xml:space="preserve">
+    <value>Megállt.</value>
+  </data>
+  <data name="HintSearchingPeers" xml:space="preserve">
+    <value>Partnerek keresése.</value>
+  </data>
+  <data name="HintWaitingSeeds" xml:space="preserve">
+    <value>Várakozás seedekre.</value>
+  </data>
+  <data name="HintConnectingPeers" xml:space="preserve">
+    <value>Csatlakozás partnerekhez.</value>
+  </data>
+  <!-- Settings Validation -->
+  <data name="ValidationFileAssociation" xml:space="preserve">
+    <value>Nem sikerült frissíteni a fájltársítást.</value>
+  </data>
+  <data name="ValidationAdjustedLimits" xml:space="preserve">
+    <value>Egyes beállításokat biztonságos határértékekre állítottak be.</value>
+  </data>
+  <data name="ValidationSeedRatioInvalid" xml:space="preserve">
+    <value>A vetőmag arányának érvényes, nem negatív számnak kell lennie. Állítsa vissza 0-ra.</value>
+  </data>
+  <data name="ValidationSeedRatioHigh" xml:space="preserve">
+    <value>A vetőmag aránya túl magas. Korlátozása {0}.</value>
+  </data>
+  <data name="ValidationNegative" xml:space="preserve">
+    <value>{0} nem lehet negatív. Állítsa be: {1}{2}.</value>
+  </data>
+  <data name="ValidationTooHigh" xml:space="preserve">
+    <value>{0} túl magas. Korlátozása {1}{2}.</value>
+  </data>
+  <data name="ValidationSelectFolder" xml:space="preserve">
+    <value>Nem lehet mappát kiválasztani.</value>
+  </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>Menj vissza</value>
+  </data>
+  <data name="SelectTorrentFile" xml:space="preserve">
+    <value>Válasszon ki egy .torrent fájlt</value>
+  </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>Illesszen be egy mágneses URI-t vagy URL-t, majd nyomja meg az Entert, a Beillesztést vagy a Tallózást.</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>Ha engedélyezve van, a letöltési elemek felül jelennek meg.</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>Megjelenítés mappában</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>Letöltés folyamata</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>Torrent adatok betöltése</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>Válassza ki a rendszer alapértelmezett beállításait vagy egy adott nyelvet.</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>Adja meg a proxy gazdagépét vagy IP-címét.</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>pl. 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>Adja meg a proxy port számát.</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>Opcionális hitelesítési felhasználónév.</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>Opcionális hitelesítési jelszó.</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>választható</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>Beállítások érvényesítési üzenet</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>Ha be van jelölve, a .torrent forrásfájl törlődik a lemezről.</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>Ha be van jelölve, a letöltött tartalomfájlok véglegesen törlődnek.</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>Eltávolítja a torrentet, és alkalmazza a kiválasztott fájltörlési beállításokat.</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>Letöltés kész</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>Az Ön letöltése</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>A {0} letöltése befejeződött.</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>A háttérben futó letöltések</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>Letöltési tevékenység</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>Futtatja a torrentletöltéseket, miközben az alkalmazás minimálisra van állítva.</value>
+  </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>Téma</value>
+  </data>
+  <data name="ThemeFollowSystem" xml:space="preserve">
+    <value>Kövesse a rendszert</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Világos</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Sötét</value>
+  </data>
+  <data name="ThemePickerHint" xml:space="preserve">
+    <value>Válassza ki, hogyan nézzen ki az alkalmazás.</value>
+  </data>
+</root>

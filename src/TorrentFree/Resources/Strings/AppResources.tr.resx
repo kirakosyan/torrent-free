@@ -217,10 +217,10 @@
     <value>Bir klasör yolu girin</value>
   </data>
   <data name="AndroidDownloadFolderHelp" xml:space="preserve">
-    <value>On Android, use the folder button on a completed download to export files to Download/TorrentFree.</value>
+    <value>Android'de, dosyaları Download/TorrentFree konumuna aktarmak için tamamlanmış bir indirmedeki klasör düğmesini kullanın.</value>
   </data>
   <data name="OpenDownloadsFolder" xml:space="preserve">
-    <value>Open Downloads folder</value>
+    <value>İndirilenler klasörünü aç</value>
   </data>
   <data name="SpeedLimits" xml:space="preserve">
     <value>Hız sınırları</value>

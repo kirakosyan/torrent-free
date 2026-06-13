@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <!-- App Title -->
+  <data name="AppTitle" xml:space="preserve">
+    <value>Torrent Free</value>
+  </data>
+  <!-- Main Page -->
+  <data name="AddTorrentPlaceholder" xml:space="preserve">
+    <value>Nhập link nam châm vào đây...</value>
+  </data>
+  <data name="AddButton" xml:space="preserve">
+    <value>Tải xuống</value>
+  </data>
+  <data name="StartButton" xml:space="preserve">
+    <value>Bắt đầu</value>
+  </data>
+  <data name="StartAllButton" xml:space="preserve">
+    <value>Bắt đầu tất cả</value>
+  </data>
+  <data name="PauseButton" xml:space="preserve">
+    <value>Tạm dừng</value>
+  </data>
+  <data name="StopButton" xml:space="preserve">
+    <value>Dừng lại</value>
+  </data>
+  <data name="StopAllButton" xml:space="preserve">
+    <value>Dừng tất cả</value>
+  </data>
+  <data name="RemoveButton" xml:space="preserve">
+    <value>Di dời</value>
+  </data>
+  <data name="DownloadsTitle" xml:space="preserve">
+    <value>Tải xuống</value>
+  </data>
+  <data name="NoDownloads" xml:space="preserve">
+    <value>Chưa có lượt tải xuống nào. Thêm một liên kết nam châm để bắt đầu!</value>
+  </data>
+  <!-- Status -->
+  <data name="StatusQueued" xml:space="preserve">
+    <value>Đã xếp hàng</value>
+  </data>
+  <data name="StatusDownloading" xml:space="preserve">
+    <value>Đang tải xuống</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>Đã tạm dừng</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>Hoàn thành</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>Thất bại</value>
+  </data>
+  <data name="StatusStopped" xml:space="preserve">
+    <value>Đã dừng</value>
+  </data>
+  <!-- Labels -->
+  <data name="Seeders" xml:space="preserve">
+    <value>Seeder</value>
+  </data>
+  <data name="Leechers" xml:space="preserve">
+    <value>Leecher</value>
+  </data>
+  <data name="DownloadSpeed" xml:space="preserve">
+    <value>Tải xuống</value>
+  </data>
+  <data name="UploadSpeed" xml:space="preserve">
+    <value>Tải lên</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Kích cỡ</value>
+  </data>
+  <!-- Errors -->
+  <data name="InvalidMagnetLink" xml:space="preserve">
+    <value>Liên kết nam châm không hợp lệ. Vui lòng nhập URL magnet:? hợp lệ.</value>
+  </data>
+  <!-- Status (additional) -->
+  <data name="StatusSeeding" xml:space="preserve">
+    <value>Đang chia sẻ</value>
+  </data>
+  <!-- Main Page (additional) -->
+  <data name="AppSubtitle" xml:space="preserve">
+    <value>Tải torrent nhanh chóng và đơn giản</value>
+  </data>
+  <data name="BrowseButton" xml:space="preserve">
+    <value>Duyệt qua</value>
+  </data>
+  <data name="PasteButton" xml:space="preserve">
+    <value>Dán</value>
+  </data>
+  <data name="Bandwidth" xml:space="preserve">
+    <value>Băng thông</value>
+  </data>
+  <data name="DownloadKBs" xml:space="preserve">
+    <value>Tải xuống KB/s</value>
+  </data>
+  <data name="UploadKBs" xml:space="preserve">
+    <value>Tải lên KB/s</value>
+  </data>
+  <data name="DownloadingOnTop" xml:space="preserve">
+    <value>Đang tải xuống trên cùng</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Chi tiết</value>
+  </data>
+  <data name="SelectedTorrentLimits" xml:space="preserve">
+    <value>Giới hạn torrent đã chọn</value>
+  </data>
+  <data name="MaxSeedRatio" xml:space="preserve">
+    <value>Tỷ lệ chia sẻ tối đa</value>
+  </data>
+  <data name="MaxSeedMinutes" xml:space="preserve">
+    <value>Số phút chia sẻ tối đa</value>
+  </data>
+  <data name="NoDownloadsYet" xml:space="preserve">
+    <value>Chưa có lượt tải xuống nào</value>
+  </data>
+  <data name="AddMagnetHint" xml:space="preserve">
+    <value>Thêm liên kết nam châm để bắt đầu.</value>
+  </data>
+  <data name="Down" xml:space="preserve">
+    <value>Tải xuống</value>
+  </data>
+  <data name="Up" xml:space="preserve">
+    <value>Tải lên</value>
+  </data>
+  <data name="Seeds" xml:space="preserve">
+    <value>Seed</value>
+  </data>
+  <data name="Peers" xml:space="preserve">
+    <value>Peer</value>
+  </data>
+  <data name="ETA" xml:space="preserve">
+    <value>ETA</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>Sức khỏe</value>
+  </data>
+  <data name="Availability" xml:space="preserve">
+    <value>sẵn có</value>
+  </data>
+  <!-- Settings Page -->
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Cài đặt</value>
+  </data>
+  <data name="AutoSaveNote" xml:space="preserve">
+    <value>Các thay đổi được lưu tự động.</value>
+  </data>
+  <data name="DownloadLocation" xml:space="preserve">
+    <value>Vị trí tải xuống</value>
+  </data>
+  <data name="DownloadToTorrentFolderLabel" xml:space="preserve">
+    <value>Lưu .torrent nội dung tải xuống bên cạnh tệp .torrent gốc</value>
+  </data>
+  <data name="SpecificDownloadFolderLabel" xml:space="preserve">
+    <value>Thư mục tải xuống cụ thể</value>
+  </data>
+  <data name="SpecificDownloadFolderPlaceholder" xml:space="preserve">
+    <value>Nhập đường dẫn thư mục</value>
+  </data>
+  <data name="AndroidDownloadFolderHelp" xml:space="preserve">
+    <value>Trên Android, hãy sử dụng nút thư mục khi tải xuống hoàn tất để xuất tệp sang Download/TorrentFree.</value>
+  </data>
+  <data name="OpenDownloadsFolder" xml:space="preserve">
+    <value>Mở thư mục Tải xuống</value>
+  </data>
+  <data name="SpeedLimits" xml:space="preserve">
+    <value>Giới hạn tốc độ</value>
+  </data>
+  <data name="FileAssociations" xml:space="preserve">
+    <value>Liên kết tập tin</value>
+  </data>
+  <data name="AssociateTorrentFiles" xml:space="preserve">
+    <value>Liên kết các tệp .torrent</value>
+  </data>
+  <data name="QueueLimits" xml:space="preserve">
+    <value>Giới hạn hàng đợi</value>
+  </data>
+  <data name="MaxActiveDownloads" xml:space="preserve">
+    <value>Số lượt tải xuống hoạt động tối đa</value>
+  </data>
+  <data name="MaxActiveSeeds" xml:space="preserve">
+    <value>Số seed hoạt động tối đa</value>
+  </data>
+  <data name="SeedingLimits" xml:space="preserve">
+    <value>Giới hạn chia sẻ</value>
+  </data>
+  <data name="Socks5Proxy" xml:space="preserve">
+    <value>SOCKS5 Ủy quyền</value>
+  </data>
+  <data name="EnableProxy" xml:space="preserve">
+    <value>Kích hoạt proxy</value>
+  </data>
+  <data name="Host" xml:space="preserve">
+    <value>Máy chủ</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>Cổng</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Tên người dùng</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Mật khẩu</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>Ngôn ngữ</value>
+  </data>
+  <!-- Delete Dialog -->
+  <data name="RemoveTorrent" xml:space="preserve">
+    <value>Xóa torrent</value>
+  </data>
+  <data name="DeleteFilesOptional" xml:space="preserve">
+    <value>Tùy chọn xóa các tập tin liên quan:</value>
+  </data>
+  <data name="DeleteTorrentFile" xml:space="preserve">
+    <value>Xóa tệp .torrent khỏi đĩa</value>
+  </data>
+  <data name="DeleteDownloadedFiles" xml:space="preserve">
+    <value>Xóa các tập tin đã tải xuống</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Hủy bỏ</value>
+  </data>
+  <!-- Hints -->
+  <data name="UnlimitedHint" xml:space="preserve">
+    <value>0 = không giới hạn</value>
+  </data>
+  <data name="GlobalHint" xml:space="preserve">
+    <value>0 = toàn cầu</value>
+  </data>
+  <!-- Dialogs -->
+  <data name="StopAndResetTitle" xml:space="preserve">
+    <value>Dừng torrent</value>
+  </data>
+  <data name="StopAndResetMessage" xml:space="preserve">
+    <value>Việc dừng sẽ giữ lại dữ liệu đã tải xuống của bạn để bạn có thể tiếp tục lại sau. Bạn có chắc không?</value>
+  </data>
+  <data name="AssociateTorrentTitle" xml:space="preserve">
+    <value>Liên kết các tệp .torrent</value>
+  </data>
+  <data name="AssociateTorrentMessage" xml:space="preserve">
+    <value>Bạn có muốn mở tệp .torrent bằng Torrent Free theo mặc định không?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Có</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Không</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>Giới thiệu về Torrent Free</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>Torrent Free được sử dụng miễn phí.</value>
+  </data>
+  <data name="AboutVersionLabel" xml:space="preserve">
+    <value>Phiên bản</value>
+  </data>
+  <data name="AboutBuildLabel" xml:space="preserve">
+    <value>Bản dựng</value>
+  </data>
+  <data name="AboutFileVersionLabel" xml:space="preserve">
+    <value>Phiên bản tập tin</value>
+  </data>
+  <data name="AboutSourceLabel" xml:space="preserve">
+    <value>Nguồn</value>
+  </data>
+  <data name="AboutUnavailable" xml:space="preserve">
+    <value>n/a</value>
+  </data>
+  <data name="OpenSource" xml:space="preserve">
+    <value>Nguồn mở</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <!-- Error Messages -->
+  <data name="ErrorOpenFolder" xml:space="preserve">
+    <value>Không mở được thư mục để tải xuống.</value>
+  </data>
+  <data name="ErrorImportTorrent" xml:space="preserve">
+    <value>Không thể nhập tệp .torrent. Vui lòng thử lại.</value>
+  </data>
+  <data name="ErrorLoadDownloads" xml:space="preserve">
+    <value>Không thể tải nội dung tải xuống của bạn. Vui lòng khởi động lại ứng dụng.</value>
+  </data>
+  <data name="ErrorDuplicateTorrent" xml:space="preserve">
+    <value>Torrent này đã có trong danh sách của bạn.</value>
+  </data>
+  <data name="ErrorInvalidTorrentFile" xml:space="preserve">
+    <value>Tệp .torrent không hợp lệ. Không thể trích xuất hàm băm thông tin.</value>
+  </data>
+  <data name="ErrorInvalidMagnet" xml:space="preserve">
+    <value>Liên kết nam châm không hợp lệ. Hãy đảm bảo liên kết của bạn bắt đầu bằng 'magnet:?' và chứa hàm băm thông tin (tham số xt=).</value>
+  </data>
+  <data name="ErrorAddTorrent" xml:space="preserve">
+    <value>Không thể thêm torrent. Vui lòng thử lại.</value>
+  </data>
+  <data name="ErrorClipboardEmpty" xml:space="preserve">
+    <value>Bảng tạm trống. Sao chép một liên kết nam châm đầu tiên.</value>
+  </data>
+  <data name="ErrorPasteClipboard" xml:space="preserve">
+    <value>Không đọc được bảng nhớ tạm. Vui lòng thử lại.</value>
+  </data>
+  <data name="ErrorStartTorrent" xml:space="preserve">
+    <value>Không thể khởi động torrent. Vui lòng thử lại.</value>
+  </data>
+  <data name="ErrorPauseTorrent" xml:space="preserve">
+    <value>Không thể tạm dừng torrent. Vui lòng thử lại.</value>
+  </data>
+  <data name="ErrorStopTorrent" xml:space="preserve">
+    <value>Không thể dừng torrent. Vui lòng thử lại.</value>
+  </data>
+  <data name="ErrorRemoveTorrent" xml:space="preserve">
+    <value>Không thể xóa torrent. Vui lòng thử lại.</value>
+  </data>
+  <!-- Status Hints -->
+  <data name="HintDownloadFailed" xml:space="preserve">
+    <value>Tải xuống không thành công.</value>
+  </data>
+  <data name="HintQueued" xml:space="preserve">
+    <value>Đã xếp hàng. Đang chờ một khe hoạt động.</value>
+  </data>
+  <data name="HintPaused" xml:space="preserve">
+    <value>Đã tạm dừng.</value>
+  </data>
+  <data name="HintStopped" xml:space="preserve">
+    <value>Đã dừng lại.</value>
+  </data>
+  <data name="HintSearchingPeers" xml:space="preserve">
+    <value>Đang tìm kiếm peer.</value>
+  </data>
+  <data name="HintWaitingSeeds" xml:space="preserve">
+    <value>Đang chờ seed.</value>
+  </data>
+  <data name="HintConnectingPeers" xml:space="preserve">
+    <value>Đang kết nối với peer.</value>
+  </data>
+  <!-- Settings Validation -->
+  <data name="ValidationFileAssociation" xml:space="preserve">
+    <value>Không thể cập nhật liên kết tập tin.</value>
+  </data>
+  <data name="ValidationAdjustedLimits" xml:space="preserve">
+    <value>Một số cài đặt đã được điều chỉnh về giới hạn an toàn.</value>
+  </data>
+  <data name="ValidationSeedRatioInvalid" xml:space="preserve">
+    <value>Tỷ lệ hạt giống phải là số không âm hợp lệ. Đặt lại về 0.</value>
+  </data>
+  <data name="ValidationSeedRatioHigh" xml:space="preserve">
+    <value>Tỷ lệ hạt giống quá cao. Giới hạn ở {0}.</value>
+  </data>
+  <data name="ValidationNegative" xml:space="preserve">
+    <value>{0} không thể âm. Đặt thành {1}{2}.</value>
+  </data>
+  <data name="ValidationTooHigh" xml:space="preserve">
+    <value>{0} quá cao. Giới hạn ở {1}{2}.</value>
+  </data>
+  <data name="ValidationSelectFolder" xml:space="preserve">
+    <value>Không thể chọn thư mục.</value>
+  </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>Quay lại</value>
+  </data>
+  <data name="SelectTorrentFile" xml:space="preserve">
+    <value>Chọn tệp .torrent</value>
+  </data>
+  <data name="MagnetInputHint" xml:space="preserve">
+    <value>Dán URI hoặc URL nam châm, sau đó nhấn Enter, Dán hoặc Duyệt.</value>
+  </data>
+  <data name="DownloadingOnTopHint" xml:space="preserve">
+    <value>Khi được bật, các mục tải xuống sẽ xuất hiện ở trên cùng.</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>Hiển thị trong thư mục</value>
+  </data>
+  <data name="DownloadProgress" xml:space="preserve">
+    <value>Tiến trình tải xuống</value>
+  </data>
+  <data name="LoadingTorrentData" xml:space="preserve">
+    <value>Đang tải dữ liệu torrent</value>
+  </data>
+  <data name="LanguagePickerHint" xml:space="preserve">
+    <value>Chọn mặc định hệ thống hoặc một ngôn ngữ cụ thể.</value>
+  </data>
+  <data name="ProxyHostHint" xml:space="preserve">
+    <value>Nhập máy chủ proxy hoặc IP.</value>
+  </data>
+  <data name="ProxyHostPlaceholder" xml:space="preserve">
+    <value>ví dụ: 127.0.0.1</value>
+  </data>
+  <data name="ProxyPortHint" xml:space="preserve">
+    <value>Nhập số cổng proxy.</value>
+  </data>
+  <data name="ProxyUsernameHint" xml:space="preserve">
+    <value>Tên người dùng xác thực tùy chọn.</value>
+  </data>
+  <data name="ProxyPasswordHint" xml:space="preserve">
+    <value>Mật khẩu xác thực tùy chọn.</value>
+  </data>
+  <data name="OptionalPlaceholder" xml:space="preserve">
+    <value>không bắt buộc</value>
+  </data>
+  <data name="SettingsValidationMessage" xml:space="preserve">
+    <value>Thông báo xác thực cài đặt</value>
+  </data>
+  <data name="DeleteTorrentFileHint" xml:space="preserve">
+    <value>Khi được chọn, tệp .torrent nguồn sẽ bị xóa khỏi đĩa.</value>
+  </data>
+  <data name="DeleteDownloadedFilesHint" xml:space="preserve">
+    <value>Khi được chọn, các tệp nội dung đã tải xuống sẽ bị xóa vĩnh viễn.</value>
+  </data>
+  <data name="RemoveTorrentHint" xml:space="preserve">
+    <value>Loại bỏ torrent và áp dụng các tùy chọn xóa tệp đã chọn.</value>
+  </data>
+  <data name="NotificationDownloadComplete" xml:space="preserve">
+    <value>Tải xuống hoàn tất</value>
+  </data>
+  <data name="NotificationYourDownload" xml:space="preserve">
+    <value>Tải xuống của bạn</value>
+  </data>
+  <data name="NotificationDownloadCompletedBody" xml:space="preserve">
+    <value>{0} đã tải xuống xong.</value>
+  </data>
+  <data name="BackgroundDownloadNotificationText" xml:space="preserve">
+    <value>Tải xuống đang chạy trong nền</value>
+  </data>
+  <data name="BackgroundDownloadChannelName" xml:space="preserve">
+    <value>Hoạt động tải xuống</value>
+  </data>
+  <data name="BackgroundDownloadChannelDescription" xml:space="preserve">
+    <value>Giữ tải xuống torrent chạy trong khi ứng dụng được thu nhỏ.</value>
+  </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>chủ đề</value>
+  </data>
+  <data name="ThemeFollowSystem" xml:space="preserve">
+    <value>Theo dõi hệ thống</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Sáng</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Tối</value>
+  </data>
+  <data name="ThemePickerHint" xml:space="preserve">
+    <value>Chọn giao diện của ứng dụng.</value>
+  </data>
+</root>

@@ -217,10 +217,10 @@
     <value>फोल्डर का पथ दर्ज करें</value>
   </data>
   <data name="AndroidDownloadFolderHelp" xml:space="preserve">
-    <value>On Android, use the folder button on a completed download to export files to Download/TorrentFree.</value>
+    <value>Android पर, फ़ाइलों को Download/TorrentFree में निर्यात करने के लिए पूर्ण डाउनलोड पर फ़ोल्डर बटन का उपयोग करें।</value>
   </data>
   <data name="OpenDownloadsFolder" xml:space="preserve">
-    <value>Open Downloads folder</value>
+    <value>डाउनलोड फ़ोल्डर खोलें</value>
   </data>
   <data name="SpeedLimits" xml:space="preserve">
     <value>गति सीमाएँ</value>
@@ -285,7 +285,7 @@
     <value>0 = असीमित</value>
   </data>
   <data name="GlobalHint" xml:space="preserve">
-    <value>0 = global</value>
+    <value>0 = ग्लोबल</value>
   </data>
   <!-- Dialogs -->
   <data name="StopAndResetTitle" xml:space="preserve">

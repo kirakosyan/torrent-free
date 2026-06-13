@@ -133,6 +133,23 @@ public partial class SettingsViewModel : ObservableObject
         new("System Default", ""),
         new("English", "en"),
         new("\u0627\u0644\u0639\u0631\u0628\u064A\u0629", "ar"),
+        new("\u7B80\u4F53\u4E2D\u6587", "zh-CN"),
+        new("\u010Ce\u0161tina", "cs-CZ"),
+        new("Dansk", "da-DK"),
+        new("Nederlands", "nl-NL"),
+        new("Suomi", "fi-FI"),
+        new("Deutsch", "de-DE"),
+        new("Magyar", "hu-HU"),
+        new("Bahasa Indonesia", "id"),
+        new("Italiano", "it-IT"),
+        new("\u65E5\u672C\u8A9E", "ja-JP"),
+        new("\uD55C\uAD6D\uC5B4", "ko-KR"),
+        new("Norsk", "nb-NO"),
+        new("Polski", "pl-PL"),
+        new("Portugu\u00EAs (Brasil)", "pt-BR"),
+        new("Rom\u00E2n\u0103", "ro"),
+        new("\u0E44\u0E17\u0E22", "th"),
+        new("Ti\u1EBFng Vi\u1EC7t", "vi"),
         new("Español", "es"),
         new("Français", "fr"),
         new("Türkçe", "tr"),
@@ -247,7 +264,8 @@ public partial class SettingsViewModel : ObservableObject
         ProxyUsername = settings.ProxyUsername ?? string.Empty;
         ProxyPassword = settings.ProxyPassword ?? string.Empty;
 
-        SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == (settings.Language ?? ""))
+        var languageCode = NormalizeLanguageCode(settings.Language ?? "");
+        SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == languageCode)
                            ?? AvailableLanguages[0];
 
         SelectedTheme = AvailableThemes.FirstOrDefault(t => t.Code == ThemeSettings.Normalize(settings.Theme))
@@ -455,6 +473,17 @@ public partial class SettingsViewModel : ObservableObject
         _localizationService.SetCulture(culture);
         SafeFireAndForget(PersistSettingsAsync());
     }
+
+    /// <summary>
+    /// Maps legacy/aliased culture codes saved by older builds to the canonical code
+    /// used by the current language list. The deprecated Norwegian alias "no"/"no-NO"
+    /// is canonicalized to "nb-NO" (Bokmål); otherwise the code is returned unchanged.
+    /// </summary>
+    private static string NormalizeLanguageCode(string code) => code switch
+    {
+        "no-NO" or "no" => "nb-NO",
+        _ => code,
+    };
 
     partial void OnSelectedThemeChanged(ThemeOption value)
     {
