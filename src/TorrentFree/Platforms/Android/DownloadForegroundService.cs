@@ -23,24 +23,23 @@ public sealed class DownloadForegroundService : Service
     {
         var notification = BuildNotification();
 
-        return TryStartForeground(notification, startId)
-            ? StartCommandResult.Sticky
-            : StartCommandResult.NotSticky;
+        TryStartForeground(notification);
+        return StartCommandResult.NotSticky;
     }
 
     public override void OnTimeout(int startId)
     {
         System.Diagnostics.Debug.WriteLine("Download foreground service timed out.");
-        StopAfterTimeout(startId);
+        StopAfterTimeout();
     }
 
     public override void OnTimeout(int startId, ForegroundService fgsType)
     {
         System.Diagnostics.Debug.WriteLine($"Download foreground service timed out for type {fgsType}.");
-        StopAfterTimeout(startId);
+        StopAfterTimeout();
     }
 
-    private bool TryStartForeground(Notification notification, int startId)
+    private bool TryStartForeground(Notification notification)
     {
         try
         {
@@ -60,21 +59,24 @@ public sealed class DownloadForegroundService : Service
         catch (ForegroundServiceStartNotAllowedException ex)
         {
             System.Diagnostics.Debug.WriteLine($"Android refused to start the dataSync foreground service: {ex}");
-            StopSelf(startId);
+            StopSelf();
             return false;
         }
         catch (Java.Lang.RuntimeException ex)
         {
             System.Diagnostics.Debug.WriteLine($"Failed to start download foreground service: {ex}");
-            StopSelf(startId);
+            StopSelf();
             return false;
         }
     }
 
-    private void StopAfterTimeout(int startId)
+    private void StopAfterTimeout()
     {
+        // Android only grants a few seconds after a foreground-service timeout.
+        // Stop the service unconditionally; StopSelf(startId) can leave it alive
+        // if the service has received a newer start request or sticky restart.
+        StopSelf();
         StopForegroundSafely();
-        StopSelf(startId);
     }
 
     public override IBinder? OnBind(Intent? intent) => null;
