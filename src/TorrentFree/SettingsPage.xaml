@@ -6,6 +6,7 @@
              x:Class="TorrentFree.SettingsPage"
              x:DataType="viewmodels:SettingsViewModel"
              BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}"
+             SafeAreaEdges="Container"
              Shell.NavBarIsVisible="False"
              Title="{helpers:Translate SettingsTitle}">
 

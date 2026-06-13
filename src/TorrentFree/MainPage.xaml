@@ -11,6 +11,7 @@
              x:Class="TorrentFree.MainPage"
              x:DataType="viewmodels:MainViewModel"
              BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}"
+             SafeAreaEdges="Container"
              Title="{helpers:Translate DownloadsTitle}">
 
        <ContentPage.Resources>

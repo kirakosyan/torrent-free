@@ -6,6 +6,7 @@
              x:Class="TorrentFree.DeleteTorrentDialogPage"
              x:DataType="local:DeleteTorrentDialogViewModel"
              BackgroundColor="#80000000"
+             SafeAreaEdges="Container"
              Padding="24">
 
        <Grid RowDefinitions="*"
