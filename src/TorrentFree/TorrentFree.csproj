@@ -29,8 +29,8 @@
 		<ApplicationId>com.torrentfree.app</ApplicationId>
 
 		<!-- Versions -->
-		<AppDisplayVersion>1.9</AppDisplayVersion>
-		<AppBuildNumber>12</AppBuildNumber>
+		<AppDisplayVersion>1.10</AppDisplayVersion>
+		<AppBuildNumber>14</AppBuildNumber>
 		<ApplicationDisplayVersion>$(AppDisplayVersion)</ApplicationDisplayVersion>
 		<ApplicationVersion>$(AppBuildNumber)</ApplicationVersion>
 		<AndroidVersionName>$(AppDisplayVersion)</AndroidVersionName>
@@ -64,6 +64,8 @@
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
 		<AndroidPackageFormat>aab</AndroidPackageFormat>
 		<AndroidLinkMode>SdkOnly</AndroidLinkMode>
+		<AndroidLinkTool>r8</AndroidLinkTool>
+		<AndroidCreateProguardMappingFile>true</AndroidCreateProguardMappingFile>
 		<AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
 	</PropertyGroup>
 

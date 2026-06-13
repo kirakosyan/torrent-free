@@ -6,7 +6,7 @@ namespace TorrentFree.UnitTests;
 public sealed class VersionMetadataConsistencyTests
 {
     [Fact]
-    public void ProjectAndWindowsManifest_AreAlignedOnVersion19Build12()
+    public void ProjectAndWindowsManifest_AreAlignedOnVersion110Build14()
     {
         var repoRoot = Path.GetFullPath(Path.Combine(
             AppContext.BaseDirectory,
@@ -18,8 +18,8 @@ public sealed class VersionMetadataConsistencyTests
         var csproj = XDocument.Load(csprojPath);
         var manifest = XDocument.Load(manifestPath);
 
-        Assert.Equal("1.9", GetProjectProperty(csproj, "AppDisplayVersion"));
-        Assert.Equal("12", GetProjectProperty(csproj, "AppBuildNumber"));
+        Assert.Equal("1.10", GetProjectProperty(csproj, "AppDisplayVersion"));
+        Assert.Equal("14", GetProjectProperty(csproj, "AppBuildNumber"));
         Assert.Equal("$(AppDisplayVersion)", GetProjectProperty(csproj, "ApplicationDisplayVersion"));
         Assert.Equal("$(AppBuildNumber)", GetProjectProperty(csproj, "ApplicationVersion"));
         Assert.Equal("$(AppDisplayVersion).0", GetProjectProperty(csproj, "Version"));
@@ -41,7 +41,7 @@ public sealed class VersionMetadataConsistencyTests
         var identity = manifest.Root?.Element(manifestNs + "Identity");
 
         Assert.NotNull(identity);
-        Assert.Equal("1.9.0.0", (string?)identity!.Attribute("Version"));
+        Assert.Equal("1.10.0.0", (string?)identity!.Attribute("Version"));
     }
 
     private static string GetProjectProperty(XDocument document, string propertyName)

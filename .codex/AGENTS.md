@@ -53,6 +53,17 @@ Suggested commands:
 - `dotnet test tests/TorrentFree.UnitTests/TorrentFree.UnitTests.csproj`
 - `dotnet build src/TorrentFree/TorrentFree.csproj`
 
+## Android Store Package Generation
+- For Google Play releases, bump `AppBuildNumber` in `src/TorrentFree/TorrentFree.csproj`; bump `AppDisplayVersion` only when the public version should change. Keep `tests/TorrentFree.UnitTests/VersionMetadataConsistencyTests.cs` and the Windows manifest version aligned.
+- Release Android builds should keep R8 mapping generation enabled with `AndroidLinkTool` set to `r8` and `AndroidCreateProguardMappingFile` set to `true`. The signed AAB should contain `BUNDLE-METADATA/com.android.tools.build.obfuscation/proguard.map`; also copy `mapping.txt` to `C:\temp` as a manual upload fallback.
+- Signing files and passphrase labels are expected under `C:\temp`. Use them for publishing, but never print or commit passwords, aliases, keystores, or generated packages.
+- Publish the signed AAB with `dotnet publish src\TorrentFree\TorrentFree.csproj -f net10.0-android -c Release -p:AndroidPackageFormat=aab -p:AndroidKeyStore=true` plus the `AndroidSigningKeyStore`, `AndroidSigningStorePass`, `AndroidSigningKeyAlias`, and `AndroidSigningKeyPass` properties read from `C:\temp`.
+- Copy the signed output from `src\TorrentFree\bin\Release\net10.0-android\publish\com.torrentfree.app-Signed.aab` to `C:\temp` with a name that includes the display version and code, for example `com.torrentfree.app-v1.10-code14-google-play-upload-key.aab`.
+- Validate the AAB with bundletool from the installed .NET Android pack, for example `java -jar "C:\Program Files\dotnet\packs\Microsoft.Android.Sdk.Windows\36.1.43\tools\bundletool.jar" validate --bundle=<aab-path>`, and dump `/manifest/@package`, `/manifest/@android:versionCode`, and `/manifest/@android:versionName`.
+- Native debug symbols for Play Console must be zipped with ABI folders at the ZIP root and only symbol files that match AAB library names. For this MAUI app, use `obj\Release\net10.0-android\app_shared_libraries\<abi>\libxamarin-app.dbg.so`, but write each ZIP entry as `<abi>/libxamarin-app.so`.
+- Do not include `assembly-store.so`, `*.dbg.so` filenames, `.manifest` files, or extra parent directories in the Play native-symbol ZIP. Play rejects those as unexpected files.
+- The Play native-symbol ZIP should contain entries like `arm64-v8a/libxamarin-app.so` and `x86_64/libxamarin-app.so`. Upload this corrected ZIP in Play Console's native debug symbols section for the matching version code.
+
 ## Agent do/don't list
 Do:
 - Make the smallest change that solves the requested problem.
