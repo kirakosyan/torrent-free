@@ -22,36 +22,90 @@ public sealed class DownloadForegroundService : Service
     public override StartCommandResult OnStartCommand(Intent? intent, StartCommandFlags flags, int startId)
     {
         var notification = BuildNotification();
-        if (Build.VERSION.SdkInt >= BuildVersionCodes.UpsideDownCake)
+
+        return TryStartForeground(notification, startId)
+            ? StartCommandResult.Sticky
+            : StartCommandResult.NotSticky;
+    }
+
+    public override void OnTimeout(int startId)
+    {
+        System.Diagnostics.Debug.WriteLine("Download foreground service timed out.");
+        StopAfterTimeout(startId);
+    }
+
+    public override void OnTimeout(int startId, ForegroundService fgsType)
+    {
+        System.Diagnostics.Debug.WriteLine($"Download foreground service timed out for type {fgsType}.");
+        StopAfterTimeout(startId);
+    }
+
+    private bool TryStartForeground(Notification notification, int startId)
+    {
+        try
         {
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.UpsideDownCake)
+            {
 #pragma warning disable CA1416
-            StartForeground(NotificationId, notification, ForegroundService.TypeDataSync);
+                StartForeground(NotificationId, notification, ForegroundService.TypeDataSync);
 #pragma warning restore CA1416
+            }
+            else
+            {
+                StartForeground(NotificationId, notification);
+            }
+
+            return true;
         }
-        else
+        catch (ForegroundServiceStartNotAllowedException ex)
         {
-            StartForeground(NotificationId, notification);
+            System.Diagnostics.Debug.WriteLine($"Android refused to start the dataSync foreground service: {ex}");
+            StopSelf(startId);
+            return false;
         }
-        return StartCommandResult.Sticky;
+        catch (Java.Lang.RuntimeException ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to start download foreground service: {ex}");
+            StopSelf(startId);
+            return false;
+        }
+    }
+
+    private void StopAfterTimeout(int startId)
+    {
+        StopForegroundSafely();
+        StopSelf(startId);
     }
 
     public override IBinder? OnBind(Intent? intent) => null;
 
     public override void OnDestroy()
     {
-        if (Build.VERSION.SdkInt >= BuildVersionCodes.Tiramisu)
-        {
-#pragma warning disable CA1416
-            StopForeground(StopForegroundFlags.Remove);
-#pragma warning restore CA1416
-        }
-        else
-        {
-#pragma warning disable CA1422
-            StopForeground(true);
-#pragma warning restore CA1422
-        }
+        StopForegroundSafely();
         base.OnDestroy();
+    }
+
+    private void StopForegroundSafely()
+    {
+        try
+        {
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Tiramisu)
+            {
+#pragma warning disable CA1416
+                StopForeground(StopForegroundFlags.Remove);
+#pragma warning restore CA1416
+            }
+            else
+            {
+#pragma warning disable CA1422
+                StopForeground(true);
+#pragma warning restore CA1422
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to stop download foreground service notification: {ex}");
+        }
     }
 
     private Notification BuildNotification()

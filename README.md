@@ -205,7 +205,7 @@ The app supports the following languages:
 | Italian | it-IT | `AppResources.it-IT.resx` |
 | Japanese | ja-JP | `AppResources.ja-JP.resx` |
 | Korean | ko-KR | `AppResources.ko-KR.resx` |
-| Norwegian | no-NO | `AppResources.no-NO.resx` |
+| Norwegian | nb-NO | `AppResources.nb-NO.resx` |
 | Polish | pl-PL | `AppResources.pl-PL.resx` |
 | Portuguese (Brazil) | pt-BR | `AppResources.pt-BR.resx` |
 | Romanian | ro | `AppResources.ro.resx` |

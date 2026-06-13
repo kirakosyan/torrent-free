@@ -449,7 +449,7 @@ Torrent Free is gratis en open source. Bestanden worden rechtstreeks op uw appar
 8. Sla bestanden rechtstreeks op uw apparaat op
 9. Geen advertenties en geen tracking
 10. Gratis en open source
-## no-NO
+## nb-NO
 
 ### Short description
 

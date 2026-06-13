@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="TorrentFree.SplashTheme" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="maui_splash">true</item>
+        <item name="android:windowBackground">@drawable/maui_splash</item>
+        <item name="android:windowSplashScreenBackground">@color/maui_splash_color</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/maui_splash</item>
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:actionModeBackground">?attr/colorPrimary</item>
+        <item name="android:actionModeStyle">@style/ActionMode</item>
+
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:actionMenuTextColor">@color/colorActionMenuTextColor</item>
+        <item name="appBarLayoutStyle">@style/MauiAppBarLayout</item>
+        <item name="bottomNavigationViewStyle">@style/Widget.Design.BottomNavigationView</item>
+        <item name="materialButtonStyle">@style/MauiMaterialButton</item>
+        <item name="checkboxStyle">@style/MauiCheckBox</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="alertDialogTheme">@style/MauiAlertDialogTheme</item>
+        <item name="materialAlertDialogTheme">@style/MauiAlertDialogTheme</item>
+    </style>
+</resources>
