@@ -48,9 +48,35 @@ public partial class MainPage : ContentPage
 
         if (openSources)
         {
-            await Browser.Default.OpenAsync(
-                new Uri(GitHubUrl),
-                BrowserLaunchMode.External);
+            await TryOpenSourceUrlAsync();
+        }
+    }
+
+    private static async Task TryOpenSourceUrlAsync()
+    {
+        var sourceUri = new Uri(GitHubUrl);
+
+        try
+        {
+            await Browser.Default.OpenAsync(sourceUri, BrowserLaunchMode.External);
+            return;
+        }
+        catch (FeatureNotSupportedException ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"External browser is not supported: {ex}");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to open source URL in external browser: {ex}");
+        }
+
+        try
+        {
+            await Launcher.Default.OpenAsync(sourceUri);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to open source URL: {ex}");
         }
     }
 
