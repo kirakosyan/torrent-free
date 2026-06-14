@@ -30,7 +30,7 @@
 
 		<!-- Versions -->
 		<AppDisplayVersion>1.10</AppDisplayVersion>
-		<AppBuildNumber>14</AppBuildNumber>
+		<AppBuildNumber>15</AppBuildNumber>
 		<ApplicationDisplayVersion>$(AppDisplayVersion)</ApplicationDisplayVersion>
 		<ApplicationVersion>$(AppBuildNumber)</ApplicationVersion>
 		<AndroidVersionName>$(AppDisplayVersion)</AndroidVersionName>
@@ -55,7 +55,7 @@
 		<AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
 		<!-- Keep language resources in the main MSIX so Store metadata advertises every implemented locale. -->
 		<AppxBundleAutoResourcePackageQualifiers>Scale|DXFeatureLevel</AppxBundleAutoResourcePackageQualifiers>
-		<GenerateTestArtifacts>False</GenerateTestArtifacts>
+		<GenerateTestArtifacts>True</GenerateTestArtifacts>
 		<GenerateTemporaryStoreCertificate>False</GenerateTemporaryStoreCertificate>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 		<DefaultLanguage>en-US</DefaultLanguage>
