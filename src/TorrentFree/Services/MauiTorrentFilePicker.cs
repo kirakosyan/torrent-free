@@ -25,8 +25,7 @@ public sealed class MauiTorrentFilePicker : ITorrentFilePicker
         }
 
         await using var stream = await result.OpenReadAsync();
-        using var ms = new MemoryStream();
-        await stream.CopyToAsync(ms, cancellationToken);
-        return new TorrentPickedFile(result.FileName, result.FullPath, ms.ToArray());
+        var content = await TorrentFileContentReader.ReadAsync(stream, cancellationToken);
+        return new TorrentPickedFile(result.FileName, result.FullPath, content);
     }
 }

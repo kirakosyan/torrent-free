@@ -6,29 +6,21 @@ namespace TorrentFree.Models;
 public static class AppSettingsFactory
 {
     /// <summary>
-    /// Builds the settings payload for the main page save flow while preserving
-    /// settings managed elsewhere, such as proxy and language.
+    /// Builds a settings payload which changes only the main page's sort preference.
+    /// Every settings-page-owned value comes from the latest persisted snapshot.
     /// </summary>
-    public static AppSettings CreateForMainPage(
-        AppSettings existing,
-        int globalDownloadLimitKbps,
-        int globalUploadLimitKbps,
-        int maxActiveDownloads,
-        int maxActiveSeeds,
-        double globalMaxSeedRatio,
-        int globalMaxSeedMinutes,
-        bool sortByStatus)
+    public static AppSettings CreateWithSortByStatus(AppSettings existing, bool sortByStatus)
     {
         ArgumentNullException.ThrowIfNull(existing);
 
         return new AppSettings
         {
-            GlobalDownloadLimitKbps = globalDownloadLimitKbps,
-            GlobalUploadLimitKbps = globalUploadLimitKbps,
-            MaxActiveDownloads = maxActiveDownloads,
-            MaxActiveSeeds = maxActiveSeeds,
-            GlobalMaxSeedRatio = globalMaxSeedRatio,
-            GlobalMaxSeedMinutes = globalMaxSeedMinutes,
+            GlobalDownloadLimitKbps = existing.GlobalDownloadLimitKbps,
+            GlobalUploadLimitKbps = existing.GlobalUploadLimitKbps,
+            MaxActiveDownloads = existing.MaxActiveDownloads,
+            MaxActiveSeeds = existing.MaxActiveSeeds,
+            GlobalMaxSeedRatio = existing.GlobalMaxSeedRatio,
+            GlobalMaxSeedMinutes = existing.GlobalMaxSeedMinutes,
             SortByStatus = sortByStatus,
             DownloadToTorrentFolder = existing.DownloadToTorrentFolder,
             SpecificDownloadFolder = existing.SpecificDownloadFolder ?? string.Empty,

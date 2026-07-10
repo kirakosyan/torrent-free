@@ -124,10 +124,18 @@ public sealed class AppSettingsFactoryTests
     }
 
     [Fact]
-    public void CreateForMainPage_PreservesSettingsManagedOutsideMainPage()
+    public void CreateWithSortByStatus_AfterSettingsPageSave_PreservesAllNewerSettings()
     {
+        // This is the regression sequence: SettingsPage has saved these newer values while
+        // MainViewModel still holds its older startup snapshot, then the user toggles sorting.
         var existing = new AppSettings
         {
+            GlobalDownloadLimitKbps = 800,
+            GlobalUploadLimitKbps = 120,
+            MaxActiveDownloads = 4,
+            MaxActiveSeeds = 6,
+            GlobalMaxSeedRatio = 1.75,
+            GlobalMaxSeedMinutes = 240,
             DownloadToTorrentFolder = false,
             SpecificDownloadFolder = @"C:\Saved",
             ProxyEnabled = true,
@@ -140,15 +148,7 @@ public sealed class AppSettingsFactoryTests
             DesktopWasMaximized = true
         };
 
-        var updated = AppSettingsFactory.CreateForMainPage(
-            existing,
-            globalDownloadLimitKbps: 800,
-            globalUploadLimitKbps: 120,
-            maxActiveDownloads: 4,
-            maxActiveSeeds: 6,
-            globalMaxSeedRatio: 1.75,
-            globalMaxSeedMinutes: 240,
-            sortByStatus: true);
+        var updated = AppSettingsFactory.CreateWithSortByStatus(existing, sortByStatus: true);
 
         Assert.Equal(800, updated.GlobalDownloadLimitKbps);
         Assert.Equal(120, updated.GlobalUploadLimitKbps);

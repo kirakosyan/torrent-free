@@ -1,6 +1,7 @@
 using Microsoft.Maui.Controls;
 using Microsoft.UI.Windowing;
 using TorrentFree.Models;
+using TorrentFree.Services;
 using WinRT.Interop;
 
 namespace TorrentFree;
@@ -90,15 +91,18 @@ public partial class App
 
     private async Task PersistDesktopWindowStateAsync(bool? desktopWasMaximized)
     {
-        if (_lastDesktopWasMaximized == desktopWasMaximized)
-        {
-            return;
-        }
-
         try
         {
-            await _storageService.UpdateDesktopWindowStateAsync(desktopWasMaximized);
-            _lastDesktopWasMaximized = desktopWasMaximized;
+            await AppSettingsPersistence.RunExclusiveAsync(async () =>
+            {
+                if (_lastDesktopWasMaximized == desktopWasMaximized)
+                {
+                    return;
+                }
+
+                await _storageService.UpdateDesktopWindowStateAsync(desktopWasMaximized);
+                _lastDesktopWasMaximized = desktopWasMaximized;
+            });
         }
         catch (Exception ex)
         {

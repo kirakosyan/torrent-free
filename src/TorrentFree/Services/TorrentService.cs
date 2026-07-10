@@ -2,10 +2,16 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Net.Http;
+using System.Net.Sockets;
+using System.Runtime.ExceptionServices;
 using System.Text.RegularExpressions;
 using System.Linq;
 using MonoTorrent;
 using MonoTorrent.Client;
+using MonoTorrent.Connections.Peer;
+using MonoTorrent.Connections.Tracker;
+using MonoTorrent.Trackers;
 using TorrentFree.Models;
 
 namespace TorrentFree.Services;
@@ -49,6 +55,17 @@ public interface ITorrentService : IDisposable, IAsyncDisposable
     /// Stops a torrent download.
     /// </summary>
     Task StopTorrentAsync(TorrentItem torrent);
+
+    /// <summary>
+    /// Pauses every active transfer before the operating system revokes background execution.
+    /// Queued torrents are deliberately left queued and are not started by this bulk operation.
+    /// </summary>
+    Task PauseAllForBackgroundTimeoutAsync();
+
+    /// <summary>
+    /// Allows transfers to be started again after the application has returned to the foreground.
+    /// </summary>
+    void ResumeAfterBackgroundTimeout();
 
     /// <summary>
     /// Removes a torrent from the list.
@@ -107,6 +124,7 @@ public class TorrentService : ITorrentService
     private readonly AsyncKeyedLocker _torrentOperationLock = new();
     private readonly ConcurrentDictionary<string, CancellationTokenSource> _downloadTokens = new();
     private readonly ConcurrentDictionary<string, TorrentManager> _managers = new();
+    private readonly ConcurrentDictionary<string, byte> _proxyRebuildPendingResumeIds = new();
     private readonly object _torrentsLock = new();
     private readonly Timer _saveTimer;
     // Read on several threads outside _engineLock (fast-path checks); volatile guarantees
@@ -118,6 +136,7 @@ public class TorrentService : ITorrentService
     private volatile bool _pendingSave;
     private bool _disposed;
     private volatile bool _backgroundTransferActive;
+    private volatile bool _backgroundExecutionSuspended;
 
     private int _maxActiveDownloads = 2;
     private int _maxActiveSeeds = 2;
@@ -137,13 +156,20 @@ public class TorrentService : ITorrentService
     private readonly SemaphoreSlim _engineRebuildLock = new(1, 1);
     private readonly object _proxyRebuildGate = new();
     private CancellationTokenSource? _proxyRebuildCts;
+    private readonly object _engineRebuildStateGate = new();
+    private TaskCompletionSource? _activeEngineRebuild;
+    private TaskCompletionSource? _activeStartsDrained;
+    private int _activeStarts;
+    private int _startBarrierHolders;
     private static readonly TimeSpan ProxyRebuildDebounce = TimeSpan.FromMilliseconds(800);
 
     // A SOCKS5 proxy can only tunnel outbound TCP, so when it is active we disable every
     // channel that would otherwise expose the user's real IP (DHT, LPD, UPnP, the inbound
     // listener, and UDP trackers). Centralised here so engine creation and tracker
     // bootstrap stay in agreement.
-    private bool ProxyActive => _proxyEnabled && !string.IsNullOrWhiteSpace(_proxyHost);
+    // Proxy mode must fail closed. An enabled-but-incomplete configuration is still proxy
+    // mode: direct DHT/tracker/peer traffic must never resume merely because the host is blank.
+    private bool ProxyRequested => _proxyEnabled;
 
     public ObservableCollection<TorrentItem> Torrents { get; } = [];
 
@@ -204,10 +230,14 @@ public class TorrentService : ITorrentService
                     System.Diagnostics.Debug.WriteLine($"Recovered torrent '{torrent.Name}' using its stored magnet link after the original .torrent file went missing.");
                 }
 
-                // Reset downloading status to paused on startup
-                if (torrent.Status == DownloadStatus.Downloading)
+                // No MonoTorrent manager is recreated during restore. Persisted active states
+                // must therefore become truthful, restartable paused states instead of showing
+                // downloads/seeds which have no backing network session.
+                if (torrent.Status is DownloadStatus.Downloading or DownloadStatus.Seeding)
                 {
                     torrent.Status = DownloadStatus.Paused;
+                    torrent.DateSeedingStarted = null;
+                    hadStateChanges = true;
                 }
 
                 AttachTorrentSettingsHandlers(torrent);
@@ -280,11 +310,18 @@ public class TorrentService : ITorrentService
             SavePath = DownloadLocationResolver.ResolveSavePath(settings, sourceTorrentFilePath: null, fallbackDownloadPath)
         };
 
-        AttachTorrentSettingsHandlers(torrent);
         await MainThread.InvokeOnMainThreadAsync(() =>
         {
             lock (_torrentsLock)
             {
+                // The early duplicate check is only a fast path. Another import can pass it
+                // while this call is loading settings, so check and add under one lock.
+                if (IsDuplicate(infoHash, magnetLink))
+                {
+                    throw new DuplicateTorrentException("This torrent is already added.");
+                }
+
+                AttachTorrentSettingsHandlers(torrent);
                 Torrents.Add(torrent);
             }
         });
@@ -364,7 +401,97 @@ public class TorrentService : ITorrentService
     /// <inheritdoc />
     public async Task StartTorrentAsync(TorrentItem torrent)
     {
-        await using var operationLock = await _torrentOperationLock.AcquireAsync(torrent.Id);
+        while (true)
+        {
+            if (_backgroundExecutionSuspended)
+            {
+                await using (await _torrentOperationLock.AcquireAsync(torrent.Id))
+                {
+                    await SuppressStartForBackgroundTimeoutAsync(torrent);
+                }
+                return;
+            }
+
+            await WaitForEngineRebuildAsync().ConfigureAwait(false);
+
+            Task? rebuildWhichWonTheRace = null;
+            Exception? startException = null;
+            var startSuppressed = false;
+            await using (await _torrentOperationLock.AcquireAsync(torrent.Id))
+            {
+                // A rebuild can begin after the wait above but before this keyed lock is
+                // acquired. Re-check while holding the key and release/loop if it did.
+                if (_backgroundExecutionSuspended)
+                {
+                    await SuppressStartForBackgroundTimeoutAsync(torrent);
+                    startSuppressed = true;
+                }
+                else if (!TryEnterStart(out rebuildWhichWonTheRace))
+                {
+                    // Leave this scope before awaiting the rebuild to avoid lock inversion.
+                }
+                else
+                {
+                    try
+                    {
+                        await StartTorrentCoreAsync(torrent);
+                    }
+                    catch (Exception ex)
+                    {
+                        startException = ex;
+                    }
+                    finally
+                    {
+                        ExitStart();
+                    }
+                }
+            }
+
+            if (startSuppressed)
+            {
+                return;
+            }
+
+            if (rebuildWhichWonTheRace is not null)
+            {
+                await rebuildWhichWonTheRace.ConfigureAwait(false);
+                continue;
+            }
+
+            if (startException is not null)
+            {
+                // Drain the queue only after releasing this torrent's keyed lock.
+                await TryStartQueuedTorrentsAsync();
+                ExceptionDispatchInfo.Capture(startException).Throw();
+            }
+
+            return;
+        }
+    }
+
+    private async Task SuppressStartForBackgroundTimeoutAsync(TorrentItem torrent)
+    {
+        if (!TryGetTorrentById(torrent.Id, out var trackedTorrent) || !ReferenceEquals(torrent, trackedTorrent))
+        {
+            return;
+        }
+
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            torrent.DownloadSpeed = 0;
+            torrent.UploadSpeed = 0;
+            torrent.Status = DownloadStatus.Paused;
+            torrent.ErrorMessage = null;
+        });
+        await SaveAsync();
+        UpdateBackgroundTransferState();
+    }
+
+    private async Task StartTorrentCoreAsync(
+        TorrentItem torrent,
+        CancellationToken proxyRebuildToken = default)
+    {
+        proxyRebuildToken.ThrowIfCancellationRequested();
 
         if (!torrent.CanStart)
         {
@@ -393,7 +520,9 @@ public class TorrentService : ITorrentService
         try
         {
             manager = await GetOrCreateManagerAsync(torrent);
+            proxyRebuildToken.ThrowIfCancellationRequested();
             await ApplySpeedLimitsToManagerAsync(manager, torrent);
+            proxyRebuildToken.ThrowIfCancellationRequested();
 
             // Cancel any existing download for this torrent
             if (_downloadTokens.TryRemove(torrent.Id, out var existingCts))
@@ -406,12 +535,17 @@ public class TorrentService : ITorrentService
             _downloadTokens[torrent.Id] = cts;
 
             // Start real download
+            proxyRebuildToken.ThrowIfCancellationRequested();
             await StartManagerAsync(manager);
+            proxyRebuildToken.ThrowIfCancellationRequested();
 
             _ = MonitorTorrentAsync(torrent, manager, cts.Token);
         }
         catch (Exception ex)
         {
+            var proxyRebuildWasSuperseded = ex is OperationCanceledException
+                && proxyRebuildToken.IsCancellationRequested;
+
             if (_downloadTokens.TryRemove(torrent.Id, out var failedCts))
             {
                 failedCts.Dispose();
@@ -440,10 +574,12 @@ public class TorrentService : ITorrentService
 
             await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                torrent.Status = DownloadStatus.Failed;
+                torrent.Status = proxyRebuildWasSuperseded
+                    ? DownloadStatus.Queued
+                    : DownloadStatus.Failed;
                 torrent.DownloadSpeed = 0;
                 torrent.UploadSpeed = 0;
-                torrent.ErrorMessage = ex.Message;
+                torrent.ErrorMessage = proxyRebuildWasSuperseded ? null : ex.Message;
             });
 
             await SaveAsync();
@@ -451,46 +587,146 @@ public class TorrentService : ITorrentService
 
             // The download slot this torrent was occupying is now free — let queued
             // torrents take it instead of waiting for the next user action.
-            await TryStartQueuedTorrentsAsync();
             throw;
+        }
+    }
+
+    private Task WaitForEngineRebuildAsync()
+    {
+        lock (_engineRebuildStateGate)
+        {
+            return _activeEngineRebuild?.Task ?? Task.CompletedTask;
+        }
+    }
+
+    private bool IsEngineRebuildActive()
+    {
+        lock (_engineRebuildStateGate)
+        {
+            return _activeEngineRebuild is not null;
+        }
+    }
+
+    private bool TryEnterStart(out Task? activeRebuild)
+    {
+        lock (_engineRebuildStateGate)
+        {
+            if (_activeEngineRebuild is not null)
+            {
+                activeRebuild = _activeEngineRebuild.Task;
+                return false;
+            }
+
+            _activeStarts++;
+            activeRebuild = null;
+            return true;
+        }
+    }
+
+    private void ExitStart()
+    {
+        TaskCompletionSource? startsDrained = null;
+        lock (_engineRebuildStateGate)
+        {
+            _activeStarts--;
+            if (_activeStarts == 0)
+            {
+                startsDrained = _activeStartsDrained;
+                _activeStartsDrained = null;
+            }
+        }
+
+        startsDrained?.TrySetResult();
+    }
+
+    private TaskCompletionSource BeginEngineRebuild(out Task activeStartsDrained)
+    {
+        lock (_engineRebuildStateGate)
+        {
+            if (_activeEngineRebuild is not null)
+            {
+                _startBarrierHolders++;
+                activeStartsDrained = _activeStartsDrained?.Task ?? Task.CompletedTask;
+                return _activeEngineRebuild;
+            }
+
+            _activeEngineRebuild = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            _startBarrierHolders = 1;
+            if (_activeStarts == 0)
+            {
+                activeStartsDrained = Task.CompletedTask;
+            }
+            else
+            {
+                _activeStartsDrained = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+                activeStartsDrained = _activeStartsDrained.Task;
+            }
+
+            return _activeEngineRebuild;
+        }
+    }
+
+    private void EndEngineRebuild(TaskCompletionSource rebuildCompletion)
+    {
+        var releaseWaiters = false;
+        lock (_engineRebuildStateGate)
+        {
+            if (ReferenceEquals(_activeEngineRebuild, rebuildCompletion))
+            {
+                _startBarrierHolders--;
+                if (_startBarrierHolders == 0)
+                {
+                    _activeEngineRebuild = null;
+                    releaseWaiters = true;
+                }
+            }
+        }
+
+        if (releaseWaiters)
+        {
+            rebuildCompletion.TrySetResult();
         }
     }
 
     /// <inheritdoc />
     public async Task PauseTorrentAsync(TorrentItem torrent)
     {
-        await using var operationLock = await _torrentOperationLock.AcquireAsync(torrent.Id);
-
-        if (!torrent.CanPause)
+        await using (await _torrentOperationLock.AcquireAsync(torrent.Id))
         {
-            return;
+            // A rebuild temporarily marks an active torrent Queued between teardown and
+            // restart. Preserve a Pause click which lands in that narrow window.
+            var isQueuedForRebuild = torrent.Status == DownloadStatus.Queued && IsEngineRebuildActive();
+            if (!torrent.CanPause && !isQueuedForRebuild)
+            {
+                return;
+            }
+
+            // Cancel the download
+            if (_downloadTokens.TryRemove(torrent.Id, out var cts))
+            {
+                await cts.CancelAsync();
+                cts.Dispose();
+            }
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                torrent.DownloadSpeed = 0;
+                torrent.UploadSpeed = 0;
+            });
+
+            if (_managers.TryGetValue(torrent.Id, out var manager))
+            {
+                await manager.PauseAsync();
+            }
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                torrent.Status = DownloadStatus.Paused;
+            });
+
+            await SaveAsync();
+            UpdateBackgroundTransferState();
         }
-
-        // Cancel the download
-        if (_downloadTokens.TryRemove(torrent.Id, out var cts))
-        {
-            await cts.CancelAsync();
-            cts.Dispose();
-        }
-
-        await MainThread.InvokeOnMainThreadAsync(() =>
-        {
-            torrent.DownloadSpeed = 0;
-            torrent.UploadSpeed = 0;
-        });
-
-        if (_managers.TryGetValue(torrent.Id, out var manager))
-        {
-            await manager.PauseAsync();
-        }
-
-        await MainThread.InvokeOnMainThreadAsync(() =>
-        {
-            torrent.Status = DownloadStatus.Paused;
-        });
-
-        await SaveAsync();
-        UpdateBackgroundTransferState();
 
         await TryStartQueuedTorrentsAsync();
     }
@@ -498,40 +734,235 @@ public class TorrentService : ITorrentService
     /// <inheritdoc />
     public async Task StopTorrentAsync(TorrentItem torrent)
     {
-        await using var operationLock = await _torrentOperationLock.AcquireAsync(torrent.Id);
+        await using (await _torrentOperationLock.AcquireAsync(torrent.Id))
+        {
+            if (!torrent.CanStop)
+            {
+                return;
+            }
 
-        if (!torrent.CanStop)
+            // Cancel the download
+            if (_downloadTokens.TryRemove(torrent.Id, out var cts))
+            {
+                await cts.CancelAsync();
+                cts.Dispose();
+            }
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                torrent.DownloadSpeed = 0;
+                torrent.UploadSpeed = 0;
+            });
+
+            if (_managers.TryGetValue(torrent.Id, out var manager))
+            {
+                await StopManagerAsync(manager);
+            }
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                torrent.Status = DownloadStatus.Stopped;
+            });
+
+            await SaveAsync();
+            UpdateBackgroundTransferState();
+        }
+
+        await TryStartQueuedTorrentsAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task PauseAllForBackgroundTimeoutAsync()
+    {
+        _backgroundExecutionSuspended = true;
+
+        // Install the start barrier before taking the snapshot. This prevents a queued or
+        // user-initiated Start from escaping after the Android foreground-service timeout.
+        var pauseBarrier = BeginEngineRebuild(out var activeStartsDrained);
+        try
+        {
+            List<TorrentItem> activeTorrents;
+            lock (_torrentsLock)
+            {
+                activeTorrents = Torrents
+                    .Where(torrent => torrent.Status is DownloadStatus.Downloading or DownloadStatus.Seeding
+                        || (torrent.Status == DownloadStatus.Queued && _proxyRebuildPendingResumeIds.ContainsKey(torrent.Id)))
+                    .ToList();
+            }
+
+            var activeIds = activeTorrents
+                .Select(static torrent => torrent.Id)
+                .ToHashSet(StringComparer.Ordinal);
+
+            // Persist the paused intent before any manager call. Android demotes the
+            // foreground service synchronously, so the process can be killed while the
+            // best-effort network cleanup below is still running.
+            foreach (var id in activeIds)
+            {
+                if (_downloadTokens.TryRemove(id, out var cts))
+                {
+                    try
+                    {
+                        cts.Cancel();
+                    }
+                    catch
+                    {
+                        // The persisted paused state remains authoritative.
+                    }
+                    finally
+                    {
+                        cts.Dispose();
+                    }
+                }
+            }
+
+            if (activeTorrents.Count > 0)
+            {
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    foreach (var torrent in activeTorrents)
+                    {
+                        if (!ShouldPauseForBackgroundTimeout(torrent))
+                        {
+                            continue;
+                        }
+
+                        torrent.DownloadSpeed = 0;
+                        torrent.UploadSpeed = 0;
+                        torrent.Status = DownloadStatus.Paused;
+                        torrent.ErrorMessage = null;
+                    }
+                });
+                await SaveAsync();
+            }
+            UpdateBackgroundTransferState();
+
+            // A Start which had already passed the barrier check is allowed to finish,
+            // then each backend is paused under its normal per-torrent lock. Run these in
+            // parallel so one slow manager does not delay every other torrent.
+            await activeStartsDrained.ConfigureAwait(false);
+
+            // Reconcile a Start which entered immediately before the barrier and had not
+            // changed its TorrentItem to Downloading when the first snapshot was taken.
+            List<TorrentItem> lateActiveTorrents;
+            lock (_torrentsLock)
+            {
+                lateActiveTorrents = Torrents
+                    .Where(torrent => torrent.Status is DownloadStatus.Downloading or DownloadStatus.Seeding
+                        || (torrent.Status == DownloadStatus.Queued && _proxyRebuildPendingResumeIds.ContainsKey(torrent.Id)))
+                    .ToList();
+            }
+
+            if (lateActiveTorrents.Count > 0)
+            {
+                foreach (var torrent in lateActiveTorrents)
+                {
+                    activeIds.Add(torrent.Id);
+                    if (_downloadTokens.TryRemove(torrent.Id, out var lateCts))
+                    {
+                        try
+                        {
+                            lateCts.Cancel();
+                        }
+                        catch
+                        {
+                            // best-effort; the manager pause below is authoritative
+                        }
+                        finally
+                        {
+                            lateCts.Dispose();
+                        }
+                    }
+                }
+
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    foreach (var torrent in lateActiveTorrents)
+                    {
+                        if (!ShouldPauseForBackgroundTimeout(torrent))
+                        {
+                            continue;
+                        }
+
+                        torrent.DownloadSpeed = 0;
+                        torrent.UploadSpeed = 0;
+                        torrent.Status = DownloadStatus.Paused;
+                        torrent.ErrorMessage = null;
+                    }
+                });
+                await SaveAsync();
+                UpdateBackgroundTransferState();
+            }
+
+            await Task.WhenAll(activeIds.Select(PauseManagerAfterBackgroundTimeoutAsync)).ConfigureAwait(false);
+        }
+        finally
+        {
+            EndEngineRebuild(pauseBarrier);
+        }
+    }
+
+    /// <inheritdoc />
+    public void ResumeAfterBackgroundTimeout()
+    {
+        _backgroundExecutionSuspended = false;
+    }
+
+    private bool ShouldPauseForBackgroundTimeout(TorrentItem torrent)
+    {
+        return TryGetTorrentById(torrent.Id, out var trackedTorrent)
+            && ReferenceEquals(torrent, trackedTorrent)
+            && (torrent.Status is DownloadStatus.Downloading or DownloadStatus.Seeding
+                || (torrent.Status == DownloadStatus.Queued
+                    && _proxyRebuildPendingResumeIds.ContainsKey(torrent.Id)));
+    }
+
+    private async Task PauseManagerAfterBackgroundTimeoutAsync(string id)
+    {
+        await using var operationLock = await _torrentOperationLock.AcquireAsync(id);
+
+        if (!TryGetTorrentById(id, out var torrent)
+            || torrent is null
+            || torrent.Status is DownloadStatus.Stopped or DownloadStatus.Completed or DownloadStatus.Failed)
         {
             return;
         }
 
-        // Cancel the download
-        if (_downloadTokens.TryRemove(torrent.Id, out var cts))
+        if (_downloadTokens.TryRemove(id, out var cts))
         {
-            await cts.CancelAsync();
-            cts.Dispose();
+            try
+            {
+                await cts.CancelAsync();
+            }
+            finally
+            {
+                cts.Dispose();
+            }
         }
 
-        await MainThread.InvokeOnMainThreadAsync(() =>
+        if (!_managers.TryGetValue(id, out var manager))
         {
-            torrent.DownloadSpeed = 0;
-            torrent.UploadSpeed = 0;
-        });
-
-        if (_managers.TryGetValue(torrent.Id, out var manager))
-        {
-            await StopManagerAsync(manager);
+            return;
         }
 
-        await MainThread.InvokeOnMainThreadAsync(() =>
+        try
         {
-            torrent.Status = DownloadStatus.Stopped;
-        });
-
-        await SaveAsync();
-        UpdateBackgroundTransferState();
-
-        await TryStartQueuedTorrentsAsync();
+            await manager.PauseAsync().WaitAsync(ManagerStopTimeout);
+        }
+        catch (Exception pauseException)
+        {
+            System.Diagnostics.Debug.WriteLine($"Background timeout: pause manager error for {id}: {pauseException.Message}");
+            try
+            {
+                await StopManagerAsync(manager).WaitAsync(ManagerStopTimeout);
+            }
+            catch (Exception stopException)
+            {
+                // The process-safe paused state was already persisted. Keep this observed;
+                // Android may terminate the process now that foreground execution ended.
+                System.Diagnostics.Debug.WriteLine($"Background timeout: stop manager error for {id}: {stopException.Message}");
+            }
+        }
     }
 
     /// <inheritdoc />
@@ -539,150 +970,146 @@ public class TorrentService : ITorrentService
     {
         ArgumentNullException.ThrowIfNull(torrent);
 
-        await using var operationLock = await _torrentOperationLock.AcquireAsync(torrent.Id);
-
-        // Cancel any active download
-        if (_downloadTokens.TryRemove(torrent.Id, out var cts))
+        await using (await _torrentOperationLock.AcquireAsync(torrent.Id))
         {
-            await cts.CancelAsync();
-            cts.Dispose();
-        }
+            // Resolve ownership before removing the manager or deleting the source .torrent.
+            // A manager's file list is authoritative. If no manager has metadata yet, a local
+            // .torrent file is the only safe fallback. A display name is never ownership proof.
+            _managers.TryGetValue(torrent.Id, out var managerWithMetadata);
+            var ownedDownloadFiles = deleteFiles
+                ? await ResolveOwnedDownloadFilesAsync(torrent, managerWithMetadata)
+                : OwnedDownloadFiles.Empty;
 
-        if (_managers.TryRemove(torrent.Id, out var manager))
-        {
-            try
+            // Cancel any active download.
+            if (_downloadTokens.TryRemove(torrent.Id, out var cts))
             {
-                await StopManagerAsync(manager);
+                await cts.CancelAsync();
+                cts.Dispose();
+            }
 
-                if (_engine is not null)
+            if (_managers.TryRemove(torrent.Id, out var manager))
+            {
+                try
                 {
-                    await _engine.RemoveAsync(manager);
+                    await StopManagerAsync(manager);
+
+                    if (_engine is not null)
+                    {
+                        await _engine.RemoveAsync(manager);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Remove manager cleanup error for '{torrent.Name}' ({torrent.Id}): {ex}");
                 }
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Remove manager cleanup error for '{torrent.Name}' ({torrent.Id}): {ex}");
-            }
-        }
 
-        DetachTorrentSettingsHandlers(torrent);
-        await MainThread.InvokeOnMainThreadAsync(() =>
-        {
-            lock (_torrentsLock)
+            DetachTorrentSettingsHandlers(torrent);
+            await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                Torrents.Remove(torrent);
-            }
-        });
-        await SaveAsync();
-        UpdateBackgroundTransferState();
+                lock (_torrentsLock)
+                {
+                    Torrents.Remove(torrent);
+                }
+            });
+            await SaveAsync();
+            UpdateBackgroundTransferState();
 
-        if (deleteTorrentFile)
-        {
-            TryDeleteTorrentFile(torrent);
+            if (deleteTorrentFile)
+            {
+                TryDeleteTorrentFile(torrent);
+            }
+
+            if (deleteFiles)
+            {
+                DeleteOwnedDownloadFiles(ownedDownloadFiles, torrent.TorrentFilePath, deleteTorrentFile);
+            }
         }
 
         await TryStartQueuedTorrentsAsync();
+    }
 
-        // Optionally delete downloaded files
-        if (deleteFiles && !string.IsNullOrEmpty(torrent.SavePath) && !string.IsNullOrEmpty(torrent.Name))
+    private static async Task<OwnedDownloadFiles> ResolveOwnedDownloadFilesAsync(TorrentItem torrent, TorrentManager? manager)
+    {
+        if (manager is { HasMetadata: true }
+            && manager.Files.Count > 0
+            && TorrentIdentityMatches(torrent, manager.InfoHashes))
         {
             try
             {
-                // Sanitize the name again to ensure safe file path
-                var safeName = SanitizeFileName(torrent.Name);
-                var filePath = Path.Combine(torrent.SavePath, safeName);
-
-                // Verify the path is within the expected directory (prevent path traversal)
-                var fullPath = Path.GetFullPath(filePath);
-                var basePath = Path.GetFullPath(torrent.SavePath);
-                if (!PathGuard.IsPathWithinDirectory(fullPath, basePath))
-                {
-                    System.Diagnostics.Debug.WriteLine("Attempted path traversal detected, skipping file deletion");
-                    return;
-                }
-
-                var torrentFilePath = string.IsNullOrWhiteSpace(torrent.TorrentFilePath)
-                    ? null
-                    : Path.GetFullPath(torrent.TorrentFilePath);
-
-                if (File.Exists(fullPath))
-                {
-                    if (!deleteTorrentFile && (string.Equals(fullPath, torrentFilePath, StringComparison.OrdinalIgnoreCase)
-                        || fullPath.EndsWith(".torrent", StringComparison.OrdinalIgnoreCase)))
-                    {
-                        return;
-                    }
-
-                    File.Delete(fullPath);
-                }
-                else if (Directory.Exists(fullPath))
-                {
-                    if (!deleteTorrentFile)
-                    {
-                        DeleteDirectoryPreserveTorrentFiles(fullPath);
-                    }
-                    else
-                    {
-                        Directory.Delete(fullPath, true);
-                    }
-                }
+                return new OwnedDownloadFiles(
+                    manager.SavePath,
+                    manager.Files
+                        .SelectMany(static file => new[]
+                        {
+                            file.FullPath,
+                            file.DownloadCompleteFullPath,
+                            file.DownloadIncompleteFullPath
+                        })
+                        .Where(static path => !string.IsNullOrWhiteSpace(path))
+                        .Distinct(GetPathComparer())
+                        .ToArray());
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error deleting files: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Could not snapshot manager file ownership for '{torrent.Name}': {ex.Message}");
             }
         }
-    }
 
-    private static void DeleteDirectoryPreserveTorrentFiles(string directoryPath)
-    {
-        foreach (var file in Directory.GetFiles(directoryPath))
+        if (string.IsNullOrWhiteSpace(torrent.SavePath)
+            || string.IsNullOrWhiteSpace(torrent.TorrentFilePath)
+            || !File.Exists(torrent.TorrentFilePath))
         {
-            if (file.EndsWith(".torrent", StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
-
-            File.Delete(file);
+            return OwnedDownloadFiles.Empty;
         }
 
-        foreach (var dir in Directory.GetDirectories(directoryPath))
-        {
-            DeleteDirectoryPreserveTorrentFiles(dir);
-            if (!Directory.EnumerateFileSystemEntries(dir).Any())
-            {
-                Directory.Delete(dir);
-            }
-        }
-    }
-
-    private static void TryDeleteTorrentFile(TorrentItem torrent)
-    {
         try
         {
-            var candidates = new List<string>();
+            var metadata = await LoadTorrentFileBoundedAsync(torrent.TorrentFilePath, torrent);
+            var basePath = Path.GetFullPath(torrent.SavePath);
+            var containingDirectory = metadata.Files.Count == 1
+                ? basePath
+                : Path.Combine(basePath, EscapeTorrentPath(metadata.Name));
 
-            if (!string.IsNullOrWhiteSpace(torrent.TorrentFilePath))
+            var paths = new HashSet<string>(GetPathComparer());
+            foreach (var file in metadata.Files)
             {
-                candidates.Add(torrent.TorrentFilePath);
+                var completePath = Path.Combine(containingDirectory, EscapeTorrentFilePath(file.Path));
+                paths.Add(completePath);
             }
 
-            if (!string.IsNullOrWhiteSpace(torrent.TorrentFileName) && !string.IsNullOrWhiteSpace(torrent.SavePath))
-            {
-                candidates.Add(Path.Combine(torrent.SavePath, torrent.TorrentFileName));
-            }
+            return new OwnedDownloadFiles(basePath, paths.ToArray());
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Could not load download ownership metadata for '{torrent.Name}': {ex.Message}");
+            return OwnedDownloadFiles.Empty;
+        }
+    }
 
-            foreach (var candidate in candidates)
-            {
-                var path = candidate.Trim();
+    private static void DeleteOwnedDownloadFiles(OwnedDownloadFiles ownedFiles, string? torrentFilePath, bool deleteTorrentFile)
+    {
+        if (string.IsNullOrWhiteSpace(ownedFiles.BaseDirectory) || ownedFiles.Paths.Count == 0)
+        {
+            return;
+        }
 
-                if (Uri.TryCreate(path, UriKind.Absolute, out var uri) && uri.IsFile)
+        try
+        {
+            var basePath = Path.GetFullPath(ownedFiles.BaseDirectory);
+            var protectedTorrentPath = string.IsNullOrWhiteSpace(torrentFilePath)
+                ? null
+                : Path.GetFullPath(torrentFilePath);
+
+            foreach (var candidate in ownedFiles.Paths)
+            {
+                if (!TryGetSafeOwnedFilePath(candidate, basePath, out var fullPath))
                 {
-                    path = uri.LocalPath;
+                    System.Diagnostics.Debug.WriteLine($"Skipping unsafe owned-file path '{candidate}'.");
+                    continue;
                 }
 
-                var fullPath = Path.GetFullPath(path);
-                if (!fullPath.EndsWith(".torrent", StringComparison.OrdinalIgnoreCase))
+                if (!deleteTorrentFile && PathsEqual(fullPath, protectedTorrentPath))
                 {
                     continue;
                 }
@@ -692,15 +1119,245 @@ public class TorrentService : ITorrentService
                     continue;
                 }
 
-                var attributes = File.GetAttributes(fullPath);
-                if (attributes.HasFlag(FileAttributes.ReadOnly))
+                try
                 {
-                    File.SetAttributes(fullPath, attributes & ~FileAttributes.ReadOnly);
-                }
+                    var attributes = File.GetAttributes(fullPath);
+                    if (attributes.HasFlag(FileAttributes.ReparsePoint))
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Skipping reparse-point payload '{fullPath}'.");
+                        continue;
+                    }
 
-                File.Delete(fullPath);
-                break;
+                    if (attributes.HasFlag(FileAttributes.ReadOnly))
+                    {
+                        File.SetAttributes(fullPath, attributes & ~FileAttributes.ReadOnly);
+                    }
+
+                    File.Delete(fullPath);
+                    PruneEmptyOwnedDirectories(Path.GetDirectoryName(fullPath), basePath);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error deleting owned payload '{fullPath}': {ex.Message}");
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error resolving owned download paths: {ex.Message}");
+        }
+    }
+
+    private static async Task<MonoTorrent.Torrent> LoadTorrentFileBoundedAsync(
+        string torrentFilePath,
+        TorrentItem expectedTorrent)
+    {
+        var content = await TorrentFileContentReader.ReadFromFileAsync(torrentFilePath);
+
+        // MonoTorrent's loader is still needed for its canonical payload path mapping, but
+        // first run the bounded decoder so legacy or externally replaced metadata cannot
+        // bypass the import parser's depth/node/container limits.
+        _ = new TorrentFileParser().Parse(content);
+        var metadata = await MonoTorrent.Torrent.LoadAsync(content.AsMemory());
+        if (!TorrentIdentityMatches(expectedTorrent, metadata.InfoHashes))
+        {
+            throw new InvalidDataException(
+                $"The .torrent metadata no longer matches torrent '{expectedTorrent.Name}'.");
+        }
+
+        return metadata;
+    }
+
+    private static bool TorrentIdentityMatches(TorrentItem torrent, InfoHashes actualInfoHashes)
+    {
+        var expectedHashes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (!string.IsNullOrWhiteSpace(torrent.InfoHash))
+        {
+            expectedHashes.Add(torrent.InfoHash.Trim());
+        }
+
+        if (!string.IsNullOrWhiteSpace(torrent.MagnetLink))
+        {
+            try
+            {
+                var magnet = MagnetLink.Parse(torrent.MagnetLink);
+                if (magnet.InfoHashes.V1 is { } v1)
+                {
+                    expectedHashes.Add(v1.ToHex());
+                }
+                if (magnet.InfoHashes.V2 is { } v2)
+                {
+                    expectedHashes.Add(v2.ToHex());
+                }
+            }
+            catch
+            {
+                // The stored hexadecimal identity can still be authoritative.
+            }
+        }
+
+        if (expectedHashes.Count == 0)
+        {
+            return false;
+        }
+
+        return (actualInfoHashes.V1 is { } actualV1 && expectedHashes.Contains(actualV1.ToHex()))
+            || (actualInfoHashes.V2 is { } actualV2 && expectedHashes.Contains(actualV2.ToHex()));
+    }
+
+    private static bool TryGetSafeOwnedFilePath(string candidate, string basePath, out string fullPath)
+    {
+        fullPath = string.Empty;
+        try
+        {
+            fullPath = Path.GetFullPath(candidate);
+            return PathGuard.IsPathWithinDirectory(fullPath, basePath)
+                && !HasReparsePointInPath(basePath, Path.GetDirectoryName(fullPath));
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static bool HasReparsePointInPath(string basePath, string? directoryPath)
+    {
+        if (string.IsNullOrWhiteSpace(directoryPath))
+        {
+            return true;
+        }
+
+        var fullBase = Path.GetFullPath(basePath);
+        var current = new DirectoryInfo(Path.GetFullPath(directoryPath));
+        while (current is not null)
+        {
+            if (current.Exists && current.Attributes.HasFlag(FileAttributes.ReparsePoint))
+            {
+                return true;
+            }
+
+            if (PathsEqual(current.FullName, fullBase))
+            {
+                return false;
+            }
+
+            if (!PathGuard.IsPathWithinDirectory(current.FullName, fullBase))
+            {
+                return true;
+            }
+
+            current = current.Parent;
+        }
+
+        return true;
+    }
+
+    private static void PruneEmptyOwnedDirectories(string? directoryPath, string basePath)
+    {
+        if (string.IsNullOrWhiteSpace(directoryPath))
+        {
+            return;
+        }
+
+        var current = new DirectoryInfo(directoryPath);
+        while (current.Exists
+            && !PathsEqual(current.FullName, basePath)
+            && PathGuard.IsPathWithinDirectory(current.FullName, basePath))
+        {
+            if (current.Attributes.HasFlag(FileAttributes.ReparsePoint)
+                || current.EnumerateFileSystemInfos().Any())
+            {
+                return;
+            }
+
+            var parent = current.Parent;
+            current.Delete(recursive: false);
+            if (parent is null)
+            {
+                return;
+            }
+
+            current = parent;
+        }
+    }
+
+    // These two routines intentionally mirror MonoTorrent 3.0.2's internal
+    // TorrentFileInfo path mapping so metadata-only removal targets the same files.
+    private static string EscapeTorrentPath(string path)
+    {
+        foreach (var invalidCharacter in Path.GetInvalidPathChars())
+        {
+            path = path.Replace(invalidCharacter.ToString(), Convert.ToString(invalidCharacter, 16));
+        }
+
+        return path;
+    }
+
+    private static string EscapeTorrentFilePath(string path)
+    {
+        path = path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+        var separatorIndex = path.LastIndexOf(Path.DirectorySeparatorChar);
+        var directory = separatorIndex < 0 ? string.Empty : path[..separatorIndex];
+        var fileName = separatorIndex < 0 ? path : path[(separatorIndex + 1)..];
+        directory = EscapeTorrentPath(directory);
+
+        foreach (var invalidCharacter in Path.GetInvalidFileNameChars())
+        {
+            fileName = fileName.Replace(invalidCharacter.ToString(), $"_{Convert.ToString(invalidCharacter, 16)}_");
+        }
+
+        return Path.Combine(directory, fileName);
+    }
+
+    private static StringComparer GetPathComparer()
+        => OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+
+    private static bool PathsEqual(string? left, string? right)
+        => left is not null
+            && right is not null
+            && GetPathComparer().Equals(Path.GetFullPath(left), Path.GetFullPath(right));
+
+    private sealed record OwnedDownloadFiles(string BaseDirectory, IReadOnlyCollection<string> Paths)
+    {
+        public static OwnedDownloadFiles Empty { get; } = new(string.Empty, Array.Empty<string>());
+    }
+
+    private static void TryDeleteTorrentFile(TorrentItem torrent)
+    {
+        try
+        {
+            // Only the exact source path is known to be the imported metadata file.
+            // TorrentFileName + SavePath is merely a guess and can name unrelated data.
+            if (string.IsNullOrWhiteSpace(torrent.TorrentFilePath))
+            {
+                return;
+            }
+
+            var path = torrent.TorrentFilePath.Trim();
+            if (Uri.TryCreate(path, UriKind.Absolute, out var uri) && uri.IsFile)
+            {
+                path = uri.LocalPath;
+            }
+
+            var fullPath = Path.GetFullPath(path);
+            if (!fullPath.EndsWith(".torrent", StringComparison.OrdinalIgnoreCase)
+                || !File.Exists(fullPath))
+            {
+                return;
+            }
+
+            var attributes = File.GetAttributes(fullPath);
+            if (attributes.HasFlag(FileAttributes.ReparsePoint))
+            {
+                return;
+            }
+
+            if (attributes.HasFlag(FileAttributes.ReadOnly))
+            {
+                File.SetAttributes(fullPath, attributes & ~FileAttributes.ReadOnly);
+            }
+
+            File.Delete(fullPath);
         }
         catch (Exception ex)
         {
@@ -796,11 +1453,24 @@ public class TorrentService : ITorrentService
         var newUsername = username ?? string.Empty;
         var newPassword = password ?? string.Empty;
 
-        var changed = _proxyEnabled != enabled
+        var proxyModeChanged = _proxyEnabled != enabled;
+        var changed = proxyModeChanged
                       || !string.Equals(_proxyHost, newHost, StringComparison.Ordinal)
                       || _proxyPort != newPort
                       || !string.Equals(_proxyUsername, newUsername, StringComparison.Ordinal)
                       || !string.Equals(_proxyPassword, newPassword, StringComparison.Ordinal);
+
+        TaskCompletionSource? rebuildReservation = null;
+        Task? activeStartsDrained = null;
+        var rebuildToken = CancellationToken.None;
+        if (changed)
+        {
+            // Reserve the start barrier before publishing the new configuration. If this
+            // update supersedes an in-flight rebuild, both holders share the same barrier,
+            // so no external Start can escape during the handoff.
+            rebuildReservation = BeginEngineRebuild(out activeStartsDrained);
+            rebuildToken = ReplaceProxyRebuildToken();
+        }
 
         _proxyEnabled = enabled;
         _proxyHost = newHost;
@@ -812,9 +1482,13 @@ public class TorrentService : ITorrentService
             ? $"Proxy settings updated: {_proxyHost}:{_proxyPort}"
             : "Proxy disabled");
 
-        if (changed && _engine is not null)
+        if (changed)
         {
-            ScheduleEngineRebuild();
+            ScheduleEngineRebuild(
+                rebuildToken,
+                immediate: proxyModeChanged,
+                rebuildReservation!,
+                activeStartsDrained!);
         }
     }
 
@@ -823,47 +1497,76 @@ public class TorrentService : ITorrentService
     /// rebuild and restarts the timer, so a burst of setting changes (e.g. typing a hostname
     /// one character at a time) collapses into a single rebuild once the user stops.
     /// </summary>
-    private void ScheduleEngineRebuild()
+    private void ScheduleEngineRebuild(
+        CancellationToken token,
+        bool immediate,
+        TaskCompletionSource rebuildReservation,
+        Task activeStartsDrained)
     {
-        CancellationToken token;
+        SafeFireAndForget(DebouncedEngineRebuildAsync(
+            token,
+            immediate,
+            rebuildReservation,
+            activeStartsDrained));
+    }
+
+    private CancellationToken ReplaceProxyRebuildToken()
+    {
         lock (_proxyRebuildGate)
         {
             _proxyRebuildCts?.Cancel();
             _proxyRebuildCts?.Dispose();
             _proxyRebuildCts = new CancellationTokenSource();
-            token = _proxyRebuildCts.Token;
+            return _proxyRebuildCts.Token;
         }
-
-        SafeFireAndForget(DebouncedEngineRebuildAsync(token));
     }
 
-    private async Task DebouncedEngineRebuildAsync(CancellationToken token)
+    private async Task DebouncedEngineRebuildAsync(
+        CancellationToken token,
+        bool immediate,
+        TaskCompletionSource rebuildReservation,
+        Task activeStartsDrained)
     {
+        var rebuildLockTaken = false;
         try
         {
-            await Task.Delay(ProxyRebuildDebounce, token).ConfigureAwait(false);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
+            if (!immediate)
+            {
+                await Task.Delay(ProxyRebuildDebounce, token).ConfigureAwait(false);
+            }
 
-        // Serialize rebuilds: a rebuild stops every manager, disposes the engine, and
-        // restarts torrents, which takes seconds. A second rebuild starting meanwhile would
-        // race on _engine and double-stop the same managers.
-        await _engineRebuildLock.WaitAsync().ConfigureAwait(false);
-        try
-        {
-            if (_disposed)
+            // Cancellation remains meaningful after the debounce. A newer proxy update
+            // must obsolete a rebuild which is waiting behind another rebuild as well.
+            await _engineRebuildLock.WaitAsync(token).ConfigureAwait(false);
+            rebuildLockTaken = true;
+
+            // Serialize rebuilds: a rebuild stops every manager, disposes the engine, and
+            // restarts torrents, which takes seconds. A second rebuild starting meanwhile
+            // would race on _engine and double-stop the same managers.
+            if (_disposed || token.IsCancellationRequested)
             {
                 return;
             }
 
-            await RebuildEngineAsync().ConfigureAwait(false);
+            await RebuildEngineCoreAsync(token, activeStartsDrained).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
+        {
+            // A newer reservation keeps the shared start barrier active.
         }
         finally
         {
-            _engineRebuildLock.Release();
+            try
+            {
+                if (rebuildLockTaken)
+                {
+                    _engineRebuildLock.Release();
+                }
+            }
+            finally
+            {
+                EndEngineRebuild(rebuildReservation);
+            }
         }
     }
 
@@ -874,51 +1577,40 @@ public class TorrentService : ITorrentService
     /// </summary>
     private async Task RebuildEngineAsync()
     {
-        List<string> idsToResume;
+        var rebuildCompletion = BeginEngineRebuild(out var activeStartsDrained);
+        try
+        {
+            await RebuildEngineCoreAsync(CancellationToken.None, activeStartsDrained)
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            EndEngineRebuild(rebuildCompletion);
+        }
+    }
+
+    private async Task RebuildEngineCoreAsync(
+        CancellationToken proxyRebuildToken,
+        Task activeStartsDrained)
+    {
+        // Starts which passed the second gate check before this rebuild was reserved are
+        // allowed to finish. All later starts remain parked across superseded handoffs.
+        await activeStartsDrained.ConfigureAwait(false);
+
+        var pendingResumeAtSnapshot = _proxyRebuildPendingResumeIds.Keys
+            .ToHashSet(StringComparer.Ordinal);
+        HashSet<string> activeIdsAtSnapshot;
         lock (_torrentsLock)
         {
-            idsToResume = Torrents
+            activeIdsAtSnapshot = Torrents
                 .Where(t => t.Status is DownloadStatus.Downloading or DownloadStatus.Seeding)
                 .Select(t => t.Id)
-                .ToList();
+                .ToHashSet(StringComparer.Ordinal);
         }
 
-        // Cancel any active monitors and stop their managers.
-        foreach (var kvp in _downloadTokens.ToArray())
-        {
-            try
-            {
-                kvp.Value.Cancel();
-                kvp.Value.Dispose();
-            }
-            catch
-            {
-                // best-effort
-            }
-            _downloadTokens.TryRemove(kvp.Key, out _);
-        }
-
-        foreach (var kvp in _managers.ToArray())
-        {
-            try
-            {
-                await StopManagerAsync(kvp.Value);
-                if (_engine is not null)
-                {
-                    await _engine.RemoveAsync(kvp.Value);
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Proxy rebuild: stop manager error for {kvp.Key}: {ex.Message}");
-            }
-            _managers.TryRemove(kvp.Key, out _);
-        }
-
-        // Tear down the engine under the same lock that guards creation so a concurrent
-        // start cannot create a fresh engine while we are disposing the old one. The lock
-        // is released before the restart loop below, which recreates the engine via
-        // EnsureEngineAsync.
+        // Detach the old engine first. Any concurrent start will create a new engine with
+        // the new proxy settings instead of registering another manager with the engine
+        // being torn down.
         ClientEngine? engineToDispose;
         await _engineLock.WaitAsync().ConfigureAwait(false);
         try
@@ -929,6 +1621,74 @@ public class TorrentService : ITorrentService
         finally
         {
             _engineLock.Release();
+        }
+
+        var managersToRemove = _managers.ToArray();
+        var idsToTearDown = managersToRemove.Select(static entry => entry.Key)
+            .Concat(_downloadTokens.Keys)
+            .Concat(activeIdsAtSnapshot)
+            .Concat(pendingResumeAtSnapshot)
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(static id => id, StringComparer.Ordinal)
+            .ToArray();
+        var idsPendingResume = pendingResumeAtSnapshot;
+
+        // Every teardown is serialized with Pause/Stop/Remove/Start for that torrent. A
+        // state change which wins the lock first is observed here and is not overwritten.
+        foreach (var id in idsToTearDown)
+        {
+            await using var operationLock = await _torrentOperationLock.AcquireAsync(id);
+
+            if (_downloadTokens.TryRemove(id, out var cts))
+            {
+                try
+                {
+                    await cts.CancelAsync();
+                    cts.Dispose();
+                }
+                catch
+                {
+                    // best-effort monitor cancellation
+                }
+            }
+
+            if (_managers.TryGetValue(id, out var currentManager)
+                && managersToRemove.Any(entry => entry.Key == id && ReferenceEquals(entry.Value, currentManager))
+                && _managers.TryRemove(id, out var manager))
+            {
+                try
+                {
+                    await StopManagerAsync(manager);
+                    if (engineToDispose is not null)
+                    {
+                        await engineToDispose.RemoveAsync(manager);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Proxy rebuild: stop manager error for {id}: {ex.Message}");
+                }
+            }
+
+            if (activeIdsAtSnapshot.Contains(id)
+                && TryGetTorrentById(id, out var torrent)
+                && torrent is not null
+                && torrent.Status is DownloadStatus.Downloading or DownloadStatus.Seeding)
+            {
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    torrent.Status = _backgroundExecutionSuspended
+                        ? DownloadStatus.Paused
+                        : DownloadStatus.Queued;
+                    torrent.DownloadSpeed = 0;
+                    torrent.UploadSpeed = 0;
+                });
+                if (!_backgroundExecutionSuspended)
+                {
+                    idsPendingResume.Add(id);
+                    _proxyRebuildPendingResumeIds[id] = 0;
+                }
+            }
         }
 
         if (engineToDispose is not null)
@@ -959,31 +1719,65 @@ public class TorrentService : ITorrentService
             }
         }
 
-        // Move previously-running torrents back to a restartable state and kick them off.
-        foreach (var id in idsToResume)
+        // Re-check membership and state while holding the same per-torrent operation lock.
+        // Stop/Remove which happened after the initial snapshot therefore wins and cannot
+        // be undone by an unconditional restart.
+        foreach (var id in idsPendingResume)
         {
+            if (proxyRebuildToken.IsCancellationRequested)
+            {
+                break;
+            }
+
+            await using var operationLock = await _torrentOperationLock.AcquireAsync(id);
+
+            if (proxyRebuildToken.IsCancellationRequested)
+            {
+                break;
+            }
+
             if (!TryGetTorrentById(id, out var torrent) || torrent is null)
             {
+                _proxyRebuildPendingResumeIds.TryRemove(id, out _);
                 continue;
             }
 
-            await MainThread.InvokeOnMainThreadAsync(() =>
-            {
-                if (torrent.Status is DownloadStatus.Downloading or DownloadStatus.Seeding)
-                {
-                    torrent.Status = DownloadStatus.Queued;
-                    torrent.DownloadSpeed = 0;
-                    torrent.UploadSpeed = 0;
-                }
-            });
-
+            var keepPendingForNewerRebuild = false;
             try
             {
-                await StartTorrentAsync(torrent);
+                if (_backgroundExecutionSuspended)
+                {
+                    await MainThread.InvokeOnMainThreadAsync(() =>
+                    {
+                        torrent.Status = DownloadStatus.Paused;
+                        torrent.DownloadSpeed = 0;
+                        torrent.UploadSpeed = 0;
+                    });
+                    await SaveAsync();
+                }
+                else if (torrent.Status == DownloadStatus.Queued)
+                {
+                    await StartTorrentCoreAsync(torrent, proxyRebuildToken);
+                    proxyRebuildToken.ThrowIfCancellationRequested();
+                }
+            }
+            catch (OperationCanceledException) when (proxyRebuildToken.IsCancellationRequested)
+            {
+                // A newer configuration owns the resume. Leave this and every remaining
+                // ID in the shared pending set so its rebuild can restart them safely.
+                keepPendingForNewerRebuild = true;
+                break;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Proxy rebuild: restart error for '{torrent.Name}': {ex.Message}");
+            }
+            finally
+            {
+                if (!keepPendingForNewerRebuild)
+                {
+                    _proxyRebuildPendingResumeIds.TryRemove(id, out _);
+                }
             }
         }
     }
@@ -1579,7 +2373,7 @@ public class TorrentService : ITorrentService
         // enabled would broadcast the user's real IP and defeat the purpose of the proxy. So
         // in proxy mode we shut them all down and rely on proxied peer + HTTP-tracker traffic
         // only. UDP bootstrap trackers are likewise skipped (see GetOrCreateManagerAsync).
-        var useProxy = ProxyActive;
+        var useProxy = ProxyRequested;
 
         var builder = new EngineSettingsBuilder
         {
@@ -1614,20 +2408,42 @@ public class TorrentService : ITorrentService
             return new ClientEngine(engineSettings);
         }
 
-        // Route outbound peer (TCP) connections and HTTP(S) tracker / web-seed requests
-        // through the SOCKS5 proxy. MonoTorrent exposes no proxy setting, so we swap the
-        // socket connector and the HTTP client via Factories.
-        var host = _proxyHost;
-        var port = _proxyPort;
-        var username = _proxyUsername;
-        var password = _proxyPassword;
-        var factories = Factories.Default
-            .WithSocketConnectorCreator(() => new Socks5SocketConnector(host, port, username, password))
-            .WithHttpClientCreator(_ => CreateProxiedHttpClient(host, port, username, password));
-        return new ClientEngine(engineSettings, factories);
+        return new ClientEngine(
+            engineSettings,
+            CreateProxyFactories(_proxyHost, _proxyPort, _proxyUsername, _proxyPassword));
     }
 
-    private static System.Net.Http.HttpClient CreateProxiedHttpClient(string host, int port, string username, string password)
+    internal static Factories CreateProxyFactories(string host, int port, string username, string password)
+    {
+        Func<AddressFamily, HttpClient> httpClientCreator =
+            _ => CreateProxiedHttpClient(host, port, username, password);
+
+        // In MonoTorrent 3.0.2 the default peer-connection creators construct their own
+        // SocketConnector, so WithSocketConnectorCreator alone never affects peer TCP.
+        // Likewise, the default HTTP tracker creators close over Factories.Default's
+        // original HttpClient factory. Override both routing layers explicitly.
+        return Factories.Default
+            .WithSocketConnectorCreator(() => new Socks5SocketConnector(host, port, username, password))
+            .WithPeerConnectionCreator(
+                "ipv4",
+                uri => new SocketPeerConnection(uri, new Socks5SocketConnector(host, port, username, password)))
+            .WithPeerConnectionCreator(
+                "ipv6",
+                uri => new SocketPeerConnection(uri, new Socks5SocketConnector(host, port, username, password)))
+            .WithHttpClientCreator(family => httpClientCreator(family))
+            .WithTrackerCreator("http", uri => CreateHttpTracker(uri, httpClientCreator))
+            .WithTrackerCreator("https", uri => CreateHttpTracker(uri, httpClientCreator))
+            // Passing null restores MonoTorrent's default UDP creator. Throwing makes
+            // Factories.CreateTracker return null, so UDP announces cannot bypass SOCKS5.
+            .WithTrackerCreator("udp", _ => throw new NotSupportedException("UDP trackers are disabled while SOCKS5 proxy mode is active."));
+    }
+
+    private static ITracker CreateHttpTracker(Uri uri, Func<AddressFamily, HttpClient> httpClientCreator)
+        => new Tracker(
+            new HttpTrackerConnection(uri, httpClientCreator, AddressFamily.InterNetwork),
+            new HttpTrackerConnection(uri, httpClientCreator, AddressFamily.InterNetworkV6));
+
+    private static HttpClient CreateProxiedHttpClient(string host, int port, string username, string password)
     {
         var proxy = new System.Net.WebProxy($"socks5://{host}:{port}");
         if (!string.IsNullOrEmpty(username))
@@ -1635,13 +2451,13 @@ public class TorrentService : ITorrentService
             proxy.Credentials = new System.Net.NetworkCredential(username, password);
         }
 
-        var handler = new System.Net.Http.SocketsHttpHandler
+        var handler = new SocketsHttpHandler
         {
             Proxy = proxy,
             UseProxy = true
         };
 
-        return new System.Net.Http.HttpClient(handler, disposeHandler: true);
+        return new HttpClient(handler, disposeHandler: true);
     }
 
 
@@ -1674,7 +2490,7 @@ public class TorrentService : ITorrentService
         {
             try
             {
-                var monoTorrent = await MonoTorrent.Torrent.LoadAsync(torrent.TorrentFilePath);
+                var monoTorrent = await LoadTorrentFileBoundedAsync(torrent.TorrentFilePath, torrent);
                 manager = await engine.AddAsync(monoTorrent, downloadPath, torrentSettings);
             }
             catch (Exception ex)
@@ -1682,7 +2498,7 @@ public class TorrentService : ITorrentService
                 System.Diagnostics.Debug.WriteLine($"Failed to load .torrent file: {ex.Message}. Falling back to magnet link.");
                 var magnet = MagnetLink.Parse(torrent.MagnetLink);
                 manager = await engine.AddAsync(magnet, downloadPath, torrentSettings);
-                if (!ProxyActive)
+                if (!ProxyRequested)
                 {
                     await AddPublicTrackersIfNeededAsync(manager, torrent.MagnetLink);
                 }
@@ -1692,7 +2508,7 @@ public class TorrentService : ITorrentService
         {
             var magnet = MagnetLink.Parse(torrent.MagnetLink);
             manager = await engine.AddAsync(magnet, downloadPath, torrentSettings);
-            if (!ProxyActive)
+            if (!ProxyRequested)
             {
                 // The bootstrap trackers are all UDP, which the SOCKS5 proxy cannot tunnel;
                 // adding them in proxy mode would leak the real IP via tracker announces.

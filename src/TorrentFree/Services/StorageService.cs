@@ -91,31 +91,12 @@ public class StorageService : IStorageService, IDisposable
         try
         {
             var newFile = Path.Combine(newDir, TorrentsFileName);
-            if (File.Exists(newFile))
-            {
-                return; // already migrated or has its own data
-            }
+            var legacyFiles = GetMsixLocalStateDirectories()
+                .Select(static directory => Path.Combine(directory, TorrentsFileName));
 
-            // FileSystem.AppDataDirectory on a packaged app points to the MSIX LocalState folder.
-            // Try to locate it via the known Packages path pattern.
-            var packagesRoot = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "Packages");
-
-            if (!Directory.Exists(packagesRoot))
+            if (StorageMigration.TryMigrate(newFile, legacyFiles))
             {
-                return;
-            }
-
-            foreach (var pkgDir in Directory.EnumerateDirectories(packagesRoot, "com.torrentfree.app*"))
-            {
-                var candidate = Path.Combine(pkgDir, "LocalState", TorrentsFileName);
-                if (File.Exists(candidate))
-                {
-                    File.Copy(candidate, newFile, overwrite: false);
-                    System.Diagnostics.Debug.WriteLine($"Migrated torrents.json from {candidate} to {newFile}");
-                    break;
-                }
+                System.Diagnostics.Debug.WriteLine($"Migrated packaged app state to {newFile}");
             }
         }
         catch (Exception ex)
@@ -123,11 +104,59 @@ public class StorageService : IStorageService, IDisposable
             System.Diagnostics.Debug.WriteLine($"Data migration error: {ex.Message}");
         }
     }
+
+    private static IReadOnlyCollection<string> GetMsixLocalStateDirectories()
+    {
+        var directories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // This is the authoritative path while the process has package identity.
+        // Accessing ApplicationData.Current is unsupported for an unpackaged process,
+        // so keep the fallback completely non-fatal for local/debug builds.
+        try
+        {
+            AddDirectory(Windows.Storage.ApplicationData.Current.LocalFolder.Path);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Packaged LocalState is unavailable: {ex.Message}");
+        }
+
+        // Resolve the folder from the package family name as a fallback. The family
+        // name includes the publisher-derived suffix and therefore matches the real
+        // Packages directory rather than the cross-platform ApplicationId.
+        try
+        {
+            var packageFamilyName = Windows.ApplicationModel.Package.Current.Id.FamilyName;
+            if (!string.IsNullOrWhiteSpace(packageFamilyName))
+            {
+                AddDirectory(Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Packages",
+                    packageFamilyName,
+                    "LocalState"));
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Package identity is unavailable: {ex.Message}");
+        }
+
+        return directories;
+
+        void AddDirectory(string? path)
+        {
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                directories.Add(path);
+            }
+        }
+    }
 #endif
 
     /// <inheritdoc />
     public async Task<List<TorrentItem>> LoadTorrentsAsync()
     {
+        await _saveLock.WaitAsync();
         try
         {
             var data = await LoadDataAsync();
@@ -151,6 +180,10 @@ public class StorageService : IStorageService, IDisposable
             // Log unexpected errors
             System.Diagnostics.Debug.WriteLine($"Unexpected error loading torrents: {ex.Message}");
             return [];
+        }
+        finally
+        {
+            _saveLock.Release();
         }
     }
 
@@ -188,6 +221,7 @@ public class StorageService : IStorageService, IDisposable
     /// <inheritdoc />
     public async Task<AppSettings> LoadSettingsAsync()
     {
+        await _saveLock.WaitAsync();
         try
         {
             var data = await LoadDataAsync();
@@ -199,6 +233,10 @@ public class StorageService : IStorageService, IDisposable
             System.Diagnostics.Debug.WriteLine($"Error loading settings: {ex.Message}");
             _cachedSettings = new AppSettings();
             return _cachedSettings;
+        }
+        finally
+        {
+            _saveLock.Release();
         }
     }
 

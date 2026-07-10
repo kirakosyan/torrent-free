@@ -2,6 +2,8 @@ using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using AndroidX.Core.View;
+using Microsoft.Extensions.DependencyInjection;
+using TorrentFree.Services;
 
 using AView = Android.Views.View;
 
@@ -14,6 +16,12 @@ public class MainActivity : MauiAppCompatActivity
     {
         ConfigureEdgeToEdge();
         base.OnCreate(savedInstanceState);
+    }
+
+    protected override void OnResume()
+    {
+        base.OnResume();
+        MauiProgram.Services?.GetService<ITorrentService>()?.ResumeAfterBackgroundTimeout();
     }
 
     private void ConfigureEdgeToEdge()

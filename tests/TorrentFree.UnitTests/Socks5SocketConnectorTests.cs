@@ -132,7 +132,7 @@ public sealed class Socks5SocketConnectorTests
     /// Minimal in-process SOCKS5 server that performs the handshake against a single
     /// client, records what it observed, and then echoes tunnelled payload bytes.
     /// </summary>
-    private sealed class FakeSocks5Proxy : IDisposable
+    internal sealed class FakeSocks5Proxy : IDisposable
     {
         public const byte AddressTypeIPv4 = 0x01;
         public const byte AddressTypeDomain = 0x03;

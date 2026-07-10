@@ -23,10 +23,10 @@ namespace TorrentFree.WinUI;
 public partial class App : MauiWinUIApplication
 {
 	private const string InstanceKey = "TorrentFreeMain";
-	private const int ActivationProcessingAttempts = 20;
-	private static readonly TimeSpan ActivationProcessingRetryDelay = TimeSpan.FromMilliseconds(250);
 	private readonly AppInstance _mainInstance;
 	private readonly DispatcherQueue? _dispatcherQueue;
+	private readonly TaskCompletionSource<bool> _servicesReady = new(TaskCreationOptions.RunContinuationsAsynchronously);
+	private AppActivationArguments? _initialActivation;
 
 	/// <summary>
 	/// Initializes the singleton application object.  This is the first line of authored code
@@ -37,13 +37,16 @@ public partial class App : MauiWinUIApplication
 		this.InitializeComponent();
 
 		_dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+		var currentInstance = AppInstance.GetCurrent();
+		var initialActivation = currentInstance.GetActivatedEventArgs();
+		_initialActivation = initialActivation;
 		_mainInstance = AppInstance.FindOrRegisterForKey(InstanceKey);
 		if (!_mainInstance.IsCurrent)
 		{
 			var redirectCompleted = false;
 			try
 			{
-				var redirectOperation = _mainInstance.RedirectActivationToAsync(AppInstance.GetCurrent().GetActivatedEventArgs());
+				var redirectOperation = _mainInstance.RedirectActivationToAsync(initialActivation);
 				redirectCompleted = WaitForRedirectCompletion(redirectOperation);
 			}
 			catch (Exception ex)
@@ -60,9 +63,33 @@ public partial class App : MauiWinUIApplication
 		}
 
 		_mainInstance.Activated += OnActivated;
+
+		// The Activated event is raised for activations redirected from later
+		// processes. The cold-start arguments are dispatched from CreateMauiApp,
+		// after the service provider has been built.
 	}
 
-	protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+	protected override MauiApp CreateMauiApp()
+	{
+		try
+		{
+			var app = MauiProgram.CreateMauiApp();
+			_servicesReady.TrySetResult(true);
+
+			var initialActivation = Interlocked.Exchange(ref _initialActivation, null);
+			if (initialActivation is not null)
+			{
+				OnActivated(AppInstance.GetCurrent(), initialActivation);
+			}
+
+			return app;
+		}
+		catch (Exception ex)
+		{
+			_servicesReady.TrySetException(ex);
+			throw;
+		}
+	}
 
 	private void OnActivated(object? sender, AppActivationArguments args)
 	{
@@ -91,7 +118,7 @@ public partial class App : MauiWinUIApplication
 		System.Diagnostics.Debug.WriteLine("Unable to dispatch activation to the WinUI UI thread.");
 	}
 
-	private static async Task ProcessActivationPathsSafelyAsync(IReadOnlyList<string> paths)
+	private async Task ProcessActivationPathsSafelyAsync(IReadOnlyList<string> paths)
 	{
 		try
 		{
@@ -103,27 +130,21 @@ public partial class App : MauiWinUIApplication
 		}
 	}
 
-	private static async Task ProcessActivationPathsAsync(IReadOnlyList<string> paths)
+	private async Task ProcessActivationPathsAsync(IReadOnlyList<string> paths)
 	{
-		for (var attempt = 1; attempt <= ActivationProcessingAttempts; attempt++)
+		await _servicesReady.Task;
+		var viewModel = MauiProgram.Services.GetService<MainViewModel>();
+		if (viewModel is null)
 		{
-			var services = MauiProgram.Services;
-			var viewModel = services?.GetService<MainViewModel>();
-			if (viewModel is not null)
-			{
-				await ActivationImportCoordinator.ImportAsync(
-					paths,
-					() => viewModel.InitializeCommand.ExecuteAsync(null),
-					viewModel.ImportTorrentFileFromPathAsync);
-
-				ActivateMainWindow();
-				return;
-			}
-
-			await Task.Delay(ActivationProcessingRetryDelay);
+			throw new InvalidOperationException("The main view model is unavailable for file activation.");
 		}
 
-		System.Diagnostics.Debug.WriteLine("Activation import skipped because the main view model was not ready.");
+		await ActivationImportCoordinator.ImportAsync(
+			paths,
+			viewModel.EnsureInitializedAsync,
+			viewModel.ImportTorrentFileFromPathAsync);
+
+		ActivateMainWindow();
 	}
 
 	private static IReadOnlyList<string> ExtractTorrentPaths(AppActivationArguments args)

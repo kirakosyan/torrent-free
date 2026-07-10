@@ -3,6 +3,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using AndroidX.Core.App;
+using Microsoft.Extensions.DependencyInjection;
 using TorrentFree.Services;
 
 namespace TorrentFree;
@@ -12,6 +13,7 @@ public sealed class DownloadForegroundService : Service
 {
     private const int NotificationId = 1001;
     private const string ChannelId = "torrentfree_downloads";
+    private int _timeoutHandled;
 
     public override void OnCreate()
     {
@@ -72,11 +74,41 @@ public sealed class DownloadForegroundService : Service
 
     private void StopAfterTimeout()
     {
+        if (Interlocked.Exchange(ref _timeoutHandled, 1) != 0)
+        {
+            return;
+        }
+
         // Android only grants a few seconds after a foreground-service timeout.
         // Stop the service unconditionally; StopSelf(startId) can leave it alive
         // if the service has received a newer start request or sticky restart.
+        // Pause and persist the transfers through TorrentService as a fire-and-forget
+        // operation. The service itself must be stopped synchronously before Android's
+        // timeout grace period expires.
+        _ = PauseTransfersAfterTimeoutAsync();
         StopSelf();
         StopForegroundSafely();
+    }
+
+    private static async Task PauseTransfersAfterTimeoutAsync()
+    {
+        try
+        {
+            var torrentService = MauiProgram.Services?.GetService<ITorrentService>();
+            if (torrentService is null)
+            {
+                System.Diagnostics.Debug.WriteLine("Torrent service was unavailable after the foreground-service timeout.");
+                return;
+            }
+
+            await torrentService.PauseAllForBackgroundTimeoutAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            // The foreground service has already been stopped as Android requires. Keep
+            // this exception observed so a best-effort pause cannot crash the process.
+            System.Diagnostics.Debug.WriteLine($"Failed to pause downloads after the foreground-service timeout: {ex}");
+        }
     }
 
     public override IBinder? OnBind(Intent? intent) => null;

@@ -77,4 +77,46 @@ public sealed class ActivationImportCoordinatorTests
         Assert.False(initializeCalled);
         Assert.False(importCalled);
     }
+
+    [Fact]
+    public async Task ImportAsync_SerializesConcurrentActivationSources()
+    {
+        var firstImportStarted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseFirstImport = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var secondImportStarted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var invocation = 0;
+
+        async Task ImportAsync(string _)
+        {
+            if (Interlocked.Increment(ref invocation) == 1)
+            {
+                firstImportStarted.SetResult(true);
+                await releaseFirstImport.Task;
+                return;
+            }
+
+            secondImportStarted.SetResult(true);
+        }
+
+        var first = ActivationImportCoordinator.ImportAsync(
+            new[] { "same.torrent" },
+            static () => Task.CompletedTask,
+            ImportAsync,
+            TestContext.Current.CancellationToken);
+
+        await firstImportStarted.Task;
+
+        var second = ActivationImportCoordinator.ImportAsync(
+            new[] { "same.torrent" },
+            static () => Task.CompletedTask,
+            ImportAsync,
+            TestContext.Current.CancellationToken);
+
+        Assert.False(secondImportStarted.Task.IsCompleted);
+
+        releaseFirstImport.SetResult(true);
+        await Task.WhenAll(first, second);
+
+        Assert.True(secondImportStarted.Task.IsCompletedSuccessfully);
+    }
 }

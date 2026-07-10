@@ -2,6 +2,8 @@ namespace TorrentFree.Services;
 
 internal static class ActivationImportCoordinator
 {
+    private static readonly SemaphoreSlim ImportLock = new(1, 1);
+
     public static async Task ImportAsync(
         IEnumerable<string> paths,
         Func<Task> initializeAsync,
@@ -22,12 +24,20 @@ internal static class ActivationImportCoordinator
             return;
         }
 
-        await initializeAsync();
-
-        foreach (var path in importPaths)
+        await ImportLock.WaitAsync(cancellationToken);
+        try
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            await importAsync(path);
+            await initializeAsync();
+
+            foreach (var path in importPaths)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                await importAsync(path);
+            }
+        }
+        finally
+        {
+            ImportLock.Release();
         }
     }
 }

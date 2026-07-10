@@ -13,9 +13,14 @@ public sealed class TorrentFileParser : ITorrentFileParser
     public TorrentMetadata Parse(byte[] torrentFileContent)
     {
         ArgumentNullException.ThrowIfNull(torrentFileContent);
+        if (torrentFileContent.Length > TorrentFileLimits.MaxFileSizeBytes)
+        {
+            throw new FormatException(
+                $".torrent file exceeds the {TorrentFileLimits.MaxFileSizeBytes / (1024 * 1024)} MB import limit.");
+        }
 
-        var root = Bencode.Decode(torrentFileContent);
-        if (root is not BDictionary dict)
+        var document = Bencode.DecodeDocument(torrentFileContent, "info");
+        if (document.Root is not BDictionary dict)
         {
             throw new FormatException("Invalid .torrent file (root is not a dictionary).");
         }
@@ -23,17 +28,20 @@ public sealed class TorrentFileParser : ITorrentFileParser
         var name = TryGetUtf8String(dict, "info", "name");
 
         var trackers = new List<string>();
+        var trackerEntryCount = 0;
         if (TryGetValue(dict, "announce", out var announce) && announce is BString announceStr)
         {
-            var t = Encoding.UTF8.GetString(announceStr.Bytes);
-            if (!string.IsNullOrWhiteSpace(t))
-            {
-                trackers.Add(t);
-            }
+            CountTrackerEntry(ref trackerEntryCount);
+            AddTracker(announceStr, trackers);
         }
 
         if (TryGetValue(dict, "announce-list", out var announceList) && announceList is BList tiers)
         {
+            if (tiers.Items.Count > TorrentFileLimits.MaxTrackerCount)
+            {
+                throw new FormatException(".torrent file contains too many tracker tiers.");
+            }
+
             foreach (var tier in tiers.Items)
             {
                 if (tier is not BList tierList)
@@ -43,16 +51,13 @@ public sealed class TorrentFileParser : ITorrentFileParser
 
                 foreach (var urlElement in tierList.Items)
                 {
+                    CountTrackerEntry(ref trackerEntryCount);
                     if (urlElement is not BString urlStr)
                     {
                         continue;
                     }
 
-                    var url = Encoding.UTF8.GetString(urlStr.Bytes);
-                    if (!string.IsNullOrWhiteSpace(url))
-                    {
-                        trackers.Add(url);
-                    }
+                    AddTracker(urlStr, trackers);
                 }
             }
         }
@@ -61,7 +66,7 @@ public sealed class TorrentFileParser : ITorrentFileParser
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        var infoHashHex = TryComputeInfoHashHex(torrentFileContent, dict);
+        var infoHashHex = TryComputeInfoHashHex(torrentFileContent, dict, document);
 
         return new TorrentMetadata(name, infoHashHex, trackers);
     }
@@ -81,19 +86,53 @@ public sealed class TorrentFileParser : ITorrentFileParser
             return null;
         }
 
+        if (str.Bytes.Length > TorrentFileLimits.MaxTorrentNameBytes)
+        {
+            throw new FormatException("Torrent name exceeds the supported length.");
+        }
+
         var value = Encoding.UTF8.GetString(str.Bytes);
         return string.IsNullOrWhiteSpace(value) ? null : value;
     }
 
-    private static string? TryComputeInfoHashHex(byte[] torrentFileContent, BDictionary root)
+    private static void CountTrackerEntry(ref int trackerEntryCount)
+    {
+        if (++trackerEntryCount > TorrentFileLimits.MaxTrackerCount)
+        {
+            throw new FormatException(".torrent file contains too many tracker entries.");
+        }
+    }
+
+    private static void AddTracker(BString tracker, List<string> trackers)
+    {
+        if (tracker.Bytes.Length > TorrentFileLimits.MaxTrackerUrlBytes)
+        {
+            throw new FormatException(".torrent tracker URL exceeds the supported length.");
+        }
+
+        var url = Encoding.UTF8.GetString(tracker.Bytes);
+        if (!string.IsNullOrWhiteSpace(url))
+        {
+            trackers.Add(url);
+        }
+    }
+
+    private static string? TryComputeInfoHashHex(
+        byte[] torrentFileContent,
+        BDictionary root,
+        BencodeDocument document)
     {
         // Hash the exact bytes of the "info" dictionary as they appear in the file. Decoding
         // and re-encoding can change the bytes (key ordering, non-UTF-8 content) and produce
         // an info-hash that does not match the one peers and trackers use.
-        if (!Bencode.TryGetTopLevelRawValue(torrentFileContent, "info", out var infoBytes) || infoBytes.Length == 0)
+        if (!document.HasCapturedValue || document.CapturedValueLength == 0)
         {
             return null;
         }
+
+        var infoBytes = torrentFileContent.AsSpan(
+            document.CapturedValueOffset,
+            document.CapturedValueLength);
 
         // A v2-only torrent (BEP 52: "meta version" >= 2 with no v1 "pieces") is identified by
         // the SHA-256 of its info dictionary; v1 and hybrid torrents use SHA-1. BuildMagnetLink

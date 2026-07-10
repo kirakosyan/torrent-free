@@ -31,7 +31,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private CancellationTokenSource? _statsTimerCts;
     private CancellationTokenSource? _magnetAutoStartCts;
     private bool _statsTimerStarted;
-    private bool _isInitializing;
+    private readonly SemaphoreSlim _initializationLock = new(1, 1);
     private bool _hasInitialized;
 
     /// <summary>
@@ -186,7 +186,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     partial void OnSortByStatusChanged(bool value)
     {
         SyncDisplayTorrents();
-        SafeFireAndForget(PersistSettingsAsync());
+        SafeFireAndForget(PersistSortPreferenceAsync());
     }
 
     partial void OnIsBusyChanged(bool value)
@@ -197,37 +197,31 @@ public partial class MainViewModel : ObservableObject, IDisposable
     partial void OnGlobalDownloadLimitKbpsChanged(int value)
     {
         ApplyGlobalSpeedLimits();
-        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnGlobalUploadLimitKbpsChanged(int value)
     {
         ApplyGlobalSpeedLimits();
-        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnMaxActiveDownloadsChanged(int value)
     {
         ApplyQueueLimits();
-        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnMaxActiveSeedsChanged(int value)
     {
         ApplyQueueLimits();
-        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnGlobalMaxSeedRatioChanged(double value)
     {
         ApplySeedingLimits();
-        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnGlobalMaxSeedMinutesChanged(int value)
     {
         ApplySeedingLimits();
-        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnShowSelectedTorrentDetailsChanged(bool value)
@@ -291,26 +285,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
         ShowSelectedTorrentDetails = !ShowSelectedTorrentDetails;
     }
 
-    private async Task PersistSettingsAsync()
+    private async Task PersistSortPreferenceAsync()
     {
         if (_isLoadingSettings)
         {
             return;
         }
 
-        var existingSettings = await _storageService.LoadSettingsAsync();
-        var settings = AppSettingsFactory.CreateForMainPage(
-            existingSettings,
-            GlobalDownloadLimitKbps,
-            GlobalUploadLimitKbps,
-            MaxActiveDownloads,
-            MaxActiveSeeds,
-            GlobalMaxSeedRatio,
-            GlobalMaxSeedMinutes,
-            SortByStatus);
-
-        _loadedSettings = settings;
-        await _storageService.SaveSettingsAsync(settings);
+        _loadedSettings = await AppSettingsPersistence.MergeAndSaveAsync(
+            _storageService,
+            existingSettings => AppSettingsFactory.CreateWithSortByStatus(existingSettings, SortByStatus));
     }
 
     [RelayCommand]
@@ -683,46 +667,98 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task InitializeAsync()
     {
-        if (_hasInitialized || _isInitializing)
+        try
         {
-            return;
+            await EnsureInitializedAsync();
         }
+        catch
+        {
+            // EnsureInitializedAsync has already logged the failure and exposed the
+            // localized error. Keep the UI command retryable without surfacing an
+            // unhandled async-command exception.
+        }
+    }
 
-        _isInitializing = true;
-        IsBusy = true;
+    /// <summary>
+    /// Waits for first-time initialization to complete. Later calls refresh the settings
+    /// snapshot before returning. File activation uses this method directly so it cannot
+    /// race an InitializeCommand already running for the main page.
+    /// </summary>
+    public async Task EnsureInitializedAsync()
+    {
+        await _initializationLock.WaitAsync();
+        try
+        {
+            if (_hasInitialized)
+            {
+                await RefreshSettingsAsync();
+                return;
+            }
+
+            IsBusy = true;
+            try
+            {
+                _isLoadingSettings = true;
+                var settings = await AppSettingsPersistence.LoadAsync(_storageService);
+                ApplyLoadedSettings(settings);
+
+                ApplyGlobalSettings();
+                await _torrentService.InitializeAsync();
+                StartStatsTimer();
+                _hasInitialized = true;
+
+                SafeFireAndForget(_notificationService.EnsurePermissionAsync());
+                SafeFireAndForget(PromptFileAssociationAsync());
+                SafeFireAndForget(ProcessCommandLineArgumentsAsync());
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Initialization error: {ex}");
+                ErrorMessage = LocalizationResourceManager.Instance["ErrorLoadDownloads"];
+                throw;
+            }
+            finally
+            {
+                _isLoadingSettings = false;
+                IsBusy = false;
+            }
+        }
+        finally
+        {
+            _initializationLock.Release();
+        }
+    }
+
+    private async Task RefreshSettingsAsync()
+    {
         try
         {
             _isLoadingSettings = true;
-            var settings = await _storageService.LoadSettingsAsync();
-            _loadedSettings = settings;
-            GlobalDownloadLimitKbps = settings.GlobalDownloadLimitKbps;
-            GlobalUploadLimitKbps = settings.GlobalUploadLimitKbps;
-            MaxActiveDownloads = settings.MaxActiveDownloads;
-            MaxActiveSeeds = settings.MaxActiveSeeds;
-            GlobalMaxSeedRatio = settings.GlobalMaxSeedRatio;
-            GlobalMaxSeedMinutes = settings.GlobalMaxSeedMinutes;
-            SortByStatus = settings.SortByStatus;
-
+            var currentSettings = await AppSettingsPersistence.LoadAsync(_storageService);
+            ApplyLoadedSettings(currentSettings);
             ApplyGlobalSettings();
-            await _torrentService.InitializeAsync();
-            StartStatsTimer();
-            _hasInitialized = true;
-
-            SafeFireAndForget(_notificationService.EnsurePermissionAsync());
-            SafeFireAndForget(PromptFileAssociationAsync());
-            SafeFireAndForget(ProcessCommandLineArgumentsAsync());
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Initialization error: {ex}");
+            System.Diagnostics.Debug.WriteLine($"Settings refresh error: {ex}");
             ErrorMessage = LocalizationResourceManager.Instance["ErrorLoadDownloads"];
         }
         finally
         {
             _isLoadingSettings = false;
-            IsBusy = false;
-            _isInitializing = false;
         }
+    }
+
+    private void ApplyLoadedSettings(AppSettings settings)
+    {
+        _loadedSettings = settings;
+        GlobalDownloadLimitKbps = settings.GlobalDownloadLimitKbps;
+        GlobalUploadLimitKbps = settings.GlobalUploadLimitKbps;
+        MaxActiveDownloads = settings.MaxActiveDownloads;
+        MaxActiveSeeds = settings.MaxActiveSeeds;
+        GlobalMaxSeedRatio = settings.GlobalMaxSeedRatio;
+        GlobalMaxSeedMinutes = settings.GlobalMaxSeedMinutes;
+        SortByStatus = settings.SortByStatus;
     }
 
     public Task ImportTorrentFileFromPathAsync(string filePath)
@@ -745,15 +781,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return;
         }
 
-        foreach (var arg in args.Skip(1))
-        {
-            if (!arg.EndsWith(".torrent", StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
+        var torrentPaths = args
+            .Skip(1)
+            .Where(static arg => arg.EndsWith(".torrent", StringComparison.OrdinalIgnoreCase));
 
-            await TryAddTorrentFromFilePathAsync(arg, notifyDuplicate: false, notifyInvalid: true);
-        }
+        await ActivationImportCoordinator.ImportAsync(
+            torrentPaths,
+            static () => Task.CompletedTask,
+            ImportTorrentFileFromPathAsync);
     }
 
     private async Task<bool> TryAddTorrentFromFilePathAsync(string filePath, bool notifyDuplicate, bool notifyInvalid)
@@ -765,7 +800,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         try
         {
-            var content = await File.ReadAllBytesAsync(filePath);
+            var content = await TorrentFileContentReader.ReadFromFileAsync(filePath);
             var metadata = _torrentFileParser.Parse(content);
             return await TryAddTorrentFromMetadataAsync(
                 metadata,
@@ -827,7 +862,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             torrent.TorrentFileName = fileName;
         }
 
-        var settings = await _storageService.LoadSettingsAsync();
+        var settings = await AppSettingsPersistence.LoadAsync(_storageService);
         var fallbackDownloadPath = string.IsNullOrWhiteSpace(torrent.SavePath)
             ? _storageService.GetDefaultDownloadPath()
             : torrent.SavePath;
@@ -1334,6 +1369,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _disposed = true;
         CancelPendingMagnetAutoStart();
         StopStatsTimer();
+        _initializationLock.Dispose();
         LocalizationResourceManager.Instance.PropertyChanged -= OnLocalizationChanged;
         foreach (var torrent in DisplayTorrents)
         {

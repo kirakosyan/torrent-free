@@ -247,7 +247,7 @@ public partial class SettingsViewModel : ObservableObject
     private async Task InitializeAsync()
     {
         _isLoadingSettings = true;
-        var settings = await _storageService.LoadSettingsAsync();
+        var settings = await AppSettingsPersistence.LoadAsync(_storageService);
         _loadedSettings = settings;
 
         GlobalDownloadLimitKbps = settings.GlobalDownloadLimitKbps;
@@ -528,26 +528,27 @@ public partial class SettingsViewModel : ObservableObject
             return;
         }
 
-        var settings = AppSettingsFactory.CreateForSettingsPage(
-            _loadedSettings,
-            GlobalDownloadLimitKbps,
-            GlobalUploadLimitKbps,
-            MaxActiveDownloads,
-            MaxActiveSeeds,
-            GlobalMaxSeedRatio,
-            GlobalMaxSeedMinutes,
-            DownloadToTorrentFolder,
-            SpecificDownloadFolder,
-            ProxyEnabled,
-            ProxyHost,
-            ProxyPort,
-            ProxyUsername,
-            ProxyPassword,
-            SelectedLanguage?.Code,
-            SelectedTheme?.Code);
-
-        _loadedSettings = settings;
-        await _storageService.SaveSettingsAsync(settings);
+        // Merge with the latest snapshot under the shared view-model update lock so a
+        // concurrent sort toggle cannot be replaced by this page's older snapshot.
+        _loadedSettings = await AppSettingsPersistence.MergeAndSaveAsync(
+            _storageService,
+            existingSettings => AppSettingsFactory.CreateForSettingsPage(
+                existingSettings,
+                GlobalDownloadLimitKbps,
+                GlobalUploadLimitKbps,
+                MaxActiveDownloads,
+                MaxActiveSeeds,
+                GlobalMaxSeedRatio,
+                GlobalMaxSeedMinutes,
+                DownloadToTorrentFolder,
+                SpecificDownloadFolder,
+                ProxyEnabled,
+                ProxyHost,
+                ProxyPort,
+                ProxyUsername,
+                ProxyPassword,
+                SelectedLanguage?.Code,
+                SelectedTheme?.Code));
     }
 
     private async Task RefreshFileAssociationAsync()
