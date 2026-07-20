@@ -78,7 +78,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public partial bool IsBusy { get; set; }
 
     /// <summary>
-    /// When enabled, downloading torrents are shown on top.
+    /// When enabled, torrents are grouped by status priority.
     /// </summary>
     [ObservableProperty]
     public partial bool SortByStatus { get; set; }
@@ -609,7 +609,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         var ordered = SortByStatus
             ? Torrents
                 .Select((torrent, index) => new { torrent, index })
-                .OrderBy(entry => entry.torrent.Status == DownloadStatus.Downloading ? 0 : 1)
+                .OrderBy(entry => GetStatusSortOrder(entry.torrent.Status))
                 .ThenBy(entry => entry.torrent.Name, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(entry => entry.index)
                 .Select(entry => entry.torrent)
@@ -648,6 +648,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
             DisplayTorrents.RemoveAt(DisplayTorrents.Count - 1);
         }
     }
+
+    private static int GetStatusSortOrder(DownloadStatus status) => status switch
+    {
+        DownloadStatus.Downloading => 0,
+        DownloadStatus.Seeding => 1,
+        DownloadStatus.Paused => 2,
+        DownloadStatus.Stopped => 3,
+        _ => 4
+    };
 
     private static int IndexOfRef(ObservableCollection<TorrentItem> collection, TorrentItem item, int startIndex)
     {

@@ -2091,6 +2091,8 @@ public class TorrentService : ITorrentService
         try
         {
             long previousDataBytesSent = manager.Monitor.DataBytesSent;
+            var nextTrackerScrape = DateTimeOffset.MinValue;
+            Task trackerScrapeTask = Task.CompletedTask;
 
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -2099,6 +2101,14 @@ public class TorrentService : ITorrentService
                 // MainThread.InvokeOnMainThreadAsync block below; everything else
                 // (reflection, peer/piece scanning) runs on the thread pool.
                 await Task.Delay(1000, cancellationToken).ConfigureAwait(false);
+
+                // Tracker scrape results are the only swarm-wide source for seed/peer counts.
+                // Refresh them in the background so a slow tracker never stalls the monitor loop.
+                if (trackerScrapeTask.IsCompleted && DateTimeOffset.UtcNow >= nextTrackerScrape)
+                {
+                    trackerScrapeTask = RefreshTrackerScrapeAsync(manager, cancellationToken);
+                    nextTrackerScrape = DateTimeOffset.UtcNow.AddMinutes(30);
+                }
 
                 // ---- Collect all data on the background thread ----
                 var metadataSize = manager.Torrent?.Size;
@@ -2115,14 +2125,20 @@ public class TorrentService : ITorrentService
                     ? (manager.Error?.Exception?.Message ?? "Unknown error occurred")
                     : null;
 
-                // Peer counts come straight from MonoTorrent's typed API (note it spells the
-                // leecher count "Leechs"). The old reflection probed property names that do
-                // not exist in MonoTorrent 3.x, so leechers were always reported as zero.
-                var peers = manager.Peers;
-                var seeds = peers?.Seeds ?? 0;
-                var leeches = peers?.Leechs ?? 0;
+                // Availability is piece coverage among connected peers, not a restatement of
+                // the seed/leecher counts. Partial peers can collectively provide 100% even
+                // when no complete seeder is currently connected.
+                var connectedPeers = await manager.GetPeersAsync().ConfigureAwait(false);
+                var connectedSeeds = connectedPeers.Count(peer => peer.IsSeeder);
+                var connectedLeeches = connectedPeers.Count - connectedSeeds;
 
-                var availabilityInfo = GetAvailabilityInfo(seeds, leeches);
+                // Prefer tracker scrape totals, which describe the whole swarm. If a tracker
+                // cannot scrape, fall back to the connected peers inspected above.
+                var (seeds, leeches) = GetSwarmPeerCounts(manager, connectedSeeds, connectedLeeches);
+
+                var availabilityInfo = GetAvailabilityInfo(
+                    connectedPeers.Select(peer => peer.BitField),
+                    manager.HasMetadata ? manager.Bitfield.Length : 0);
                 var healthScore = ComputeHealthScore(seeds, leeches, availabilityInfo.Percent);
 
                 // Metadata from torrent file (if available)
@@ -2279,29 +2295,93 @@ public class TorrentService : ITorrentService
         }
     }
 
-    private readonly record struct AvailabilityInfo(double Percent, string Label);
+    internal readonly record struct AvailabilityInfo(double Percent, string Label);
 
     /// <summary>
-    /// Reports swarm availability from the connected peer counts. Each seed is one full copy
-    /// of the torrent; the partial copies held by leechers cannot be measured because peer
-    /// bitfields are not exposed by MonoTorrent's public API, so the seed count is the
-    /// guaranteed-availability figure and the swarm size is the secondary signal.
+    /// Reports the percentage of torrent pieces currently available from connected peers.
+    /// A collection of partial peers can therefore report 100% without any one peer being a seed.
     /// </summary>
-    private static AvailabilityInfo GetAvailabilityInfo(int seeds, int leeches)
+    internal static AvailabilityInfo GetAvailabilityInfo(IEnumerable<ReadOnlyBitField> peerBitFields, int pieceCount)
     {
-        if (seeds > 0)
+        if (pieceCount <= 0)
         {
-            var meterPercent = Math.Clamp(seeds / 2d, 0, 1) * 100;
-            return new AvailabilityInfo(meterPercent, $"{seeds:0.0}x");
+            return new AvailabilityInfo(0, "—");
         }
 
-        if (leeches > 0)
+        var availablePieces = new BitField(pieceCount);
+        foreach (var bitField in peerBitFields)
         {
-            var swarmPercent = Math.Clamp(leeches / 20d, 0, 1) * 100;
-            return new AvailabilityInfo(swarmPercent, $"{seeds}S/{leeches}L");
+            if (bitField.Length == pieceCount)
+            {
+                availablePieces.Or(bitField);
+                if (availablePieces.AllTrue)
+                {
+                    break;
+                }
+            }
         }
 
-        return new AvailabilityInfo(0, "—");
+        var percent = availablePieces.PercentComplete;
+        return new AvailabilityInfo(percent, $"{percent:0.#}%");
+    }
+
+    private static (int Seeds, int Leeches) GetSwarmPeerCounts(
+        TorrentManager manager,
+        int connectedSeeds,
+        int connectedLeeches)
+    {
+        int? scrapedSeeds = null;
+        int? scrapedLeeches = null;
+
+        foreach (var tier in manager.TrackerManager.Tiers)
+        {
+            foreach (var infoHash in EnumerateInfoHashes(manager.InfoHashes))
+            {
+                if (!tier.ScrapeInfo.TryGetValue(infoHash, out var scrapeInfo))
+                {
+                    continue;
+                }
+
+                // The same peers can be returned by multiple trackers, so use the largest
+                // reported swarm rather than incorrectly adding duplicate tracker totals.
+                scrapedSeeds = Math.Max(scrapedSeeds ?? 0, scrapeInfo.Complete);
+                scrapedLeeches = Math.Max(scrapedLeeches ?? 0, scrapeInfo.Incomplete);
+            }
+        }
+
+        return (
+            Math.Max(connectedSeeds, scrapedSeeds ?? 0),
+            Math.Max(connectedLeeches, scrapedLeeches ?? 0));
+    }
+
+    private static IEnumerable<InfoHash> EnumerateInfoHashes(InfoHashes infoHashes)
+    {
+        if (infoHashes.V1 is not null)
+        {
+            yield return infoHashes.V1;
+        }
+
+        if (infoHashes.V2 is not null)
+        {
+            yield return infoHashes.V2;
+        }
+    }
+
+    private static async Task RefreshTrackerScrapeAsync(TorrentManager manager, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await manager.TrackerManager.ScrapeAsync(cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // Expected when the torrent is paused or stopped.
+        }
+        catch (Exception ex)
+        {
+            // Scraping is optional; connected-peer counts remain a valid fallback.
+            System.Diagnostics.Debug.WriteLine($"Tracker scrape error: {ex.Message}");
+        }
     }
 
     private static int ComputeHealthScore(int seeds, int leeches, double availabilityPercent)
