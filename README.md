@@ -26,7 +26,35 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 - **Save path** prefers the picked `.torrent` folder (if available) otherwise the default path
 - **Persistent storage** of torrent list and settings
 
-## 📝 Release Notes
+## 📝 Release Overview
+
+The current app version is **v1.12**.
+
+### v1.12 (latest)
+
+- Improved swarm availability metrics and torrent status sorting.
+- Updated the .NET MAUI, AndroidX, and test dependency stack.
+
+### v1.11
+
+- Hardened torrent parsing, storage migration, settings persistence, and concurrent engine rebuilds.
+- Improved torrent lifecycle safety, Android foreground execution, and Windows activation behavior.
+
+### v1.10
+
+- Strengthened SOCKS5 privacy, torrent parsing, and thread safety.
+- Improved Android foreground-service reliability, safe-area handling, themes, and localized store presentation.
+
+### v1.9
+
+- Added system, light, and dark theme selection.
+- Applied speed limits and SOCKS5 settings through the MonoTorrent engine.
+- Improved Android file handling, engine reliability, and multilingual support.
+
+### v1.8
+
+- Expanded localization and accessibility throughout the app.
+- Improved activation reliability and desktop window-state persistence.
 
 ### v1.7
 
