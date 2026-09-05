@@ -28,9 +28,16 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 
 ## 📝 Release Overview
 
-The current app version is **v1.12**.
+The current app version is **v1.13**.
 
-### v1.12 (latest)
+### v1.13 (latest)
+
+- Improved saved queue recovery and retained imported torrent metadata across restarts.
+- Fixed transfer monitoring, download/seeding queue admission, and active seeding time limits.
+- Made Android download exports safer when changing destinations or retrying a copy.
+- Extracted a platform-independent core and added regression tests against production models and storage.
+
+### v1.12
 
 - Improved swarm availability metrics and torrent status sorting.
 - Updated the .NET MAUI, AndroidX, and test dependency stack.

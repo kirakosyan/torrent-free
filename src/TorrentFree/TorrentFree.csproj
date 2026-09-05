@@ -29,8 +29,8 @@
 		<ApplicationId>com.torrentfree.app</ApplicationId>
 
 		<!-- Versions -->
-		<AppDisplayVersion>1.12</AppDisplayVersion>
-		<AppBuildNumber>17</AppBuildNumber>
+		<AppDisplayVersion>1.13</AppDisplayVersion>
+		<AppBuildNumber>18</AppBuildNumber>
 		<ApplicationDisplayVersion>$(AppDisplayVersion)</ApplicationDisplayVersion>
 		<ApplicationVersion>$(AppBuildNumber)</ApplicationVersion>
 		<AndroidVersionName>$(AppDisplayVersion)</AndroidVersionName>
