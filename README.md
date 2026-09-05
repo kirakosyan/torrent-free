@@ -129,6 +129,11 @@ The current app version is **v1.13**.
 
 ### Running the App
 
+Windows Debug builds run unpackaged, so launching the project does not register a
+development package over the Microsoft Store installation. Release builds still
+produce MSIX packages with the existing Store identity. Debug and Store builds
+share the saved torrent queue and settings; avoid running both at the same time.
+
 ```bash
 # Android emulator
 dotnet build src/TorrentFree/TorrentFree.csproj -t:Run -f net10.0-android
