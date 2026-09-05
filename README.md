@@ -200,17 +200,30 @@ The following features are planned for future releases:
 The app follows **MVVM**:
 
 ```
-src/TorrentFree/
-├── Models/              # TorrentItem, DownloadStatus
-├── ViewModels/          # MainViewModel
-├── Services/            # TorrentService (MonoTorrent), StorageService, LocalizationService
-├── Converters/          # XAML value converters
-└── Resources/           # Styles, strings, assets
+src/
+├── TorrentFree.Core/    # net10.0 library; no MAUI or platform SDK dependencies
+│   ├── Models/          # Production observable and persisted models
+│   ├── Services/        # Torrent engine, storage, imports, export policy, parsing
+│   └── Resources/       # Localization strings
+└── TorrentFree/         # MAUI application
+    ├── ViewModels/      # Main and settings view models
+    ├── Services/        # Platform paths, UI dispatch, pickers, notifications, Android exports
+    ├── Platforms/       # Windows, Android, iOS, Mac Catalyst integration
+    ├── Converters/      # XAML value converters
+    └── Resources/       # Styles and assets
 ```
 
 ### Data Persistence
 
 Downloads are stored in a JSON file in the app's data directory. Actual payload files are downloaded by MonoTorrent to the designated save path.
+
+`StorageService` receives `StoragePaths` from the MAUI host. Reads and writes report failures to callers; replacing the queue requires a successful load, and successful writes retain the previous state as `torrents.json.bak`. Imported `.torrent` bytes are kept in the persistent `ImportedTorrents` directory, independent of the original file provider. Active seeding duration is persisted separately from pause time and application downtime. Legacy JSON remains readable.
+
+The app injects `IUiDispatcher` for observable model updates. Tests reference `TorrentFree.Core` directly, using the production models, storage, and MonoTorrent services. Only platform effects such as UI dispatch, notifications, and export destinations are substituted. Run the core suite without MAUI workloads:
+
+```bash
+dotnet test --project tests/TorrentFree.UnitTests/TorrentFree.UnitTests.csproj
+```
 
 ## 🌐 Localization
 
@@ -259,4 +272,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## ⚠️ Disclaimer
 
 This application is provided for educational purposes. Users are responsible for ensuring they only download content they have the legal right to access. The developers are not responsible for any misuse of this software.
-

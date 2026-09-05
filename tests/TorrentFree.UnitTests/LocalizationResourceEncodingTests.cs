@@ -80,7 +80,7 @@ public sealed class LocalizationResourceEncodingTests
         var repoRoot = Path.GetFullPath(Path.Combine(
             AppContext.BaseDirectory,
             "..", "..", "..", "..", ".."));
-        var path = Path.Combine(repoRoot, "src", "TorrentFree", "Resources", "Strings", fileName);
+        var path = Path.Combine(repoRoot, "src", "TorrentFree.Core", "Resources", "Strings", fileName);
 
         return File.ReadAllText(path);
     }

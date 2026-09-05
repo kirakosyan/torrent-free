@@ -119,11 +119,14 @@ public class TorrentService : ITorrentService
     ];
 
     private readonly IStorageService _storageService;
+    private readonly IUiDispatcher _dispatcher;
+    private readonly TimeProvider _timeProvider;
     private readonly INotificationService _notificationService;
     private readonly IBackgroundDownloadService _backgroundDownloadService;
     private readonly AsyncKeyedLocker _torrentOperationLock = new();
     private readonly ConcurrentDictionary<string, CancellationTokenSource> _downloadTokens = new();
     private readonly ConcurrentDictionary<string, TorrentManager> _managers = new();
+    private readonly Dictionary<string, long> _seedingSessions = new();
     private readonly ConcurrentDictionary<string, byte> _proxyRebuildPendingResumeIds = new();
     private readonly object _torrentsLock = new();
     private readonly Timer _saveTimer;
@@ -173,9 +176,11 @@ public class TorrentService : ITorrentService
 
     public ObservableCollection<TorrentItem> Torrents { get; } = [];
 
-    public TorrentService(IStorageService storageService, INotificationService notificationService, IBackgroundDownloadService backgroundDownloadService)
+    public TorrentService(IStorageService storageService, INotificationService notificationService, IBackgroundDownloadService backgroundDownloadService, IUiDispatcher dispatcher, TimeProvider? timeProvider = null)
     {
         _storageService = storageService;
+        _dispatcher = dispatcher;
+        _timeProvider = timeProvider ?? TimeProvider.System;
         _notificationService = notificationService;
         _backgroundDownloadService = backgroundDownloadService;
         // Debounced save timer - saves at most every 5 seconds
@@ -187,7 +192,8 @@ public class TorrentService : ITorrentService
     {
         lock (_initGate)
         {
-            _initTask ??= InitializeCoreAsync();
+            if (_initTask is null || _initTask.IsFaulted || _initTask.IsCanceled)
+                _initTask = InitializeCoreAsync();
             return _initTask;
         }
     }
@@ -204,7 +210,7 @@ public class TorrentService : ITorrentService
                 var hadMissingTorrentFile = TorrentRestoreRules.HasMissingTorrentFile(torrent.TorrentFilePath);
                 var restoreDecision = TorrentRestoreRules.Evaluate(
                     new TorrentIdentity(torrent.Id, torrent.InfoHash, torrent.MagnetLink),
-                    torrent.TorrentFilePath,
+                    GetMetadataPath(torrent) ?? torrent.TorrentFilePath,
                     GetTorrentIdentitySnapshot(),
                     IsValidMagnetLink);
                 hadStateChanges |= restoreDecision.ShouldPersistChanges;
@@ -233,6 +239,12 @@ public class TorrentService : ITorrentService
                 // No MonoTorrent manager is recreated during restore. Persisted active states
                 // must therefore become truthful, restartable paused states instead of showing
                 // downloads/seeds which have no backing network session.
+                if (torrent.DateSeedingStarted is not null)
+                {
+                    // A persisted session start cannot distinguish app downtime from active seeding.
+                    torrent.DateSeedingStarted = null;
+                    hadStateChanges = true;
+                }
                 if (torrent.Status is DownloadStatus.Downloading or DownloadStatus.Seeding)
                 {
                     torrent.Status = DownloadStatus.Paused;
@@ -241,7 +253,7 @@ public class TorrentService : ITorrentService
                 }
 
                 AttachTorrentSettingsHandlers(torrent);
-                await MainThread.InvokeOnMainThreadAsync(() =>
+                await _dispatcher.InvokeAsync(() =>
                 {
                     lock (_torrentsLock)
                     {
@@ -268,7 +280,9 @@ public class TorrentService : ITorrentService
     }
 
     /// <inheritdoc />
-    public async Task<TorrentItem?> AddTorrentAsync(string magnetLink)
+    public Task<TorrentItem?> AddTorrentAsync(string magnetLink) => AddTorrentCoreAsync(magnetLink);
+
+    private async Task<TorrentItem?> AddTorrentCoreAsync(string magnetLink, TorrentMetadata? metadata = null)
     {
         if (!IsValidMagnetLink(magnetLink))
         {
@@ -286,6 +300,7 @@ public class TorrentService : ITorrentService
             return null;
         }
 
+        await InitializeAsync();
         var infoHash = magnet.InfoHashes.V1?.ToHex() ?? magnet.InfoHashes.V2?.ToHex() ?? string.Empty;
 
         if (IsDuplicate(infoHash, magnetLink))
@@ -307,10 +322,13 @@ public class TorrentService : ITorrentService
             Name = name,
             Status = DownloadStatus.Queued,
             TotalSize = 0,
-            SavePath = DownloadLocationResolver.ResolveSavePath(settings, sourceTorrentFilePath: null, fallbackDownloadPath)
+            TorrentFilePath = metadata?.SourceFilePath,
+            TorrentFileName = metadata?.SourceFileName,
+            CachedTorrentFilePath = metadata?.CachedFilePath,
+            SavePath = DownloadLocationResolver.ResolveSavePath(settings, metadata?.DownloadSourcePath, fallbackDownloadPath)
         };
 
-        await MainThread.InvokeOnMainThreadAsync(() =>
+        await _dispatcher.InvokeAsync(() =>
         {
             lock (_torrentsLock)
             {
@@ -341,7 +359,7 @@ public class TorrentService : ITorrentService
         }
 
         var magnet = BuildMagnetLink(metadata.InfoHashHex, metadata.Name, metadata.Trackers);
-        return await AddTorrentAsync(magnet);
+        return await AddTorrentCoreAsync(magnet, metadata);
     }
 
     private static string BuildMagnetLink(string infoHashHex, string? displayName, IEnumerable<string> trackers)
@@ -476,7 +494,7 @@ public class TorrentService : ITorrentService
             return;
         }
 
-        await MainThread.InvokeOnMainThreadAsync(() =>
+        await _dispatcher.InvokeAsync(() =>
         {
             torrent.DownloadSpeed = 0;
             torrent.UploadSpeed = 0;
@@ -498,27 +516,31 @@ public class TorrentService : ITorrentService
             return;
         }
 
-        if (!CanStartAnotherDownload())
+        var admitted = false;
+        await _dispatcher.InvokeAsync(() =>
         {
-            await MainThread.InvokeOnMainThreadAsync(() =>
+            lock (_torrentsLock)
             {
-                torrent.Status = DownloadStatus.Queued;
-            });
+                if (!Torrents.Contains(torrent)) return;
+                var seed = IsSeedCandidate(torrent);
+                admitted = seed ? CanStartAnotherSeed() : CanStartAnotherDownload();
+                torrent.Status = admitted
+                    ? (seed ? DownloadStatus.Seeding : DownloadStatus.Downloading)
+                    : DownloadStatus.Queued;
+                torrent.ErrorMessage = null;
+            }
+        });
+        if (!admitted)
+        {
             await SaveAsync();
             return;
         }
 
-        await MainThread.InvokeOnMainThreadAsync(() =>
-        {
-            torrent.Status = DownloadStatus.Downloading;
-            torrent.ErrorMessage = null;
-        });
-        await SaveAsync();
-        UpdateBackgroundTransferState();
-
         TorrentManager? manager = null;
         try
         {
+            await SaveAsync();
+            UpdateBackgroundTransferState();
             manager = await GetOrCreateManagerAsync(torrent);
             proxyRebuildToken.ThrowIfCancellationRequested();
             await ApplySpeedLimitsToManagerAsync(manager, torrent);
@@ -572,8 +594,9 @@ public class TorrentService : ITorrentService
                 }
             }
 
-            await MainThread.InvokeOnMainThreadAsync(() =>
+            await _dispatcher.InvokeAsync(() =>
             {
+                UpdateSeedingTime(torrent, active: false);
                 torrent.Status = proxyRebuildWasSuperseded
                     ? DownloadStatus.Queued
                     : DownloadStatus.Failed;
@@ -708,7 +731,7 @@ public class TorrentService : ITorrentService
                 cts.Dispose();
             }
 
-            await MainThread.InvokeOnMainThreadAsync(() =>
+            await _dispatcher.InvokeAsync(() =>
             {
                 torrent.DownloadSpeed = 0;
                 torrent.UploadSpeed = 0;
@@ -719,7 +742,7 @@ public class TorrentService : ITorrentService
                 await manager.PauseAsync();
             }
 
-            await MainThread.InvokeOnMainThreadAsync(() =>
+            await _dispatcher.InvokeAsync(() =>
             {
                 torrent.Status = DownloadStatus.Paused;
             });
@@ -748,7 +771,7 @@ public class TorrentService : ITorrentService
                 cts.Dispose();
             }
 
-            await MainThread.InvokeOnMainThreadAsync(() =>
+            await _dispatcher.InvokeAsync(() =>
             {
                 torrent.DownloadSpeed = 0;
                 torrent.UploadSpeed = 0;
@@ -759,7 +782,7 @@ public class TorrentService : ITorrentService
                 await StopManagerAsync(manager);
             }
 
-            await MainThread.InvokeOnMainThreadAsync(() =>
+            await _dispatcher.InvokeAsync(() =>
             {
                 torrent.Status = DownloadStatus.Stopped;
             });
@@ -818,7 +841,7 @@ public class TorrentService : ITorrentService
 
             if (activeTorrents.Count > 0)
             {
-                await MainThread.InvokeOnMainThreadAsync(() =>
+                await _dispatcher.InvokeAsync(() =>
                 {
                     foreach (var torrent in activeTorrents)
                     {
@@ -875,7 +898,7 @@ public class TorrentService : ITorrentService
                     }
                 }
 
-                await MainThread.InvokeOnMainThreadAsync(() =>
+                await _dispatcher.InvokeAsync(() =>
                 {
                     foreach (var torrent in lateActiveTorrents)
                     {
@@ -1004,8 +1027,9 @@ public class TorrentService : ITorrentService
                 }
             }
 
+            await _dispatcher.InvokeAsync(() => UpdateSeedingTime(torrent, active: false));
             DetachTorrentSettingsHandlers(torrent);
-            await MainThread.InvokeOnMainThreadAsync(() =>
+            await _dispatcher.InvokeAsync(() =>
             {
                 lock (_torrentsLock)
                 {
@@ -1056,16 +1080,15 @@ public class TorrentService : ITorrentService
             }
         }
 
-        if (string.IsNullOrWhiteSpace(torrent.SavePath)
-            || string.IsNullOrWhiteSpace(torrent.TorrentFilePath)
-            || !File.Exists(torrent.TorrentFilePath))
+        var metadataPath = GetMetadataPath(torrent);
+        if (string.IsNullOrWhiteSpace(torrent.SavePath) || metadataPath is null)
         {
             return OwnedDownloadFiles.Empty;
         }
 
         try
         {
-            var metadata = await LoadTorrentFileBoundedAsync(torrent.TorrentFilePath, torrent);
+            var metadata = await LoadTorrentFileBoundedAsync(metadataPath, torrent);
             var basePath = Path.GetFullPath(torrent.SavePath);
             var containingDirectory = metadata.Files.Count == 1
                 ? basePath
@@ -1675,7 +1698,7 @@ public class TorrentService : ITorrentService
                 && torrent is not null
                 && torrent.Status is DownloadStatus.Downloading or DownloadStatus.Seeding)
             {
-                await MainThread.InvokeOnMainThreadAsync(() =>
+                await _dispatcher.InvokeAsync(() =>
                 {
                     torrent.Status = _backgroundExecutionSuspended
                         ? DownloadStatus.Paused
@@ -1747,7 +1770,7 @@ public class TorrentService : ITorrentService
             {
                 if (_backgroundExecutionSuspended)
                 {
-                    await MainThread.InvokeOnMainThreadAsync(() =>
+                    await _dispatcher.InvokeAsync(() =>
                     {
                         torrent.Status = DownloadStatus.Paused;
                         torrent.DownloadSpeed = 0;
@@ -1845,6 +1868,7 @@ public class TorrentService : ITorrentService
 
     private void UpdateBackgroundTransferState()
     {
+        if (_disposed) return;
         bool hasActiveTransfers;
         lock (_torrentsLock)
         {
@@ -1904,12 +1928,16 @@ public class TorrentService : ITorrentService
             return;
         }
 
+        if (e.PropertyName == nameof(TorrentItem.Status) && torrent.Status != DownloadStatus.Seeding)
+            UpdateSeedingTime(torrent, active: false);
+
         if (e.PropertyName is nameof(TorrentItem.DownloadLimitKbps) or nameof(TorrentItem.UploadLimitKbps))
         {
             SafeFireAndForget(UpdateTorrentManagerSettingsAsync(torrent));
         }
 
-        if (e.PropertyName is nameof(TorrentItem.TorrentFilePath) or nameof(TorrentItem.TorrentFileName) or nameof(TorrentItem.SavePath))
+        if (e.PropertyName is nameof(TorrentItem.TorrentFilePath) or nameof(TorrentItem.CachedTorrentFilePath)
+            or nameof(TorrentItem.TorrentFileName) or nameof(TorrentItem.SavePath) or nameof(TorrentItem.SeededSeconds))
         {
             _pendingSave = true;
         }
@@ -1928,6 +1956,33 @@ public class TorrentService : ITorrentService
                 System.Diagnostics.Debug.WriteLine($"Update settings error: {ex.Message}");
             }
         }
+    }
+
+    private static bool IsSeedCandidate(TorrentItem torrent) => torrent.Progress >= 100;
+
+    private void UpdateSeedingTime(TorrentItem torrent, bool active)
+    {
+        lock (_seedingSessions)
+        {
+            var now = _timeProvider.GetTimestamp();
+            if (_seedingSessions.Remove(torrent.Id, out var previous))
+                torrent.SeededSeconds += Math.Max(0, _timeProvider.GetElapsedTime(previous, now).TotalSeconds);
+
+            if (active)
+            {
+                _seedingSessions[torrent.Id] = now;
+                torrent.DateSeedingStarted ??= _timeProvider.GetLocalNow().DateTime;
+            }
+            else
+                torrent.DateSeedingStarted = null;
+        }
+    }
+
+    private double GetSeededSeconds(TorrentItem torrent)
+    {
+        lock (_seedingSessions)
+            return torrent.SeededSeconds + (_seedingSessions.TryGetValue(torrent.Id, out var start)
+                ? Math.Max(0, _timeProvider.GetElapsedTime(start).TotalSeconds) : 0);
     }
 
     private bool CanStartAnotherDownload()
@@ -1965,24 +2020,16 @@ public class TorrentService : ITorrentService
         List<TorrentItem> queued;
         lock (_torrentsLock)
         {
-            var availableSlots = _maxActiveDownloads <= 0
-                ? int.MaxValue
-                : Math.Max(0, _maxActiveDownloads - Torrents.Count(t => t.Status == DownloadStatus.Downloading));
-
-            if (availableSlots <= 0)
-            {
-                return;
-            }
-
-            queued = Torrents
+queued = Torrents
                 .Where(t => t.Status == DownloadStatus.Queued)
                 .OrderBy(t => t.DateAdded)
-                .Take(availableSlots)
                 .ToList();
         }
 
         foreach (var torrent in queued)
         {
+            if (IsSeedCandidate(torrent) ? !CanStartAnotherSeed() : !CanStartAnotherDownload())
+                continue;
             try
             {
                 await StartTorrentAsync(torrent);
@@ -2032,13 +2079,9 @@ public class TorrentService : ITorrentService
             }
         }
 
-        if (maxMinutes > 0 && torrent.DateSeedingStarted.HasValue)
+        if (maxMinutes > 0 && GetSeededSeconds(torrent) >= maxMinutes * 60d)
         {
-            var elapsed = DateTime.Now - torrent.DateSeedingStarted.Value;
-            if (elapsed.TotalMinutes >= maxMinutes)
-            {
-                await PauseTorrentAsync(torrent);
-            }
+            await PauseTorrentAsync(torrent);
         }
     }
 
@@ -2098,7 +2141,7 @@ public class TorrentService : ITorrentService
             {
                 // ConfigureAwait(false) keeps the loop body off the UI thread. The only
                 // work that must touch the UI thread is the explicit
-                // MainThread.InvokeOnMainThreadAsync block below; everything else
+                // dispatcher block below; everything else
                 // (reflection, peer/piece scanning) runs on the thread pool.
                 await Task.Delay(1000, cancellationToken).ConfigureAwait(false);
 
@@ -2114,6 +2157,7 @@ public class TorrentService : ITorrentService
                 var metadataSize = manager.Torrent?.Size;
                 var progress = manager.Progress;
                 var previousStatus = torrent.Status;
+                var alreadyCompleted = torrent.DateCompleted is not null;
                 var currentDataBytesSent = manager.Monitor.DataBytesSent;
                 var uploadedDelta = currentDataBytesSent - previousDataBytesSent;
                 previousDataBytesSent = currentDataBytesSent;
@@ -2159,7 +2203,8 @@ public class TorrentService : ITorrentService
 
                 // ---- Marshal only lightweight property assignments to the UI thread ----
                 var currentStatus = previousStatus;
-                await MainThread.InvokeOnMainThreadAsync(() =>
+                var queueForCapacity = false;
+                await _dispatcher.InvokeAsync(() =>
                 {
                     // If the download was cancelled (pause/stop) while this dispatch was
                     // queued, skip the update to avoid overwriting the status set by
@@ -2217,37 +2262,52 @@ public class TorrentService : ITorrentService
                         torrent.EstimatedSecondsRemaining = 0;
                     }
 
-                    torrent.Status = mappedStatus;
+                    lock (_torrentsLock)
+                    {
+                        queueForCapacity = (mappedStatus == DownloadStatus.Seeding && torrent.Status != DownloadStatus.Seeding && !CanStartAnotherSeed())
+                            || (mappedStatus == DownloadStatus.Downloading && torrent.Status != DownloadStatus.Downloading && !CanStartAnotherDownload());
+                        torrent.Status = queueForCapacity ? DownloadStatus.Queued : mappedStatus;
+                    }
                     torrent.ErrorMessage = errorMessage;
 
-                    if (torrent.Status == DownloadStatus.Seeding)
-                    {
-                        torrent.DateSeedingStarted ??= DateTime.Now;
-                    }
-                    else
-                    {
-                        torrent.DateSeedingStarted = null;
-                    }
+                    UpdateSeedingTime(torrent, active: !queueForCapacity && managerState == TorrentState.Seeding);
 
-                    if (torrent.Status is DownloadStatus.Completed or DownloadStatus.Seeding)
+                    if (managerState == TorrentState.Seeding || (managerState == TorrentState.Stopped && progress >= 100))
                     {
                         torrent.DateCompleted ??= DateTime.Now;
+                    }
+                    else if (managerState == TorrentState.Downloading && progress < 100)
+                    {
+                        torrent.DateCompleted = null;
                     }
 
                     currentStatus = torrent.Status;
                 }).ConfigureAwait(false);
 
-                var wasComplete = previousStatus is DownloadStatus.Completed or DownloadStatus.Seeding;
-                var isComplete = currentStatus is DownloadStatus.Completed or DownloadStatus.Seeding;
+                cancellationToken.ThrowIfCancellationRequested();
+                if (queueForCapacity)
+                {
+                    await using (await _torrentOperationLock.AcquireAsync(torrent.Id))
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        await StopManagerAsync(manager).ConfigureAwait(false);
+                        await _dispatcher.InvokeAsync(() => { torrent.DownloadSpeed = 0; torrent.UploadSpeed = 0; });
+                        await SaveAsync().ConfigureAwait(false);
+                    }
+                    await TryStartQueuedTorrentsAsync().ConfigureAwait(false);
+                    if (!alreadyCompleted && torrent.DateCompleted is not null)
+                        await NotifyCompletionSafelyAsync(torrent).ConfigureAwait(false);
+                    break;
+                }
 
                 if (previousStatus != currentStatus)
                 {
                     UpdateBackgroundTransferState();
                 }
 
-                if (!wasComplete && isComplete)
+                if (!alreadyCompleted && torrent.DateCompleted is not null)
                 {
-                    await _notificationService.ShowDownloadCompletedAsync(torrent).ConfigureAwait(false);
+                    await NotifyCompletionSafelyAsync(torrent).ConfigureAwait(false);
                 }
 
                 _pendingSave = true;
@@ -2275,11 +2335,27 @@ public class TorrentService : ITorrentService
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Monitor error: {ex.Message}");
-            await MainThread.InvokeOnMainThreadAsync(() =>
+            await using (await _torrentOperationLock.AcquireAsync(torrent.Id))
             {
-                torrent.Status = DownloadStatus.Failed;
-                torrent.ErrorMessage = ex.Message;
-            }).ConfigureAwait(false);
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    var stopped = false;
+                    try { await StopManagerAsync(manager).ConfigureAwait(false); stopped = true; }
+                    catch (Exception stopError) { System.Diagnostics.Debug.WriteLine($"Monitor cleanup failed: {stopError}"); }
+                    await _dispatcher.InvokeAsync(() =>
+                    {
+                        if (stopped)
+                        {
+                            UpdateSeedingTime(torrent, active: false);
+                            torrent.DownloadSpeed = 0;
+                            torrent.UploadSpeed = 0;
+                            torrent.Status = DownloadStatus.Failed;
+                        }
+                        // If stopping failed, retain active controls so the user can retry.
+                        torrent.ErrorMessage = ex.Message;
+                    }).ConfigureAwait(false);
+                }
+            }
         }
         finally
         {
@@ -2287,7 +2363,9 @@ public class TorrentService : ITorrentService
             if (_downloadTokens.TryGetValue(torrent.Id, out var activeCts)
                 && activeCts.Token == cancellationToken)
             {
-                _downloadTokens.TryRemove(torrent.Id, out _);
+                if (((ICollection<KeyValuePair<string, CancellationTokenSource>>)_downloadTokens)
+                    .Remove(new(torrent.Id, activeCts)))
+                    activeCts.Dispose();
             }
 
             _pendingSave = true;
@@ -2296,6 +2374,12 @@ public class TorrentService : ITorrentService
     }
 
     internal readonly record struct AvailabilityInfo(double Percent, string Label);
+
+    private async Task NotifyCompletionSafelyAsync(TorrentItem torrent)
+    {
+        try { await _notificationService.ShowDownloadCompletedAsync(torrent).ConfigureAwait(false); }
+        catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Completion notification failed: {ex}"); }
+    }
 
     /// <summary>
     /// Reports the percentage of torrent pieces currently available from connected peers.
@@ -2405,17 +2489,20 @@ public class TorrentService : ITorrentService
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Debounced save error: {ex.Message}");
+            _pendingSave = true;
         }
     }
 
-    private Task SaveAsync()
+    private async Task SaveAsync()
     {
         List<TorrentItem> snapshot;
         lock (_torrentsLock)
         {
             snapshot = [.. Torrents];
         }
-        return _storageService.SaveTorrentsAsync(snapshot);
+        try { await _storageService.SaveTorrentsAsync(snapshot).ConfigureAwait(false); }
+        catch { _pendingSave = true; throw; }
+        finally { UpdateBackgroundTransferState(); }
     }
 
     private async Task<ClientEngine> EnsureEngineAsync()
@@ -2541,6 +2628,11 @@ public class TorrentService : ITorrentService
     }
 
 
+    private static string? GetMetadataPath(TorrentItem torrent)
+        => !string.IsNullOrWhiteSpace(torrent.CachedTorrentFilePath) && File.Exists(torrent.CachedTorrentFilePath)
+            ? torrent.CachedTorrentFilePath
+            : (!string.IsNullOrWhiteSpace(torrent.TorrentFilePath) && File.Exists(torrent.TorrentFilePath) ? torrent.TorrentFilePath : null);
+
     protected virtual async Task<TorrentManager> GetOrCreateManagerAsync(TorrentItem torrent)
     {
         if (_managers.TryGetValue(torrent.Id, out var existing))
@@ -2566,11 +2658,12 @@ public class TorrentService : ITorrentService
         }.ToSettings();
 
         TorrentManager manager;
-        if (!string.IsNullOrWhiteSpace(torrent.TorrentFilePath) && File.Exists(torrent.TorrentFilePath))
+        var metadataPath = GetMetadataPath(torrent);
+        if (metadataPath is not null)
         {
             try
             {
-                var monoTorrent = await LoadTorrentFileBoundedAsync(torrent.TorrentFilePath, torrent);
+                var monoTorrent = await LoadTorrentFileBoundedAsync(metadataPath, torrent);
                 manager = await engine.AddAsync(monoTorrent, downloadPath, torrentSettings);
             }
             catch (Exception ex)

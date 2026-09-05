@@ -372,7 +372,7 @@ public sealed class TorrentServiceSafetyTests
         };
 
     private static TorrentService CreateService(TestStorageService storage)
-        => new(storage, new StubNotificationService(), new StubBackgroundDownloadService());
+        => new(storage, new StubNotificationService(), new StubBackgroundDownloadService(), ImmediateDispatcher.Instance);
 
     private static T GetPrivateField<T>(object instance, string fieldName)
     {
@@ -404,6 +404,8 @@ public sealed class TorrentServiceSafetyTests
             => LoadSettingsAsyncHandler?.Invoke() ?? Task.FromResult(new AppSettings());
 
         public Task SaveSettingsAsync(AppSettings settings) => Task.CompletedTask;
+
+        public Task UpdateDesktopWindowStateAsync(bool? desktopWasMaximized) => Task.CompletedTask;
 
         public string GetDefaultDownloadPath()
         {

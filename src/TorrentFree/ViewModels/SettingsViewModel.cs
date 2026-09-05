@@ -246,6 +246,17 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private async Task InitializeAsync()
     {
+        try { await LoadSettingsCoreAsync(); }
+        catch (Exception ex)
+        {
+            _isLoadingSettings = true;
+            ValidationMessage = ex.Message;
+            System.Diagnostics.Debug.WriteLine($"Settings initialization failed: {ex}");
+        }
+    }
+
+    private async Task LoadSettingsCoreAsync()
+    {
         _isLoadingSettings = true;
         var settings = await AppSettingsPersistence.LoadAsync(_storageService);
         _loadedSettings = settings;
@@ -702,7 +713,7 @@ public partial class SettingsViewModel : ObservableObject
     /// <summary>
     /// Runs the task without awaiting, logging any exceptions instead of crashing.
     /// </summary>
-    private static async void SafeFireAndForget(Task task)
+    private async void SafeFireAndForget(Task task)
     {
         try
         {
@@ -711,6 +722,7 @@ public partial class SettingsViewModel : ObservableObject
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Fire-and-forget error: {ex}");
+            ValidationMessage = ex.Message;
         }
     }
 }

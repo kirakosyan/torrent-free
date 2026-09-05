@@ -134,6 +134,9 @@ public partial class TorrentItem : ObservableObject
     /// </summary>
     [ObservableProperty]
     public partial DateTime? DateSeedingStarted { get; set; }
+    /// <summary>Accumulated active seeding time, excluding pauses and app downtime.</summary>
+    [ObservableProperty]
+    public partial double SeededSeconds { get; set; }
 
     /// <summary>
     /// Per-torrent max seed ratio (0 = unlimited).
@@ -158,6 +161,9 @@ public partial class TorrentItem : ObservableObject
     /// </summary>
     [ObservableProperty]
     public partial string? TorrentFilePath { get; set; }
+    /// <summary>App-owned metadata copy, independent of the original file/provider.</summary>
+    [ObservableProperty]
+    public partial string? CachedTorrentFilePath { get; set; }
 
     /// <summary>
     /// Name of the .torrent file (if applicable).

@@ -1,5 +1,6 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using TorrentFree.Models;
+using TorrentFree.Services;
 using Xunit;
 
 namespace TorrentFree.UnitTests;
@@ -7,84 +8,94 @@ namespace TorrentFree.UnitTests;
 public sealed class StorageServiceTests
 {
     [Fact]
-    public void JsonOptions_WithUnmappedMemberHandlingSkip_IgnoresUnknownFields()
+    public async Task FailedRead_ThrowsAndBlocksReplacementUntilSuccessfulReload()
     {
-        // Arrange: Create a legacy JSON with unmapped ICommand properties
-        var legacyJson = """
-        {
-            "id": "test-id-123",
-            "name": "Test Torrent",
-            "magnetLink": "magnet:?xt=urn:btih:test",
-            "showInFolderCommand": null,
-            "startSpecificTorrentCommand": null,
-            "pauseSpecificTorrentCommand": null
-        }
-        """;
+        using var directory = new CoreTestDirectory();
+        using var storage = new StorageService(directory.StoragePaths);
+        await storage.LoadTorrentsAsync();
+        await storage.SaveTorrentsAsync([new TorrentItem { Id = "original" }]);
+        var path = Path.Combine(directory.Path, "torrents.json");
+        using (File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+            await Assert.ThrowsAnyAsync<IOException>(() => storage.LoadTorrentsAsync());
 
-        var jsonOptions = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            UnmappedMemberHandling = JsonUnmappedMemberHandling.Skip
-        };
-
-        // Act: Deserialize the legacy JSON with UnmappedMemberHandling.Skip
-        var torrent = JsonSerializer.Deserialize<SimpleTorrent>(legacyJson, jsonOptions);
-
-        // Assert: Deserialization should succeed and ignore unknown fields
-        Assert.NotNull(torrent);
-        Assert.Equal("test-id-123", torrent.Id);
-        Assert.Equal("Test Torrent", torrent.Name);
-        Assert.Equal("magnet:?xt=urn:btih:test", torrent.MagnetLink);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => storage.SaveTorrentsAsync([new TorrentItem { Id = "replacement" }]));
+        var restored = await storage.LoadTorrentsAsync();
+        Assert.Equal("original", Assert.Single(restored).Id);
+        restored.Add(new TorrentItem { Id = "new" });
+        await storage.SaveTorrentsAsync(restored);
+        Assert.Equal(2, (await storage.LoadTorrentsAsync()).Count);
     }
 
     [Fact]
-    public void JsonOptions_WithoutUnmappedMemberHandling_StillIgnoresUnknownFieldsByDefault()
+    public async Task FailedWrite_IsObservableAndLeavesPreviousStateIntact()
     {
-        // Arrange: System.Text.Json by default ignores unknown properties
-        var legacyJson = """
+        using var directory = new CoreTestDirectory();
+        using var storage = new StorageService(directory.StoragePaths);
+        await storage.LoadTorrentsAsync();
+        await storage.SaveTorrentsAsync([new TorrentItem { Id = "original" }]);
+        var path = Path.Combine(directory.Path, "torrents.json");
+        // Read sharing allows the read/merge step but prevents replacing the destination.
+        using (File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
         {
-            "id": "test-id",
-            "name": "Test",
-            "unknownField": "value"
+            var error = await Record.ExceptionAsync(() => storage.SaveTorrentsAsync([new TorrentItem { Id = "new" }]));
+            Assert.True(error is IOException or UnauthorizedAccessException);
         }
-        """;
+        Assert.Equal("original", Assert.Single(await storage.LoadTorrentsAsync()).Id);
+        Assert.False(File.Exists(path + ".tmp"));
+        await storage.SaveTorrentsAsync([new TorrentItem { Id = "new" }]);
+        Assert.Equal("new", Assert.Single(await storage.LoadTorrentsAsync()).Id);
+        Assert.Contains("original", await File.ReadAllTextAsync(path + ".bak", TestContext.Current.CancellationToken));
+    }
 
-        var jsonOptionsDefault = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-
-        // Act: Without explicit UnmappedMemberHandling, unknown fields are still ignored
-        var torrent = JsonSerializer.Deserialize<SimpleTorrent>(legacyJson, jsonOptionsDefault);
-
-        // Assert: Deserialization succeeds even with unknown fields
-        Assert.NotNull(torrent);
-        Assert.Equal("test-id", torrent.Id);
-        Assert.Equal("Test", torrent.Name);
+    [Theory]
+    [InlineData("{broken")]
+    [InlineData("null")]
+    public async Task CorruptState_IsNeverTreatedAsAnEmptyInstallation(string contents)
+    {
+        using var directory = new CoreTestDirectory();
+        var path = Path.Combine(directory.Path, "torrents.json");
+        await File.WriteAllTextAsync(path, contents, TestContext.Current.CancellationToken);
+        using var storage = new StorageService(directory.StoragePaths);
+        await Assert.ThrowsAnyAsync<JsonException>(() => storage.LoadTorrentsAsync());
+        await Assert.ThrowsAnyAsync<JsonException>(() => storage.LoadSettingsAsync());
+        await Assert.ThrowsAsync<InvalidOperationException>(() => storage.SaveTorrentsAsync([]));
+        await Assert.ThrowsAnyAsync<JsonException>(() => storage.SaveSettingsAsync(new AppSettings()));
+        Assert.Equal(contents, await File.ReadAllTextAsync(path, TestContext.Current.CancellationToken));
     }
 
     [Fact]
-    public void JsonOptions_VerifySkipBehaviorIsExplicitlySet()
+    public async Task SettingsAndTorrentUpdates_PreserveEachOthersProductionFields()
     {
-        // This test verifies that UnmappedMemberHandling.Skip is the recommended
-        // approach for handling legacy JSON with unknown fields
-        var jsonOptions = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            UnmappedMemberHandling = JsonUnmappedMemberHandling.Skip
-        };
-
-        // Assert: Verify the option is set
-        Assert.Equal(JsonUnmappedMemberHandling.Skip, jsonOptions.UnmappedMemberHandling);
+        using var directory = new CoreTestDirectory();
+        using var storage = new StorageService(directory.StoragePaths);
+        await storage.LoadTorrentsAsync();
+        var torrent = new TorrentItem { Id = "kept", SeededSeconds = 40, CachedTorrentFilePath = "metadata.torrent" };
+        await storage.SaveTorrentsAsync([torrent]);
+        await storage.SaveSettingsAsync(new AppSettings { SortByStatus = true, ProxyHost = "proxy.example", GlobalMaxSeedMinutes = 10 });
+        await storage.UpdateDesktopWindowStateAsync(true);
+        torrent.SeededSeconds = 60;
+        await storage.SaveTorrentsAsync([torrent]);
+        var settings = await storage.LoadSettingsAsync();
+        Assert.True(settings.SortByStatus);
+        Assert.True(settings.DesktopWasMaximized);
+        Assert.Equal("proxy.example", settings.ProxyHost);
+        var restored = Assert.Single(await storage.LoadTorrentsAsync());
+        Assert.Equal(60, restored.SeededSeconds);
+        Assert.Equal("metadata.torrent", restored.CachedTorrentFilePath);
     }
-}
 
-// Simple test class to verify deserialization
-internal class SimpleTorrent
-{
-    public string Id { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-    public string MagnetLink { get; set; } = string.Empty;
+    [Fact]
+    public async Task LegacyJson_LoadsActualModelAndDefaultsNewFields()
+    {
+        using var directory = new CoreTestDirectory();
+        await File.WriteAllTextAsync(Path.Combine(directory.Path, "torrents.json"),
+            """{"torrents":[{"id":"legacy","name":"Ubuntu","showInFolderCommand":null,"removedField":true}],"settings":{"sortByStatus":true}}""", TestContext.Current.CancellationToken);
+        using var storage = new StorageService(directory.StoragePaths);
+        var torrent = Assert.Single(await storage.LoadTorrentsAsync());
+        Assert.Equal("legacy", torrent.Id);
+        Assert.Null(torrent.CachedTorrentFilePath);
+        Assert.Equal(0, torrent.SeededSeconds);
+        Assert.True((await storage.LoadSettingsAsync()).SortByStatus);
+        await storage.SaveTorrentsAsync([torrent]);
+    }
 }

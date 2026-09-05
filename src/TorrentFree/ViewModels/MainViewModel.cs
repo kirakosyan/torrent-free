@@ -19,7 +19,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private const int MaxChartPoints = 60;
     private readonly ITorrentService _torrentService;
     private readonly ITorrentFilePicker _torrentFilePicker;
-    private readonly ITorrentFileParser _torrentFileParser;
+    private readonly TorrentImportService _torrentImportService;
     private readonly IStorageService _storageService;
     private readonly IFileAssociationService _fileAssociationService;
     private readonly INotificationService _notificationService;
@@ -151,11 +151,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// </summary>
     public bool CanStopAllTorrents => !IsBusy && Torrents.Any(torrent => torrent.CanStop);
 
-    public MainViewModel(ITorrentService torrentService, ITorrentFilePicker torrentFilePicker, ITorrentFileParser torrentFileParser, IStorageService storageService, IFileAssociationService fileAssociationService, INotificationService notificationService)
+    public MainViewModel(ITorrentService torrentService, ITorrentFilePicker torrentFilePicker, IStorageService storageService, IFileAssociationService fileAssociationService, INotificationService notificationService, TorrentImportService torrentImportService)
     {
         _torrentService = torrentService;
         _torrentFilePicker = torrentFilePicker;
-        _torrentFileParser = torrentFileParser;
+        _torrentImportService = torrentImportService;
         _storageService = storageService;
         _fileAssociationService = fileAssociationService;
         _notificationService = notificationService;
@@ -386,7 +386,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 #if ANDROID
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
-                if (!await TryOpenAndroidFolderAsync(downloadPath, folderPath, isDirectory))
+                if (!await TryOpenAndroidFolderAsync(torrent.Id, downloadPath, folderPath, isDirectory))
                 {
                     ErrorMessage = LocalizationResourceManager.Instance["ErrorOpenFolder"];
                 }
@@ -410,7 +410,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
 #if ANDROID
-    private static async Task<bool> TryOpenAndroidFolderAsync(string downloadPath, string folderPath, bool isDirectory)
+    private static async Task<bool> TryOpenAndroidFolderAsync(string ownerId, string downloadPath, string folderPath, bool isDirectory)
     {
         var targetFolder = isDirectory ? downloadPath : folderPath;
         if (string.IsNullOrWhiteSpace(targetFolder) || !Directory.Exists(targetFolder))
@@ -422,7 +422,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         string? publicFolder = null;
         try
         {
-            publicFolder = await AndroidDownloadExportService.ExportToPublicDownloadsAsync(downloadPath, isDirectory);
+            publicFolder = await AndroidDownloadExportService.ExportToPublicDownloadsAsync(ownerId, downloadPath, isDirectory);
             exported = !string.IsNullOrWhiteSpace(publicFolder);
         }
         catch (Exception ex)
@@ -483,11 +483,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 return;
             }
 
-            var metadata = _torrentFileParser.Parse(picked.Content);
+            var metadata = await _torrentImportService.PrepareAsync(picked);
             await TryAddTorrentFromMetadataAsync(
                 metadata,
-                picked.FullPath,
-                picked.FileName,
                 notifyDuplicate: true,
                 notifyInvalid: true);
         }
@@ -810,11 +808,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         try
         {
             var content = await TorrentFileContentReader.ReadFromFileAsync(filePath);
-            var metadata = _torrentFileParser.Parse(content);
+            var metadata = await _torrentImportService.PrepareAsync(new TorrentPickedFile(Path.GetFileName(filePath), filePath, content));
             return await TryAddTorrentFromMetadataAsync(
                 metadata,
-                filePath,
-                Path.GetFileName(filePath),
                 notifyDuplicate,
                 notifyInvalid);
         }
@@ -829,7 +825,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
-    private async Task<bool> TryAddTorrentFromMetadataAsync(TorrentMetadata metadata, string? filePath, string? fileName, bool notifyDuplicate, bool notifyInvalid)
+    private async Task<bool> TryAddTorrentFromMetadataAsync(TorrentMetadata metadata, bool notifyDuplicate, bool notifyInvalid)
     {
         TorrentItem? torrent = null;
         try
@@ -854,29 +850,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return false;
         }
 
-        await ApplyTorrentFileMetadataAsync(torrent, filePath, fileName);
         await _torrentService.StartTorrentAsync(torrent);
         return true;
-    }
-
-    private async Task ApplyTorrentFileMetadataAsync(TorrentItem torrent, string? filePath, string? fileName)
-    {
-        if (!string.IsNullOrWhiteSpace(filePath) && File.Exists(filePath))
-        {
-            torrent.TorrentFilePath = filePath;
-        }
-
-        if (!string.IsNullOrWhiteSpace(fileName))
-        {
-            torrent.TorrentFileName = fileName;
-        }
-
-        var settings = await AppSettingsPersistence.LoadAsync(_storageService);
-        var fallbackDownloadPath = string.IsNullOrWhiteSpace(torrent.SavePath)
-            ? _storageService.GetDefaultDownloadPath()
-            : torrent.SavePath;
-
-        torrent.SavePath = DownloadLocationResolver.ResolveSavePath(settings, filePath, fallbackDownloadPath);
     }
 
     private async Task PromptFileAssociationAsync()

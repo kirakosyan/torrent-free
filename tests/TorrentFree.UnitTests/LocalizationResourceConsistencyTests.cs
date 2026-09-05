@@ -10,7 +10,7 @@ public sealed class LocalizationResourceConsistencyTests
     {
         var resourcesDirectory = Path.Combine(
             GetRepoRoot(),
-            "src", "TorrentFree", "Resources", "Strings");
+            "src", "TorrentFree.Core", "Resources", "Strings");
 
         var baseResourcePath = Path.Combine(resourcesDirectory, "AppResources.resx");
         var baseKeys = ReadKeys(baseResourcePath);
