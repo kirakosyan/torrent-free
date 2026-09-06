@@ -490,4 +490,28 @@
   <data name="ThemePickerHint" xml:space="preserve">
     <value>اختر شكل التطبيق.</value>
   </data>
+  <data name="StoreUpdateAvailable" xml:space="preserve">
+    <value>يتوفر إصدار جديد.</value>
+  </data>
+  <data name="StoreUpdateAction" xml:space="preserve">
+    <value>تحديث</value>
+  </data>
+  <data name="StoreDismissAction" xml:space="preserve">
+    <value>إغلاق</value>
+  </data>
+  <data name="StoreReviewMessage" xml:space="preserve">
+    <value>هل ترغب في تقييم التطبيق؟</value>
+  </data>
+  <data name="StoreRateAction" xml:space="preserve">
+    <value>تقييم التطبيق</value>
+  </data>
+  <data name="StoreLaterAction" xml:space="preserve">
+    <value>لاحقًا</value>
+  </data>
+  <data name="StoreNeverAction" xml:space="preserve">
+    <value>عدم السؤال مجددًا</value>
+  </data>
+  <data name="StoreActionError" xml:space="preserve">
+    <value>تعذّر إكمال هذا الإجراء. يُرجى المحاولة مرة أخرى.</value>
+  </data>
 </root>

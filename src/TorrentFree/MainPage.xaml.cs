@@ -9,6 +9,8 @@ namespace TorrentFree;
 public partial class MainPage : ContentPage
 {
     private const string GitHubUrl = "https://github.com/kirakosyan/torrent-free";
+    private Window? _promptWindow;
+    private bool _isPageVisible;
 
     public MainPage(MainViewModel viewModel)
     {
@@ -19,11 +21,59 @@ public partial class MainPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        _isPageVisible = true;
 
         if (BindingContext is MainViewModel vm)
         {
             await vm.InitializeCommand.ExecuteAsync(null);
+            if (!_isPageVisible) return;
+            if (_promptWindow != Window)
+            {
+                DetachPromptWindow();
+                _promptWindow = Window;
+                if (_promptWindow is not null)
+                {
+                    _promptWindow.Activated += OnPromptWindowActivated;
+                    _promptWindow.Resumed += OnPromptWindowActivated;
+                    _promptWindow.Deactivated += OnPromptWindowDeactivated;
+                    _promptWindow.Stopped += OnPromptWindowDeactivated;
+                }
+            }
+            await vm.Prompts.SetForegroundAsync(true);
         }
+    }
+
+    protected override void OnDisappearing()
+    {
+        _isPageVisible = false;
+        DetachPromptWindow();
+        if (BindingContext is MainViewModel vm)
+            _ = vm.Prompts.SetForegroundAsync(false);
+        base.OnDisappearing();
+    }
+
+    private void DetachPromptWindow()
+    {
+        if (_promptWindow is not null)
+        {
+            _promptWindow.Activated -= OnPromptWindowActivated;
+            _promptWindow.Resumed -= OnPromptWindowActivated;
+            _promptWindow.Deactivated -= OnPromptWindowDeactivated;
+            _promptWindow.Stopped -= OnPromptWindowDeactivated;
+            _promptWindow = null;
+        }
+    }
+
+    private async void OnPromptWindowActivated(object? sender, EventArgs e)
+    {
+        if (_isPageVisible && BindingContext is MainViewModel vm)
+            await vm.Prompts.SetForegroundAsync(true);
+    }
+
+    private async void OnPromptWindowDeactivated(object? sender, EventArgs e)
+    {
+        if (BindingContext is MainViewModel vm)
+            await vm.Prompts.SetForegroundAsync(false);
     }
 
     private async void OnAboutClicked(object? sender, EventArgs e)

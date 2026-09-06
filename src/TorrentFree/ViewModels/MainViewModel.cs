@@ -151,8 +151,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// </summary>
     public bool CanStopAllTorrents => !IsBusy && Torrents.Any(torrent => torrent.CanStop);
 
-    public MainViewModel(ITorrentService torrentService, ITorrentFilePicker torrentFilePicker, IStorageService storageService, IFileAssociationService fileAssociationService, INotificationService notificationService, TorrentImportService torrentImportService)
+    public AppPromptService Prompts { get; }
+
+    public MainViewModel(ITorrentService torrentService, ITorrentFilePicker torrentFilePicker, IStorageService storageService, IFileAssociationService fileAssociationService, INotificationService notificationService, TorrentImportService torrentImportService, AppPromptService prompts)
     {
+        Prompts = prompts;
         _torrentService = torrentService;
         _torrentFilePicker = torrentFilePicker;
         _torrentImportService = torrentImportService;

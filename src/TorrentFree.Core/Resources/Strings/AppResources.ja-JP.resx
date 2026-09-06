@@ -504,4 +504,28 @@
   <data name="ThemePickerHint" xml:space="preserve">
     <value>アプリの外観を選択します。</value>
   </data>
+  <data name="StoreUpdateAvailable" xml:space="preserve">
+    <value>新しいバージョンが利用できます。</value>
+  </data>
+  <data name="StoreUpdateAction" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="StoreDismissAction" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="StoreReviewMessage" xml:space="preserve">
+    <value>アプリを評価しますか？</value>
+  </data>
+  <data name="StoreRateAction" xml:space="preserve">
+    <value>アプリを評価</value>
+  </data>
+  <data name="StoreLaterAction" xml:space="preserve">
+    <value>後で</value>
+  </data>
+  <data name="StoreNeverAction" xml:space="preserve">
+    <value>今後表示しない</value>
+  </data>
+  <data name="StoreActionError" xml:space="preserve">
+    <value>操作を完了できませんでした。もう一度お試しください。</value>
+  </data>
 </root>

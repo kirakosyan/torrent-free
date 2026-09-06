@@ -28,6 +28,12 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 
 ## 📝 Release Overview
 
+### Unreleased
+
+- Added a startup update banner linking to Microsoft Store or Google Play.
+- Added review requests after five completed downloads, with persistent opt-out and a ten-download/30-day reminder interval.
+- See [store prompt behavior and validation](docs/store-prompts.md). These changes have not been published to either store.
+
 The current app version is **v1.13**.
 
 ### v1.13 (latest)

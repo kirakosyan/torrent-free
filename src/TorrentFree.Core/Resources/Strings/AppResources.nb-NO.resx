@@ -504,4 +504,28 @@
   <data name="ThemePickerHint" xml:space="preserve">
     <value>Velg hvordan appen skal se ut.</value>
   </data>
+  <data name="StoreUpdateAvailable" xml:space="preserve">
+    <value>En ny versjon er tilgjengelig.</value>
+  </data>
+  <data name="StoreUpdateAction" xml:space="preserve">
+    <value>Oppdater</value>
+  </data>
+  <data name="StoreDismissAction" xml:space="preserve">
+    <value>Lukk</value>
+  </data>
+  <data name="StoreReviewMessage" xml:space="preserve">
+    <value>Vil du vurdere appen?</value>
+  </data>
+  <data name="StoreRateAction" xml:space="preserve">
+    <value>Vurder appen</value>
+  </data>
+  <data name="StoreLaterAction" xml:space="preserve">
+    <value>Senere</value>
+  </data>
+  <data name="StoreNeverAction" xml:space="preserve">
+    <value>Ikke spør igjen</value>
+  </data>
+  <data name="StoreActionError" xml:space="preserve">
+    <value>Handlingen kunne ikke fullføres. Prøv igjen.</value>
+  </data>
 </root>

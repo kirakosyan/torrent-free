@@ -504,4 +504,28 @@
   <data name="ThemePickerHint" xml:space="preserve">
     <value>Válassza ki, hogyan nézzen ki az alkalmazás.</value>
   </data>
+  <data name="StoreUpdateAvailable" xml:space="preserve">
+    <value>Új verzió érhető el.</value>
+  </data>
+  <data name="StoreUpdateAction" xml:space="preserve">
+    <value>Frissítés</value>
+  </data>
+  <data name="StoreDismissAction" xml:space="preserve">
+    <value>Bezárás</value>
+  </data>
+  <data name="StoreReviewMessage" xml:space="preserve">
+    <value>Szeretné értékelni az alkalmazást?</value>
+  </data>
+  <data name="StoreRateAction" xml:space="preserve">
+    <value>Alkalmazás értékelése</value>
+  </data>
+  <data name="StoreLaterAction" xml:space="preserve">
+    <value>Később</value>
+  </data>
+  <data name="StoreNeverAction" xml:space="preserve">
+    <value>Ne kérdezze újra</value>
+  </data>
+  <data name="StoreActionError" xml:space="preserve">
+    <value>A művelet nem sikerült. Próbálja újra.</value>
+  </data>
 </root>

@@ -504,4 +504,28 @@
   <data name="ThemePickerHint" xml:space="preserve">
     <value>Kies hoe de app eruit ziet.</value>
   </data>
+  <data name="StoreUpdateAvailable" xml:space="preserve">
+    <value>Er is een nieuwe versie beschikbaar.</value>
+  </data>
+  <data name="StoreUpdateAction" xml:space="preserve">
+    <value>Bijwerken</value>
+  </data>
+  <data name="StoreDismissAction" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="StoreReviewMessage" xml:space="preserve">
+    <value>Wil je de app beoordelen?</value>
+  </data>
+  <data name="StoreRateAction" xml:space="preserve">
+    <value>App beoordelen</value>
+  </data>
+  <data name="StoreLaterAction" xml:space="preserve">
+    <value>Later</value>
+  </data>
+  <data name="StoreNeverAction" xml:space="preserve">
+    <value>Niet meer vragen</value>
+  </data>
+  <data name="StoreActionError" xml:space="preserve">
+    <value>Deze actie kon niet worden voltooid. Probeer het opnieuw.</value>
+  </data>
 </root>

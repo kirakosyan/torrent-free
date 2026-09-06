@@ -504,4 +504,28 @@
   <data name="ThemePickerHint" xml:space="preserve">
     <value>Vyberte, jak aplikace vypadá.</value>
   </data>
+  <data name="StoreUpdateAvailable" xml:space="preserve">
+    <value>Je k dispozici nová verze.</value>
+  </data>
+  <data name="StoreUpdateAction" xml:space="preserve">
+    <value>Aktualizovat</value>
+  </data>
+  <data name="StoreDismissAction" xml:space="preserve">
+    <value>Zavřít</value>
+  </data>
+  <data name="StoreReviewMessage" xml:space="preserve">
+    <value>Chcete aplikaci ohodnotit?</value>
+  </data>
+  <data name="StoreRateAction" xml:space="preserve">
+    <value>Ohodnotit aplikaci</value>
+  </data>
+  <data name="StoreLaterAction" xml:space="preserve">
+    <value>Později</value>
+  </data>
+  <data name="StoreNeverAction" xml:space="preserve">
+    <value>Znovu se neptat</value>
+  </data>
+  <data name="StoreActionError" xml:space="preserve">
+    <value>Akci se nepodařilo dokončit. Zkuste to znovu.</value>
+  </data>
 </root>

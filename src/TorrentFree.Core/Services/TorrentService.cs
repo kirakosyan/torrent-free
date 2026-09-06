@@ -122,6 +122,7 @@ public class TorrentService : ITorrentService
     private readonly IUiDispatcher _dispatcher;
     private readonly TimeProvider _timeProvider;
     private readonly INotificationService _notificationService;
+    private readonly IDownloadCompletionObserver? _completionObserver;
     private readonly IBackgroundDownloadService _backgroundDownloadService;
     private readonly AsyncKeyedLocker _torrentOperationLock = new();
     private readonly ConcurrentDictionary<string, CancellationTokenSource> _downloadTokens = new();
@@ -176,12 +177,13 @@ public class TorrentService : ITorrentService
 
     public ObservableCollection<TorrentItem> Torrents { get; } = [];
 
-    public TorrentService(IStorageService storageService, INotificationService notificationService, IBackgroundDownloadService backgroundDownloadService, IUiDispatcher dispatcher, TimeProvider? timeProvider = null)
+    public TorrentService(IStorageService storageService, INotificationService notificationService, IBackgroundDownloadService backgroundDownloadService, IUiDispatcher dispatcher, TimeProvider? timeProvider = null, IDownloadCompletionObserver? completionObserver = null)
     {
         _storageService = storageService;
         _dispatcher = dispatcher;
         _timeProvider = timeProvider ?? TimeProvider.System;
         _notificationService = notificationService;
+        _completionObserver = completionObserver;
         _backgroundDownloadService = backgroundDownloadService;
         // Debounced save timer - saves at most every 5 seconds
         _saveTimer = new Timer(async _ => await SaveIfPendingAsync(), null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
@@ -2377,6 +2379,13 @@ queued = Torrents
 
     private async Task NotifyCompletionSafelyAsync(TorrentItem torrent)
     {
+        // Completion tracking is independent of notification permission and notification failures.
+        try
+        {
+            if (_completionObserver is not null)
+                await _completionObserver.OnDownloadCompletedAsync(torrent).ConfigureAwait(false);
+        }
+        catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Completion tracking failed: {ex.Message}"); }
         try { await _notificationService.ShowDownloadCompletedAsync(torrent).ConfigureAwait(false); }
         catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Completion notification failed: {ex}"); }
     }
