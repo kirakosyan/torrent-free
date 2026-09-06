@@ -45,6 +45,139 @@ public sealed class AppPromptServiceTests
         }
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(99.99)]
+    public async Task AuthoritativeCompletionMarker_CountsEvenWhenSampledProgressLags(double progress)
+    {
+        var fixture = new Fixture();
+        var torrent = Completed(0);
+        torrent.Progress = progress;
+        await fixture.Service.OnDownloadCompletedAsync(torrent);
+        Assert.Single(fixture.Persistence.State.CompletedDownloadIds);
+        torrent.Progress = 100;
+        await fixture.Service.OnDownloadCompletedAsync(torrent);
+        Assert.Single(fixture.Persistence.State.CompletedDownloadIds);
+    }
+
+    [Fact]
+    public async Task CorrectedClock_RestartsCooldownAndPreservesDownloadThresholdAcrossRestart()
+    {
+        var fixture = new Fixture();
+        var correctTime = fixture.Clock.Now;
+        fixture.Clock.Now = correctTime.AddYears(10);
+        await fixture.CompleteAsync(0, 5);
+        await fixture.Service.SetForegroundAsync(true);
+        await fixture.Service.ReviewLaterCommand.ExecuteAsync(null);
+
+        fixture.Clock.Now = correctTime;
+        var restarted = fixture.Restart();
+        await restarted.SetForegroundAsync(true);
+        Assert.Equal(correctTime, fixture.Persistence.State.LastReviewPromptUtc);
+        Assert.Equal(5, fixture.Persistence.State.DownloadsAtLastReviewPrompt);
+        Assert.False(restarted.IsReviewBannerVisible);
+        for (var i = 5; i < 15; i++) await restarted.OnDownloadCompletedAsync(Completed(i));
+        Assert.False(restarted.IsReviewBannerVisible);
+        fixture.Clock.Now += TimeSpan.FromDays(29);
+        await restarted.SetForegroundAsync(true);
+        Assert.False(restarted.IsReviewBannerVisible);
+        fixture.Clock.Now += TimeSpan.FromDays(1);
+        await restarted.SetForegroundAsync(true);
+        Assert.True(restarted.IsReviewBannerVisible);
+    }
+
+    [Fact]
+    public async Task CorrectedClock_DoesNotUndoOptOut()
+    {
+        var fixture = new Fixture();
+        await fixture.CompleteAsync(0, 5);
+        await fixture.Service.SetForegroundAsync(true);
+        await fixture.Service.DisableReviewsCommand.ExecuteAsync(null);
+        fixture.Clock.Now = fixture.Clock.Now.AddYears(-10);
+        var restarted = fixture.Restart();
+        await restarted.SetForegroundAsync(true);
+        Assert.True(fixture.Persistence.State.ReviewPromptsDisabled);
+        Assert.False(restarted.IsReviewBannerVisible);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task DismissalDuringOfferSave_IsNotOverwritten(bool canceledReview)
+    {
+        var fixture = new Fixture();
+        await fixture.Service.SetForegroundAsync(true);
+        await fixture.CompleteAsync(0, 4);
+        var savingOffer = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseSave = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        fixture.Persistence.BeforeSave = async state =>
+        {
+            if (state.LastReviewPromptUtc is not null)
+            {
+                savingOffer.TrySetResult();
+                await releaseSave.Task;
+            }
+        };
+        var completing = fixture.CompleteAsync(4, 1);
+        await savingOffer.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+        fixture.Store.ReviewResult = AppReviewResult.Canceled;
+        var dismissing = canceledReview
+            ? fixture.Service.RateAppCommand.ExecuteAsync(null)
+            : fixture.Service.ReviewLaterCommand.ExecuteAsync(null);
+        releaseSave.SetResult();
+        await Task.WhenAll(completing, dismissing);
+        Assert.False(fixture.Service.IsReviewBannerVisible);
+        Assert.False(fixture.Persistence.State.ReviewPromptsDisabled);
+        await fixture.Service.SetForegroundAsync(true);
+        Assert.False(fixture.Service.IsReviewBannerVisible);
+    }
+
+    [Fact]
+    public async Task BackgroundingWhileShowIsQueued_SerializesHideAndNeverShowsStaleBanner()
+    {
+        var dispatcher = new ControlledDispatcher();
+        var fixture = new Fixture(dispatcher);
+        await fixture.Service.SetForegroundAsync(true);
+        await fixture.CompleteAsync(0, 4);
+        var visibleTransitions = 0;
+        fixture.Service.PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName == nameof(AppPromptService.IsReviewBannerVisible) && fixture.Service.IsReviewBannerVisible)
+                Interlocked.Increment(ref visibleTransitions);
+        };
+        var pause = dispatcher.PauseNext();
+        var completing = fixture.CompleteAsync(4, 1);
+        await pause.Entered.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+        var stopping = fixture.Service.SetForegroundAsync(false);
+        try { Assert.False(stopping.IsCompleted); }
+        finally { pause.Release.SetResult(); }
+        await Task.WhenAll(completing, stopping);
+        Assert.False(fixture.Service.IsReviewBannerVisible);
+        Assert.Equal(0, visibleTransitions);
+        await fixture.Service.SetForegroundAsync(true);
+        Assert.True(fixture.Service.IsReviewBannerVisible);
+    }
+
+    [Fact]
+    public async Task DispatcherShutdown_DoesNotEscapeLifecycleOrPermanentlyLockActions()
+    {
+        var dispatcher = new ControlledDispatcher();
+        var fixture = new Fixture(dispatcher);
+        await fixture.Service.SetForegroundAsync(true);
+        await fixture.CompleteAsync(0, 5);
+        dispatcher.Fail = true;
+        await fixture.Service.SetForegroundAsync(false);
+        await fixture.Service.SetForegroundAsync(true);
+        await fixture.Service.RateAppCommand.ExecuteAsync(null);
+        Assert.Equal(0, fixture.Store.ReviewRequests);
+        dispatcher.Fail = false;
+        fixture.Store.ReviewResult = AppReviewResult.Canceled;
+        await fixture.Service.RateAppCommand.ExecuteAsync(null);
+        Assert.Equal(1, fixture.Store.ReviewRequests);
+        Assert.True(fixture.Service.CanAct);
+        Assert.False(fixture.Service.IsReviewBannerVisible);
+    }
+
     [Fact]
     public async Task Later_RequiresBothTenMoreDownloadsAndThirtyDays()
     {
@@ -216,8 +349,11 @@ public sealed class AppPromptServiceTests
         Assert.Equal(0, fixture.Persistence.Writes);
     }
 
-    [Fact]
-    public async Task PendingUpdateCheck_DoesNotBlockCompletionsOrOfferReviewAheadOfUpdate()
+    [Theory]
+    [InlineData(AppUpdateAvailability.Available)]
+    [InlineData(AppUpdateAvailability.Current)]
+    [InlineData(AppUpdateAvailability.Unknown)]
+    public async Task PendingUpdateCheck_DoesNotBlockCompletionsAndReevaluatesReviewOnReturn(AppUpdateAvailability availability)
     {
         var fixture = new Fixture();
         await fixture.CompleteAsync(0, 4);
@@ -229,10 +365,10 @@ public sealed class AppPromptServiceTests
         Assert.Equal(5, fixture.Persistence.State.CompletedDownloadIds.Length);
         Assert.False(fixture.Service.IsReviewBannerVisible);
         Assert.Null(fixture.Persistence.State.LastReviewPromptUtc);
-        pending.SetResult(AppUpdateAvailability.Available);
+        pending.SetResult(availability);
         await activating;
-        Assert.True(fixture.Service.IsUpdateBannerVisible);
-        Assert.False(fixture.Service.IsReviewBannerVisible);
+        Assert.Equal(availability == AppUpdateAvailability.Available, fixture.Service.IsUpdateBannerVisible);
+        Assert.Equal(availability != AppUpdateAvailability.Available, fixture.Service.IsReviewBannerVisible);
         Assert.Equal(1, fixture.Store.UpdateRequests);
     }
 
@@ -306,12 +442,17 @@ public sealed class AppPromptServiceTests
 
     private sealed class Fixture
     {
+        private readonly IUiDispatcher _dispatcher;
         public FakeStore Store { get; } = new();
         public MemoryStateStore Persistence { get; } = new();
         public Clock Clock { get; } = new();
         public AppPromptService Service { get; }
-        public Fixture() => Service = Restart();
-        public AppPromptService Restart() => new(Store, Persistence, new Dispatcher(), Clock);
+        public Fixture(IUiDispatcher? dispatcher = null)
+        {
+            _dispatcher = dispatcher ?? new Dispatcher();
+            Service = Restart();
+        }
+        public AppPromptService Restart() => new(Store, Persistence, _dispatcher, Clock);
         public async Task CompleteAsync(int start, int count)
         {
             for (var i = start; i < start + count; i++) await Service.OnDownloadCompletedAsync(Completed(i));
@@ -329,16 +470,42 @@ public sealed class AppPromptServiceTests
         public Task InvokeAsync(Action action) { action(); return Task.CompletedTask; }
     }
 
+    private sealed class ControlledDispatcher : IUiDispatcher
+    {
+        private DispatchPause? _pause;
+        public bool Fail { get; set; }
+        public DispatchPause PauseNext() => _pause = new();
+        public async Task InvokeAsync(Action action)
+        {
+            if (Fail) throw new InvalidOperationException("Dispatcher has shut down.");
+            var pause = Interlocked.Exchange(ref _pause, null);
+            if (pause is not null)
+            {
+                pause.Entered.SetResult();
+                await pause.Release.Task;
+            }
+            action();
+        }
+    }
+
+    private sealed class DispatchPause
+    {
+        public TaskCompletionSource Entered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public TaskCompletionSource Release { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    }
+
     private sealed class MemoryStateStore : IAppPromptStateStore
     {
         public AppPromptState State { get; private set; } = new();
         public bool FailReads { get; set; }
         public bool FailWrites { get; set; }
+        public Func<AppPromptState, Task>? BeforeSave { get; set; }
         public int Writes { get; private set; }
         public Task<AppPromptState> LoadAsync() => FailReads ? throw new IOException() : Task.FromResult(State);
         public async Task SaveAsync(AppPromptState state)
         {
             if (FailWrites) throw new IOException();
+            if (BeforeSave is not null) await BeforeSave(state);
             // Exercise overlapping callers rather than completing every fake write synchronously.
             await Task.Yield();
             State = state;

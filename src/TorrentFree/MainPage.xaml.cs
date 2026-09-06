@@ -33,13 +33,11 @@ public partial class MainPage : ContentPage
                 _promptWindow = Window;
                 if (_promptWindow is not null)
                 {
-                    _promptWindow.Activated += OnPromptWindowActivated;
-                    _promptWindow.Resumed += OnPromptWindowActivated;
-                    _promptWindow.Deactivated += OnPromptWindowDeactivated;
-                    _promptWindow.Stopped += OnPromptWindowDeactivated;
+                    _promptWindow.Resumed += OnPromptWindowResumed;
+                    _promptWindow.Stopped += OnPromptWindowStopped;
                 }
             }
-            await vm.Prompts.SetForegroundAsync(true);
+            await SetPromptForegroundSafelyAsync(true);
         }
     }
 
@@ -47,8 +45,7 @@ public partial class MainPage : ContentPage
     {
         _isPageVisible = false;
         DetachPromptWindow();
-        if (BindingContext is MainViewModel vm)
-            _ = vm.Prompts.SetForegroundAsync(false);
+        _ = SetPromptForegroundSafelyAsync(false);
         base.OnDisappearing();
     }
 
@@ -56,24 +53,34 @@ public partial class MainPage : ContentPage
     {
         if (_promptWindow is not null)
         {
-            _promptWindow.Activated -= OnPromptWindowActivated;
-            _promptWindow.Resumed -= OnPromptWindowActivated;
-            _promptWindow.Deactivated -= OnPromptWindowDeactivated;
-            _promptWindow.Stopped -= OnPromptWindowDeactivated;
+            _promptWindow.Resumed -= OnPromptWindowResumed;
+            _promptWindow.Stopped -= OnPromptWindowStopped;
             _promptWindow = null;
         }
     }
 
-    private async void OnPromptWindowActivated(object? sender, EventArgs e)
+    private async void OnPromptWindowResumed(object? sender, EventArgs e)
     {
-        if (_isPageVisible && BindingContext is MainViewModel vm)
-            await vm.Prompts.SetForegroundAsync(true);
+        if (_isPageVisible)
+            await SetPromptForegroundSafelyAsync(true);
     }
 
-    private async void OnPromptWindowDeactivated(object? sender, EventArgs e)
+    private async void OnPromptWindowStopped(object? sender, EventArgs e)
     {
-        if (BindingContext is MainViewModel vm)
-            await vm.Prompts.SetForegroundAsync(false);
+        await SetPromptForegroundSafelyAsync(false);
+    }
+
+    private async Task SetPromptForegroundSafelyAsync(bool foreground)
+    {
+        try
+        {
+            if (BindingContext is MainViewModel vm)
+                await vm.Prompts.SetForegroundAsync(foreground);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Store prompt lifecycle failed: {ex.Message}");
+        }
     }
 
     private async void OnAboutClicked(object? sender, EventArgs e)

@@ -108,6 +108,7 @@
 		<!-- Keep AndroidX KTX packages aligned with the newer Material Components dependency graph. -->
 		<PackageReference Include="Xamarin.AndroidX.Activity.Ktx" Version="1.13.0.1" />
 		<PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.6.0.1" />
+		<!-- Play App Update 2.1.0.20 resolves Fragment 1.9.0; KTX 1.8.9.4 excludes it (NU1608). -->
 		<PackageReference Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.9.0" />
 		<PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.11.0.1" />
 		<PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData.Core.Ktx" Version="2.11.0.1" />

@@ -16,6 +16,7 @@ public partial class AppPromptService(
     private readonly SemaphoreSlim _updateLock = new(1, 1);
     private AppPromptState? _state;
     private volatile bool _foreground;
+    private volatile bool _updateCheckInProgress;
     private bool _reviewPending;
     private bool _updateDismissed;
     private int _actionInProgress;
@@ -39,18 +40,26 @@ public partial class AppPromptService(
     [ObservableProperty]
     public partial bool HasActionError { get; private set; }
 
-    public async Task SetForegroundAsync(bool foreground)
+    public Task SetForegroundAsync(bool foreground)
     {
         _foreground = foreground;
-        if (!foreground)
+        return RunSafelyAsync(async () =>
         {
-            await dispatcher.InvokeAsync(() => IsReviewBannerVisible = false);
-            return;
-        }
+            if (!foreground)
+            {
+                await _stateLock.WaitAsync();
+                try
+                {
+                    await dispatcher.InvokeAsync(() =>
+                    {
+                        if (!_foreground) IsReviewBannerVisible = false;
+                    });
+                }
+                finally { _stateLock.Release(); }
+                return;
+            }
 
-        if (!store.IsSupported) return;
-        await RunSafelyAsync(async () =>
-        {
+            if (!store.IsSupported) return;
             // Show cached availability immediately. Network work never blocks app initialization.
             await RefreshVisibilityAsync(allowNewReview: false);
             await CheckForUpdatesAsync();
@@ -60,7 +69,8 @@ public partial class AppPromptService(
 
     public Task OnDownloadCompletedAsync(TorrentItem torrent)
     {
-        if (!store.IsSupported || torrent.DateCompleted is null || torrent.Progress < 100)
+        // The engine can enter Seeding after Progress was sampled. Its completion marker wins.
+        if (!store.IsSupported || torrent.DateCompleted is null)
             return Task.CompletedTask;
         var identity = string.IsNullOrWhiteSpace(torrent.InfoHash)
             ? "id:" + torrent.Id
@@ -78,6 +88,7 @@ public partial class AppPromptService(
     private async Task CheckForUpdatesAsync()
     {
         if (!await _updateLock.WaitAsync(0)) return;
+        _updateCheckInProgress = true;
         try
         {
             var state = await ChangeStateAsync(state => state);
@@ -102,25 +113,40 @@ public partial class AppPromptService(
                 UpdateAvailability = result
             });
         }
-        finally { _updateLock.Release(); }
+        finally
+        {
+            _updateCheckInProgress = false;
+            _updateLock.Release();
+        }
     }
 
-    private async Task RefreshVisibilityAsync(bool allowNewReview = true)
+    private async Task RefreshVisibilityAsync(bool allowNewReview = true, bool dismissReview = false, bool dismissUpdate = false)
     {
         await _stateLock.WaitAsync();
         try
         {
+            // Apply user choices after any pending offer has finished saving/showing.
+            if (dismissReview) _reviewPending = false;
+            if (dismissUpdate) _updateDismissed = true;
             _state ??= await stateStore.LoadAsync();
+            var now = _clock.GetUtcNow();
+            if (allowNewReview && _foreground && !_state.ReviewPromptsDisabled && _state.LastReviewPromptUtc > now)
+            {
+                // A corrected device clock starts a fresh cooldown, without prompting immediately.
+                var corrected = _state with { LastReviewPromptUtc = now };
+                await stateStore.SaveAsync(corrected);
+                _state = corrected;
+            }
             var updateVisible = !_updateDismissed
                 && _state.CheckedInstalledVersion == store.InstalledVersion
                 && _state.UpdateAvailability == AppUpdateAvailability.Available;
-            if (allowNewReview && _foreground && _updateLock.CurrentCount != 0
-                && !updateVisible && !_reviewPending && IsReviewDue(_state, _clock.GetUtcNow()))
+            if (allowNewReview && _foreground && !_updateCheckInProgress
+                && !updateVisible && !_reviewPending && IsReviewDue(_state, now))
             {
                 // Persist when offered, not when dismissed, so closing the app does not cause nagging.
                 var next = _state with
                 {
-                    LastReviewPromptUtc = _clock.GetUtcNow(),
+                    LastReviewPromptUtc = now,
                     DownloadsAtLastReviewPrompt = _state.CompletedDownloadIds.Length
                 };
                 await stateStore.SaveAsync(next);
@@ -131,6 +157,7 @@ public partial class AppPromptService(
             await dispatcher.InvokeAsync(() =>
             {
                 IsUpdateBannerVisible = updateVisible;
+                // Read at execution time: the page may have stopped while this callback was queued.
                 IsReviewBannerVisible = _foreground && reviewVisible;
             });
         }
@@ -146,25 +173,22 @@ public partial class AppPromptService(
     [RelayCommand]
     private Task DismissUpdateAsync() => RunSafelyAsync(async () =>
     {
-        _updateDismissed = true;
         await dispatcher.InvokeAsync(() => HasActionError = false);
-        await RefreshVisibilityAsync();
+        await RefreshVisibilityAsync(dismissUpdate: true);
     });
 
     [RelayCommand]
     private Task ReviewLaterAsync() => RunSafelyAsync(async () =>
     {
-        _reviewPending = false;
         await dispatcher.InvokeAsync(() => HasActionError = false);
-        await RefreshVisibilityAsync();
+        await RefreshVisibilityAsync(allowNewReview: false, dismissReview: true);
     });
 
     [RelayCommand]
     private Task DisableReviewsAsync() => RunActionAsync(async () =>
     {
         await ChangeStateAsync(state => state with { ReviewPromptsDisabled = true });
-        _reviewPending = false;
-        await RefreshVisibilityAsync();
+        await RefreshVisibilityAsync(allowNewReview: false, dismissReview: true);
     });
 
     [RelayCommand]
@@ -191,24 +215,26 @@ public partial class AppPromptService(
                 ReviewSubmitted = result == AppReviewResult.Submitted
             });
         }
-        _reviewPending = false;
-        await RefreshVisibilityAsync();
+        await RefreshVisibilityAsync(allowNewReview: false, dismissReview: true);
     });
 
     private async Task RunActionAsync(Func<Task> action)
     {
         if (Interlocked.CompareExchange(ref _actionInProgress, 1, 0) != 0) return;
-        await dispatcher.InvokeAsync(() => { IsActionInProgress = true; HasActionError = false; });
-        try { await action(); }
+        try
+        {
+            await dispatcher.InvokeAsync(() => { IsActionInProgress = true; HasActionError = false; });
+            await action();
+        }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Store prompt action failed: {ex.Message}");
-            await dispatcher.InvokeAsync(() => HasActionError = true);
+            await RunSafelyAsync(() => dispatcher.InvokeAsync(() => HasActionError = true));
         }
         finally
         {
             Interlocked.Exchange(ref _actionInProgress, 0);
-            await dispatcher.InvokeAsync(() => IsActionInProgress = false);
+            await RunSafelyAsync(() => dispatcher.InvokeAsync(() => IsActionInProgress = false));
         }
     }
 
