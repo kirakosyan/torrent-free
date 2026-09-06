@@ -9,6 +9,8 @@ namespace TorrentFree;
 public partial class MainPage : ContentPage
 {
     private const string GitHubUrl = "https://github.com/kirakosyan/torrent-free";
+    private Window? _promptWindow;
+    private bool _isPageVisible;
 
     public MainPage(MainViewModel viewModel)
     {
@@ -19,10 +21,65 @@ public partial class MainPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        _isPageVisible = true;
 
         if (BindingContext is MainViewModel vm)
         {
             await vm.InitializeCommand.ExecuteAsync(null);
+            if (!_isPageVisible) return;
+            if (_promptWindow != Window)
+            {
+                DetachPromptWindow();
+                _promptWindow = Window;
+                if (_promptWindow is not null)
+                {
+                    _promptWindow.Resumed += OnPromptWindowResumed;
+                    _promptWindow.Stopped += OnPromptWindowStopped;
+                }
+            }
+            await SetPromptForegroundSafelyAsync(true);
+        }
+    }
+
+    protected override void OnDisappearing()
+    {
+        _isPageVisible = false;
+        DetachPromptWindow();
+        _ = SetPromptForegroundSafelyAsync(false);
+        base.OnDisappearing();
+    }
+
+    private void DetachPromptWindow()
+    {
+        if (_promptWindow is not null)
+        {
+            _promptWindow.Resumed -= OnPromptWindowResumed;
+            _promptWindow.Stopped -= OnPromptWindowStopped;
+            _promptWindow = null;
+        }
+    }
+
+    private async void OnPromptWindowResumed(object? sender, EventArgs e)
+    {
+        if (_isPageVisible)
+            await SetPromptForegroundSafelyAsync(true);
+    }
+
+    private async void OnPromptWindowStopped(object? sender, EventArgs e)
+    {
+        await SetPromptForegroundSafelyAsync(false);
+    }
+
+    private async Task SetPromptForegroundSafelyAsync(bool foreground)
+    {
+        try
+        {
+            if (BindingContext is MainViewModel vm)
+                await vm.Prompts.SetForegroundAsync(foreground);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Store prompt lifecycle failed: {ex.Message}");
         }
     }
 

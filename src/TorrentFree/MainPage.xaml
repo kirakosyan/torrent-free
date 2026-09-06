@@ -160,7 +160,7 @@
               </ResourceDictionary>
        </ContentPage.Resources>
 
-       <Grid RowDefinitions="Auto,Auto,*"
+       <Grid RowDefinitions="Auto,Auto,Auto,*"
              Padding="16,12">
 
               <!-- Header Section -->
@@ -201,8 +201,42 @@
                               Command="{Binding OpenSettingsCommand}"/>
               </Grid>
 
-              <!-- Input Section -->
+              <!-- Store prompts: wrapping actions keep the banner usable on narrow screens. -->
               <VerticalStackLayout Grid.Row="1"
+                                   IsVisible="{Binding Prompts.HasBanner}"
+                                   Margin="0,12,0,0" Spacing="6">
+                     <Border IsVisible="{Binding Prompts.IsUpdateBannerVisible}"
+                             Padding="12" Stroke="{StaticResource AccentColor}"
+                             Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                            <VerticalStackLayout Spacing="8">
+                                   <Label Text="{helpers:Translate StoreUpdateAvailable}" FontAttributes="Bold" LineBreakMode="WordWrap"/>
+                                   <FlexLayout Direction="Row" Wrap="Wrap" IsEnabled="{Binding Prompts.CanAct}">
+                                          <Button Text="{helpers:Translate StoreUpdateAction}" Command="{Binding Prompts.OpenUpdateCommand}" Margin="0,0,8,4"/>
+                                          <Button Text="{helpers:Translate StoreDismissAction}" Command="{Binding Prompts.DismissUpdateCommand}" Margin="0,0,0,4"/>
+                                   </FlexLayout>
+                            </VerticalStackLayout>
+                     </Border>
+                     <Border IsVisible="{Binding Prompts.IsReviewBannerVisible}"
+                             Padding="12" Stroke="{StaticResource AccentColor}"
+                             Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                            <VerticalStackLayout Spacing="8">
+                                   <Label Text="{helpers:Translate StoreReviewMessage}" FontAttributes="Bold" LineBreakMode="WordWrap"/>
+                                   <FlexLayout Direction="Row" Wrap="Wrap" IsEnabled="{Binding Prompts.CanAct}">
+                                          <Button Text="{helpers:Translate StoreRateAction}" Command="{Binding Prompts.RateAppCommand}" Margin="0,0,8,4"/>
+                                          <Button Text="{helpers:Translate StoreLaterAction}" Command="{Binding Prompts.ReviewLaterCommand}" Margin="0,0,8,4"/>
+                                          <Button Text="{helpers:Translate StoreNeverAction}" Command="{Binding Prompts.DisableReviewsCommand}" Margin="0,0,0,4"/>
+                                   </FlexLayout>
+                            </VerticalStackLayout>
+                     </Border>
+                     <ActivityIndicator IsVisible="{Binding Prompts.IsActionInProgress}" IsRunning="{Binding Prompts.IsActionInProgress}" HeightRequest="20"/>
+                     <Label Text="{helpers:Translate StoreActionError}" IsVisible="{Binding Prompts.HasActionError}"
+                            TextColor="{AppThemeBinding Light=#B91C1C, Dark=#FCA5A5}" LineBreakMode="WordWrap"/>
+              </VerticalStackLayout>
+
+              <!-- Input Section -->
+              <VerticalStackLayout Grid.Row="2"
                                    Spacing="8"
                                    Margin="0,16,0,16">
                      <Border Padding="12"
@@ -294,7 +328,7 @@
               </VerticalStackLayout>
 
               <!-- Downloads Section -->
-              <Grid Grid.Row="2"
+              <Grid Grid.Row="3"
                     RowDefinitions="Auto,Auto,*">
                      <VerticalStackLayout Grid.Row="0"
                                           Spacing="8"

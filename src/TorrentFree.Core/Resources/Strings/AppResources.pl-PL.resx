@@ -504,4 +504,28 @@
   <data name="ThemePickerHint" xml:space="preserve">
     <value>Wybierz wygląd aplikacji.</value>
   </data>
+  <data name="StoreUpdateAvailable" xml:space="preserve">
+    <value>Dostępna jest nowa wersja.</value>
+  </data>
+  <data name="StoreUpdateAction" xml:space="preserve">
+    <value>Aktualizuj</value>
+  </data>
+  <data name="StoreDismissAction" xml:space="preserve">
+    <value>Zamknij</value>
+  </data>
+  <data name="StoreReviewMessage" xml:space="preserve">
+    <value>Czy chcesz ocenić aplikację?</value>
+  </data>
+  <data name="StoreRateAction" xml:space="preserve">
+    <value>Oceń aplikację</value>
+  </data>
+  <data name="StoreLaterAction" xml:space="preserve">
+    <value>Później</value>
+  </data>
+  <data name="StoreNeverAction" xml:space="preserve">
+    <value>Nie pytaj ponownie</value>
+  </data>
+  <data name="StoreActionError" xml:space="preserve">
+    <value>Nie udało się wykonać tej czynności. Spróbuj ponownie.</value>
+  </data>
 </root>

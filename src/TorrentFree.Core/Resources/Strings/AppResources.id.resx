@@ -504,4 +504,28 @@
   <data name="ThemePickerHint" xml:space="preserve">
     <value>Pilih tampilan aplikasi.</value>
   </data>
+  <data name="StoreUpdateAvailable" xml:space="preserve">
+    <value>Versi baru tersedia.</value>
+  </data>
+  <data name="StoreUpdateAction" xml:space="preserve">
+    <value>Perbarui</value>
+  </data>
+  <data name="StoreDismissAction" xml:space="preserve">
+    <value>Tutup</value>
+  </data>
+  <data name="StoreReviewMessage" xml:space="preserve">
+    <value>Ingin memberi rating aplikasi ini?</value>
+  </data>
+  <data name="StoreRateAction" xml:space="preserve">
+    <value>Beri rating</value>
+  </data>
+  <data name="StoreLaterAction" xml:space="preserve">
+    <value>Nanti</value>
+  </data>
+  <data name="StoreNeverAction" xml:space="preserve">
+    <value>Jangan tanya lagi</value>
+  </data>
+  <data name="StoreActionError" xml:space="preserve">
+    <value>Tindakan ini tidak dapat diselesaikan. Silakan coba lagi.</value>
+  </data>
 </root>

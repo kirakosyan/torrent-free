@@ -504,4 +504,28 @@
   <data name="ThemePickerHint" xml:space="preserve">
     <value>ऐप का स्वरूप चुनें।</value>
   </data>
+  <data name="StoreUpdateAvailable" xml:space="preserve">
+    <value>नया संस्करण उपलब्ध है।</value>
+  </data>
+  <data name="StoreUpdateAction" xml:space="preserve">
+    <value>अपडेट करें</value>
+  </data>
+  <data name="StoreDismissAction" xml:space="preserve">
+    <value>बंद करें</value>
+  </data>
+  <data name="StoreReviewMessage" xml:space="preserve">
+    <value>क्या आप ऐप को रेटिंग देना चाहेंगे?</value>
+  </data>
+  <data name="StoreRateAction" xml:space="preserve">
+    <value>ऐप को रेटिंग दें</value>
+  </data>
+  <data name="StoreLaterAction" xml:space="preserve">
+    <value>बाद में</value>
+  </data>
+  <data name="StoreNeverAction" xml:space="preserve">
+    <value>दोबारा न पूछें</value>
+  </data>
+  <data name="StoreActionError" xml:space="preserve">
+    <value>यह कार्रवाई पूरी नहीं हो सकी। कृपया फिर से कोशिश करें।</value>
+  </data>
 </root>

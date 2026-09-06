@@ -504,4 +504,28 @@
   <data name="ThemePickerHint" xml:space="preserve">
     <value>เลือกลักษณะของแอป</value>
   </data>
+  <data name="StoreUpdateAvailable" xml:space="preserve">
+    <value>มีเวอร์ชันใหม่พร้อมใช้งาน</value>
+  </data>
+  <data name="StoreUpdateAction" xml:space="preserve">
+    <value>อัปเดต</value>
+  </data>
+  <data name="StoreDismissAction" xml:space="preserve">
+    <value>ปิด</value>
+  </data>
+  <data name="StoreReviewMessage" xml:space="preserve">
+    <value>คุณต้องการให้คะแนนแอปหรือไม่?</value>
+  </data>
+  <data name="StoreRateAction" xml:space="preserve">
+    <value>ให้คะแนนแอป</value>
+  </data>
+  <data name="StoreLaterAction" xml:space="preserve">
+    <value>ภายหลัง</value>
+  </data>
+  <data name="StoreNeverAction" xml:space="preserve">
+    <value>ไม่ต้องถามอีก</value>
+  </data>
+  <data name="StoreActionError" xml:space="preserve">
+    <value>ไม่สามารถดำเนินการให้เสร็จสิ้นได้ โปรดลองอีกครั้ง</value>
+  </data>
 </root>

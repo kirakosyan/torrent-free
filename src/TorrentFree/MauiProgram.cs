@@ -27,6 +27,10 @@ public static class MauiProgram
         builder.Services.AddSingleton(_ => MauiStoragePaths.Create());
         builder.Services.AddSingleton<IUiDispatcher, MauiUiDispatcher>();
         builder.Services.AddSingleton<IStorageService, StorageService>();
+        builder.Services.AddSingleton<IAppStore, PlatformAppStore>();
+        builder.Services.AddSingleton<IAppPromptStateStore, AppPromptStateStore>();
+        builder.Services.AddSingleton<AppPromptService>();
+        builder.Services.AddSingleton<IDownloadCompletionObserver>(services => services.GetRequiredService<AppPromptService>());
         builder.Services.AddSingleton<ITorrentService, TorrentService>();
         builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
         builder.Services.AddSingleton<IThemeService, ThemeService>();

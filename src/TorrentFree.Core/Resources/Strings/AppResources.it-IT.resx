@@ -504,4 +504,28 @@
   <data name="ThemePickerHint" xml:space="preserve">
     <value>Scegli l'aspetto dell'app.</value>
   </data>
+  <data name="StoreUpdateAvailable" xml:space="preserve">
+    <value>È disponibile una nuova versione.</value>
+  </data>
+  <data name="StoreUpdateAction" xml:space="preserve">
+    <value>Aggiorna</value>
+  </data>
+  <data name="StoreDismissAction" xml:space="preserve">
+    <value>Chiudi</value>
+  </data>
+  <data name="StoreReviewMessage" xml:space="preserve">
+    <value>Vuoi valutare l’app?</value>
+  </data>
+  <data name="StoreRateAction" xml:space="preserve">
+    <value>Valuta l’app</value>
+  </data>
+  <data name="StoreLaterAction" xml:space="preserve">
+    <value>Più tardi</value>
+  </data>
+  <data name="StoreNeverAction" xml:space="preserve">
+    <value>Non chiedere più</value>
+  </data>
+  <data name="StoreActionError" xml:space="preserve">
+    <value>Impossibile completare questa azione. Riprova.</value>
+  </data>
 </root>

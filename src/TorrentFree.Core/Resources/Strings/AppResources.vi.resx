@@ -504,4 +504,28 @@
   <data name="ThemePickerHint" xml:space="preserve">
     <value>Chọn giao diện của ứng dụng.</value>
   </data>
+  <data name="StoreUpdateAvailable" xml:space="preserve">
+    <value>Đã có phiên bản mới.</value>
+  </data>
+  <data name="StoreUpdateAction" xml:space="preserve">
+    <value>Cập nhật</value>
+  </data>
+  <data name="StoreDismissAction" xml:space="preserve">
+    <value>Đóng</value>
+  </data>
+  <data name="StoreReviewMessage" xml:space="preserve">
+    <value>Bạn có muốn đánh giá ứng dụng không?</value>
+  </data>
+  <data name="StoreRateAction" xml:space="preserve">
+    <value>Đánh giá ứng dụng</value>
+  </data>
+  <data name="StoreLaterAction" xml:space="preserve">
+    <value>Để sau</value>
+  </data>
+  <data name="StoreNeverAction" xml:space="preserve">
+    <value>Không hỏi lại</value>
+  </data>
+  <data name="StoreActionError" xml:space="preserve">
+    <value>Không thể hoàn tất thao tác này. Vui lòng thử lại.</value>
+  </data>
 </root>

@@ -504,4 +504,28 @@
   <data name="ThemePickerHint" xml:space="preserve">
     <value>选择应用程序的外观。</value>
   </data>
+  <data name="StoreUpdateAvailable" xml:space="preserve">
+    <value>有新版本可用。</value>
+  </data>
+  <data name="StoreUpdateAction" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="StoreDismissAction" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="StoreReviewMessage" xml:space="preserve">
+    <value>您愿意评价此应用吗？</value>
+  </data>
+  <data name="StoreRateAction" xml:space="preserve">
+    <value>评价应用</value>
+  </data>
+  <data name="StoreLaterAction" xml:space="preserve">
+    <value>稍后</value>
+  </data>
+  <data name="StoreNeverAction" xml:space="preserve">
+    <value>不再询问</value>
+  </data>
+  <data name="StoreActionError" xml:space="preserve">
+    <value>无法完成此操作。请重试。</value>
+  </data>
 </root>
