@@ -303,7 +303,7 @@ public sealed class StoreLanguageMetadataTests
     }
 
     private static string ResourcesDirectory() =>
-        Path.Combine(GetRepoRoot(), "src", "TorrentFree", "Resources", "Strings");
+        Path.Combine(GetRepoRoot(), "src", "TorrentFree.Core", "Resources", "Strings");
 
     private static string? ProjectProperty(XDocument document, string name) =>
         document

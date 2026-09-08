@@ -6,10 +6,11 @@ Use this file as the default guidance for Codex-style agents working in this rep
 
 ## Solution layout
 - `src/TorrentFree` — main .NET MAUI app
-- `tests/TorrentFree.UnitTests` — unit tests for app logic
-- `src/TorrentFree/Services` — domain and infrastructure services
+- `src/TorrentFree.Core` — platform-independent production models and services
+- `tests/TorrentFree.UnitTests` — tests referencing the production Core assembly
+- `src/TorrentFree/Services` — MAUI infrastructure and platform adapters
 - `src/TorrentFree/ViewModels` — MVVM view models using CommunityToolkit.Mvvm
-- `src/TorrentFree/Models` — persisted models and UI/domain state
+- `src/TorrentFree.Core/Models` — persisted models and UI/domain state
 - `src/TorrentFree/Platforms` — platform-specific implementations
 
 ## Architecture expectations
@@ -40,7 +41,7 @@ Use this file as the default guidance for Codex-style agents working in this rep
 ## Testing guidance
 - Add or update unit tests for behavior changes in services, rules, settings normalization, persistence, and path handling.
 - Prefer testing pure logic in `tests/TorrentFree.UnitTests`.
-- The test project links selected source files directly from `src/TorrentFree`; if new pure logic files need coverage, follow the existing test-project pattern.
+- Test the production types in `TorrentFree.Core` through its project reference; do not duplicate models or link source files into tests.
 - Run targeted tests first, then broader validation.
 
 ## Validation
@@ -50,7 +51,7 @@ Before finishing work, prefer this order:
 3. Only fix issues caused by the current change
 
 Suggested commands:
-- `dotnet test tests/TorrentFree.UnitTests/TorrentFree.UnitTests.csproj`
+- `dotnet test --project tests/TorrentFree.UnitTests/TorrentFree.UnitTests.csproj`
 - `dotnet build src/TorrentFree/TorrentFree.csproj`
 
 ## Android Store Package Generation

@@ -11,7 +11,7 @@ public sealed class StopConfirmationResourceTests
         var path = Path.GetFullPath(Path.Combine(
             AppContext.BaseDirectory,
             "..", "..", "..", "..", "..",
-            "src", "TorrentFree", "Resources", "Strings", "AppResources.resx"));
+            "src", "TorrentFree.Core", "Resources", "Strings", "AppResources.resx"));
 
         var document = XDocument.Load(path);
         var message = document

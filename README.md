@@ -26,7 +26,48 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 - **Save path** prefers the picked `.torrent` folder (if available) otherwise the default path
 - **Persistent storage** of torrent list and settings
 
-## 📝 Release Notes
+## 📝 Release Overview
+
+### Unreleased
+
+- Added a startup update banner linking to Microsoft Store or Google Play.
+- Added review requests after five completed downloads, with persistent opt-out and a ten-download/30-day reminder interval.
+- See [store prompt behavior and validation](docs/store-prompts.md). These changes have not been published to either store.
+
+The current app version is **v1.13**.
+
+### v1.13 (latest)
+
+- Improved saved queue recovery and retained imported torrent metadata across restarts.
+- Fixed transfer monitoring, download/seeding queue admission, and active seeding time limits.
+- Made Android download exports safer when changing destinations or retrying a copy.
+- Extracted a platform-independent core and added regression tests against production models and storage.
+
+### v1.12
+
+- Improved swarm availability metrics and torrent status sorting.
+- Updated the .NET MAUI, AndroidX, and test dependency stack.
+
+### v1.11
+
+- Hardened torrent parsing, storage migration, settings persistence, and concurrent engine rebuilds.
+- Improved torrent lifecycle safety, Android foreground execution, and Windows activation behavior.
+
+### v1.10
+
+- Strengthened SOCKS5 privacy, torrent parsing, and thread safety.
+- Improved Android foreground-service reliability, safe-area handling, themes, and localized store presentation.
+
+### v1.9
+
+- Added system, light, and dark theme selection.
+- Applied speed limits and SOCKS5 settings through the MonoTorrent engine.
+- Improved Android file handling, engine reliability, and multilingual support.
+
+### v1.8
+
+- Expanded localization and accessibility throughout the app.
+- Improved activation reliability and desktop window-state persistence.
 
 ### v1.7
 
@@ -93,6 +134,11 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
    ```
 
 ### Running the App
+
+Windows Debug builds run unpackaged, so launching the project does not register a
+development package over the Microsoft Store installation. Release builds still
+produce MSIX packages with the existing Store identity. Debug and Store builds
+share the saved torrent queue and settings; avoid running both at the same time.
 
 ```bash
 # Android emulator
@@ -172,17 +218,30 @@ The following features are planned for future releases:
 The app follows **MVVM**:
 
 ```
-src/TorrentFree/
-├── Models/              # TorrentItem, DownloadStatus
-├── ViewModels/          # MainViewModel
-├── Services/            # TorrentService (MonoTorrent), StorageService, LocalizationService
-├── Converters/          # XAML value converters
-└── Resources/           # Styles, strings, assets
+src/
+├── TorrentFree.Core/    # net10.0 library; no MAUI or platform SDK dependencies
+│   ├── Models/          # Production observable and persisted models
+│   ├── Services/        # Torrent engine, storage, imports, export policy, parsing
+│   └── Resources/       # Localization strings
+└── TorrentFree/         # MAUI application
+    ├── ViewModels/      # Main and settings view models
+    ├── Services/        # Platform paths, UI dispatch, pickers, notifications, Android exports
+    ├── Platforms/       # Windows, Android, iOS, Mac Catalyst integration
+    ├── Converters/      # XAML value converters
+    └── Resources/       # Styles and assets
 ```
 
 ### Data Persistence
 
 Downloads are stored in a JSON file in the app's data directory. Actual payload files are downloaded by MonoTorrent to the designated save path.
+
+`StorageService` receives `StoragePaths` from the MAUI host. Reads and writes report failures to callers; replacing the queue requires a successful load, and successful writes retain the previous state as `torrents.json.bak`. Imported `.torrent` bytes are kept in the persistent `ImportedTorrents` directory, independent of the original file provider. Active seeding duration is persisted separately from pause time and application downtime. Legacy JSON remains readable.
+
+The app injects `IUiDispatcher` for observable model updates. Tests reference `TorrentFree.Core` directly, using the production models, storage, and MonoTorrent services. Only platform effects such as UI dispatch, notifications, and export destinations are substituted. Run the core suite without MAUI workloads:
+
+```bash
+dotnet test --project tests/TorrentFree.UnitTests/TorrentFree.UnitTests.csproj
+```
 
 ## 🌐 Localization
 
@@ -231,4 +290,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## ⚠️ Disclaimer
 
 This application is provided for educational purposes. Users are responsible for ensuring they only download content they have the legal right to access. The developers are not responsible for any misuse of this software.
-

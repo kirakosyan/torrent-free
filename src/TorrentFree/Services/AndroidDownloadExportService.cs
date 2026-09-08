@@ -3,6 +3,10 @@ namespace TorrentFree.Services;
 public static class AndroidDownloadExportService
 {
     public const string PublicDownloadsSubfolder = "TorrentFree";
+#if ANDROID
+    private static readonly Lazy<DownloadExportService> Exporter = new(() => new(
+        Path.Combine(FileSystem.AppDataDirectory, "Exports"), new AndroidDownloadExportStore()));
+#endif
 
     public static string GetPublicDownloadsPath(string? childFolder = null)
     {
@@ -40,7 +44,7 @@ public static class AndroidDownloadExportService
 #endif
     }
 
-    public static async Task<string?> ExportToPublicDownloadsAsync(string downloadPath, bool isDirectory)
+    public static async Task<string?> ExportToPublicDownloadsAsync(string ownerId, string downloadPath, bool isDirectory)
     {
 #if ANDROID
         if (string.IsNullOrWhiteSpace(downloadPath))
@@ -48,6 +52,8 @@ public static class AndroidDownloadExportService
             return null;
         }
 
+        var ownerSuffix = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(ownerId)))[..12];
+        var folderName = GetSafeFolderName(Path.GetFileName(downloadPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))) + "-" + ownerSuffix;
         if (isDirectory)
         {
             if (!Directory.Exists(downloadPath))
@@ -55,13 +61,12 @@ public static class AndroidDownloadExportService
                 return null;
             }
 
-            var folderName = GetSafeFolderName(Path.GetFileName(downloadPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)));
             foreach (var sourceFile in Directory.EnumerateFiles(downloadPath, "*", SearchOption.AllDirectories))
             {
                 var sourceDirectory = Path.GetDirectoryName(sourceFile) ?? downloadPath;
                 var relativeDirectory = Path.GetRelativePath(downloadPath, sourceDirectory);
                 var androidRelativePath = BuildAndroidDownloadsRelativePath(folderName, relativeDirectory);
-                await CopyFileToAndroidDownloadsAsync(sourceFile, androidRelativePath);
+                await Exporter.Value.ExportAsync(ownerId, sourceFile, androidRelativePath);
             }
 
             return GetPublicDownloadsPath(folderName);
@@ -72,8 +77,8 @@ public static class AndroidDownloadExportService
             return null;
         }
 
-        await CopyFileToAndroidDownloadsAsync(downloadPath, BuildAndroidDownloadsRelativePath());
-        return GetPublicDownloadsPath();
+        await Exporter.Value.ExportAsync(ownerId, downloadPath, BuildAndroidDownloadsRelativePath(folderName));
+        return GetPublicDownloadsPath(folderName);
 #else
         await Task.CompletedTask;
         return null;
@@ -203,137 +208,6 @@ public static class AndroidDownloadExportService
         return string.Join("/", parts) + "/";
     }
 
-    private static async Task CopyFileToAndroidDownloadsAsync(string sourcePath, string relativePath)
-    {
-        if (OperatingSystem.IsAndroidVersionAtLeast(29))
-        {
-            await CopyFileToMediaStoreDownloadsAsync(sourcePath, relativePath);
-            return;
-        }
-
-        CopyFileToLegacyPublicDownloads(sourcePath, relativePath);
-    }
-
-    [System.Runtime.Versioning.SupportedOSPlatform("android29.0")]
-    private static async Task CopyFileToMediaStoreDownloadsAsync(string sourcePath, string relativePath)
-    {
-        var context = Android.App.Application.Context;
-        var resolver = context.ContentResolver ?? throw new InvalidOperationException("Content resolver is unavailable.");
-        var sourceInfo = new FileInfo(sourcePath);
-        var displayName = Path.GetFileName(sourcePath);
-        var collection = Android.Provider.MediaStore.Downloads.GetContentUri(Android.Provider.MediaStore.VolumeExternalPrimary);
-
-        var existingUri = FindExistingDownload(resolver, collection, displayName, relativePath, sourceInfo.Length);
-        if (existingUri is not null)
-        {
-            return;
-        }
-
-        var values = new Android.Content.ContentValues();
-        values.Put(Android.Provider.MediaStore.IMediaColumns.DisplayName, displayName);
-        values.Put(Android.Provider.MediaStore.IMediaColumns.MimeType, GetMimeType(displayName));
-        values.Put(Android.Provider.MediaStore.IMediaColumns.RelativePath, relativePath);
-        values.Put(Android.Provider.MediaStore.IMediaColumns.IsPending, 1);
-
-        var uri = resolver.Insert(collection, values) ?? throw new InvalidOperationException("Failed to create Android download entry.");
-        try
-        {
-            await using (var input = File.OpenRead(sourcePath))
-            await using (var output = resolver.OpenOutputStream(uri) ?? throw new InvalidOperationException("Failed to open Android download entry."))
-            {
-                await input.CopyToAsync(output);
-            }
-
-            values.Clear();
-            values.Put(Android.Provider.MediaStore.IMediaColumns.IsPending, 0);
-            resolver.Update(uri, values, null, null);
-        }
-        catch
-        {
-            try
-            {
-                resolver.Delete(uri, null, null);
-            }
-            catch
-            {
-                // Ignore cleanup failures; the original copy error is more useful.
-            }
-
-            throw;
-        }
-    }
-
-    [System.Runtime.Versioning.SupportedOSPlatform("android29.0")]
-    private static Android.Net.Uri? FindExistingDownload(
-        Android.Content.ContentResolver resolver,
-        Android.Net.Uri collection,
-        string displayName,
-        string relativePath,
-        long sourceSize)
-    {
-        var projection = new[]
-        {
-            Android.Provider.IBaseColumns.Id,
-            Android.Provider.MediaStore.IMediaColumns.Size
-        };
-
-        using var cursor = resolver.Query(
-            collection,
-            projection,
-            $"{Android.Provider.MediaStore.IMediaColumns.DisplayName}=? AND {Android.Provider.MediaStore.IMediaColumns.RelativePath}=?",
-            [displayName, relativePath],
-            null);
-
-        if (cursor is null)
-        {
-            return null;
-        }
-
-        while (cursor.MoveToNext())
-        {
-            var id = cursor.GetLong(0);
-            var size = cursor.GetLong(1);
-            var uri = Android.Content.ContentUris.WithAppendedId(collection, id);
-            if (size == sourceSize)
-            {
-                return uri;
-            }
-
-            resolver.Delete(uri, null, null);
-        }
-
-        return null;
-    }
-
-    private static void CopyFileToLegacyPublicDownloads(string sourcePath, string relativePath)
-    {
-        var publicRoot = Android.OS.Environment.GetExternalStoragePublicDirectory(AndroidDownloadsDirectory)?.AbsolutePath;
-        if (string.IsNullOrWhiteSpace(publicRoot))
-        {
-            throw new InvalidOperationException("Public Downloads folder is unavailable.");
-        }
-
-        var relativeParts = relativePath
-            .TrimEnd('/')
-            .Split('/', StringSplitOptions.RemoveEmptyEntries)
-            .Skip(1)
-            .ToArray();
-        var destinationDirectory = relativeParts.Length == 0
-            ? publicRoot
-            : Path.Combine([publicRoot, .. relativeParts]);
-
-        Directory.CreateDirectory(destinationDirectory);
-
-        var destinationPath = Path.Combine(destinationDirectory, Path.GetFileName(sourcePath));
-        File.Copy(sourcePath, destinationPath, overwrite: true);
-
-        Android.Media.MediaScannerConnection.ScanFile(
-            Android.App.Application.Context,
-            [destinationPath],
-            null,
-            null);
-    }
-
     private static Android.Net.Uri? BuildExternalStorageDocumentUri(string folderPath)
     {
         var documentId = BuildExternalStorageDocumentId(folderPath);
@@ -376,17 +250,6 @@ public static class AndroidDownloadExportService
         return relativePath == "."
             ? "primary:"
             : $"primary:{relativePath}";
-    }
-
-    private static string GetMimeType(string fileName)
-    {
-        var extension = Path.GetExtension(fileName).TrimStart('.').ToLowerInvariant();
-        if (string.IsNullOrWhiteSpace(extension))
-        {
-            return "application/octet-stream";
-        }
-
-        return Android.Webkit.MimeTypeMap.Singleton?.GetMimeTypeFromExtension(extension) ?? "application/octet-stream";
     }
 
     private static string GetSafeFolderName(string? folderName)

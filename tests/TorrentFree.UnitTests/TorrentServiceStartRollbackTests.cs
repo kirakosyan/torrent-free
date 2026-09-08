@@ -53,7 +53,7 @@ public sealed class TorrentServiceStartRollbackTests
             INotificationService notificationService,
             IBackgroundDownloadService backgroundDownloadService,
             Exception exception)
-            : base(storageService, notificationService, backgroundDownloadService)
+            : base(storageService, notificationService, backgroundDownloadService, ImmediateDispatcher.Instance)
         {
             _exception = exception;
         }
@@ -78,6 +78,8 @@ public sealed class TorrentServiceStartRollbackTests
         public Task<AppSettings> LoadSettingsAsync() => Task.FromResult(new AppSettings());
 
         public Task SaveSettingsAsync(AppSettings settings) => Task.CompletedTask;
+
+        public Task UpdateDesktopWindowStateAsync(bool? desktopWasMaximized) => Task.CompletedTask;
 
         public string GetDefaultDownloadPath()
         {

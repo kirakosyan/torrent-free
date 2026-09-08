@@ -162,7 +162,7 @@ public sealed class TorrentServiceRebuildConcurrencyTests
     }
 
     private sealed class BlockingStartTorrentService(IStorageService storageService)
-        : TorrentService(storageService, new StubNotificationService(), new StubBackgroundDownloadService())
+        : TorrentService(storageService, new StubNotificationService(), new StubBackgroundDownloadService(), ImmediateDispatcher.Instance)
     {
         public TaskCompletionSource ManagerCreationEntered { get; } =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -179,7 +179,7 @@ public sealed class TorrentServiceRebuildConcurrencyTests
     }
 
     private sealed class ProxyTransitionTorrentService(IStorageService storageService)
-        : TorrentService(storageService, new StubNotificationService(), new StubBackgroundDownloadService())
+        : TorrentService(storageService, new StubNotificationService(), new StubBackgroundDownloadService(), ImmediateDispatcher.Instance)
     {
         private int _startManagerCallCount;
 
@@ -237,6 +237,8 @@ public sealed class TorrentServiceRebuildConcurrencyTests
         public Task<AppSettings> LoadSettingsAsync() => Task.FromResult(new AppSettings());
 
         public Task SaveSettingsAsync(AppSettings settings) => Task.CompletedTask;
+
+        public Task UpdateDesktopWindowStateAsync(bool? desktopWasMaximized) => Task.CompletedTask;
 
         public string GetDefaultDownloadPath()
         {

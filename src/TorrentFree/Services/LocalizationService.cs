@@ -36,7 +36,7 @@ public class LocalizationService : ILocalizationService
     {
         _resourceManager = new ResourceManager(
             "TorrentFree.Resources.Strings.AppResources",
-            typeof(LocalizationService).Assembly);
+            typeof(LocalizationResourceManager).Assembly);
         _currentCulture = CultureInfo.CurrentUICulture;
     }
 

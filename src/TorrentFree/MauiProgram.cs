@@ -24,13 +24,20 @@ public static class MauiProgram
             });
 
         // Register Services
+        builder.Services.AddSingleton(_ => MauiStoragePaths.Create());
+        builder.Services.AddSingleton<IUiDispatcher, MauiUiDispatcher>();
         builder.Services.AddSingleton<IStorageService, StorageService>();
+        builder.Services.AddSingleton<IAppStore, PlatformAppStore>();
+        builder.Services.AddSingleton<IAppPromptStateStore, AppPromptStateStore>();
+        builder.Services.AddSingleton<AppPromptService>();
+        builder.Services.AddSingleton<IDownloadCompletionObserver>(services => services.GetRequiredService<AppPromptService>());
         builder.Services.AddSingleton<ITorrentService, TorrentService>();
         builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
         builder.Services.AddSingleton<IThemeService, ThemeService>();
         builder.Services.AddSingleton<IFolderPickerService, MauiFolderPickerService>();
         builder.Services.AddSingleton<ITorrentFilePicker, MauiTorrentFilePicker>();
         builder.Services.AddSingleton<ITorrentFileParser, TorrentFileParser>();
+        builder.Services.AddSingleton<TorrentImportService>();
         builder.Services.AddSingleton<IFileAssociationService, FileAssociationService>();
         builder.Services.AddSingleton<TorrentFree.Services.INotificationService, NotificationService>();
     #if ANDROID
