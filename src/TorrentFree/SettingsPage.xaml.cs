@@ -25,7 +25,15 @@ public partial class SettingsPage : ContentPage
 
         if (BindingContext is SettingsViewModel vm)
         {
-            await vm.InitializeCommand.ExecuteAsync(null);
+            try
+            {
+                await vm.InitializeCommand.ExecuteAsync(null);
+            }
+            catch (Exception ex)
+            {
+                // async void: an unhandled exception here would crash the app.
+                System.Diagnostics.Debug.WriteLine($"Settings page appearing error: {ex}");
+            }
         }
     }
 
@@ -89,15 +97,23 @@ public partial class SettingsPage : ContentPage
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
-        if (Shell.Current is not null)
+        try
         {
-            await Shell.Current.GoToAsync("..");
-            return;
-        }
+            if (Shell.Current is not null)
+            {
+                await Shell.Current.GoToAsync("..");
+                return;
+            }
 
-        if (Navigation.NavigationStack.Count > 1)
+            if (Navigation.NavigationStack.Count > 1)
+            {
+                await Navigation.PopAsync();
+            }
+        }
+        catch (Exception ex)
         {
-            await Navigation.PopAsync();
+            // async void: an unhandled exception here would crash the app.
+            System.Diagnostics.Debug.WriteLine($"Settings back navigation error: {ex}");
         }
     }
 

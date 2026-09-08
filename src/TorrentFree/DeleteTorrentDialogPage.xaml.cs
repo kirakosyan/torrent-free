@@ -35,9 +35,18 @@ public partial class DeleteTorrentDialogPage : ContentPage
     private async void OnCancelClicked(object sender, EventArgs e)
     {
         _tcs.TrySetResult(null);
-        if (Navigation.ModalStack.Contains(this))
+        try
         {
-            await Navigation.PopModalAsync();
+            if (Navigation.ModalStack.Contains(this))
+            {
+                await Navigation.PopModalAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            // async void: an unhandled exception here would crash the app. The result is
+            // already delivered via _tcs above, so a failed pop is safe to just log.
+            System.Diagnostics.Debug.WriteLine($"Delete dialog cancel dismiss error: {ex}");
         }
     }
 
@@ -45,9 +54,16 @@ public partial class DeleteTorrentDialogPage : ContentPage
     {
         var result = new DeleteTorrentDialogResult(ViewModel.DeleteTorrentFile, ViewModel.DeleteDownloadedFiles);
         _tcs.TrySetResult(result);
-        if (Navigation.ModalStack.Contains(this))
+        try
         {
-            await Navigation.PopModalAsync();
+            if (Navigation.ModalStack.Contains(this))
+            {
+                await Navigation.PopModalAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Delete dialog dismiss error: {ex}");
         }
     }
 }

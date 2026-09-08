@@ -6,6 +6,43 @@ namespace TorrentFree.UnitTests;
 public sealed class AsyncKeyedLockerTests
 {
     [Fact]
+    public async Task Dispose_AllowsExistingWaiterToFinishAndRejectsNewAcquisitions()
+    {
+        var locker = new AsyncKeyedLocker();
+        var first = await locker.AcquireAsync("torrent");
+        var waiting = locker.AcquireAsync("torrent").AsTask();
+        locker.Dispose();
+        await Assert.ThrowsAsync<ObjectDisposedException>(async () => await locker.AcquireAsync("other"));
+        first.Dispose();
+        await using var second = await waiting.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    public async Task CancelledWaiter_DoesNotBreakSubsequentAcquisitions()
+    {
+        using var locker = new AsyncKeyedLocker();
+        var first = await locker.AcquireAsync("torrent");
+        using var cancellation = new CancellationTokenSource();
+        var waiting = locker.AcquireAsync("torrent", cancellation.Token).AsTask();
+        cancellation.Cancel();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => waiting);
+        first.Dispose();
+        await using var next = await locker.AcquireAsync("torrent").AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    public async Task ConcurrentRelease_IsIdempotent()
+    {
+        using var locker = new AsyncKeyedLocker();
+        for (var i = 0; i < 100; i++)
+        {
+            var handle = await locker.AcquireAsync("torrent");
+            await Task.WhenAll(Task.Run(handle.Dispose), Task.Run(handle.Dispose));
+            await using var next = await locker.AcquireAsync("torrent").AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+        }
+    }
+
+    [Fact]
     public async Task AcquireAsync_SerializesAccessForSameKey()
     {
         using var locker = new AsyncKeyedLocker();

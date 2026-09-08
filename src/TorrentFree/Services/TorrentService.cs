@@ -137,6 +137,9 @@ public class TorrentService : ITorrentService
     private bool _disposed;
     private volatile bool _backgroundTransferActive;
     private volatile bool _backgroundExecutionSuspended;
+    // Cancelled first thing on Dispose so any pending lock/semaphore wait unblocks via
+    // OperationCanceledException instead of hanging on a primitive that Dispose then tears down.
+    private readonly CancellationTokenSource _disposalCts = new();
 
     private int _maxActiveDownloads = 2;
     private int _maxActiveSeeds = 2;
@@ -405,7 +408,7 @@ public class TorrentService : ITorrentService
         {
             if (_backgroundExecutionSuspended)
             {
-                await using (await _torrentOperationLock.AcquireAsync(torrent.Id))
+                await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalCts.Token))
                 {
                     await SuppressStartForBackgroundTimeoutAsync(torrent);
                 }
@@ -417,7 +420,7 @@ public class TorrentService : ITorrentService
             Task? rebuildWhichWonTheRace = null;
             Exception? startException = null;
             var startSuppressed = false;
-            await using (await _torrentOperationLock.AcquireAsync(torrent.Id))
+            await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalCts.Token))
             {
                 // A rebuild can begin after the wait above but before this keyed lock is
                 // acquired. Re-check while holding the key and release/loop if it did.
@@ -691,7 +694,7 @@ public class TorrentService : ITorrentService
     /// <inheritdoc />
     public async Task PauseTorrentAsync(TorrentItem torrent)
     {
-        await using (await _torrentOperationLock.AcquireAsync(torrent.Id))
+        await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalCts.Token))
         {
             // A rebuild temporarily marks an active torrent Queued between teardown and
             // restart. Preserve a Pause click which lands in that narrow window.
@@ -734,7 +737,7 @@ public class TorrentService : ITorrentService
     /// <inheritdoc />
     public async Task StopTorrentAsync(TorrentItem torrent)
     {
-        await using (await _torrentOperationLock.AcquireAsync(torrent.Id))
+        await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalCts.Token))
         {
             if (!torrent.CanStop)
             {
@@ -919,7 +922,7 @@ public class TorrentService : ITorrentService
 
     private async Task PauseManagerAfterBackgroundTimeoutAsync(string id)
     {
-        await using var operationLock = await _torrentOperationLock.AcquireAsync(id);
+        await using var operationLock = await _torrentOperationLock.AcquireAsync(id, _disposalCts.Token);
 
         if (!TryGetTorrentById(id, out var torrent)
             || torrent is null
@@ -970,7 +973,7 @@ public class TorrentService : ITorrentService
     {
         ArgumentNullException.ThrowIfNull(torrent);
 
-        await using (await _torrentOperationLock.AcquireAsync(torrent.Id))
+        await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalCts.Token))
         {
             // Resolve ownership before removing the manager or deleting the source .torrent.
             // A manager's file list is authoritative. If no manager has metadata yet, a local
@@ -1563,6 +1566,10 @@ public class TorrentService : ITorrentService
                     _engineRebuildLock.Release();
                 }
             }
+            catch (ObjectDisposedException)
+            {
+                // Disposed during shutdown while this rebuild still held the lock.
+            }
             finally
             {
                 EndEngineRebuild(rebuildReservation);
@@ -1612,7 +1619,7 @@ public class TorrentService : ITorrentService
         // the new proxy settings instead of registering another manager with the engine
         // being torn down.
         ClientEngine? engineToDispose;
-        await _engineLock.WaitAsync().ConfigureAwait(false);
+        await _engineLock.WaitAsync(_disposalCts.Token).ConfigureAwait(false);
         try
         {
             engineToDispose = _engine;
@@ -1620,7 +1627,14 @@ public class TorrentService : ITorrentService
         }
         finally
         {
-            _engineLock.Release();
+            try
+            {
+                _engineLock.Release();
+            }
+            catch (ObjectDisposedException)
+            {
+                // Disposed during shutdown while this rebuild still held the lock.
+            }
         }
 
         var managersToRemove = _managers.ToArray();
@@ -1637,7 +1651,7 @@ public class TorrentService : ITorrentService
         // state change which wins the lock first is observed here and is not overwritten.
         foreach (var id in idsToTearDown)
         {
-            await using var operationLock = await _torrentOperationLock.AcquireAsync(id);
+            await using var operationLock = await _torrentOperationLock.AcquireAsync(id, _disposalCts.Token);
 
             if (_downloadTokens.TryRemove(id, out var cts))
             {
@@ -1729,7 +1743,7 @@ public class TorrentService : ITorrentService
                 break;
             }
 
-            await using var operationLock = await _torrentOperationLock.AcquireAsync(id);
+            await using var operationLock = await _torrentOperationLock.AcquireAsync(id, _disposalCts.Token);
 
             if (proxyRebuildToken.IsCancellationRequested)
             {
@@ -2245,21 +2259,45 @@ public class TorrentService : ITorrentService
                     UpdateBackgroundTransferState();
                 }
 
+                // Each of these is auxiliary to monitoring: a failure here (e.g. a
+                // notification-plugin error) must not fall into the catch below and mark an
+                // otherwise-healthy (or successfully completed) torrent as Failed.
                 if (!wasComplete && isComplete)
                 {
-                    await _notificationService.ShowDownloadCompletedAsync(torrent).ConfigureAwait(false);
+                    try
+                    {
+                        await _notificationService.ShowDownloadCompletedAsync(torrent).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Download completed notification error for '{torrent.Name}': {ex.Message}");
+                    }
                 }
 
                 _pendingSave = true;
 
                 if (previousStatus == DownloadStatus.Downloading && currentStatus != DownloadStatus.Downloading)
                 {
-                    await TryStartQueuedTorrentsAsync().ConfigureAwait(false);
+                    try
+                    {
+                        await TryStartQueuedTorrentsAsync().ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Queue drain error after '{torrent.Name}' left Downloading: {ex.Message}");
+                    }
                 }
 
                 if (currentStatus == DownloadStatus.Seeding)
                 {
-                    await EnforceSeedingLimitsAsync(torrent, manager).ConfigureAwait(false);
+                    try
+                    {
+                        await EnforceSeedingLimitsAsync(torrent, manager).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Seeding limit enforcement error for '{torrent.Name}': {ex.Message}");
+                    }
                 }
 
                 if (managerState == TorrentState.Stopped && progress >= 100)
@@ -2425,7 +2463,7 @@ public class TorrentService : ITorrentService
             return _engine;
         }
 
-        await _engineLock.WaitAsync().ConfigureAwait(false);
+        await _engineLock.WaitAsync(_disposalCts.Token).ConfigureAwait(false);
         try
         {
             // Re-check after acquiring the lock: another caller may have created the
@@ -2440,7 +2478,14 @@ public class TorrentService : ITorrentService
         }
         finally
         {
-            _engineLock.Release();
+            try
+            {
+                _engineLock.Release();
+            }
+            catch (ObjectDisposedException)
+            {
+                // Disposed during shutdown while this call still held the lock.
+            }
         }
     }
 
@@ -2551,7 +2596,13 @@ public class TorrentService : ITorrentService
         var engine = await EnsureEngineAsync();
         var downloadPath = string.IsNullOrWhiteSpace(torrent.SavePath) ? _storageService.GetDefaultDownloadPath() : torrent.SavePath;
         Directory.CreateDirectory(downloadPath);
-        torrent.SavePath = downloadPath;
+        // EnsureEngineAsync can resume on a thread-pool thread (ConfigureAwait(false) inside),
+        // and this property drives live UI bindings (CanOpenDownloadedFile), so it must be
+        // set on the UI thread like every other TorrentItem mutation in this service.
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            torrent.SavePath = downloadPath;
+        });
 
         var (downloadLimit, uploadLimit) = ResolveManagerLimits(torrent);
         var torrentSettings = new TorrentSettingsBuilder
@@ -2658,6 +2709,18 @@ public class TorrentService : ITorrentService
 
     private async Task DisposeAsyncCore()
     {
+        // Cancelled first, before anything is torn down: unblocks any pending
+        // _torrentOperationLock/_engineLock wait immediately (via OperationCanceledException)
+        // instead of leaving it parked on a primitive this method is about to dispose.
+        try
+        {
+            _disposalCts.Cancel();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Disposal cancellation error: {ex.Message}");
+        }
+
         try
         {
             _saveTimer.Dispose();
@@ -2761,6 +2824,8 @@ public class TorrentService : ITorrentService
             // A debounced rebuild may still hold the lock during shutdown; ignore.
             System.Diagnostics.Debug.WriteLine($"Engine rebuild lock dispose error: {ex.Message}");
         }
+
+        _disposalCts.Dispose();
     }
 
     /// <summary>

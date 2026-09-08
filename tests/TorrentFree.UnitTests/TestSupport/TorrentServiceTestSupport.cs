@@ -3,6 +3,14 @@ global using Microsoft.Maui.ApplicationModel;
 using System.ComponentModel;
 using TorrentFree.Models;
 
+// NOTE on coverage limits: MainThread.InvokeOnMainThreadAsync below runs its action
+// synchronously on whatever thread calls it (there is no real UI thread in this plain
+// net10.0 test project), and the TorrentItem stub further down raises no PropertyChanged
+// notifications. That makes this suite excellent for behavioral/logic coverage of
+// TorrentService, but it means a regression where a TorrentItem property gets mutated off
+// the real UI thread (thread-affinity/marshalling bugs) will NOT be caught here — there is
+// no thread-affine control to violate and no subscriber to observe the wrong-thread access.
+// Verify those cases manually or with a UI-hosted test instead.
 namespace Microsoft.Maui.ApplicationModel
 {
     public static class MainThread

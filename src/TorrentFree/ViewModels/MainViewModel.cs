@@ -179,6 +179,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
 
         var cts = new CancellationTokenSource();
+        var token = cts.Token;
         _magnetAutoStartCts = cts;
         SafeFireAndForget(AutoStartMagnetInputAsync(trimmed, cts.Token));
     }
@@ -734,7 +735,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         finally
         {
-            _initializationLock.Release();
+            try
+            {
+                _initializationLock.Release();
+            }
+            catch (ObjectDisposedException)
+            {
+                // The view model was disposed (e.g. page navigated away) while this call
+                // was still finishing up; there is nothing left to coordinate.
+            }
         }
     }
 
@@ -1315,14 +1324,21 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
 
         _statsTimerStarted = true;
-        _statsTimerCts = new CancellationTokenSource();
-        _statsTimer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        var cts = new CancellationTokenSource();
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        _statsTimerCts = cts;
+        _statsTimer = timer;
 
         _ = Task.Run(async () =>
         {
             try
             {
-                while (_statsTimer is not null && await _statsTimer.WaitForNextTickAsync(_statsTimerCts.Token))
+                // Capture cts/timer locally: StopStatsTimer nulls out (and disposes) the
+                // instance fields, and reading them from this loop after that raced with
+                // ObjectDisposedException/NullReferenceException. The local references stay
+                // valid, and PeriodicTimer.WaitForNextTickAsync simply returns false once
+                // disposed, ending the loop cleanly.
+                while (await timer.WaitForNextTickAsync(token))
                 {
                     // Torrents is an ObservableCollection owned by the UI thread; summing it
                     // on a background thread can observe mid-Add/Remove state and throw.

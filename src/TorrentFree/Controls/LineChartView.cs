@@ -102,7 +102,7 @@ public sealed class LineChartView : GraphicsView
 
     private void Subscribe(INotifyCollectionChanged? collection)
     {
-        if (collection is null)
+        if (collection is null || ReferenceEquals(_currentCollection, collection))
         {
             return;
         }
@@ -134,6 +134,21 @@ public sealed class LineChartView : GraphicsView
         if (args.NewHandler is null)
         {
             Unsubscribe(_currentCollection);
+        }
+    }
+
+    protected override void OnHandlerChanged()
+    {
+        base.OnHandlerChanged();
+
+        // A recycled CollectionView cell can be reattached (Handler becomes non-null again)
+        // while still bound to the same TorrentItem, so Values keeps the same collection
+        // reference and OnValuesChanged never fires. Resubscribe explicitly so the chart
+        // does not silently freeze after a scroll-away/scroll-back.
+        if (Handler is not null)
+        {
+            Subscribe(Values as INotifyCollectionChanged);
+            Invalidate();
         }
     }
 

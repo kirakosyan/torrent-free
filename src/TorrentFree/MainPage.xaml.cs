@@ -28,27 +28,35 @@ public partial class MainPage : ContentPage
 
     private async void OnAboutClicked(object? sender, EventArgs e)
     {
-        var aboutMessage = AboutDialogMessageBuilder.Build(
-            LocalizationResourceManager.Instance["AboutMessage"],
-            LocalizationResourceManager.Instance["AboutVersionLabel"],
-            TryGetAppVersion(),
-            LocalizationResourceManager.Instance["AboutBuildLabel"],
-            TryGetBuildNumber(),
-            LocalizationResourceManager.Instance["AboutFileVersionLabel"],
-            TryGetFileVersion(),
-            LocalizationResourceManager.Instance["AboutSourceLabel"],
-            GitHubUrl,
-            LocalizationResourceManager.Instance["AboutUnavailable"]);
-
-        var openSources = await DisplayAlertAsync(
-            LocalizationResourceManager.Instance["AboutTitle"],
-            aboutMessage,
-            LocalizationResourceManager.Instance["OpenSource"],
-            LocalizationResourceManager.Instance["OK"]);
-
-        if (openSources)
+        try
         {
-            await TryOpenSourceUrlAsync();
+            var aboutMessage = AboutDialogMessageBuilder.Build(
+                LocalizationResourceManager.Instance["AboutMessage"],
+                LocalizationResourceManager.Instance["AboutVersionLabel"],
+                TryGetAppVersion(),
+                LocalizationResourceManager.Instance["AboutBuildLabel"],
+                TryGetBuildNumber(),
+                LocalizationResourceManager.Instance["AboutFileVersionLabel"],
+                TryGetFileVersion(),
+                LocalizationResourceManager.Instance["AboutSourceLabel"],
+                GitHubUrl,
+                LocalizationResourceManager.Instance["AboutUnavailable"]);
+
+            var openSources = await DisplayAlertAsync(
+                LocalizationResourceManager.Instance["AboutTitle"],
+                aboutMessage,
+                LocalizationResourceManager.Instance["OpenSource"],
+                LocalizationResourceManager.Instance["OK"]);
+
+            if (openSources)
+            {
+                await TryOpenSourceUrlAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            // async void: an unhandled exception here would crash the app.
+            System.Diagnostics.Debug.WriteLine($"About dialog error: {ex}");
         }
     }
 

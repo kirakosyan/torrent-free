@@ -247,32 +247,41 @@ public partial class SettingsViewModel : ObservableObject
     private async Task InitializeAsync()
     {
         _isLoadingSettings = true;
-        var settings = await AppSettingsPersistence.LoadAsync(_storageService);
-        _loadedSettings = settings;
+        try
+        {
+            var settings = await AppSettingsPersistence.LoadAsync(_storageService);
+            _loadedSettings = settings;
 
-        GlobalDownloadLimitKbps = settings.GlobalDownloadLimitKbps;
-        GlobalUploadLimitKbps = settings.GlobalUploadLimitKbps;
-        MaxActiveDownloads = settings.MaxActiveDownloads;
-        MaxActiveSeeds = settings.MaxActiveSeeds;
-        GlobalMaxSeedRatio = settings.GlobalMaxSeedRatio;
-        GlobalMaxSeedMinutes = settings.GlobalMaxSeedMinutes;
-        DownloadToTorrentFolder = settings.DownloadToTorrentFolder;
-        SpecificDownloadFolder = settings.SpecificDownloadFolder?.Trim() ?? string.Empty;
-        ProxyEnabled = settings.ProxyEnabled;
-        ProxyHost = settings.ProxyHost ?? string.Empty;
-        ProxyPort = settings.ProxyPort is > 0 and <= 65535 ? settings.ProxyPort : 1080;
-        ProxyUsername = settings.ProxyUsername ?? string.Empty;
-        ProxyPassword = settings.ProxyPassword ?? string.Empty;
+            GlobalDownloadLimitKbps = settings.GlobalDownloadLimitKbps;
+            GlobalUploadLimitKbps = settings.GlobalUploadLimitKbps;
+            MaxActiveDownloads = settings.MaxActiveDownloads;
+            MaxActiveSeeds = settings.MaxActiveSeeds;
+            GlobalMaxSeedRatio = settings.GlobalMaxSeedRatio;
+            GlobalMaxSeedMinutes = settings.GlobalMaxSeedMinutes;
+            DownloadToTorrentFolder = settings.DownloadToTorrentFolder;
+            SpecificDownloadFolder = settings.SpecificDownloadFolder?.Trim() ?? string.Empty;
+            ProxyEnabled = settings.ProxyEnabled;
+            ProxyHost = settings.ProxyHost ?? string.Empty;
+            ProxyPort = settings.ProxyPort is > 0 and <= 65535 ? settings.ProxyPort : 1080;
+            ProxyUsername = settings.ProxyUsername ?? string.Empty;
+            ProxyPassword = settings.ProxyPassword ?? string.Empty;
 
-        var languageCode = NormalizeLanguageCode(settings.Language ?? "");
-        SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == languageCode)
-                           ?? AvailableLanguages[0];
+            var languageCode = NormalizeLanguageCode(settings.Language ?? "");
+            SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == languageCode)
+                               ?? AvailableLanguages[0];
 
-        SelectedTheme = AvailableThemes.FirstOrDefault(t => t.Code == ThemeSettings.Normalize(settings.Theme))
-                        ?? AvailableThemes[0];
+            SelectedTheme = AvailableThemes.FirstOrDefault(t => t.Code == ThemeSettings.Normalize(settings.Theme))
+                            ?? AvailableThemes[0];
 
-        _isLoadingSettings = false;
-        await RefreshFileAssociationAsync();
+            await RefreshFileAssociationAsync();
+        }
+        finally
+        {
+            // Must always run: leaving this true would silently stop every later
+            // settings change from being persisted (see OnXxxChanged partial methods).
+            _isLoadingSettings = false;
+        }
+
         NormalizeAllSettings();
         ApplySettingsToService();
         SafeFireAndForget(PersistSettingsAsync());
