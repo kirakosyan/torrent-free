@@ -29,6 +29,9 @@ public partial class SettingsViewModel : ObservableObject
     private const double MaxSeedRatioLimit = 100;
     private const int MaxSeedMinutesLimit = 525_600;
 
+    [ObservableProperty]
+    public partial bool WifiOnly { get; set; }
+
     /// <summary>
     /// Global download limit in KB/s (0 = unlimited).
     /// </summary>
@@ -262,6 +265,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             var settings = await AppSettingsPersistence.LoadAsync(_storageService);
             _loadedSettings = settings;
+            WifiOnly = settings.WifiOnly;
 
             GlobalDownloadLimitKbps = settings.GlobalDownloadLimitKbps;
             GlobalUploadLimitKbps = settings.GlobalUploadLimitKbps;
@@ -307,6 +311,13 @@ public partial class SettingsViewModel : ObservableObject
         }
 
         ApplySpeedLimits();
+        SafeFireAndForget(PersistSettingsAsync());
+    }
+
+    partial void OnWifiOnlyChanged(bool value)
+    {
+        if (_isLoadingSettings) return;
+        SafeFireAndForget(_torrentService.UpdateWifiOnlyAsync(value));
         SafeFireAndForget(PersistSettingsAsync());
     }
 
@@ -515,6 +526,7 @@ public partial class SettingsViewModel : ObservableObject
 
     private void ApplySettingsToService()
     {
+        SafeFireAndForget(_torrentService.UpdateWifiOnlyAsync(WifiOnly));
         ApplySpeedLimits();
         ApplyQueueLimits();
         ApplySeedingLimits();
@@ -568,7 +580,8 @@ public partial class SettingsViewModel : ObservableObject
                 ProxyUsername,
                 ProxyPassword,
                 SelectedLanguage?.Code,
-                SelectedTheme?.Code));
+                SelectedTheme?.Code,
+                WifiOnly));
     }
 
     private async Task RefreshFileAssociationAsync()

@@ -528,4 +528,16 @@
   <data name="StoreActionError" xml:space="preserve">
     <value>Die Aktion konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.</value>
   </data>
+  <data name="WifiOnlyLabel" xml:space="preserve">
+    <value>Nur WLAN</value>
+  </data>
+  <data name="WifiOnlyHelp" xml:space="preserve">
+    <value>Downloads und Seeding ohne WLAN automatisch pausieren und bei erneuter WLAN-Verbindung fortsetzen.</value>
+  </data>
+  <data name="StatusWaitingForWifi" xml:space="preserve">
+    <value>Warten auf WLAN</value>
+  </data>
+  <data name="HintWaitingForWifi" xml:space="preserve">
+    <value>Wird über WLAN automatisch fortgesetzt. Pausieren bricht die automatische Fortsetzung ab.</value>
+  </data>
 </root>

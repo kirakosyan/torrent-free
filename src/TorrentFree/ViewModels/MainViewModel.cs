@@ -182,7 +182,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
 
         var cts = new CancellationTokenSource();
-        var token = cts.Token;
         _magnetAutoStartCts = cts;
         SafeFireAndForget(AutoStartMagnetInputAsync(trimmed, cts.Token));
     }
@@ -1303,6 +1302,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         _statsTimerStarted = true;
         var cts = new CancellationTokenSource();
+        var token = cts.Token;
         var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
         _statsTimerCts = cts;
         _statsTimer = timer;

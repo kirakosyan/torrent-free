@@ -528,4 +528,16 @@
   <data name="StoreActionError" xml:space="preserve">
     <value>Handlingen kunne ikke fuldføres. Prøv igen.</value>
   </data>
+  <data name="WifiOnlyLabel" xml:space="preserve">
+    <value>Kun Wi-Fi</value>
+  </data>
+  <data name="WifiOnlyHelp" xml:space="preserve">
+    <value>Sæt automatisk downloads og seeding på pause uden Wi-Fi, og genoptag dem, når Wi-Fi er tilbage.</value>
+  </data>
+  <data name="StatusWaitingForWifi" xml:space="preserve">
+    <value>Venter på Wi-Fi</value>
+  </data>
+  <data name="HintWaitingForWifi" xml:space="preserve">
+    <value>Genoptages automatisk på Wi-Fi. Sæt på pause for at annullere automatisk genoptagelse.</value>
+  </data>
 </root>

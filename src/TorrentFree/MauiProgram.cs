@@ -32,6 +32,13 @@ public static class MauiProgram
         builder.Services.AddSingleton<AppPromptService>();
         builder.Services.AddSingleton<IDownloadCompletionObserver>(services => services.GetRequiredService<AppPromptService>());
         builder.Services.AddSingleton<ITorrentService, TorrentService>();
+#if ANDROID
+        builder.Services.AddSingleton<ITransferNetworkMonitor, AndroidTransferNetworkMonitor>();
+#elif WINDOWS
+        builder.Services.AddSingleton<ITransferNetworkMonitor, WindowsTransferNetworkMonitor>();
+#else
+        builder.Services.AddSingleton<ITransferNetworkMonitor, MauiTransferNetworkMonitor>();
+#endif
         builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
         builder.Services.AddSingleton<IThemeService, ThemeService>();
         builder.Services.AddSingleton<IFolderPickerService, MauiFolderPickerService>();

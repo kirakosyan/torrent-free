@@ -528,4 +528,16 @@
   <data name="StoreActionError" xml:space="preserve">
     <value>Akci se nepodařilo dokončit. Zkuste to znovu.</value>
   </data>
+  <data name="WifiOnlyLabel" xml:space="preserve">
+    <value>Pouze Wi-Fi</value>
+  </data>
+  <data name="WifiOnlyHelp" xml:space="preserve">
+    <value>Automaticky pozastavit stahování a sdílení bez Wi-Fi a obnovit je po opětovném připojení.</value>
+  </data>
+  <data name="StatusWaitingForWifi" xml:space="preserve">
+    <value>Čekání na Wi-Fi</value>
+  </data>
+  <data name="HintWaitingForWifi" xml:space="preserve">
+    <value>Automaticky se obnoví přes Wi-Fi. Pozastavením zrušíte automatické obnovení.</value>
+  </data>
 </root>

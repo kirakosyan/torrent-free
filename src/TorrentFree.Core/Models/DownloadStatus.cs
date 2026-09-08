@@ -38,5 +38,8 @@ public enum DownloadStatus
     /// <summary>
     /// Download has been stopped/cancelled.
     /// </summary>
-    Stopped
+    Stopped,
+
+    /// <summary>Transfer will resume automatically when the Wi-Fi policy permits it.</summary>
+    WaitingForWifi
 }

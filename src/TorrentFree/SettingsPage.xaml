@@ -42,6 +42,24 @@
                             </VerticalStackLayout>
                      </Grid>
 
+                     <Border Padding="16"
+                             Stroke="Transparent"
+                             Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
+                            <Border.StrokeShape>
+                                   <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="8" ColumnSpacing="12">
+                                   <Label Text="{helpers:Translate WifiOnlyLabel}"
+                                          FontSize="14" FontAttributes="Bold" VerticalOptions="Center"/>
+                                   <Switch Grid.Column="1" IsToggled="{Binding WifiOnly}"
+                                           SemanticProperties.Description="{helpers:Translate WifiOnlyLabel}"
+                                           SemanticProperties.Hint="{helpers:Translate WifiOnlyHelp}"/>
+                                   <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{helpers:Translate WifiOnlyHelp}"
+                                          FontSize="12"
+                                          TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                            </Grid>
+                     </Border>
+
                      <!-- Language -->
                      <Border Padding="16"
                              Stroke="Transparent"

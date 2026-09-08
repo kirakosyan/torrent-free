@@ -22,6 +22,7 @@ public static class AppSettingsFactory
             GlobalMaxSeedRatio = existing.GlobalMaxSeedRatio,
             GlobalMaxSeedMinutes = existing.GlobalMaxSeedMinutes,
             SortByStatus = sortByStatus,
+            WifiOnly = existing.WifiOnly,
             DownloadToTorrentFolder = existing.DownloadToTorrentFolder,
             SpecificDownloadFolder = existing.SpecificDownloadFolder ?? string.Empty,
             ProxyEnabled = existing.ProxyEnabled,
@@ -54,7 +55,8 @@ public static class AppSettingsFactory
         string proxyUsername,
         string proxyPassword,
         string? language,
-        string? theme)
+        string? theme,
+        bool? wifiOnly = null)
     {
         ArgumentNullException.ThrowIfNull(existing);
 
@@ -67,6 +69,7 @@ public static class AppSettingsFactory
             GlobalMaxSeedRatio = globalMaxSeedRatio,
             GlobalMaxSeedMinutes = globalMaxSeedMinutes,
             SortByStatus = existing.SortByStatus,
+            WifiOnly = wifiOnly ?? existing.WifiOnly,
             DownloadToTorrentFolder = downloadToTorrentFolder,
             SpecificDownloadFolder = specificDownloadFolder?.Trim() ?? string.Empty,
             ProxyEnabled = proxyEnabled,

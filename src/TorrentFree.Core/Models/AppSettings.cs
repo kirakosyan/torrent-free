@@ -5,6 +5,9 @@ namespace TorrentFree.Models;
 /// </summary>
 public class AppSettings
 {
+    /// <summary>Restricts downloads and seeding to Wi-Fi; waiting transfers resume automatically.</summary>
+    public bool WifiOnly { get; set; }
+
     /// <summary>
     /// Global download limit in KB/s (0 = unlimited).
     /// </summary>

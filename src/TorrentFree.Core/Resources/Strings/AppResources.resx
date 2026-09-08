@@ -528,4 +528,16 @@
   <data name="StoreActionError" xml:space="preserve">
     <value>Could not complete this action. Please try again.</value>
   </data>
+  <data name="WifiOnlyLabel" xml:space="preserve">
+    <value>Wi-Fi only</value>
+  </data>
+  <data name="WifiOnlyHelp" xml:space="preserve">
+    <value>Automatically pause downloads and seeding without Wi-Fi, and resume when Wi-Fi returns.</value>
+  </data>
+  <data name="StatusWaitingForWifi" xml:space="preserve">
+    <value>Waiting for Wi-Fi</value>
+  </data>
+  <data name="HintWaitingForWifi" xml:space="preserve">
+    <value>Resumes automatically on Wi-Fi. Pause to cancel automatic resume.</value>
+  </data>
 </root>

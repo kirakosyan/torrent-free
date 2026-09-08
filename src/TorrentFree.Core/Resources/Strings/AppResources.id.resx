@@ -528,4 +528,16 @@
   <data name="StoreActionError" xml:space="preserve">
     <value>Tindakan ini tidak dapat diselesaikan. Silakan coba lagi.</value>
   </data>
+  <data name="WifiOnlyLabel" xml:space="preserve">
+    <value>Hanya Wi-Fi</value>
+  </data>
+  <data name="WifiOnlyHelp" xml:space="preserve">
+    <value>Jeda unduhan dan seeding secara otomatis tanpa Wi-Fi, lalu lanjutkan saat Wi-Fi kembali.</value>
+  </data>
+  <data name="StatusWaitingForWifi" xml:space="preserve">
+    <value>Menunggu Wi-Fi</value>
+  </data>
+  <data name="HintWaitingForWifi" xml:space="preserve">
+    <value>Dilanjutkan otomatis melalui Wi-Fi. Jeda untuk membatalkan pelanjutan otomatis.</value>
+  </data>
 </root>

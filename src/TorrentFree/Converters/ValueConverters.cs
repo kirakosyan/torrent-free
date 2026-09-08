@@ -99,6 +99,7 @@ public class StatusColorConverter : IValueConverter
             return status switch
             {
                 DownloadStatus.Queued => Color.FromArgb("#FFA726"),
+                DownloadStatus.WaitingForWifi => Color.FromArgb("#FFA726"),
                 DownloadStatus.Downloading => Color.FromArgb("#42A5F5"),
                 DownloadStatus.Paused => Color.FromArgb("#BDBDBD"),
                 DownloadStatus.Completed => Color.FromArgb("#66BB6A"),

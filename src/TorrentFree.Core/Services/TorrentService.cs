@@ -31,6 +31,9 @@ public interface ITorrentService : IDisposable, IAsyncDisposable
     /// </summary>
     Task InitializeAsync();
 
+    /// <summary>Applies Wi-Fi-only transfers and resumes only torrents waiting for Wi-Fi.</summary>
+    Task UpdateWifiOnlyAsync(bool enabled);
+
     /// <summary>
     /// Adds a new torrent from a magnet link.
     /// </summary>
@@ -101,7 +104,7 @@ public interface ITorrentService : IDisposable, IAsyncDisposable
 /// <summary>
 /// Service for managing torrent downloads.
 /// </summary>
-public class TorrentService : ITorrentService
+public partial class TorrentService : ITorrentService
 {
     private static readonly TimeSpan ManagerStopTimeout = TimeSpan.FromSeconds(2);
     private static readonly Uri[] PublicTrackers =
@@ -144,6 +147,7 @@ public class TorrentService : ITorrentService
     // Cancelled first thing on Dispose so any pending lock/semaphore wait unblocks via
     // OperationCanceledException instead of hanging on a primitive that Dispose then tears down.
     private readonly CancellationTokenSource _disposalCts = new();
+    private readonly CancellationToken _disposalToken;
 
     private int _maxActiveDownloads = 2;
     private int _maxActiveSeeds = 2;
@@ -180,7 +184,7 @@ public class TorrentService : ITorrentService
 
     public ObservableCollection<TorrentItem> Torrents { get; } = [];
 
-    public TorrentService(IStorageService storageService, INotificationService notificationService, IBackgroundDownloadService backgroundDownloadService, IUiDispatcher dispatcher, TimeProvider? timeProvider = null, IDownloadCompletionObserver? completionObserver = null)
+    public TorrentService(IStorageService storageService, INotificationService notificationService, IBackgroundDownloadService backgroundDownloadService, IUiDispatcher dispatcher, TimeProvider? timeProvider = null, IDownloadCompletionObserver? completionObserver = null, ITransferNetworkMonitor? networkMonitor = null)
     {
         _storageService = storageService;
         _dispatcher = dispatcher;
@@ -188,6 +192,10 @@ public class TorrentService : ITorrentService
         _notificationService = notificationService;
         _completionObserver = completionObserver;
         _backgroundDownloadService = backgroundDownloadService;
+        _disposalToken = _disposalCts.Token;
+        _networkMonitor = networkMonitor;
+        if (_networkMonitor is not null)
+            _networkMonitor.Changed += OnNetworkChanged;
         // Debounced save timer - saves at most every 5 seconds
         _saveTimer = new Timer(async _ => await SaveIfPendingAsync(), null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
     }
@@ -207,6 +215,7 @@ public class TorrentService : ITorrentService
     {
         try
         {
+            _wifiOnly = (await _storageService.LoadSettingsAsync()).WifiOnly;
             var savedTorrents = await _storageService.LoadTorrentsAsync();
             var hadStateChanges = false;
 
@@ -272,6 +281,9 @@ public class TorrentService : ITorrentService
             {
                 await SaveAsync();
             }
+
+            _networkPolicyReady = true;
+            await ReconcileNetworkPolicyAsync();
         }
         catch
         {
@@ -422,14 +434,18 @@ public class TorrentService : ITorrentService
     }
 
     /// <inheritdoc />
-    public async Task StartTorrentAsync(TorrentItem torrent)
+    public Task StartTorrentAsync(TorrentItem torrent) => StartTorrentIfStatusAsync(torrent);
+
+    private async Task StartTorrentIfStatusAsync(TorrentItem torrent, DownloadStatus? expectedStatus = null)
     {
         while (true)
         {
             if (_backgroundExecutionSuspended)
             {
-                await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalCts.Token))
+                if (expectedStatus == DownloadStatus.WaitingForWifi) return;
+                await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalToken))
                 {
+                    if (expectedStatus is not null && torrent.Status != expectedStatus) return;
                     await SuppressStartForBackgroundTimeoutAsync(torrent);
                 }
                 return;
@@ -440,12 +456,14 @@ public class TorrentService : ITorrentService
             Task? rebuildWhichWonTheRace = null;
             Exception? startException = null;
             var startSuppressed = false;
-            await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalCts.Token))
+            await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalToken))
             {
+                if (expectedStatus is not null && torrent.Status != expectedStatus) return;
                 // A rebuild can begin after the wait above but before this keyed lock is
                 // acquired. Re-check while holding the key and release/loop if it did.
                 if (_backgroundExecutionSuspended)
                 {
+                    if (expectedStatus == DownloadStatus.WaitingForWifi) return;
                     await SuppressStartForBackgroundTimeoutAsync(torrent);
                     startSuppressed = true;
                 }
@@ -521,6 +539,14 @@ public class TorrentService : ITorrentService
             return;
         }
 
+        if (!TryGetTorrentById(torrent.Id, out var trackedTorrent) || !ReferenceEquals(torrent, trackedTorrent)) return;
+        if (NetworkBlocked)
+        {
+            await MarkWaitingForWifiAsync(torrent);
+            await SaveAsync();
+            return;
+        }
+
         var admitted = false;
         await _dispatcher.InvokeAsync(() =>
         {
@@ -546,6 +572,7 @@ public class TorrentService : ITorrentService
         {
             await SaveAsync();
             UpdateBackgroundTransferState();
+            ThrowIfNetworkBlocked();
             manager = await GetOrCreateManagerAsync(torrent);
             proxyRebuildToken.ThrowIfCancellationRequested();
             await ApplySpeedLimitsToManagerAsync(manager, torrent);
@@ -563,6 +590,7 @@ public class TorrentService : ITorrentService
 
             // Start real download
             proxyRebuildToken.ThrowIfCancellationRequested();
+            ThrowIfNetworkBlocked();
             await StartManagerAsync(manager);
             proxyRebuildToken.ThrowIfCancellationRequested();
 
@@ -602,16 +630,20 @@ public class TorrentService : ITorrentService
             await _dispatcher.InvokeAsync(() =>
             {
                 UpdateSeedingTime(torrent, active: false);
-                torrent.Status = proxyRebuildWasSuperseded
+                torrent.Status = ex is WifiUnavailableException
+                    ? DownloadStatus.WaitingForWifi
+                    : proxyRebuildWasSuperseded
                     ? DownloadStatus.Queued
                     : DownloadStatus.Failed;
                 torrent.DownloadSpeed = 0;
                 torrent.UploadSpeed = 0;
-                torrent.ErrorMessage = proxyRebuildWasSuperseded ? null : ex.Message;
+                torrent.ErrorMessage = proxyRebuildWasSuperseded || ex is WifiUnavailableException ? null : ex.Message;
             });
 
             await SaveAsync();
             UpdateBackgroundTransferState();
+
+            if (ex is WifiUnavailableException) return;
 
             // The download slot this torrent was occupying is now free — let queued
             // torrents take it instead of waiting for the next user action.
@@ -719,7 +751,7 @@ public class TorrentService : ITorrentService
     /// <inheritdoc />
     public async Task PauseTorrentAsync(TorrentItem torrent)
     {
-        await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalCts.Token))
+        await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalToken))
         {
             // A rebuild temporarily marks an active torrent Queued between teardown and
             // restart. Preserve a Pause click which lands in that narrow window.
@@ -762,7 +794,7 @@ public class TorrentService : ITorrentService
     /// <inheritdoc />
     public async Task StopTorrentAsync(TorrentItem torrent)
     {
-        await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalCts.Token))
+        await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalToken))
         {
             if (!torrent.CanStop)
             {
@@ -934,6 +966,8 @@ public class TorrentService : ITorrentService
     public void ResumeAfterBackgroundTimeout()
     {
         _backgroundExecutionSuspended = false;
+        if (_networkPolicyReady && !_disposed)
+            SafeFireAndForget(ReconcileNetworkPolicyAsync());
     }
 
     private bool ShouldPauseForBackgroundTimeout(TorrentItem torrent)
@@ -947,7 +981,7 @@ public class TorrentService : ITorrentService
 
     private async Task PauseManagerAfterBackgroundTimeoutAsync(string id)
     {
-        await using var operationLock = await _torrentOperationLock.AcquireAsync(id, _disposalCts.Token);
+        await using var operationLock = await _torrentOperationLock.AcquireAsync(id, _disposalToken);
 
         if (!TryGetTorrentById(id, out var torrent)
             || torrent is null
@@ -998,7 +1032,7 @@ public class TorrentService : ITorrentService
     {
         ArgumentNullException.ThrowIfNull(torrent);
 
-        await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalCts.Token))
+        await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalToken))
         {
             // Resolve ownership before removing the manager or deleting the source .torrent.
             // A manager's file list is authoritative. If no manager has metadata yet, a local
@@ -1644,7 +1678,7 @@ public class TorrentService : ITorrentService
         // the new proxy settings instead of registering another manager with the engine
         // being torn down.
         ClientEngine? engineToDispose;
-        await _engineLock.WaitAsync(_disposalCts.Token).ConfigureAwait(false);
+        await _engineLock.WaitAsync(_disposalToken).ConfigureAwait(false);
         try
         {
             engineToDispose = _engine;
@@ -1676,7 +1710,7 @@ public class TorrentService : ITorrentService
         // state change which wins the lock first is observed here and is not overwritten.
         foreach (var id in idsToTearDown)
         {
-            await using var operationLock = await _torrentOperationLock.AcquireAsync(id, _disposalCts.Token);
+            await using var operationLock = await _torrentOperationLock.AcquireAsync(id, _disposalToken);
 
             if (_downloadTokens.TryRemove(id, out var cts))
             {
@@ -1768,7 +1802,7 @@ public class TorrentService : ITorrentService
                 break;
             }
 
-            await using var operationLock = await _torrentOperationLock.AcquireAsync(id, _disposalCts.Token);
+            await using var operationLock = await _torrentOperationLock.AcquireAsync(id, _disposalToken);
 
             if (proxyRebuildToken.IsCancellationRequested)
             {
@@ -2048,7 +2082,7 @@ queued = Torrents
                 continue;
             try
             {
-                await StartTorrentAsync(torrent);
+                await StartTorrentIfStatusAsync(torrent, DownloadStatus.Queued);
             }
             catch (Exception ex)
             {
@@ -2549,7 +2583,7 @@ queued = Torrents
             return _engine;
         }
 
-        await _engineLock.WaitAsync(_disposalCts.Token).ConfigureAwait(false);
+        await _engineLock.WaitAsync(_disposalToken).ConfigureAwait(false);
         try
         {
             // Re-check after acquiring the lock: another caller may have created the
@@ -2575,7 +2609,7 @@ queued = Torrents
         }
     }
 
-    private ClientEngine CreateEngine()
+    protected virtual ClientEngine CreateEngine()
     {
         // When a SOCKS5 proxy is active we can only tunnel outbound TCP (peer connections and
         // HTTP/HTTPS tracker + web-seed requests). Every other discovery channel below either
@@ -2801,6 +2835,8 @@ queued = Torrents
 
     private async Task DisposeAsyncCore()
     {
+        if (_networkMonitor is not null)
+            _networkMonitor.Changed -= OnNetworkChanged;
         // Cancelled first, before anything is torn down: unblocks any pending
         // _torrentOperationLock/_engineLock wait immediately (via OperationCanceledException)
         // instead of leaving it parked on a primitive this method is about to dispose.

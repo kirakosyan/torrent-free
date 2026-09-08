@@ -528,4 +528,16 @@
   <data name="StoreActionError" xml:space="preserve">
     <value>Bu işlem tamamlanamadı. Lütfen tekrar deneyin.</value>
   </data>
+  <data name="WifiOnlyLabel" xml:space="preserve">
+    <value>Yalnızca Wi-Fi</value>
+  </data>
+  <data name="WifiOnlyHelp" xml:space="preserve">
+    <value>Wi-Fi olmadığında indirmeleri ve gönderimleri otomatik duraklat, Wi-Fi geri geldiğinde devam et.</value>
+  </data>
+  <data name="StatusWaitingForWifi" xml:space="preserve">
+    <value>Wi-Fi bekleniyor</value>
+  </data>
+  <data name="HintWaitingForWifi" xml:space="preserve">
+    <value>Wi-Fi üzerinden otomatik devam eder. Otomatik devamı iptal etmek için duraklatın.</value>
+  </data>
 </root>

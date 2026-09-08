@@ -528,4 +528,16 @@
   <data name="StoreActionError" xml:space="preserve">
     <value>Impossibile completare questa azione. Riprova.</value>
   </data>
+  <data name="WifiOnlyLabel" xml:space="preserve">
+    <value>Solo Wi-Fi</value>
+  </data>
+  <data name="WifiOnlyHelp" xml:space="preserve">
+    <value>Metti automaticamente in pausa download e seeding senza Wi-Fi e riprendili quando il Wi-Fi torna disponibile.</value>
+  </data>
+  <data name="StatusWaitingForWifi" xml:space="preserve">
+    <value>In attesa del Wi-Fi</value>
+  </data>
+  <data name="HintWaitingForWifi" xml:space="preserve">
+    <value>Riprende automaticamente tramite Wi-Fi. Metti in pausa per annullare la ripresa automatica.</value>
+  </data>
 </root>

@@ -528,4 +528,16 @@
   <data name="StoreActionError" xml:space="preserve">
     <value>A művelet nem sikerült. Próbálja újra.</value>
   </data>
+  <data name="WifiOnlyLabel" xml:space="preserve">
+    <value>Csak Wi-Fi</value>
+  </data>
+  <data name="WifiOnlyHelp" xml:space="preserve">
+    <value>A letöltések és a visszaosztás automatikus szüneteltetése Wi-Fi nélkül, majd folytatása a Wi-Fi visszatérésekor.</value>
+  </data>
+  <data name="StatusWaitingForWifi" xml:space="preserve">
+    <value>Várakozás Wi-Fi-re</value>
+  </data>
+  <data name="HintWaitingForWifi" xml:space="preserve">
+    <value>Wi-Fi-n automatikusan folytatódik. Szüneteltetéssel megszakítható az automatikus folytatás.</value>
+  </data>
 </root>

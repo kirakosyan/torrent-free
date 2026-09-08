@@ -542,4 +542,16 @@
   <data name="StoreActionError" xml:space="preserve">
     <value>Не удалось выполнить действие. Попробуйте ещё раз.</value>
   </data>
+  <data name="WifiOnlyLabel" xml:space="preserve">
+    <value>Только Wi-Fi</value>
+  </data>
+  <data name="WifiOnlyHelp" xml:space="preserve">
+    <value>Автоматически приостанавливать загрузки и раздачи без Wi-Fi и возобновлять при его появлении.</value>
+  </data>
+  <data name="StatusWaitingForWifi" xml:space="preserve">
+    <value>Ожидание Wi-Fi</value>
+  </data>
+  <data name="HintWaitingForWifi" xml:space="preserve">
+    <value>Автоматически возобновится по Wi-Fi. Нажмите «Пауза», чтобы отменить автовозобновление.</value>
+  </data>
 </root>

@@ -262,7 +262,7 @@ public partial class TorrentItem : ObservableObject
         get
         {
             var isComplete = Status is DownloadStatus.Completed or DownloadStatus.Seeding
-                             || (Status is DownloadStatus.Paused or DownloadStatus.Stopped && (Progress >= 100 || DateCompleted is not null));
+                             || (Status is DownloadStatus.Paused or DownloadStatus.Stopped or DownloadStatus.WaitingForWifi && (Progress >= 100 || DateCompleted is not null));
 
             if (!isComplete)
             {
@@ -326,6 +326,7 @@ public partial class TorrentItem : ObservableObject
         DownloadStatus.Seeding => LocalizationResourceManager.Instance["StatusSeeding"],
         DownloadStatus.Failed => LocalizationResourceManager.Instance["StatusFailed"],
         DownloadStatus.Stopped => LocalizationResourceManager.Instance["StatusStopped"],
+        DownloadStatus.WaitingForWifi => LocalizationResourceManager.Instance["StatusWaitingForWifi"],
         _ => "Unknown" // Not localized by design: defensive fallback for unexpected DownloadStatus values.
     };
 
@@ -347,6 +348,7 @@ public partial class TorrentItem : ObservableObject
             return Status switch
             {
                 DownloadStatus.Queued => LocalizationResourceManager.Instance["HintQueued"],
+                DownloadStatus.WaitingForWifi => LocalizationResourceManager.Instance["HintWaitingForWifi"],
                 DownloadStatus.Paused => LocalizationResourceManager.Instance["HintPaused"],
                 DownloadStatus.Stopped => LocalizationResourceManager.Instance["HintStopped"],
                 DownloadStatus.Downloading => BuildDownloadingHint(),
@@ -359,19 +361,19 @@ public partial class TorrentItem : ObservableObject
     /// Indicates whether the download can be started or resumed.
     /// </summary>
     [JsonIgnore]
-    public bool CanStart => Status is DownloadStatus.Queued or DownloadStatus.Paused or DownloadStatus.Stopped or DownloadStatus.Failed or DownloadStatus.Completed;
+    public bool CanStart => Status is DownloadStatus.Queued or DownloadStatus.Paused or DownloadStatus.Stopped or DownloadStatus.Failed or DownloadStatus.Completed or DownloadStatus.WaitingForWifi;
 
     /// <summary>
     /// Indicates whether the download can be paused.
     /// </summary>
     [JsonIgnore]
-    public bool CanPause => Status is DownloadStatus.Downloading or DownloadStatus.Seeding;
+    public bool CanPause => Status is DownloadStatus.Downloading or DownloadStatus.Seeding or DownloadStatus.WaitingForWifi;
 
     /// <summary>
     /// Indicates whether the download can be stopped.
     /// </summary>
     [JsonIgnore]
-    public bool CanStop => Status is DownloadStatus.Downloading or DownloadStatus.Paused or DownloadStatus.Queued or DownloadStatus.Seeding;
+    public bool CanStop => Status is DownloadStatus.Downloading or DownloadStatus.Paused or DownloadStatus.Queued or DownloadStatus.Seeding or DownloadStatus.WaitingForWifi;
 
     private static string FormatBytes(long bytes)
     {

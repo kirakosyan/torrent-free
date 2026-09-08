@@ -19,6 +19,7 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 - **Start / Pause / Stop / Remove / Start All / Stop All** controls
 - **Live stats**: progress, download/upload speed, seeds, peers, ETA
 - **Seeding state** with pause support
+- **Wi-Fi-only transfers**: automatically pause downloads and seeding when Wi-Fi is unavailable, and resume waiting torrents when it returns. Manual pauses and stops are preserved.
 - **Global limits**: upload/download speed caps, max active downloads/seeds, seeding ratio/time
 - **Per-torrent limits**: upload/download caps and seeding ratio/time overrides
 - **Safe delete dialog** with options to remove data and/or the `.torrent` file

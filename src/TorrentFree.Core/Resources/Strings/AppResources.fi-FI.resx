@@ -528,4 +528,16 @@
   <data name="StoreActionError" xml:space="preserve">
     <value>Toimintoa ei voitu suorittaa. Yritä uudelleen.</value>
   </data>
+  <data name="WifiOnlyLabel" xml:space="preserve">
+    <value>Vain Wi-Fi</value>
+  </data>
+  <data name="WifiOnlyHelp" xml:space="preserve">
+    <value>Keskeytä lataukset ja jakaminen automaattisesti ilman Wi-Fiä ja jatka, kun Wi-Fi-yhteys palautuu.</value>
+  </data>
+  <data name="StatusWaitingForWifi" xml:space="preserve">
+    <value>Odotetaan Wi-Fiä</value>
+  </data>
+  <data name="HintWaitingForWifi" xml:space="preserve">
+    <value>Jatkuu automaattisesti Wi-Fi-yhteydellä. Keskeytä peruuttaaksesi automaattisen jatkamisen.</value>
+  </data>
 </root>

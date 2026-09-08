@@ -528,4 +528,16 @@
   <data name="StoreActionError" xml:space="preserve">
     <value>Acțiunea nu a putut fi finalizată. Încearcă din nou.</value>
   </data>
+  <data name="WifiOnlyLabel" xml:space="preserve">
+    <value>Doar Wi-Fi</value>
+  </data>
+  <data name="WifiOnlyHelp" xml:space="preserve">
+    <value>Întrerupe automat descărcările și distribuirea fără Wi-Fi și reia-le când revine conexiunea Wi-Fi.</value>
+  </data>
+  <data name="StatusWaitingForWifi" xml:space="preserve">
+    <value>Se așteaptă Wi-Fi</value>
+  </data>
+  <data name="HintWaitingForWifi" xml:space="preserve">
+    <value>Se reia automat prin Wi-Fi. Pune pe pauză pentru a anula reluarea automată.</value>
+  </data>
 </root>

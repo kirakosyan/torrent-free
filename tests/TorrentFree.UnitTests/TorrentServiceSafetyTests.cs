@@ -14,20 +14,19 @@ public sealed class TorrentServiceSafetyTests
         using var temporaryDirectory = new TemporaryDirectory();
         var bothCallsReachedSettingsLoad = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         var settingsLoadCount = 0;
-        var storage = new TestStorageService(temporaryDirectory.Path)
-        {
-            LoadSettingsAsyncHandler = async () =>
+        var storage = new TestStorageService(temporaryDirectory.Path);
+        await using var service = CreateService(storage);
+        await service.InitializeAsync();
+        storage.LoadSettingsAsyncHandler = async () =>
             {
                 if (Interlocked.Increment(ref settingsLoadCount) == 2)
                 {
                     bothCallsReachedSettingsLoad.SetResult(true);
                 }
 
-                await bothCallsReachedSettingsLoad.Task;
+                await bothCallsReachedSettingsLoad.Task.WaitAsync(TestContext.Current.CancellationToken);
                 return new AppSettings();
-            }
-        };
-        await using var service = CreateService(storage);
+            };
         var magnet = $"magnet:?xt=urn:btih:{new string('a', 40)}&dn=duplicate";
 
         static async Task<Exception?> CaptureAsync(Func<Task> action)
@@ -387,7 +386,7 @@ public sealed class TorrentServiceSafetyTests
     {
         public List<TorrentItem> InitialTorrents { get; init; } = [];
 
-        public Func<Task<AppSettings>>? LoadSettingsAsyncHandler { get; init; }
+        public Func<Task<AppSettings>>? LoadSettingsAsyncHandler { get; set; }
 
         public List<List<(string Id, DownloadStatus Status)>> SavedStatuses { get; } = [];
 

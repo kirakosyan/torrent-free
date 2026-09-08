@@ -528,4 +528,16 @@
   <data name="StoreActionError" xml:space="preserve">
     <value>无法完成此操作。请重试。</value>
   </data>
+  <data name="WifiOnlyLabel" xml:space="preserve">
+    <value>仅限 Wi-Fi</value>
+  </data>
+  <data name="WifiOnlyHelp" xml:space="preserve">
+    <value>无 Wi-Fi 时自动暂停下载和做种，Wi-Fi 恢复后自动继续。</value>
+  </data>
+  <data name="StatusWaitingForWifi" xml:space="preserve">
+    <value>等待 Wi-Fi</value>
+  </data>
+  <data name="HintWaitingForWifi" xml:space="preserve">
+    <value>连接 Wi-Fi 后自动继续。点击暂停可取消自动继续。</value>
+  </data>
 </root>

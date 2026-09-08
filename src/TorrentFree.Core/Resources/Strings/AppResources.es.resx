@@ -542,4 +542,16 @@
   <data name="StoreActionError" xml:space="preserve">
     <value>No se pudo completar esta acción. Inténtalo de nuevo.</value>
   </data>
+  <data name="WifiOnlyLabel" xml:space="preserve">
+    <value>Solo Wi-Fi</value>
+  </data>
+  <data name="WifiOnlyHelp" xml:space="preserve">
+    <value>Pausar automáticamente las descargas y la subida sin Wi-Fi y reanudarlas cuando vuelva la conexión Wi-Fi.</value>
+  </data>
+  <data name="StatusWaitingForWifi" xml:space="preserve">
+    <value>Esperando Wi-Fi</value>
+  </data>
+  <data name="HintWaitingForWifi" xml:space="preserve">
+    <value>Se reanuda automáticamente con Wi-Fi. Pausa para cancelar la reanudación automática.</value>
+  </data>
 </root>

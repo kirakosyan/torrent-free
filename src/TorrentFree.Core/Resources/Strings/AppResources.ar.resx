@@ -514,4 +514,16 @@
   <data name="StoreActionError" xml:space="preserve">
     <value>تعذّر إكمال هذا الإجراء. يُرجى المحاولة مرة أخرى.</value>
   </data>
+  <data name="WifiOnlyLabel" xml:space="preserve">
+    <value>Wi-Fi فقط</value>
+  </data>
+  <data name="WifiOnlyHelp" xml:space="preserve">
+    <value>إيقاف التنزيلات والمشاركة مؤقتًا تلقائيًا عند انقطاع Wi-Fi، واستئنافها عند عودته.</value>
+  </data>
+  <data name="StatusWaitingForWifi" xml:space="preserve">
+    <value>في انتظار Wi-Fi</value>
+  </data>
+  <data name="HintWaitingForWifi" xml:space="preserve">
+    <value>يُستأنف تلقائيًا عبر Wi-Fi. اضغط إيقاف مؤقت لإلغاء الاستئناف التلقائي.</value>
+  </data>
 </root>

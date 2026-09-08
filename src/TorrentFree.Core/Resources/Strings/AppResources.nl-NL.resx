@@ -528,4 +528,16 @@
   <data name="StoreActionError" xml:space="preserve">
     <value>Deze actie kon niet worden voltooid. Probeer het opnieuw.</value>
   </data>
+  <data name="WifiOnlyLabel" xml:space="preserve">
+    <value>Alleen wifi</value>
+  </data>
+  <data name="WifiOnlyHelp" xml:space="preserve">
+    <value>Pauzeer downloads en seeding automatisch zonder wifi en hervat ze zodra wifi terug is.</value>
+  </data>
+  <data name="StatusWaitingForWifi" xml:space="preserve">
+    <value>Wachten op wifi</value>
+  </data>
+  <data name="HintWaitingForWifi" xml:space="preserve">
+    <value>Wordt automatisch hervat via wifi. Pauzeer om automatisch hervatten te annuleren.</value>
+  </data>
 </root>

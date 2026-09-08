@@ -32,9 +32,11 @@ public sealed class AppSettingsFactoryTests
             proxyUsername: "user",
             proxyPassword: "pass",
             language: "fr",
-            theme: "dark");
+            theme: "dark",
+            wifiOnly: true);
 
         Assert.True(updated.SortByStatus);
+        Assert.True(updated.WifiOnly);
         Assert.Equal("dark", updated.Theme);
         Assert.Equal(1200, updated.GlobalDownloadLimitKbps);
         Assert.Equal(300, updated.GlobalUploadLimitKbps);
@@ -196,6 +198,7 @@ public sealed class AppSettingsFactoryTests
         var settings = JsonSerializer.Deserialize<AppSettings>(oldJson, options);
 
         Assert.NotNull(settings);
+        Assert.False(settings.WifiOnly);
         // Original fields preserved
         Assert.Equal(500, settings.GlobalDownloadLimitKbps);
         Assert.True(settings.SortByStatus);

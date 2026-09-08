@@ -528,4 +528,16 @@
   <data name="StoreActionError" xml:space="preserve">
     <value>यह कार्रवाई पूरी नहीं हो सकी। कृपया फिर से कोशिश करें।</value>
   </data>
+  <data name="WifiOnlyLabel" xml:space="preserve">
+    <value>केवल Wi-Fi</value>
+  </data>
+  <data name="WifiOnlyHelp" xml:space="preserve">
+    <value>Wi-Fi न होने पर डाउनलोड और सीडिंग अपने आप रोकें और Wi-Fi वापस आने पर फिर शुरू करें।</value>
+  </data>
+  <data name="StatusWaitingForWifi" xml:space="preserve">
+    <value>Wi-Fi की प्रतीक्षा में</value>
+  </data>
+  <data name="HintWaitingForWifi" xml:space="preserve">
+    <value>Wi-Fi पर अपने आप फिर शुरू होगा। अपने आप फिर शुरू करना रद्द करने के लिए रोकें।</value>
+  </data>
 </root>
