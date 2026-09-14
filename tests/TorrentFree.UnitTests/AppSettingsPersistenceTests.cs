@@ -131,6 +131,7 @@ public sealed class AppSettingsPersistenceTests
         }
 
         public string GetDefaultDownloadPath() => string.Empty;
+        public string GetAppDataPath() => string.Empty;
 
         private void EnterOperation()
         {

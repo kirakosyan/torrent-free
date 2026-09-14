@@ -16,11 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".codex", ".codex", "{E2BFB3
 		.codex\AGENTS.md = .codex\AGENTS.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".claude", ".claude", "{264CCEF6-CC31-4D96-89E7-45B7D3341853}"
-	ProjectSection(SolutionItems) = preProject
-		.claude\settings.local.json = .claude\settings.local.json
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorrentFree.Core", "src\TorrentFree.Core\TorrentFree.Core.csproj", "{D7405587-E1F4-444E-A197-7843CA5514B9}"
 EndProject
 Global

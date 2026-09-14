@@ -244,7 +244,9 @@ public partial class App : MauiWinUIApplication
 
 			if (redirectOperation is IAsyncAction asyncAction)
 			{
-				return WaitWithTimeouts(asyncAction.AsTask(), initialTimeoutMs, fallbackTimeoutMs);
+				var completed = WaitWithTimeouts(asyncAction.AsTask(), initialTimeoutMs, fallbackTimeoutMs);
+				if (!completed) asyncAction.Cancel();
+				return completed;
 			}
 		}
 		catch (Exception ex)
@@ -269,8 +271,9 @@ public partial class App : MauiWinUIApplication
 			return true;
 		}
 
-		System.Diagnostics.Debug.WriteLine("Activation redirection still pending; waiting for completion to avoid dropping activation.");
-		task.Wait();
-		return true;
+		System.Diagnostics.Debug.WriteLine("Activation redirection timed out; continuing with local activation.");
+		_ = task.ContinueWith(failed => System.Diagnostics.Debug.WriteLine(failed.Exception),
+			TaskContinuationOptions.OnlyOnFaulted);
+		return false;
 	}
 }

@@ -9,6 +9,25 @@ namespace TorrentFree.UnitTests;
 public sealed class TorrentServiceRebuildConcurrencyTests
 {
     [Fact]
+    public async Task FailedRebuildResume_OffersFreedSlotToQueueAfterReleasingBarrier()
+    {
+        var storage = new StubStorageService();
+        await using var service = new RecordingFailureTorrentService(storage);
+        service.UpdateQueueLimits(1, 1);
+        var active = CreateTorrent(storage);
+        active.Status = DownloadStatus.Downloading;
+        var queued = CreateTorrent(storage, "89abcdef0123456789abcdef0123456789abcdef");
+        service.Torrents.Add(active);
+        service.Torrents.Add(queued);
+
+        await InvokePrivateTask(service, "RebuildEngineAsync").WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+
+        Assert.Equal(new[] { active.Id, queued.Id }, service.AttemptedStarts);
+        Assert.Equal(DownloadStatus.Failed, active.Status);
+        Assert.Equal(DownloadStatus.Failed, queued.Status);
+    }
+
+    [Fact]
     public async Task Rebuild_WaitsForStartWhichEnteredBeforeBarrier()
     {
         var storage = new StubStorageService();
@@ -161,6 +180,18 @@ public sealed class TorrentServiceRebuildConcurrencyTests
         }
     }
 
+    private sealed class RecordingFailureTorrentService(IStorageService storageService)
+        : TorrentService(storageService, new StubNotificationService(), new StubBackgroundDownloadService(), ImmediateDispatcher.Instance)
+    {
+        public List<string> AttemptedStarts { get; } = [];
+
+        protected override Task<TorrentManager> GetOrCreateManagerAsync(TorrentItem torrent)
+        {
+            AttemptedStarts.Add(torrent.Id);
+            throw new InvalidOperationException("Injected manager creation failure");
+        }
+    }
+
     private sealed class BlockingStartTorrentService(IStorageService storageService)
         : TorrentService(storageService, new StubNotificationService(), new StubBackgroundDownloadService(), ImmediateDispatcher.Instance)
     {
@@ -239,6 +270,8 @@ public sealed class TorrentServiceRebuildConcurrencyTests
         public Task SaveSettingsAsync(AppSettings settings) => Task.CompletedTask;
 
         public Task UpdateDesktopWindowStateAsync(bool? desktopWasMaximized) => Task.CompletedTask;
+
+        public string GetAppDataPath() => GetDefaultDownloadPath();
 
         public string GetDefaultDownloadPath()
         {

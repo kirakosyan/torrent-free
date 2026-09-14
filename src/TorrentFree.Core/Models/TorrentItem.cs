@@ -71,12 +71,14 @@ public partial class TorrentItem : ObservableObject
     /// Download speed in bytes per second.
     /// </summary>
     [ObservableProperty]
+    [JsonIgnore]
     public partial long DownloadSpeed { get; set; }
 
     /// <summary>
     /// Upload speed in bytes per second.
     /// </summary>
     [ObservableProperty]
+    [JsonIgnore]
     public partial long UploadSpeed { get; set; }
 
     /// <summary>
@@ -95,18 +97,21 @@ public partial class TorrentItem : ObservableObject
     /// Number of seeders connected.
     /// </summary>
     [ObservableProperty]
+    [JsonIgnore]
     public partial int Seeders { get; set; }
 
     /// <summary>
     /// Number of leechers connected.
     /// </summary>
     [ObservableProperty]
+    [JsonIgnore]
     public partial int Leechers { get; set; }
 
     /// <summary>
     /// Estimated seconds remaining to finish download.
     /// </summary>
     [ObservableProperty]
+    [JsonIgnore]
     public partial long EstimatedSecondsRemaining { get; set; }
 
     /// <summary>
@@ -115,7 +120,9 @@ public partial class TorrentItem : ObservableObject
     [JsonIgnore]
     public string FormattedEstimatedTime => EstimatedSecondsRemaining <= 0
         ? "—"
-        : TimeSpan.FromSeconds(EstimatedSecondsRemaining).ToString(EstimatedSecondsRemaining >= 3600 ? "hh\\:mm\\:ss" : "mm\\:ss");
+        : EstimatedSecondsRemaining >= 3600
+            ? $"{EstimatedSecondsRemaining / 3600:00}:{EstimatedSecondsRemaining / 60 % 60:00}:{EstimatedSecondsRemaining % 60:00}"
+            : $"{EstimatedSecondsRemaining / 60:00}:{EstimatedSecondsRemaining % 60:00}";
 
     /// <summary>
     /// Date and time when the torrent was added.
@@ -156,6 +163,10 @@ public partial class TorrentItem : ObservableObject
     [ObservableProperty]
     public partial string SavePath { get; set; } = string.Empty;
 
+    /// <summary>Actual file or containing directory reported by the transfer engine.</summary>
+    [ObservableProperty]
+    public partial string? ResolvedDownloadPath { get; set; }
+
     /// <summary>
     /// Local .torrent file path when imported from disk.
     /// </summary>
@@ -181,24 +192,28 @@ public partial class TorrentItem : ObservableObject
     /// Current display index in the list (used for styling).
     /// </summary>
     [ObservableProperty]
+    [JsonIgnore]
     public partial int DisplayIndex { get; set; }
 
     /// <summary>
     /// Health score of the torrent (0-100).
     /// </summary>
     [ObservableProperty]
+    [JsonIgnore]
     public partial int HealthScore { get; set; }
 
     /// <summary>
     /// Availability percentage (0-100).
     /// </summary>
     [ObservableProperty]
+    [JsonIgnore]
     public partial double AvailabilityPercent { get; set; }
 
     /// <summary>
     /// Availability label (e.g., 1.2x or 75%).
     /// </summary>
     [ObservableProperty]
+    [JsonIgnore]
     public partial string AvailabilityLabel { get; set; } = "—";
 
     /// <summary>
@@ -236,6 +251,10 @@ public partial class TorrentItem : ObservableObject
     {
         get
         {
+            if (!string.IsNullOrWhiteSpace(ResolvedDownloadPath)
+                && PathGuard.IsPathWithinDirectory(ResolvedDownloadPath, SavePath))
+                return ResolvedDownloadPath;
+
             var basePath = SavePath ?? string.Empty;
             var safeName = string.IsNullOrWhiteSpace(Name) ? "unnamed_torrent" : Name;
             safeName = string.Concat(safeName.Where(c => !InvalidFileNameChars.Contains(c))).Trim();
@@ -425,6 +444,14 @@ public partial class TorrentItem : ObservableObject
     }
 
     partial void OnSavePathChanged(string value)
+    {
+        ResolvedDownloadPath = null;
+        InvalidateCanOpenDownloadedFileCache();
+        OnPropertyChanged(nameof(DownloadedFilePath));
+        OnPropertyChanged(nameof(CanOpenDownloadedFile));
+    }
+
+    partial void OnResolvedDownloadPathChanged(string? value)
     {
         InvalidateCanOpenDownloadedFileCache();
         OnPropertyChanged(nameof(DownloadedFilePath));

@@ -11,10 +11,20 @@ public partial class App
     private AppWindow? _desktopAppWindow;
     private Window? _trackedDesktopWindow;
     private bool? _lastDesktopWasMaximized;
+    private bool _desktopShutdownStarted;
+    private bool _desktopShutdownComplete;
 
     partial void ConfigurePlatformWindow(Window window)
     {
+        window.Created += OnDesktopWindowCreated;
         window.Destroying += OnDesktopWindowDestroying;
+    }
+
+    private void OnDesktopWindowCreated(object? sender, EventArgs e)
+    {
+        if (sender is not Window window) return;
+        window.Created -= OnDesktopWindowCreated;
+        TrackDesktopWindow(window);
     }
 
     partial void ApplyPlatformWindowSettings(Window window, AppSettings settings)
@@ -47,6 +57,7 @@ public partial class App
         if (_desktopAppWindow is not null)
         {
             _desktopAppWindow.Changed += OnDesktopAppWindowChanged;
+            _desktopAppWindow.Closing += OnDesktopAppWindowClosing;
         }
     }
 
@@ -55,6 +66,7 @@ public partial class App
         if (_desktopAppWindow is not null)
         {
             _desktopAppWindow.Changed -= OnDesktopAppWindowChanged;
+            _desktopAppWindow.Closing -= OnDesktopAppWindowClosing;
         }
 
         _desktopAppWindow = null;
@@ -69,6 +81,30 @@ public partial class App
         }
 
         _ = PersistDesktopWindowStateAsync(GetDesktopWindowMaximized(sender));
+    }
+
+    private async void OnDesktopAppWindowClosing(AppWindow sender, AppWindowClosingEventArgs args)
+    {
+        if (_desktopShutdownComplete) return;
+        args.Cancel = true;
+        if (_desktopShutdownStarted) return;
+        _desktopShutdownStarted = true;
+        var window = _trackedDesktopWindow?.Handler?.PlatformView as Microsoft.UI.Xaml.Window;
+        try
+        {
+            await Task.WhenAll(
+                PersistDesktopWindowStateAsync(GetDesktopWindowMaximized(sender)),
+                _torrentService.DisposeAsync().AsTask()).WaitAsync(TimeSpan.FromSeconds(10));
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Desktop transfer shutdown failed: {ex.Message}");
+        }
+        finally
+        {
+            _desktopShutdownComplete = true;
+            window?.Close();
+        }
     }
 
     private void OnDesktopWindowDestroying(object? sender, EventArgs e)

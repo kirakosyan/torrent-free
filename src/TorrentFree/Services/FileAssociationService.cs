@@ -8,10 +8,11 @@ public sealed class FileAssociationService : IFileAssociationService
     private const string Extension = ".torrent";
     private const string ProgId = "TorrentFree.Torrent";
 
-    public bool IsSupported => true;
+    public bool IsSupported => AppInfo.Current.PackagingModel == AppPackagingModel.Unpackaged;
 
     public Task<bool> IsAssociatedAsync()
     {
+        if (!IsSupported) return Task.FromResult(false);
         try
         {
             using var key = Registry.CurrentUser.OpenSubKey($"Software\\Classes\\{Extension}");
@@ -26,6 +27,7 @@ public sealed class FileAssociationService : IFileAssociationService
 
     public Task<bool> AssociateAsync()
     {
+        if (!IsSupported) return Task.FromResult(false);
         try
         {
             var exePath = Environment.ProcessPath;
@@ -56,6 +58,7 @@ public sealed class FileAssociationService : IFileAssociationService
 
     public Task<bool> RemoveAssociationAsync()
     {
+        if (!IsSupported) return Task.FromResult(false);
         try
         {
             using var extKey = Registry.CurrentUser.OpenSubKey($"Software\\Classes\\{Extension}", writable: true);

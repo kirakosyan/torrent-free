@@ -11,6 +11,7 @@ public interface IStorageService
     Task SaveSettingsAsync(AppSettings settings);
     Task UpdateDesktopWindowStateAsync(bool? desktopWasMaximized);
     string GetDefaultDownloadPath();
+    string GetAppDataPath();
 }
 
 /// <summary>Persists application state atomically. Read and write failures reach the caller.</summary>
@@ -96,15 +97,47 @@ public sealed class StorageService(StoragePaths paths) : IStorageService, IDispo
         return paths.DownloadDirectory;
     }
 
+    public string GetAppDataPath() => paths.AppDataDirectory;
+
     private async Task<TorrentStorageData> LoadDataAsync()
     {
         string json;
         try { json = await File.ReadAllTextAsync(_dataPath); }
         catch (FileNotFoundException) { return new(); }
         catch (DirectoryNotFoundException) { return new(); }
-        return JsonSerializer.Deserialize<TorrentStorageData>(json, _jsonOptions)
-            ?? throw new JsonException("The saved application state is null.");
+        try { return DeserializeData(json); }
+        catch (JsonException)
+        {
+            // Validate the backup before touching either file. I/O failures still surface;
+            // a locked or inaccessible state file must never look like an empty install.
+            string backupJson;
+            TorrentStorageData recovered;
+            try
+            {
+                backupJson = await File.ReadAllTextAsync(_dataPath + ".bak");
+                recovered = DeserializeData(backupJson);
+            }
+            catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or JsonException)
+            {
+                throw new JsonException("The saved application state is corrupt and no valid backup is available.", ex);
+            }
+
+            var corruptPath = _dataPath + $".corrupt-{Guid.NewGuid():N}";
+            File.Copy(_dataPath, corruptPath);
+            var recoveryPath = _dataPath + ".recovery.tmp";
+            try
+            {
+                await File.WriteAllTextAsync(recoveryPath, backupJson);
+                File.Move(recoveryPath, _dataPath, overwrite: true);
+            }
+            finally { TryDeleteTemporaryFile(recoveryPath); }
+            return recovered;
+        }
     }
+
+    private TorrentStorageData DeserializeData(string json) =>
+        JsonSerializer.Deserialize<TorrentStorageData>(json, _jsonOptions)
+        ?? throw new JsonException("The saved application state is null.");
 
     private async Task WriteDataAsync(TorrentStorageData data)
     {
