@@ -214,6 +214,8 @@ public sealed class TorrentServiceBehaviorTests
 
         public Task UpdateDesktopWindowStateAsync(bool? desktopWasMaximized) => Task.CompletedTask;
 
+        public string GetAppDataPath() => GetDefaultDownloadPath();
+
         public string GetDefaultDownloadPath()
         {
             var path = Path.Combine(Path.GetTempPath(), "torrent-free-tests", Guid.NewGuid().ToString("N"));

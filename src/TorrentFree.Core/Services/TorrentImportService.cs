@@ -3,34 +3,45 @@ namespace TorrentFree.Services;
 /// <summary>Retains imported metadata before publishing the torrent to the queue.</summary>
 public sealed class TorrentImportService(StoragePaths paths, ITorrentFileParser parser)
 {
-    private readonly SemaphoreSlim _cacheLock = new(1, 1);
+    private static readonly AsyncKeyedLocker CacheLocks = new();
+
+    internal static string GetCachePath(string appDataDirectory, string? infoHash)
+    {
+        if (infoHash is not { Length: 40 or 64 } hash || !hash.All(Uri.IsHexDigit))
+            throw new FormatException("The torrent does not contain a supported info hash.");
+        return Path.Combine(appDataDirectory, "ImportedTorrents", hash.ToLowerInvariant() + ".torrent");
+    }
+
+    internal static ValueTask<AsyncKeyedLocker.Releaser> LockCacheAsync(string cachePath, CancellationToken cancellationToken = default)
+    {
+        var key = Path.GetFullPath(cachePath);
+        return CacheLocks.AcquireAsync(OperatingSystem.IsWindows() ? key.ToUpperInvariant() : key, cancellationToken);
+    }
+
+    internal static async Task WriteCacheAsync(string cachePath, byte[] content, CancellationToken cancellationToken)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(cachePath)!);
+        var temporaryPath = cachePath + ".tmp";
+        try
+        {
+            await File.WriteAllBytesAsync(temporaryPath, content, cancellationToken).ConfigureAwait(false);
+            File.Move(temporaryPath, cachePath, overwrite: true);
+        }
+        finally { File.Delete(temporaryPath); }
+    }
 
     public async Task<TorrentMetadata> PrepareAsync(TorrentPickedFile picked, CancellationToken cancellationToken = default)
     {
         var metadata = parser.Parse(picked.Content);
-        if (metadata.InfoHashHex is not { Length: 40 or 64 } hash || !hash.All(Uri.IsHexDigit))
-            throw new FormatException("The torrent does not contain a supported info hash.");
-
-        var directory = Path.Combine(paths.AppDataDirectory, "ImportedTorrents");
-        var cachePath = Path.Combine(directory, hash.ToLowerInvariant() + ".torrent");
-        await _cacheLock.WaitAsync(cancellationToken);
-        try
-        {
-            Directory.CreateDirectory(directory);
-            var temporaryPath = cachePath + ".tmp";
-            try
-            {
-                await File.WriteAllBytesAsync(temporaryPath, picked.Content, cancellationToken);
-                File.Move(temporaryPath, cachePath, overwrite: true);
-            }
-            finally { File.Delete(temporaryPath); }
-        }
-        finally { _cacheLock.Release(); }
+        var cachePath = GetCachePath(paths.AppDataDirectory, metadata.InfoHashHex);
+        await using (await LockCacheAsync(cachePath, cancellationToken))
+            await WriteCacheAsync(cachePath, picked.Content, cancellationToken);
 
         var sourcePath = GetLocalSourcePath(picked.FullPath);
         return metadata with
         {
             CachedFilePath = cachePath,
+            CachedContent = picked.Content.ToArray(),
             SourceFilePath = sourcePath,
             SourceFileName = picked.FileName,
             DownloadSourcePath = IsSourceFolderWritable(sourcePath) ? sourcePath : null

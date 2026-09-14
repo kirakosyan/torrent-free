@@ -14,8 +14,9 @@ public partial class App : Application
     private readonly IStorageService _storageService;
     private readonly ILocalizationService _localizationService;
     private readonly IThemeService _themeService;
+    private readonly ITorrentService _torrentService;
 
-    public App(AppShell appShell, IStorageService storageService, ILocalizationService localizationService, IThemeService themeService)
+    public App(AppShell appShell, IStorageService storageService, ILocalizationService localizationService, IThemeService themeService, ITorrentService torrentService)
     {
         InitializeComponent();
 
@@ -32,6 +33,7 @@ public partial class App : Application
         _storageService = storageService;
         _localizationService = localizationService;
         _themeService = themeService;
+        _torrentService = torrentService;
     }
 
     private static string GetCrashLogPath()

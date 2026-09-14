@@ -51,8 +51,11 @@ Before finishing work, prefer this order:
 3. Only fix issues caused by the current change
 
 Suggested commands:
-- `dotnet test --project tests/TorrentFree.UnitTests/TorrentFree.UnitTests.csproj`
+- `rtk proxy dotnet test --project tests/TorrentFree.UnitTests/TorrentFree.UnitTests.csproj`
 - `dotnet build src/TorrentFree/TorrentFree.csproj`
+
+The test project uses Microsoft.Testing.Platform. Use `rtk proxy` for this command;
+the filtered `rtk dotnet test` wrapper can report zero tests with this runner.
 
 ## Android Store Package Generation
 - For Google Play releases, bump `AppBuildNumber` in `src/TorrentFree/TorrentFree.csproj`; bump `AppDisplayVersion` only when the public version should change. Keep `tests/TorrentFree.UnitTests/VersionMetadataConsistencyTests.cs` and the Windows manifest version aligned.

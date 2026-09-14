@@ -82,8 +82,6 @@ public partial class DeleteTorrentDialogViewModel : ObservableObject
     public DeleteTorrentDialogViewModel(string torrentName)
     {
         TorrentName = torrentName;
-        DeleteTorrentFile = true;
-        DeleteDownloadedFiles = true;
     }
 
     /// <summary>

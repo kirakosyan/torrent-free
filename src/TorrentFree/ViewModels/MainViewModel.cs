@@ -591,7 +591,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             UpdateBulkActionState();
         }
 
-        if (e.PropertyName == nameof(TorrentItem.Status) && SortByStatus)
+        if (SortByStatus && e.PropertyName is nameof(TorrentItem.Status) or nameof(TorrentItem.Name))
         {
             SyncDisplayTorrents();
         }
@@ -656,7 +656,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
         DownloadStatus.Seeding => 1,
         DownloadStatus.Paused => 2,
         DownloadStatus.Stopped => 3,
-        _ => 4
+        DownloadStatus.Queued => 4,
+        DownloadStatus.WaitingForWifi => 5,
+        DownloadStatus.Completed => 6,
+        DownloadStatus.Failed => 7,
+        _ => 8
     };
 
     private static int IndexOfRef(ObservableCollection<TorrentItem> collection, TorrentItem item, int startIndex)
@@ -719,7 +723,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
                 SafeFireAndForget(_notificationService.EnsurePermissionAsync());
                 SafeFireAndForget(PromptFileAssociationAsync());
+#if !WINDOWS
                 SafeFireAndForget(ProcessCommandLineArgumentsAsync());
+#endif
             }
             catch (Exception ex)
             {

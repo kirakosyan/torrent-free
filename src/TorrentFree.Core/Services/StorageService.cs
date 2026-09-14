@@ -11,6 +11,7 @@ public interface IStorageService
     Task SaveSettingsAsync(AppSettings settings);
     Task UpdateDesktopWindowStateAsync(bool? desktopWasMaximized);
     string GetDefaultDownloadPath();
+    string GetAppDataPath();
 }
 
 /// <summary>Persists application state atomically. Read and write failures reach the caller.</summary>
@@ -28,11 +29,11 @@ public sealed class StorageService(StoragePaths paths) : IStorageService, IDispo
 
     public async Task<List<TorrentItem>> LoadTorrentsAsync()
     {
-        await _saveLock.WaitAsync();
+        await _saveLock.WaitAsync().ConfigureAwait(false);
         try
         {
             _torrentsLoaded = false;
-            var data = await LoadDataAsync();
+            var data = await LoadDataAsync().ConfigureAwait(false);
             _torrentsLoaded = true;
             return data.Torrents ?? [];
         }
@@ -41,51 +42,51 @@ public sealed class StorageService(StoragePaths paths) : IStorageService, IDispo
 
     public async Task SaveTorrentsAsync(IEnumerable<TorrentItem> torrents)
     {
-        await _saveLock.WaitAsync();
+        await _saveLock.WaitAsync().ConfigureAwait(false);
         try
         {
             if (!_torrentsLoaded)
                 throw new InvalidOperationException("Load the saved torrent list successfully before replacing it.");
 
             // Read settings under the same lock; a torrent save must not restore an old snapshot.
-            var data = await LoadDataAsync();
+            var data = await LoadDataAsync().ConfigureAwait(false);
             data.Torrents = torrents.ToList();
-            await WriteDataAsync(data);
+            await WriteDataAsync(data).ConfigureAwait(false);
         }
         finally { _saveLock.Release(); }
     }
 
     public async Task<AppSettings> LoadSettingsAsync()
     {
-        await _saveLock.WaitAsync();
-        try { return (await LoadDataAsync()).Settings ?? new AppSettings(); }
+        await _saveLock.WaitAsync().ConfigureAwait(false);
+        try { return (await LoadDataAsync().ConfigureAwait(false)).Settings ?? new AppSettings(); }
         finally { _saveLock.Release(); }
     }
 
     public async Task SaveSettingsAsync(AppSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
-        await _saveLock.WaitAsync();
+        await _saveLock.WaitAsync().ConfigureAwait(false);
         try
         {
-            var data = await LoadDataAsync();
+            var data = await LoadDataAsync().ConfigureAwait(false);
             data.Settings = settings;
-            await WriteDataAsync(data);
+            await WriteDataAsync(data).ConfigureAwait(false);
         }
         finally { _saveLock.Release(); }
     }
 
     public async Task UpdateDesktopWindowStateAsync(bool? desktopWasMaximized)
     {
-        await _saveLock.WaitAsync();
+        await _saveLock.WaitAsync().ConfigureAwait(false);
         try
         {
-            var data = await LoadDataAsync();
+            var data = await LoadDataAsync().ConfigureAwait(false);
             data.Settings ??= new AppSettings();
             if (data.Settings.DesktopWasMaximized == desktopWasMaximized)
                 return;
             data.Settings.DesktopWasMaximized = desktopWasMaximized;
-            await WriteDataAsync(data);
+            await WriteDataAsync(data).ConfigureAwait(false);
         }
         finally { _saveLock.Release(); }
     }
@@ -96,15 +97,47 @@ public sealed class StorageService(StoragePaths paths) : IStorageService, IDispo
         return paths.DownloadDirectory;
     }
 
+    public string GetAppDataPath() => paths.AppDataDirectory;
+
     private async Task<TorrentStorageData> LoadDataAsync()
     {
         string json;
-        try { json = await File.ReadAllTextAsync(_dataPath); }
+        try { json = await File.ReadAllTextAsync(_dataPath).ConfigureAwait(false); }
         catch (FileNotFoundException) { return new(); }
         catch (DirectoryNotFoundException) { return new(); }
-        return JsonSerializer.Deserialize<TorrentStorageData>(json, _jsonOptions)
-            ?? throw new JsonException("The saved application state is null.");
+        try { return DeserializeData(json); }
+        catch (JsonException)
+        {
+            // Validate the backup before touching either file. I/O failures still surface;
+            // a locked or inaccessible state file must never look like an empty install.
+            string backupJson;
+            TorrentStorageData recovered;
+            try
+            {
+                backupJson = await File.ReadAllTextAsync(_dataPath + ".bak").ConfigureAwait(false);
+                recovered = DeserializeData(backupJson);
+            }
+            catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or JsonException)
+            {
+                throw new JsonException("The saved application state is corrupt and no valid backup is available.", ex);
+            }
+
+            var corruptPath = _dataPath + $".corrupt-{Guid.NewGuid():N}";
+            File.Copy(_dataPath, corruptPath);
+            var recoveryPath = _dataPath + ".recovery.tmp";
+            try
+            {
+                await File.WriteAllTextAsync(recoveryPath, backupJson).ConfigureAwait(false);
+                File.Move(recoveryPath, _dataPath, overwrite: true);
+            }
+            finally { TryDeleteTemporaryFile(recoveryPath); }
+            return recovered;
+        }
     }
+
+    private TorrentStorageData DeserializeData(string json) =>
+        JsonSerializer.Deserialize<TorrentStorageData>(json, _jsonOptions)
+        ?? throw new JsonException("The saved application state is null.");
 
     private async Task WriteDataAsync(TorrentStorageData data)
     {
@@ -116,7 +149,7 @@ public sealed class StorageService(StoragePaths paths) : IStorageService, IDispo
         var backupTempPath = _dataPath + ".bak.tmp";
         try
         {
-            await File.WriteAllTextAsync(tempPath, json);
+            await File.WriteAllTextAsync(tempPath, json).ConfigureAwait(false);
             if (File.Exists(_dataPath))
             {
                 File.Copy(_dataPath, backupTempPath, overwrite: true);

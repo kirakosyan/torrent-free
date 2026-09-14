@@ -55,8 +55,7 @@ public partial class App : MauiWinUIApplication
 			}
 			if (!redirectCompleted)
 			{
-				System.Diagnostics.Debug.WriteLine("Activation redirection did not complete; continuing without exit to avoid losing activation.");
-				return;
+				System.Diagnostics.Debug.WriteLine("Activation redirection did not complete; exiting the secondary process to protect shared state.");
 			}
 			Environment.Exit(0);
 			return;
@@ -244,7 +243,9 @@ public partial class App : MauiWinUIApplication
 
 			if (redirectOperation is IAsyncAction asyncAction)
 			{
-				return WaitWithTimeouts(asyncAction.AsTask(), initialTimeoutMs, fallbackTimeoutMs);
+				var completed = WaitWithTimeouts(asyncAction.AsTask(), initialTimeoutMs, fallbackTimeoutMs);
+				if (!completed) asyncAction.Cancel();
+				return completed;
 			}
 		}
 		catch (Exception ex)
@@ -269,8 +270,9 @@ public partial class App : MauiWinUIApplication
 			return true;
 		}
 
-		System.Diagnostics.Debug.WriteLine("Activation redirection still pending; waiting for completion to avoid dropping activation.");
-		task.Wait();
-		return true;
+		System.Diagnostics.Debug.WriteLine("Activation redirection timed out; the secondary process will exit.");
+		_ = task.ContinueWith(failed => System.Diagnostics.Debug.WriteLine(failed.Exception),
+			TaskContinuationOptions.OnlyOnFaulted);
+		return false;
 	}
 }

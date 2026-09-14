@@ -23,6 +23,7 @@ public partial class SettingsViewModel : ObservableObject
     private bool _isNormalizing;
     private bool _isUpdatingAssociation;
     private bool _isSyncingThemeOptions;
+    private bool _languageChanged;
 
     private const int MaxKbpsLimit = 1_000_000;
     private const int MaxActiveLimit = 200;
@@ -265,6 +266,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             var settings = await AppSettingsPersistence.LoadAsync(_storageService);
             _loadedSettings = settings;
+            _languageChanged = false;
             WifiOnly = settings.WifiOnly;
 
             GlobalDownloadLimitKbps = settings.GlobalDownloadLimitKbps;
@@ -289,6 +291,7 @@ public partial class SettingsViewModel : ObservableObject
                             ?? AvailableThemes[0];
 
             await RefreshFileAssociationAsync();
+            NormalizeAllSettings();
         }
         finally
         {
@@ -297,9 +300,7 @@ public partial class SettingsViewModel : ObservableObject
             _isLoadingSettings = false;
         }
 
-        NormalizeAllSettings();
         ApplySettingsToService();
-        SafeFireAndForget(PersistSettingsAsync());
     }
 
     partial void OnGlobalDownloadLimitKbpsChanged(int value)
@@ -496,6 +497,7 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnSelectedLanguageChanged(LanguageOption value)
     {
         if (_isLoadingSettings || value is null) return;
+        _languageChanged = true;
 
         var culture = string.IsNullOrEmpty(value.Code)
             ? LocalizationResourceManager.OriginalSystemCulture
@@ -535,21 +537,25 @@ public partial class SettingsViewModel : ObservableObject
 
     private void ApplySpeedLimits()
     {
+        if (_isLoadingSettings || _isNormalizing) return;
         _torrentService.UpdateGlobalSpeedLimits(GlobalDownloadLimitKbps, GlobalUploadLimitKbps);
     }
 
     private void ApplyQueueLimits()
     {
+        if (_isLoadingSettings || _isNormalizing) return;
         _torrentService.UpdateQueueLimits(MaxActiveDownloads, MaxActiveSeeds);
     }
 
     private void ApplySeedingLimits()
     {
+        if (_isLoadingSettings || _isNormalizing) return;
         _torrentService.UpdateSeedingLimits(GlobalMaxSeedRatio, GlobalMaxSeedMinutes);
     }
 
     private void ApplyProxySettings()
     {
+        if (_isLoadingSettings || _isNormalizing) return;
         _torrentService.UpdateProxySettings(ProxyEnabled, ProxyHost, ProxyPort, ProxyUsername, ProxyPassword);
     }
 
@@ -579,7 +585,7 @@ public partial class SettingsViewModel : ObservableObject
                 ProxyPort,
                 ProxyUsername,
                 ProxyPassword,
-                SelectedLanguage?.Code,
+                _languageChanged ? SelectedLanguage?.Code : existingSettings.Language,
                 SelectedTheme?.Code,
                 WifiOnly));
     }

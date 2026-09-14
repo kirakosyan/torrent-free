@@ -309,7 +309,7 @@ public sealed class TorrentServiceSafetyTests
     }
 
     [Fact]
-    public async Task PauseAllForBackgroundTimeoutAsync_BlocksLaterStartsUntilForegroundResume()
+    public async Task PauseAllForBackgroundTimeoutAsync_PreservesAutomaticQueueIntentUntilForegroundResume()
     {
         using var temporaryDirectory = new TemporaryDirectory();
         var storage = new TestStorageService(temporaryDirectory.Path);
@@ -318,9 +318,10 @@ public sealed class TorrentServiceSafetyTests
         service.Torrents.Add(queued);
 
         await service.PauseAllForBackgroundTimeoutAsync();
-        await service.StartTorrentAsync(queued);
+        await CoreServiceFixture.InvokeAsync(service, "TryStartQueuedTorrentsAsync");
 
-        Assert.Equal(DownloadStatus.Paused, queued.Status);
+        Assert.Equal(DownloadStatus.Queued, queued.Status);
+        Assert.True(GetPrivateField<bool>(service, "_backgroundExecutionSuspended"));
 
         service.ResumeAfterBackgroundTimeout();
         Assert.False(GetPrivateField<bool>(service, "_backgroundExecutionSuspended"));
@@ -405,6 +406,8 @@ public sealed class TorrentServiceSafetyTests
         public Task SaveSettingsAsync(AppSettings settings) => Task.CompletedTask;
 
         public Task UpdateDesktopWindowStateAsync(bool? desktopWasMaximized) => Task.CompletedTask;
+
+        public string GetAppDataPath() => GetDefaultDownloadPath();
 
         public string GetDefaultDownloadPath()
         {
