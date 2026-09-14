@@ -172,7 +172,6 @@ public partial class TorrentService : ITorrentService
     private TaskCompletionSource? _activeStartsDrained;
     private int _activeStarts;
     private int _startBarrierHolders;
-    private int _queueDrainAfterRebuild;
     private static readonly TimeSpan ProxyRebuildDebounce = TimeSpan.FromMilliseconds(800);
 
     // A SOCKS5 proxy can only tunnel outbound TCP, so when it is active we disable every
@@ -377,6 +376,13 @@ public partial class TorrentService : ITorrentService
         }
 
         var magnet = BuildMagnetLink(metadata.InfoHashHex, metadata.Name, metadata.Trackers);
+        await InitializeAsync();
+        var cachePath = TorrentImportService.GetCachePath(_storageService.GetAppDataPath(), metadata.InfoHashHex);
+        await using var cacheLock = await TorrentImportService.LockCacheAsync(cachePath, _disposalToken);
+        // Preparation can precede removal of the previous item. Restore its cached bytes
+        // under the same lock used by cleanup, and hold it until the new item is published.
+        if (metadata.CachedContent is not null && PathsEqual(metadata.CachedFilePath, cachePath) && !File.Exists(cachePath))
+            await TorrentImportService.WriteCacheAsync(cachePath, metadata.CachedContent, _disposalToken);
         return await AddTorrentCoreAsync(magnet, metadata);
     }
 
@@ -450,7 +456,6 @@ public partial class TorrentService : ITorrentService
                 if (expectedStatus is not null) return;
                 await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalToken))
                 {
-                    if (expectedStatus is not null && torrent.Status != expectedStatus) return;
                     await SuppressStartForBackgroundTimeoutAsync(torrent);
                 }
                 return;
@@ -972,7 +977,13 @@ public partial class TorrentService : ITorrentService
     {
         _backgroundExecutionSuspended = false;
         if (_networkPolicyReady && !_disposed)
-            SafeFireAndForget(ReconcileNetworkPolicyAsync());
+            SafeFireAndForget(ResumeNetworkAndQueueAsync());
+    }
+
+    private async Task ResumeNetworkAndQueueAsync()
+    {
+        await ReconcileNetworkPolicyAsync().ConfigureAwait(false);
+        await TryStartQueuedTorrentsAsync().ConfigureAwait(false);
     }
 
     private bool ShouldPauseForBackgroundTimeout(TorrentItem torrent)
@@ -1095,28 +1106,28 @@ public partial class TorrentService : ITorrentService
                 DeleteOwnedDownloadFiles(ownedDownloadFiles, torrent.TorrentFilePath, deleteTorrentFile);
             }
 
-            TryDeleteCachedTorrentFile(torrent);
+            await TryDeleteCachedTorrentFileAsync(torrent);
         }
 
         await TryStartQueuedTorrentsAsync();
     }
 
-    private void TryDeleteCachedTorrentFile(TorrentItem torrent)
+    private async Task TryDeleteCachedTorrentFileAsync(TorrentItem torrent)
     {
         try
         {
-            if (torrent.InfoHash is not { Length: 40 or 64 } hash || !hash.All(Uri.IsHexDigit)) return;
             var appDataPath = _storageService.GetAppDataPath();
-            var expectedPath = Path.Combine(appDataPath, "ImportedTorrents", hash.ToLowerInvariant() + ".torrent");
+            var expectedPath = TorrentImportService.GetCachePath(appDataPath, torrent.InfoHash);
+            await using var cacheLock = await TorrentImportService.LockCacheAsync(expectedPath, _disposalToken);
             if (!PathsEqual(torrent.CachedTorrentFilePath, expectedPath)
                 || !TryGetSafeOwnedFilePath(expectedPath, appDataPath, out var path)) return;
 
             lock (_torrentsLock)
             {
                 if (Torrents.Any(t => PathsEqual(t.CachedTorrentFilePath, path))) return;
-                if (File.Exists(path) && !File.GetAttributes(path).HasFlag(FileAttributes.ReparsePoint))
-                    File.Delete(path);
             }
+            if (File.Exists(path) && !File.GetAttributes(path).HasFlag(FileAttributes.ReparsePoint))
+                File.Delete(path);
         }
         catch (Exception ex)
         {
@@ -1540,7 +1551,7 @@ public partial class TorrentService : ITorrentService
         var newPassword = password ?? string.Empty;
 
         var proxyModeChanged = _proxyEnabled != enabled;
-        var changed = proxyModeChanged || ((enabled || _proxyEnabled)
+        var changed = proxyModeChanged || (enabled
                       && (!string.Equals(_proxyHost, newHost, StringComparison.Ordinal)
                       || _proxyPort != newPort
                       || !string.Equals(_proxyUsername, newUsername, StringComparison.Ordinal)
@@ -1659,8 +1670,7 @@ public partial class TorrentService : ITorrentService
             }
         }
 
-        if (!_disposed && !token.IsCancellationRequested && !NetworkBlocked
-            && Interlocked.Exchange(ref _queueDrainAfterRebuild, 0) != 0)
+        if (!_disposed && !token.IsCancellationRequested && !NetworkBlocked)
             await TryStartQueuedTorrentsAsync().ConfigureAwait(false);
     }
 
@@ -1681,9 +1691,6 @@ public partial class TorrentService : ITorrentService
         {
             EndEngineRebuild(rebuildCompletion);
         }
-
-        if (!_disposed && !NetworkBlocked && Interlocked.Exchange(ref _queueDrainAfterRebuild, 0) != 0)
-            await TryStartQueuedTorrentsAsync().ConfigureAwait(false);
     }
 
     private async Task RebuildEngineCoreAsync(
@@ -1875,7 +1882,6 @@ public partial class TorrentService : ITorrentService
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Proxy rebuild: restart error for '{torrent.Name}': {ex.Message}");
-                Interlocked.Exchange(ref _queueDrainAfterRebuild, 1);
             }
             finally
             {
@@ -2179,26 +2185,16 @@ public partial class TorrentService : ITorrentService
 
     private async Task<bool> QueueIfOverCapacityAsync(TorrentItem torrent)
     {
+        lock (_torrentsLock)
+            if (!IsOverCapacity(torrent)) return false;
+
         await using var operationLock = await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalToken);
         var queued = false;
         await _dispatcher.InvokeAsync(() =>
         {
             lock (_torrentsLock)
             {
-                if (!Torrents.Contains(torrent)) return;
-                var limit = torrent.Status switch
-                {
-                    DownloadStatus.Downloading => _maxActiveDownloads,
-                    DownloadStatus.Seeding => _maxActiveSeeds,
-                    _ => 0
-                };
-                if (limit <= 0) return;
-
-                // Pick the excess entries deterministically and release their slots atomically.
-                // Concurrent limit checks must not all decide to pause themselves.
-                if (!Torrents.Where(t => t.Status == torrent.Status)
-                    .OrderBy(t => t.DateAdded).ThenBy(t => t.Id, StringComparer.Ordinal)
-                    .Skip(limit).Contains(torrent)) return;
+                if (!IsOverCapacity(torrent)) return;
 
                 if (_downloadTokens.TryRemove(torrent.Id, out var cts))
                 {
@@ -2218,6 +2214,28 @@ public partial class TorrentService : ITorrentService
             await StopManagerAsync(manager);
         await SaveAsync();
         return true;
+    }
+
+    // Called under _torrentsLock. Count predecessors instead of sorting every seed on every tick.
+    private bool IsOverCapacity(TorrentItem torrent)
+    {
+        var limit = torrent.Status switch
+        {
+            DownloadStatus.Downloading => _maxActiveDownloads,
+            DownloadStatus.Seeding => _maxActiveSeeds,
+            _ => 0
+        };
+        if (limit <= 0 || !Torrents.Contains(torrent)) return false;
+
+        var predecessors = 0;
+        foreach (var candidate in Torrents)
+        {
+            if (candidate.Status != torrent.Status || ReferenceEquals(candidate, torrent)) continue;
+            if (candidate.DateAdded < torrent.DateAdded
+                || (candidate.DateAdded == torrent.DateAdded && StringComparer.Ordinal.Compare(candidate.Id, torrent.Id) < 0))
+                if (++predecessors >= limit) return true;
+        }
+        return false;
     }
 
     private static async Task ApplySpeedLimitsToEngineAsync(ClientEngine engine, long downloadLimitBytesPerSec, long uploadLimitBytesPerSec)
@@ -2711,9 +2729,12 @@ public partial class TorrentService : ITorrentService
         // only. UDP bootstrap trackers are likewise skipped (see GetOrCreateManagerAsync).
         var useProxy = ProxyRequested;
 
+        var cacheDirectory = Path.Combine(_storageService.GetAppDataPath(), "EngineCache");
+        EngineCacheMigration.Migrate(_storageService.GetDefaultDownloadPath(), cacheDirectory);
+
         var builder = new EngineSettingsBuilder
         {
-            CacheDirectory = Path.Combine(_storageService.GetAppDataPath(), "EngineCache"),
+            CacheDirectory = cacheDirectory,
             // UPnP/NAT-PMP opens an inbound port on the router and advertises our address.
             AllowPortForwarding = !useProxy,
             // DHT is UDP and announces our IP to the swarm; disable it (and its cache) when proxied.

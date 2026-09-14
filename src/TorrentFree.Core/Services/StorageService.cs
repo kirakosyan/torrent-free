@@ -29,11 +29,11 @@ public sealed class StorageService(StoragePaths paths) : IStorageService, IDispo
 
     public async Task<List<TorrentItem>> LoadTorrentsAsync()
     {
-        await _saveLock.WaitAsync();
+        await _saveLock.WaitAsync().ConfigureAwait(false);
         try
         {
             _torrentsLoaded = false;
-            var data = await LoadDataAsync();
+            var data = await LoadDataAsync().ConfigureAwait(false);
             _torrentsLoaded = true;
             return data.Torrents ?? [];
         }
@@ -42,51 +42,51 @@ public sealed class StorageService(StoragePaths paths) : IStorageService, IDispo
 
     public async Task SaveTorrentsAsync(IEnumerable<TorrentItem> torrents)
     {
-        await _saveLock.WaitAsync();
+        await _saveLock.WaitAsync().ConfigureAwait(false);
         try
         {
             if (!_torrentsLoaded)
                 throw new InvalidOperationException("Load the saved torrent list successfully before replacing it.");
 
             // Read settings under the same lock; a torrent save must not restore an old snapshot.
-            var data = await LoadDataAsync();
+            var data = await LoadDataAsync().ConfigureAwait(false);
             data.Torrents = torrents.ToList();
-            await WriteDataAsync(data);
+            await WriteDataAsync(data).ConfigureAwait(false);
         }
         finally { _saveLock.Release(); }
     }
 
     public async Task<AppSettings> LoadSettingsAsync()
     {
-        await _saveLock.WaitAsync();
-        try { return (await LoadDataAsync()).Settings ?? new AppSettings(); }
+        await _saveLock.WaitAsync().ConfigureAwait(false);
+        try { return (await LoadDataAsync().ConfigureAwait(false)).Settings ?? new AppSettings(); }
         finally { _saveLock.Release(); }
     }
 
     public async Task SaveSettingsAsync(AppSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
-        await _saveLock.WaitAsync();
+        await _saveLock.WaitAsync().ConfigureAwait(false);
         try
         {
-            var data = await LoadDataAsync();
+            var data = await LoadDataAsync().ConfigureAwait(false);
             data.Settings = settings;
-            await WriteDataAsync(data);
+            await WriteDataAsync(data).ConfigureAwait(false);
         }
         finally { _saveLock.Release(); }
     }
 
     public async Task UpdateDesktopWindowStateAsync(bool? desktopWasMaximized)
     {
-        await _saveLock.WaitAsync();
+        await _saveLock.WaitAsync().ConfigureAwait(false);
         try
         {
-            var data = await LoadDataAsync();
+            var data = await LoadDataAsync().ConfigureAwait(false);
             data.Settings ??= new AppSettings();
             if (data.Settings.DesktopWasMaximized == desktopWasMaximized)
                 return;
             data.Settings.DesktopWasMaximized = desktopWasMaximized;
-            await WriteDataAsync(data);
+            await WriteDataAsync(data).ConfigureAwait(false);
         }
         finally { _saveLock.Release(); }
     }
@@ -102,7 +102,7 @@ public sealed class StorageService(StoragePaths paths) : IStorageService, IDispo
     private async Task<TorrentStorageData> LoadDataAsync()
     {
         string json;
-        try { json = await File.ReadAllTextAsync(_dataPath); }
+        try { json = await File.ReadAllTextAsync(_dataPath).ConfigureAwait(false); }
         catch (FileNotFoundException) { return new(); }
         catch (DirectoryNotFoundException) { return new(); }
         try { return DeserializeData(json); }
@@ -114,7 +114,7 @@ public sealed class StorageService(StoragePaths paths) : IStorageService, IDispo
             TorrentStorageData recovered;
             try
             {
-                backupJson = await File.ReadAllTextAsync(_dataPath + ".bak");
+                backupJson = await File.ReadAllTextAsync(_dataPath + ".bak").ConfigureAwait(false);
                 recovered = DeserializeData(backupJson);
             }
             catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or JsonException)
@@ -127,7 +127,7 @@ public sealed class StorageService(StoragePaths paths) : IStorageService, IDispo
             var recoveryPath = _dataPath + ".recovery.tmp";
             try
             {
-                await File.WriteAllTextAsync(recoveryPath, backupJson);
+                await File.WriteAllTextAsync(recoveryPath, backupJson).ConfigureAwait(false);
                 File.Move(recoveryPath, _dataPath, overwrite: true);
             }
             finally { TryDeleteTemporaryFile(recoveryPath); }
@@ -149,7 +149,7 @@ public sealed class StorageService(StoragePaths paths) : IStorageService, IDispo
         var backupTempPath = _dataPath + ".bak.tmp";
         try
         {
-            await File.WriteAllTextAsync(tempPath, json);
+            await File.WriteAllTextAsync(tempPath, json).ConfigureAwait(false);
             if (File.Exists(_dataPath))
             {
                 File.Copy(_dataPath, backupTempPath, overwrite: true);

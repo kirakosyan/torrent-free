@@ -9,4 +9,5 @@ public sealed record TorrentMetadata(
     public string? SourceFileName { get; init; }
     public string? CachedFilePath { get; init; }
     public string? DownloadSourcePath { get; init; }
+    internal byte[]? CachedContent { get; init; }
 }

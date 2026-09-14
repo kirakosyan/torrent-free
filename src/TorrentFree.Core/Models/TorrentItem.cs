@@ -445,7 +445,11 @@ public partial class TorrentItem : ObservableObject
 
     partial void OnSavePathChanged(string value)
     {
-        ResolvedDownloadPath = null;
+        if (ResolvedDownloadPath is not null && !PathGuard.IsPathWithinDirectory(ResolvedDownloadPath, value))
+        {
+            ResolvedDownloadPath = null;
+            return;
+        }
         InvalidateCanOpenDownloadedFileCache();
         OnPropertyChanged(nameof(DownloadedFilePath));
         OnPropertyChanged(nameof(CanOpenDownloadedFile));

@@ -86,10 +86,11 @@ public partial class App
     private async void OnDesktopAppWindowClosing(AppWindow sender, AppWindowClosingEventArgs args)
     {
         if (_desktopShutdownComplete) return;
+        var window = _trackedDesktopWindow?.Handler?.PlatformView as Microsoft.UI.Xaml.Window;
+        if (window is null) return;
         args.Cancel = true;
         if (_desktopShutdownStarted) return;
         _desktopShutdownStarted = true;
-        var window = _trackedDesktopWindow?.Handler?.PlatformView as Microsoft.UI.Xaml.Window;
         try
         {
             await Task.WhenAll(
@@ -103,7 +104,11 @@ public partial class App
         finally
         {
             _desktopShutdownComplete = true;
-            window?.Close();
+            try { window.Close(); }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Desktop window close failed: {ex.Message}");
+            }
         }
     }
 

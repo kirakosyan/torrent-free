@@ -55,8 +55,7 @@ public partial class App : MauiWinUIApplication
 			}
 			if (!redirectCompleted)
 			{
-				System.Diagnostics.Debug.WriteLine("Activation redirection did not complete; continuing without exit to avoid losing activation.");
-				return;
+				System.Diagnostics.Debug.WriteLine("Activation redirection did not complete; exiting the secondary process to protect shared state.");
 			}
 			Environment.Exit(0);
 			return;
@@ -271,7 +270,7 @@ public partial class App : MauiWinUIApplication
 			return true;
 		}
 
-		System.Diagnostics.Debug.WriteLine("Activation redirection timed out; continuing with local activation.");
+		System.Diagnostics.Debug.WriteLine("Activation redirection timed out; the secondary process will exit.");
 		_ = task.ContinueWith(failed => System.Diagnostics.Debug.WriteLine(failed.Exception),
 			TaskContinuationOptions.OnlyOnFaulted);
 		return false;
