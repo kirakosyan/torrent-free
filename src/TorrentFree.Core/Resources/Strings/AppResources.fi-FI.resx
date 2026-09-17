@@ -540,4 +540,10 @@
   <data name="HintWaitingForWifi" xml:space="preserve">
     <value>Jatkuu automaattisesti Wi-Fi-yhteydellä. Keskeytä peruuttaaksesi automaattisen jatkamisen.</value>
   </data>
+  <data name="OpenInLibroNest" xml:space="preserve">
+    <value>Avaa LibroNestissä</value>
+  </data>
+  <data name="ErrorOpenLibroNest" xml:space="preserve">
+    <value>LibroNestiä tai sen kauppasivua ei voitu avata. Tarkista, että äänitiedostot ovat edelleen saatavilla, ja yritä uudelleen.</value>
+  </data>
 </root>

@@ -554,4 +554,10 @@
   <data name="HintWaitingForWifi" xml:space="preserve">
     <value>Reprise automatique en Wi-Fi. Mettez en pause pour annuler la reprise automatique.</value>
   </data>
+  <data name="OpenInLibroNest" xml:space="preserve">
+    <value>Ouvrir dans LibroNest</value>
+  </data>
+  <data name="ErrorOpenLibroNest" xml:space="preserve">
+    <value>Impossible d’ouvrir LibroNest ou sa page dans la boutique. Vérifiez que les fichiers audio sont toujours disponibles et réessayez.</value>
+  </data>
 </root>

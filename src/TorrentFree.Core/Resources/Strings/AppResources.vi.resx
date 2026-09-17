@@ -540,4 +540,10 @@
   <data name="HintWaitingForWifi" xml:space="preserve">
     <value>Tự động tiếp tục qua Wi-Fi. Tạm dừng để hủy tự động tiếp tục.</value>
   </data>
+  <data name="OpenInLibroNest" xml:space="preserve">
+    <value>Mở trong LibroNest</value>
+  </data>
+  <data name="ErrorOpenLibroNest" xml:space="preserve">
+    <value>Không thể mở LibroNest hoặc trang cửa hàng. Kiểm tra xem các tệp âm thanh còn khả dụng hay không rồi thử lại.</value>
+  </data>
 </root>

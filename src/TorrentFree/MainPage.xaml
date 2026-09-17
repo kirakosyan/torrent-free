@@ -516,6 +516,18 @@
                                                                              IsVisible="{Binding StatusHint, Converter={StaticResource StringNotEmptyConverter}}"
                                                                              LineBreakMode="TailTruncation"
                                                                              MaxLines="2"/>
+                                                                      <Button Text="{helpers:Translate OpenInLibroNest}"
+                                                                              ImageSource="{AppThemeBinding Light=libronest_headphones.png, Dark=libronest_headphones_dark.png}"
+                                                                              ContentLayout="Left,8"
+                                                                              HorizontalOptions="Start"
+                                                                              Margin="0,6,0,0"
+                                                                              Padding="12,8"
+                                                                              CornerRadius="16"
+                                                                              FontSize="12"
+                                                                              SemanticProperties.Description="{helpers:Translate OpenInLibroNest}"
+                                                                              IsVisible="{Binding CanOpenInLibroNest}"
+                                                                              Command="{Binding OpenInLibroNestCommand}"
+                                                                              CommandParameter="{Binding .}"/>
                                                                </VerticalStackLayout>
                                                                <Button Grid.Column="1"
                                                                        Text="📂"

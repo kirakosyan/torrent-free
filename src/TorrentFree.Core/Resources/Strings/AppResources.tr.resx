@@ -540,4 +540,10 @@
   <data name="HintWaitingForWifi" xml:space="preserve">
     <value>Wi-Fi üzerinden otomatik devam eder. Otomatik devamı iptal etmek için duraklatın.</value>
   </data>
+  <data name="OpenInLibroNest" xml:space="preserve">
+    <value>LibroNest ile aç</value>
+  </data>
+  <data name="ErrorOpenLibroNest" xml:space="preserve">
+    <value>LibroNest veya mağaza sayfası açılamadı. Ses dosyalarının hâlâ kullanılabilir olduğunu kontrol edip tekrar deneyin.</value>
+  </data>
 </root>

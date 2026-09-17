@@ -540,4 +540,10 @@
   <data name="HintWaitingForWifi" xml:space="preserve">
     <value>Wi-Fi接続時に自動で再開します。一時停止すると自動再開を取り消せます。</value>
   </data>
+  <data name="OpenInLibroNest" xml:space="preserve">
+    <value>LibroNestで開く</value>
+  </data>
+  <data name="ErrorOpenLibroNest" xml:space="preserve">
+    <value>LibroNestまたはストアページを開けませんでした。音声ファイルが利用可能か確認して、もう一度お試しください。</value>
+  </data>
 </root>

@@ -12,8 +12,6 @@ namespace TorrentFree.Services;
 
 public sealed class PlatformAppStore : IAppStore
 {
-    private const string WindowsListing = "https://apps.microsoft.com/detail/9NNX2ZTPXC26";
-    private const string AndroidListing = "https://play.google.com/store/apps/details?id=com.torrentfree.app";
 
     public bool IsSupported
     {
@@ -60,16 +58,18 @@ public sealed class PlatformAppStore : IAppStore
 #endif
         });
 
-    public Task<bool> OpenListingAsync() => MainThread.InvokeOnMainThreadAsync(async () =>
+    public Task<bool> OpenListingAsync() => OpenListingAsync("9NNX2ZTPXC26", "com.torrentfree.app");
+
+    public static Task<bool> OpenListingAsync(string windowsProductId, string androidPackageId) => MainThread.InvokeOnMainThreadAsync(async () =>
     {
 #if WINDOWS
-        if (await TryLaunchAsync("ms-windows-store://pdp/?ProductId=9NNX2ZTPXC26")) return true;
-        return await TryLaunchAsync(WindowsListing);
+        if (await TryLaunchAsync("ms-windows-store://pdp/?ProductId=" + windowsProductId)) return true;
+        return await TryLaunchAsync("https://apps.microsoft.com/detail/" + windowsProductId);
 #elif ANDROID
         try
         {
             // Explicitly target Play; a third-party handler must not intercept the review link.
-            using var intent = new Intent(Intent.ActionView, Android.Net.Uri.Parse("market://details?id=com.torrentfree.app"));
+            using var intent = new Intent(Intent.ActionView, Android.Net.Uri.Parse("market://details?id=" + androidPackageId));
             intent.SetPackage("com.android.vending");
             intent.AddFlags(ActivityFlags.NewTask);
             Android.App.Application.Context.StartActivity(intent);
@@ -77,7 +77,7 @@ public sealed class PlatformAppStore : IAppStore
         }
         catch (ActivityNotFoundException) { }
         catch (Java.Lang.SecurityException) { }
-        return await TryLaunchAsync(AndroidListing);
+        return await TryLaunchAsync("https://play.google.com/store/apps/details?id=" + androidPackageId);
 #else
         await Task.CompletedTask;
         return false;

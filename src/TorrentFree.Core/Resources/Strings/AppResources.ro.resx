@@ -540,4 +540,10 @@
   <data name="HintWaitingForWifi" xml:space="preserve">
     <value>Se reia automat prin Wi-Fi. Pune pe pauză pentru a anula reluarea automată.</value>
   </data>
+  <data name="OpenInLibroNest" xml:space="preserve">
+    <value>Deschide în LibroNest</value>
+  </data>
+  <data name="ErrorOpenLibroNest" xml:space="preserve">
+    <value>Nu s-a putut deschide LibroNest sau pagina magazinului. Verifică dacă fișierele audio mai sunt disponibile și încearcă din nou.</value>
+  </data>
 </root>

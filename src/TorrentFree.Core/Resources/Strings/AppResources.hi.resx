@@ -540,4 +540,10 @@
   <data name="HintWaitingForWifi" xml:space="preserve">
     <value>Wi-Fi पर अपने आप फिर शुरू होगा। अपने आप फिर शुरू करना रद्द करने के लिए रोकें।</value>
   </data>
+  <data name="OpenInLibroNest" xml:space="preserve">
+    <value>LibroNest में खोलें</value>
+  </data>
+  <data name="ErrorOpenLibroNest" xml:space="preserve">
+    <value>LibroNest या उसका स्टोर पेज नहीं खुल सका। जाँचें कि ऑडियो फ़ाइलें अभी भी उपलब्ध हैं और फिर से कोशिश करें।</value>
+  </data>
 </root>

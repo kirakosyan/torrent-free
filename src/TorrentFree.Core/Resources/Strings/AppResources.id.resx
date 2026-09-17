@@ -540,4 +540,10 @@
   <data name="HintWaitingForWifi" xml:space="preserve">
     <value>Dilanjutkan otomatis melalui Wi-Fi. Jeda untuk membatalkan pelanjutan otomatis.</value>
   </data>
+  <data name="OpenInLibroNest" xml:space="preserve">
+    <value>Buka di LibroNest</value>
+  </data>
+  <data name="ErrorOpenLibroNest" xml:space="preserve">
+    <value>Tidak dapat membuka LibroNest atau halaman tokonya. Pastikan berkas audio masih tersedia dan coba lagi.</value>
+  </data>
 </root>

@@ -540,4 +540,10 @@
   <data name="HintWaitingForWifi" xml:space="preserve">
     <value>ทำต่ออัตโนมัติผ่าน Wi-Fi กดพักเพื่อยกเลิกการทำต่ออัตโนมัติ</value>
   </data>
+  <data name="OpenInLibroNest" xml:space="preserve">
+    <value>เปิดใน LibroNest</value>
+  </data>
+  <data name="ErrorOpenLibroNest" xml:space="preserve">
+    <value>ไม่สามารถเปิด LibroNest หรือหน้าร้านค้าได้ ตรวจสอบว่าไฟล์เสียงยังพร้อมใช้งานแล้วลองอีกครั้ง</value>
+  </data>
 </root>

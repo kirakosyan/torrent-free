@@ -31,6 +31,8 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 
 ### Unreleased
 
+- Open completed audio downloads in LibroNest, with multi-track import and platform store fallback. See [audiobook handoff](docs/libronest-handoff.md).
+
 - Added a startup update banner linking to Microsoft Store or Google Play.
 - Added review requests after five completed downloads, with persistent opt-out and a ten-download/30-day reminder interval.
 - See [store prompt behavior and validation](docs/store-prompts.md). These changes have not been published to either store.
