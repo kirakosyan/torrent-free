@@ -546,4 +546,10 @@
   <data name="ErrorOpenLibroNest" xml:space="preserve">
     <value>LibroNestまたはストアページを開けませんでした。音声ファイルが利用可能か確認して、もう一度お試しください。</value>
   </data>
+  <data name="StatusQueuedForSeeding" xml:space="preserve">
+    <value>シード待ち</value>
+  </data>
+  <data name="HintQueuedForSeeding" xml:space="preserve">
+    <value>ダウンロード完了。シードの空き枠を待っています。ダウンロードしたファイルは使用できます。</value>
+  </data>
 </root>

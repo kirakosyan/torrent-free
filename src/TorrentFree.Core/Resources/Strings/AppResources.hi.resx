@@ -546,4 +546,10 @@
   <data name="ErrorOpenLibroNest" xml:space="preserve">
     <value>LibroNest या उसका स्टोर पेज नहीं खुल सका। जाँचें कि ऑडियो फ़ाइलें अभी भी उपलब्ध हैं और फिर से कोशिश करें।</value>
   </data>
+  <data name="StatusQueuedForSeeding" xml:space="preserve">
+    <value>सीडिंग की कतार में</value>
+  </data>
+  <data name="HintQueuedForSeeding" xml:space="preserve">
+    <value>डाउनलोड पूरा हो गया। सीडिंग के लिए जगह खाली होने की प्रतीक्षा है। डाउनलोड की गई फ़ाइलें उपयोग के लिए तैयार हैं।</value>
+  </data>
 </root>

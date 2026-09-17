@@ -546,4 +546,10 @@
   <data name="ErrorOpenLibroNest" xml:space="preserve">
     <value>Tidak dapat membuka LibroNest atau halaman tokonya. Pastikan berkas audio masih tersedia dan coba lagi.</value>
   </data>
+  <data name="StatusQueuedForSeeding" xml:space="preserve">
+    <value>Antre untuk seeding</value>
+  </data>
+  <data name="HintQueuedForSeeding" xml:space="preserve">
+    <value>Unduhan selesai. Menunggu slot seeding. File yang diunduh siap digunakan.</value>
+  </data>
 </root>

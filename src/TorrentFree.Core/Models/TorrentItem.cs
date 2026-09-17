@@ -276,6 +276,7 @@ public partial class TorrentItem : ObservableObject
 
     private bool? _cachedCanOpenDownloadedFile;
     private string? _cachedCanOpenPath;
+    private bool HasCompletedDownload => Progress >= 100 || DateCompleted is not null;
 
     /// <summary>
     /// Indicates whether the downloaded file or folder can be opened from the UI.
@@ -288,7 +289,7 @@ public partial class TorrentItem : ObservableObject
         get
         {
             var isComplete = Status is DownloadStatus.Completed or DownloadStatus.Seeding
-                             || (Status is DownloadStatus.Paused or DownloadStatus.Stopped or DownloadStatus.WaitingForWifi && (Progress >= 100 || DateCompleted is not null));
+                             || (Status is DownloadStatus.Queued or DownloadStatus.Paused or DownloadStatus.Stopped or DownloadStatus.WaitingForWifi && HasCompletedDownload);
 
             if (!isComplete)
             {
@@ -345,7 +346,7 @@ public partial class TorrentItem : ObservableObject
     [JsonIgnore]
     public string StatusText => Status switch
     {
-        DownloadStatus.Queued => LocalizationResourceManager.Instance["StatusQueued"],
+        DownloadStatus.Queued => LocalizationResourceManager.Instance[HasCompletedDownload ? "StatusQueuedForSeeding" : "StatusQueued"],
         DownloadStatus.Downloading => $"{LocalizationResourceManager.Instance["StatusDownloading"]} - {Progress:F1}%",
         DownloadStatus.Paused => LocalizationResourceManager.Instance["StatusPaused"],
         DownloadStatus.Completed => LocalizationResourceManager.Instance["StatusCompleted"],
@@ -373,7 +374,7 @@ public partial class TorrentItem : ObservableObject
 
             return Status switch
             {
-                DownloadStatus.Queued => LocalizationResourceManager.Instance["HintQueued"],
+                DownloadStatus.Queued => LocalizationResourceManager.Instance[HasCompletedDownload ? "HintQueuedForSeeding" : "HintQueued"],
                 DownloadStatus.WaitingForWifi => LocalizationResourceManager.Instance["HintWaitingForWifi"],
                 DownloadStatus.Paused => LocalizationResourceManager.Instance["HintPaused"],
                 DownloadStatus.Stopped => LocalizationResourceManager.Instance["HintStopped"],
@@ -417,12 +418,15 @@ public partial class TorrentItem : ObservableObject
     partial void OnProgressChanged(double value)
     {
         OnPropertyChanged(nameof(StatusText));
+        OnPropertyChanged(nameof(StatusHint));
         InvalidateCanOpenDownloadedFileCache();
         OnPropertyChanged(nameof(CanOpenDownloadedFile));
     }
 
     partial void OnDateCompletedChanged(DateTime? value)
     {
+        OnPropertyChanged(nameof(StatusText));
+        OnPropertyChanged(nameof(StatusHint));
         InvalidateCanOpenDownloadedFileCache();
         OnPropertyChanged(nameof(CanOpenDownloadedFile));
     }

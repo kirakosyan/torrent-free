@@ -546,4 +546,10 @@
   <data name="ErrorOpenLibroNest" xml:space="preserve">
     <value>Kunne ikke åpne LibroNest eller butikksiden. Kontroller at lydfilene fortsatt er tilgjengelige, og prøv igjen.</value>
   </data>
+  <data name="StatusQueuedForSeeding" xml:space="preserve">
+    <value>I kø for seeding</value>
+  </data>
+  <data name="HintQueuedForSeeding" xml:space="preserve">
+    <value>Nedlastingen er fullført. Venter på en ledig plass for seeding. De nedlastede filene er klare til bruk.</value>
+  </data>
 </root>

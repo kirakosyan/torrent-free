@@ -546,4 +546,10 @@
   <data name="ErrorOpenLibroNest" xml:space="preserve">
     <value>LibroNestiä tai sen kauppasivua ei voitu avata. Tarkista, että äänitiedostot ovat edelleen saatavilla, ja yritä uudelleen.</value>
   </data>
+  <data name="StatusQueuedForSeeding" xml:space="preserve">
+    <value>Jonossa jakamiseen</value>
+  </data>
+  <data name="HintQueuedForSeeding" xml:space="preserve">
+    <value>Lataus valmis. Odotetaan vapaata jakamispaikkaa. Ladatut tiedostot ovat käyttövalmiita.</value>
+  </data>
 </root>

@@ -546,4 +546,10 @@
   <data name="ErrorOpenLibroNest" xml:space="preserve">
     <value>Nem sikerült megnyitni a LibroNest alkalmazást vagy az áruházi oldalt. Ellenőrizze, hogy a hangfájlok még elérhetők-e, és próbálja újra.</value>
   </data>
+  <data name="StatusQueuedForSeeding" xml:space="preserve">
+    <value>Megosztásra vár</value>
+  </data>
+  <data name="HintQueuedForSeeding" xml:space="preserve">
+    <value>A letöltés befejeződött. Várakozás egy szabad megosztási helyre. A letöltött fájlok használatra készek.</value>
+  </data>
 </root>

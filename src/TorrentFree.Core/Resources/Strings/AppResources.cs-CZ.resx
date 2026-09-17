@@ -546,4 +546,10 @@
   <data name="ErrorOpenLibroNest" xml:space="preserve">
     <value>Nelze otevřít LibroNest ani stránku obchodu. Zkontrolujte dostupnost zvukových souborů a zkuste to znovu.</value>
   </data>
+  <data name="StatusQueuedForSeeding" xml:space="preserve">
+    <value>Ve frontě na sdílení</value>
+  </data>
+  <data name="HintQueuedForSeeding" xml:space="preserve">
+    <value>Stahování dokončeno. Čeká se na volné místo pro sdílení. Stažené soubory jsou připravené k použití.</value>
+  </data>
 </root>

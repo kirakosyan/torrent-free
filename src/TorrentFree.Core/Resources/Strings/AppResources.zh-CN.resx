@@ -546,4 +546,10 @@
   <data name="ErrorOpenLibroNest" xml:space="preserve">
     <value>无法打开 LibroNest 或其商店页面。请确认音频文件仍然可用，然后重试。</value>
   </data>
+  <data name="StatusQueuedForSeeding" xml:space="preserve">
+    <value>排队等待做种</value>
+  </data>
+  <data name="HintQueuedForSeeding" xml:space="preserve">
+    <value>下载已完成。正在等待做种名额。下载的文件已可使用。</value>
+  </data>
 </root>

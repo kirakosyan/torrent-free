@@ -546,4 +546,10 @@
   <data name="ErrorOpenLibroNest" xml:space="preserve">
     <value>Nu s-a putut deschide LibroNest sau pagina magazinului. Verifică dacă fișierele audio mai sunt disponibile și încearcă din nou.</value>
   </data>
+  <data name="StatusQueuedForSeeding" xml:space="preserve">
+    <value>În coadă pentru partajare</value>
+  </data>
+  <data name="HintQueuedForSeeding" xml:space="preserve">
+    <value>Descărcare finalizată. Se așteaptă un loc liber pentru partajare. Fișierele descărcate sunt gata de utilizare.</value>
+  </data>
 </root>

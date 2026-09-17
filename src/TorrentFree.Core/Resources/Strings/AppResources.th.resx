@@ -546,4 +546,10 @@
   <data name="ErrorOpenLibroNest" xml:space="preserve">
     <value>ไม่สามารถเปิด LibroNest หรือหน้าร้านค้าได้ ตรวจสอบว่าไฟล์เสียงยังพร้อมใช้งานแล้วลองอีกครั้ง</value>
   </data>
+  <data name="StatusQueuedForSeeding" xml:space="preserve">
+    <value>อยู่ในคิวรอซีด</value>
+  </data>
+  <data name="HintQueuedForSeeding" xml:space="preserve">
+    <value>ดาวน์โหลดเสร็จแล้ว กำลังรอสล็อตสำหรับซีด ไฟล์ที่ดาวน์โหลดพร้อมใช้งานแล้ว</value>
+  </data>
 </root>

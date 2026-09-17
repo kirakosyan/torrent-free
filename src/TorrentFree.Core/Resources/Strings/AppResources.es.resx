@@ -560,4 +560,10 @@
   <data name="ErrorOpenLibroNest" xml:space="preserve">
     <value>No se pudo abrir LibroNest ni su página en la tienda. Comprueba que los archivos de audio siguen disponibles e inténtalo de nuevo.</value>
   </data>
+  <data name="StatusQueuedForSeeding" xml:space="preserve">
+    <value>En cola para compartir</value>
+  </data>
+  <data name="HintQueuedForSeeding" xml:space="preserve">
+    <value>Descarga completada. Esperando un turno para compartir. Los archivos descargados están listos para usar.</value>
+  </data>
 </root>

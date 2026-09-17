@@ -546,4 +546,10 @@
   <data name="ErrorOpenLibroNest" xml:space="preserve">
     <value>LibroNest veya mağaza sayfası açılamadı. Ses dosyalarının hâlâ kullanılabilir olduğunu kontrol edip tekrar deneyin.</value>
   </data>
+  <data name="StatusQueuedForSeeding" xml:space="preserve">
+    <value>Gönderim kuyruğunda</value>
+  </data>
+  <data name="HintQueuedForSeeding" xml:space="preserve">
+    <value>İndirme tamamlandı. Boş bir gönderim yuvası bekleniyor. İndirilen dosyalar kullanıma hazır.</value>
+  </data>
 </root>

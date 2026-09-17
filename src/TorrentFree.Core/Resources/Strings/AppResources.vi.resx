@@ -546,4 +546,10 @@
   <data name="ErrorOpenLibroNest" xml:space="preserve">
     <value>Không thể mở LibroNest hoặc trang cửa hàng. Kiểm tra xem các tệp âm thanh còn khả dụng hay không rồi thử lại.</value>
   </data>
+  <data name="StatusQueuedForSeeding" xml:space="preserve">
+    <value>Đang chờ chia sẻ</value>
+  </data>
+  <data name="HintQueuedForSeeding" xml:space="preserve">
+    <value>Tải xuống hoàn tất. Đang chờ lượt chia sẻ. Các tệp đã tải xuống sẵn sàng để sử dụng.</value>
+  </data>
 </root>
