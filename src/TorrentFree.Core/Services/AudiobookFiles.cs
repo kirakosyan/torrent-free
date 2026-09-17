@@ -23,7 +23,7 @@ public static class AudiobookFiles
         {
             RecurseSubdirectories = true,
             AttributesToSkip = FileAttributes.ReparsePoint,
-            IgnoreInaccessible = false
+            IgnoreInaccessible = true
         };
         foreach (var file in Directory.EnumerateFiles(path, "*", options))
             if (IsSupported(file)) yield return file;

@@ -21,9 +21,12 @@ uses its existing duplicate and library-limit handling.
   for multiple tracks, using `audio/*`, `EXTRA_STREAM`, `ClipData` and temporary
   read grants. FileProvider exposes Torrent Free's private download directories and
   a dedicated handoff cache. Downloads in legacy/custom locations are copied into
-  that cache when needed; normal downloads need no extra copy. Cached handoff copies
-  are disposable Android app cache and can be cleared by the OS/user. No broad
+  that cache when needed; normal downloads need no extra copy. Unchanged files reuse
+  an immutable cached copy. Copies unused for seven days are pruned on the next staging
+  request; recent copies remain available to pending LibroNest confirmations/imports.
+  Cache can also be cleared by the OS/user. No broad
   filesystem root or additional storage permission is exposed.
+  Relative-path and title hints preserve multi-disc ordering and the book folder name.
 - If the required LibroNest handler is unavailable, open the native Microsoft Store
   or Google Play listing; fall back to its HTTPS listing if the store client cannot
   launch. An older release may need updating for multi-track import. After installing
@@ -32,6 +35,12 @@ uses its existing duplicate and library-limit handling.
 Ship the companion LibroNest handoff change before releasing this Torrent Free
 feature. Audio file associations remain owned by LibroNest; this action does not
 change the user's default audio player.
+
+Availability scans are cached per download path and duplicate completion notifications
+share one task, with at most two disk scans running at once. A new download cycle or
+failed handoff invalidates the result; the action re-reads the current files on click.
+Inaccessible subfolders are skipped. Folder enumeration in LibroNest is separately
+approved using the displayed location before the final track-count/import confirmation.
 
 ## Verification
 

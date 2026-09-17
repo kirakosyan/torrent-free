@@ -417,6 +417,14 @@ public partial class TorrentItem : ObservableObject
     partial void OnProgressChanged(double value)
     {
         OnPropertyChanged(nameof(StatusText));
+        InvalidateCanOpenDownloadedFileCache();
+        OnPropertyChanged(nameof(CanOpenDownloadedFile));
+    }
+
+    partial void OnDateCompletedChanged(DateTime? value)
+    {
+        InvalidateCanOpenDownloadedFileCache();
+        OnPropertyChanged(nameof(CanOpenDownloadedFile));
     }
 
     /// <summary>

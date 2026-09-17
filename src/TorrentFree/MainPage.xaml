@@ -517,7 +517,7 @@
                                                                              LineBreakMode="TailTruncation"
                                                                              MaxLines="2"/>
                                                                       <Button Text="{helpers:Translate OpenInLibroNest}"
-                                                                              ImageSource="libronest_headphones.png"
+                                                                              ImageSource="{AppThemeBinding Light=libronest_headphones.png, Dark=libronest_headphones_dark.png}"
                                                                               ContentLayout="Left,8"
                                                                               HorizontalOptions="Start"
                                                                               Margin="0,6,0,0"

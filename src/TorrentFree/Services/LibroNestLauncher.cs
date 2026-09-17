@@ -32,8 +32,7 @@ public sealed class LibroNestLauncher : ILibroNestLauncher
                 return;
             }
         }
-        await OpenStoreAsync("ms-windows-store://pdp/?ProductId=9MX3S655HWN7",
-            "https://apps.microsoft.com/detail/9MX3S655HWN7");
+        await OpenStoreAsync();
 #elif ANDROID
         var context = Android.App.Application.Context;
         using var intent = new Android.Content.Intent(audioFiles.Count == 1
@@ -45,8 +44,7 @@ public sealed class LibroNestLauncher : ILibroNestLauncher
         intent.AddFlags(Android.Content.ActivityFlags.NewTask | Android.Content.ActivityFlags.GrantReadUriPermission);
         if (intent.ResolveActivity(context.PackageManager!) is null)
         {
-            await OpenStoreAsync("market://details?id=com.libronest.app",
-                "https://play.google.com/store/apps/details?id=com.libronest.app");
+            await OpenStoreAsync();
             return;
         }
         var uris = new List<Android.Net.Uri>();
@@ -55,6 +53,12 @@ public sealed class LibroNestLauncher : ILibroNestLauncher
             ?? throw new IOException("Could not grant access to the audio files.");
         foreach (var uri in uris.Skip(1)) clip.AddItem(new Android.Content.ClipData.Item(uri));
         intent.ClipData = clip;
+        if (Directory.Exists(downloadPath))
+        {
+            intent.PutExtra("com.libronest.import.TITLE", Path.GetFileName(downloadPath.TrimEnd(Path.DirectorySeparatorChar)));
+            intent.PutExtra("com.libronest.import.RELATIVE_PATHS",
+                audioFiles.Select(file => Path.GetRelativePath(downloadPath, file)).ToArray());
+        }
         if (uris.Count == 1) intent.SetDataAndType(uris[0], "audio/*");
         else intent.PutParcelableArrayListExtra(Android.Content.Intent.ExtraStream,
             uris.Cast<Android.OS.IParcelable>().ToList());
@@ -65,7 +69,9 @@ public sealed class LibroNestLauncher : ILibroNestLauncher
     }
 
 #if ANDROID
-    private static async Task<Android.Net.Uri> GetAudioUriAsync(string file)
+    private readonly AudiobookHandoffCache handoffCache = new(Path.Combine(FileSystem.CacheDirectory, "LibroNestHandoff"));
+
+    private async Task<Android.Net.Uri> GetAudioUriAsync(string file)
     {
         var context = Android.App.Application.Context;
         var authority = context.PackageName + ".audiobooks";
@@ -78,31 +84,16 @@ public sealed class LibroNestLauncher : ILibroNestLauncher
         {
             // Older downloads may live beside a picked torrent or in a custom folder.
             // Stage only that selected track instead of exposing broad filesystem roots.
-            var directory = Path.Combine(FileSystem.CacheDirectory, "LibroNestHandoff", Guid.NewGuid().ToString("N"));
-            var staged = Path.Combine(directory, Path.GetFileName(file));
-            Directory.CreateDirectory(directory);
-            try
-            {
-                await using (var input = File.OpenRead(file))
-                await using (var output = File.Create(staged))
-                    await input.CopyToAsync(output);
-                return AndroidX.Core.Content.FileProvider.GetUriForFile(context, authority, new Java.IO.File(staged))
-                    ?? throw new IOException("Could not share the audio file.");
-            }
-            catch
-            {
-                File.Delete(staged);
-                Directory.Delete(directory);
-                throw;
-            }
+            var staged = await handoffCache.StageAsync(file);
+            return AndroidX.Core.Content.FileProvider.GetUriForFile(context, authority, new Java.IO.File(staged))
+                ?? throw new IOException("Could not share the audio file.");
         }
     }
 #endif
 
-    private static async Task OpenStoreAsync(string nativeUri, string webUri)
+    private static async Task OpenStoreAsync()
     {
-        try { if (await Launcher.Default.TryOpenAsync(nativeUri)) return; }
-        catch (Exception) { /* A browser can still open the listing without a store client. */ }
-        if (!await Launcher.Default.TryOpenAsync(webUri)) throw new IOException("The store could not be opened.");
+        if (!await PlatformAppStore.OpenListingAsync("9MX3S655HWN7", "com.libronest.app"))
+            throw new IOException("The store could not be opened.");
     }
 }

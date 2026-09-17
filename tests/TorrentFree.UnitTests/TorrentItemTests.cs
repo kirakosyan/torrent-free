@@ -6,6 +6,29 @@ namespace TorrentFree.UnitTests;
 
 public sealed class TorrentItemTests
 {
+    [Theory]
+    [InlineData(DownloadStatus.Paused)]
+    [InlineData(DownloadStatus.Stopped)]
+    [InlineData(DownloadStatus.WaitingForWifi)]
+    public void CompletionInputsRefreshFileAvailabilityWithoutAStatusChange(DownloadStatus status)
+    {
+        var path = Path.GetTempFileName();
+        try
+        {
+            var torrent = new TorrentItem { SavePath = Path.GetDirectoryName(path)!, Name = Path.GetFileName(path), Status = status };
+            var notifications = 0;
+            torrent.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(TorrentItem.CanOpenDownloadedFile)) notifications++; };
+            Assert.False(torrent.CanOpenDownloadedFile);
+            torrent.Progress = 100;
+            Assert.True(torrent.CanOpenDownloadedFile);
+            torrent.Progress = 50;
+            Assert.False(torrent.CanOpenDownloadedFile);
+            torrent.DateCompleted = DateTime.UtcNow;
+            Assert.True(torrent.CanOpenDownloadedFile);
+            Assert.Equal(3, notifications);
+        }
+        finally { File.Delete(path); }
+    }
     [Fact]
     public void GeneratedStatusChange_RefreshesCommandsAndLocalizedProperties()
     {
