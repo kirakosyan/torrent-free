@@ -526,4 +526,10 @@
   <data name="HintWaitingForWifi" xml:space="preserve">
     <value>يُستأنف تلقائيًا عبر Wi-Fi. اضغط إيقاف مؤقت لإلغاء الاستئناف التلقائي.</value>
   </data>
+  <data name="OpenInLibroNest" xml:space="preserve">
+    <value>فتح في LibroNest</value>
+  </data>
+  <data name="ErrorOpenLibroNest" xml:space="preserve">
+    <value>تعذر فتح LibroNest أو صفحة المتجر. تأكد من توفر الملفات الصوتية وحاول مرة أخرى.</value>
+  </data>
 </root>

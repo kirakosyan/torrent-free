@@ -540,4 +540,10 @@
   <data name="HintWaitingForWifi" xml:space="preserve">
     <value>Fortsetter automatisk på Wi-Fi. Sett på pause for å avbryte automatisk gjenopptakelse.</value>
   </data>
+  <data name="OpenInLibroNest" xml:space="preserve">
+    <value>Åpne i LibroNest</value>
+  </data>
+  <data name="ErrorOpenLibroNest" xml:space="preserve">
+    <value>Kunne ikke åpne LibroNest eller butikksiden. Kontroller at lydfilene fortsatt er tilgjengelige, og prøv igjen.</value>
+  </data>
 </root>

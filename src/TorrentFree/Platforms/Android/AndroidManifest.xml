@@ -1,6 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-	<application android:allowBackup="false" android:icon="@mipmap/appicon" android:label="@string/app_name" android:roundIcon="@mipmap/appicon_round" android:localeConfig="@xml/locale_config" android:supportsRtl="true"></application>
+	<application android:allowBackup="false" android:icon="@mipmap/appicon" android:label="@string/app_name" android:roundIcon="@mipmap/appicon_round" android:localeConfig="@xml/locale_config" android:supportsRtl="true">
+    <provider android:name="androidx.core.content.FileProvider" android:authorities="com.torrentfree.app.audiobooks" android:exported="false" android:grantUriPermissions="true">
+      <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/audiobook_paths" />
+    </provider>
+  </application>
+  <queries><package android:name="com.libronest.app" /></queries>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />

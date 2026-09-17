@@ -540,4 +540,10 @@
   <data name="HintWaitingForWifi" xml:space="preserve">
     <value>Wird über WLAN automatisch fortgesetzt. Pausieren bricht die automatische Fortsetzung ab.</value>
   </data>
+  <data name="OpenInLibroNest" xml:space="preserve">
+    <value>In LibroNest öffnen</value>
+  </data>
+  <data name="ErrorOpenLibroNest" xml:space="preserve">
+    <value>LibroNest oder die Store-Seite konnte nicht geöffnet werden. Prüfen Sie, ob die Audiodateien noch verfügbar sind, und versuchen Sie es erneut.</value>
+  </data>
 </root>

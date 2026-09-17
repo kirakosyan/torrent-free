@@ -23,6 +23,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly IStorageService _storageService;
     private readonly IFileAssociationService _fileAssociationService;
     private readonly INotificationService _notificationService;
+    private readonly ILibroNestLauncher _libroNestLauncher;
     private bool _disposed;
     private bool _isLoadingSettings;
     private bool _processedCommandLine;
@@ -153,8 +154,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public AppPromptService Prompts { get; }
 
-    public MainViewModel(ITorrentService torrentService, ITorrentFilePicker torrentFilePicker, IStorageService storageService, IFileAssociationService fileAssociationService, INotificationService notificationService, TorrentImportService torrentImportService, AppPromptService prompts)
+    public MainViewModel(ITorrentService torrentService, ITorrentFilePicker torrentFilePicker, IStorageService storageService, IFileAssociationService fileAssociationService, INotificationService notificationService, TorrentImportService torrentImportService, AppPromptService prompts, ILibroNestLauncher libroNestLauncher)
     {
+        _libroNestLauncher = libroNestLauncher;
         Prompts = prompts;
         _torrentService = torrentService;
         _torrentFilePicker = torrentFilePicker;
@@ -559,6 +561,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         AttachTorrentCommands(torrent);
         torrent.PropertyChanged += OnTorrentPropertyChanged;
+        _ = RefreshAudiobookActionAsync(torrent);
     }
 
     private void DetachTorrentHandlers(TorrentItem torrent)
@@ -578,6 +581,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         // Bind per-item UI buttons directly to these commands to avoid Source-based bindings in XAML.
         torrent.ShowInFolderCommand = ShowInFolderCommand;
+        torrent.OpenInLibroNestCommand = OpenInLibroNestCommand;
         torrent.StartSpecificTorrentCommand = StartSpecificTorrentCommand;
         torrent.PauseSpecificTorrentCommand = PauseSpecificTorrentCommand;
         torrent.StopSpecificTorrentCommand = StopSpecificTorrentCommand;
@@ -586,6 +590,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void OnTorrentPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
+        if (sender is TorrentItem item && e.PropertyName is nameof(TorrentItem.CanOpenDownloadedFile)
+            or nameof(TorrentItem.DateCompleted) or nameof(TorrentItem.Progress))
+            _ = RefreshAudiobookActionAsync(item);
+
         if (e.PropertyName == nameof(TorrentItem.Status))
         {
             UpdateBulkActionState();
@@ -594,6 +602,46 @@ public partial class MainViewModel : ObservableObject, IDisposable
         if (SortByStatus && e.PropertyName is nameof(TorrentItem.Status) or nameof(TorrentItem.Name))
         {
             SyncDisplayTorrents();
+        }
+    }
+
+    private async Task RefreshAudiobookActionAsync(TorrentItem torrent)
+    {
+        if (!_libroNestLauncher.IsSupported || !torrent.CanOpenDownloadedFile)
+        {
+            torrent.CanOpenInLibroNest = false;
+            return;
+        }
+        var path = torrent.DownloadedFilePath;
+        try
+        {
+            var hasAudio = await Task.Run(() => AudiobookFiles.Enumerate(path).Any());
+            if (path == torrent.DownloadedFilePath && Torrents.Contains(torrent))
+                torrent.CanOpenInLibroNest = torrent.CanOpenDownloadedFile && hasAudio;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or ArgumentException)
+        {
+            torrent.CanOpenInLibroNest = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task OpenInLibroNestAsync(TorrentItem torrent)
+    {
+        if (!_libroNestLauncher.IsSupported || !torrent.CanOpenDownloadedFile) return;
+        try
+        {
+            ErrorMessage = null;
+            var path = torrent.DownloadedFilePath;
+            var files = await Task.Run(() => AudiobookFiles.Enumerate(path).ToArray());
+            if (!torrent.CanOpenDownloadedFile || path != torrent.DownloadedFilePath) return;
+            await _libroNestLauncher.OpenAsync(path, files);
+        }
+        catch (Exception exception)
+        {
+            Debug.WriteLine($"Could not open LibroNest: {exception}");
+            ErrorMessage = LocalizationResourceManager.Instance["ErrorOpenLibroNest"];
+            await RefreshAudiobookActionAsync(torrent);
         }
     }
 

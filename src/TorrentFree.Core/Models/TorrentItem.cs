@@ -232,6 +232,13 @@ public partial class TorrentItem : ObservableObject
     public ICommand? ShowInFolderCommand { get; set; }
 
     [JsonIgnore]
+    public ICommand? OpenInLibroNestCommand { get; set; }
+
+    [ObservableProperty]
+    [JsonIgnore]
+    public partial bool CanOpenInLibroNest { get; set; }
+
+    [JsonIgnore]
     public ICommand? StartSpecificTorrentCommand { get; set; }
 
     [JsonIgnore]

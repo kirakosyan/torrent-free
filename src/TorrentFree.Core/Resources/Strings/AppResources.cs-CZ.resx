@@ -540,4 +540,10 @@
   <data name="HintWaitingForWifi" xml:space="preserve">
     <value>Automaticky se obnoví přes Wi-Fi. Pozastavením zrušíte automatické obnovení.</value>
   </data>
+  <data name="OpenInLibroNest" xml:space="preserve">
+    <value>Otevřít v LibroNest</value>
+  </data>
+  <data name="ErrorOpenLibroNest" xml:space="preserve">
+    <value>Nelze otevřít LibroNest ani stránku obchodu. Zkontrolujte dostupnost zvukových souborů a zkuste to znovu.</value>
+  </data>
 </root>

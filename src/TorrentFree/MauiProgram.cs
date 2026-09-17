@@ -28,6 +28,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IUiDispatcher, MauiUiDispatcher>();
         builder.Services.AddSingleton<IStorageService, StorageService>();
         builder.Services.AddSingleton<IAppStore, PlatformAppStore>();
+        builder.Services.AddSingleton<ILibroNestLauncher, LibroNestLauncher>();
         builder.Services.AddSingleton<IAppPromptStateStore, AppPromptStateStore>();
         builder.Services.AddSingleton<AppPromptService>();
         builder.Services.AddSingleton<IDownloadCompletionObserver>(services => services.GetRequiredService<AppPromptService>());

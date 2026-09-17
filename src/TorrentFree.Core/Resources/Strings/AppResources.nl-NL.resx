@@ -540,4 +540,10 @@
   <data name="HintWaitingForWifi" xml:space="preserve">
     <value>Wordt automatisch hervat via wifi. Pauzeer om automatisch hervatten te annuleren.</value>
   </data>
+  <data name="OpenInLibroNest" xml:space="preserve">
+    <value>Openen in LibroNest</value>
+  </data>
+  <data name="ErrorOpenLibroNest" xml:space="preserve">
+    <value>Kan LibroNest of de winkelpagina niet openen. Controleer of de audiobestanden nog beschikbaar zijn en probeer het opnieuw.</value>
+  </data>
 </root>
