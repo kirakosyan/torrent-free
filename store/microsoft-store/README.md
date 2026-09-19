@@ -1,5 +1,40 @@
 # Microsoft Store listings
 
+## Build an update
+
+Bump `AppDisplayVersion` and `AppBuildNumber` in the app project, align the Windows
+manifest and version metadata test, then run the core tests. Build each supported
+architecture separately:
+
+```powershell
+rtk proxy dotnet test --project tests/TorrentFree.UnitTests/TorrentFree.UnitTests.csproj -c Release
+
+foreach ($architecture in @('x64', 'arm64')) {
+    rtk proxy dotnet publish src/TorrentFree/TorrentFree.csproj `
+        -f net10.0-windows10.0.19041.0 -c Release `
+        -p:WindowsStoreBuild=true -p:RuntimeIdentifier=win-$architecture `
+        -p:Platform=$architecture -p:SelfContained=true `
+        -p:PublishSingleFile=false -p:PublishReadyToRun=false `
+        -p:WindowsPackageType=MSIX -p:GenerateAppxPackageOnBuild=true `
+        -p:AppxPackageSigningEnabled=false -p:AppxSymbolPackageEnabled=false `
+        -p:UapAppxPackageBuildMode=SideloadOnly -p:AppxBundle=Never
+    if ($LASTEXITCODE -ne 0) { throw "Packaging failed for $architecture" }
+}
+```
+
+`WindowsStoreBuild` limits the MAUI app's restore to Windows without overriding
+the Core project's `net10.0` target. The packaging mode above produces standalone
+MSIX files accepted by Partner Center, avoiding the optional upload-container
+and symbol-generation tools. Microsoft signs the packages after certification;
+these unsigned files are for Store upload, not direct installation.
+
+Before uploading, verify each MSIX manifest has the expected Store identity,
+increased version, correct architecture, and all 24 languages. Upload both
+architecture packages to the same update and wait for validation before submitting
+for certification.
+
+## Listing imports
+
 Use `listings.csv` with Partner Center's **Import listings** action after uploading the MSIX packages.
 
 To upload the included Store logo PNGs, choose **Import folder** and select the `store/microsoft-store` folder. The CSV paths include the root folder name (`microsoft-store/assets/...`) as Partner Center expects for folder imports.
