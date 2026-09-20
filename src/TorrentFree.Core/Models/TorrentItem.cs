@@ -288,8 +288,10 @@ public partial class TorrentItem : ObservableObject
     {
         get
         {
-            var isComplete = Status is DownloadStatus.Completed or DownloadStatus.Seeding
-                             || (Status is DownloadStatus.Queued or DownloadStatus.Paused or DownloadStatus.Stopped or DownloadStatus.WaitingForWifi && HasCompletedDownload);
+            // Progress can reach 100 before the transfer status changes to seeding.
+            var isComplete = Progress >= 100
+                             || Status is DownloadStatus.Completed or DownloadStatus.Seeding
+                             || (Status is DownloadStatus.Queued or DownloadStatus.Paused or DownloadStatus.Stopped or DownloadStatus.WaitingForWifi && DateCompleted is not null);
 
             if (!isComplete)
             {

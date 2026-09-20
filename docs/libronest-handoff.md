@@ -2,8 +2,10 @@
 
 Completed downloads containing MP3, M4B, M4A, AAC, FLAC, OGG or WAV files show an
 **Open in LibroNest** button with a headphone icon on Windows and Android. Audio
-formats identify candidates; music files can also display this action. Incomplete
-downloads and downloads without supported audio do not display it.
+formats identify candidates; music files can also display this action. The action
+becomes available at 100% progress, even before the transfer status changes, and
+stays available while seeding, queued, paused or stopped. Incomplete downloads and
+downloads without supported audio do not display it.
 
 The action includes supported tracks in nested folders and ignores artwork,
 unrelated sibling downloads and symbolic links. It leaves the downloaded originals

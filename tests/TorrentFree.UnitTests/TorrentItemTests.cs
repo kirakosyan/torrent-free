@@ -8,6 +8,58 @@ namespace TorrentFree.UnitTests;
 public sealed class TorrentItemTests
 {
     [Theory]
+    [InlineData(DownloadStatus.Downloading)]
+    [InlineData(DownloadStatus.Failed)]
+    public void Reaching100Percent_EnablesFileWithoutWaitingForStatusChange(DownloadStatus status)
+    {
+        var path = Path.GetTempFileName();
+        try
+        {
+            var torrent = new TorrentItem
+            {
+                SavePath = Path.GetDirectoryName(path)!, Name = Path.GetFileName(path),
+                Status = status, Progress = 99.9
+            };
+            var changes = new List<string?>();
+            torrent.PropertyChanged += (_, e) => changes.Add(e.PropertyName);
+
+            Assert.False(torrent.CanOpenDownloadedFile);
+            torrent.Progress = 100;
+
+            Assert.True(torrent.CanOpenDownloadedFile);
+            Assert.Equal(status, torrent.Status);
+            Assert.Contains(nameof(TorrentItem.CanOpenDownloadedFile), changes);
+
+            torrent.Progress = 99.9;
+            Assert.False(torrent.CanOpenDownloadedFile);
+        }
+        finally { File.Delete(path); }
+    }
+
+    [Fact]
+    public void FullyDownloadedFile_RemainsAvailableAcrossAllTransferStates()
+    {
+        var path = Path.GetTempFileName();
+        try
+        {
+            var torrent = new TorrentItem
+            {
+                SavePath = Path.GetDirectoryName(path)!, Name = Path.GetFileName(path), Progress = 100
+            };
+
+            foreach (var status in Enum.GetValues<DownloadStatus>())
+            {
+                torrent.Status = status;
+                Assert.True(torrent.CanOpenDownloadedFile, $"Completed file should remain available while {status}.");
+            }
+
+            torrent.Name = Guid.NewGuid().ToString();
+            Assert.False(torrent.CanOpenDownloadedFile);
+        }
+        finally { File.Delete(path); }
+    }
+
+    [Theory]
     [InlineData(DownloadStatus.Queued)]
     [InlineData(DownloadStatus.Paused)]
     [InlineData(DownloadStatus.Stopped)]
