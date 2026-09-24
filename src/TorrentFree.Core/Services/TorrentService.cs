@@ -61,7 +61,9 @@ public interface ITorrentService : IDisposable, IAsyncDisposable
 
     /// <summary>
     /// Pauses every active transfer before the operating system revokes background execution.
-    /// Queued torrents are deliberately left queued and are not started by this bulk operation.
+    /// Interrupted transfers are requeued rather than paused, so they resume automatically once
+    /// the application returns to the foreground (or on the next launch). Nothing is started
+    /// by this bulk operation.
     /// </summary>
     Task PauseAllForBackgroundTimeoutAsync();
 
@@ -71,9 +73,16 @@ public interface ITorrentService : IDisposable, IAsyncDisposable
     void ResumeAfterBackgroundTimeout();
 
     /// <summary>
+    /// Starts queued torrents while capacity allows. Hosts call this once the app is ready for
+    /// network activity, for example after <see cref="InitializeAsync"/> restored transfers
+    /// which were active when the app last closed.
+    /// </summary>
+    Task StartQueuedTorrentsAsync();
+
+    /// <summary>
     /// Removes a torrent from the list.
     /// </summary>
-    Task RemoveTorrentAsync(TorrentItem torrent, bool deleteTorrentFile = false, bool deleteFiles = false);
+    Task<TorrentRemovalResult> RemoveTorrentAsync(TorrentItem torrent, bool deleteTorrentFile = false, bool deleteFiles = false);
 
     /// <summary>
     /// Validates if a string is a valid magnet link.
@@ -99,6 +108,11 @@ public interface ITorrentService : IDisposable, IAsyncDisposable
     /// Update SOCKS5 proxy settings. Takes effect on the next engine creation.
     /// </summary>
     void UpdateProxySettings(bool enabled, string host, int port, string username, string password);
+
+    /// <summary>
+    /// Keeps the device CPU awake while transfers run in the background, where the platform supports it.
+    /// </summary>
+    void UpdateKeepDeviceAwake(bool enabled);
 }
 
 /// <summary>
@@ -141,8 +155,15 @@ public partial class TorrentService : ITorrentService
     private Task? _initTask;
     private readonly object _initGate = new();
     private volatile bool _pendingSave;
+    // Progress-only changes (bytes, speeds, seeding time) are persisted at most every
+    // ProgressSaveInterval; status and settings changes still use the 5-second debounce.
+    private volatile bool _pendingProgressSave;
+    private long _lastSaveTimestamp;
+    private static readonly TimeSpan ProgressSaveInterval = TimeSpan.FromSeconds(30);
     private bool _disposed;
     private volatile bool _backgroundTransferActive;
+    private bool _backgroundStartRefused;
+    private readonly object _backgroundStateGate = new();
     private volatile bool _backgroundExecutionSuspended;
     // Cancelled first thing on Dispose so any pending lock/semaphore wait unblocks via
     // OperationCanceledException instead of hanging on a primitive that Dispose then tears down.
@@ -251,8 +272,9 @@ public partial class TorrentService : ITorrentService
                 }
 
                 // No MonoTorrent manager is recreated during restore. Persisted active states
-                // must therefore become truthful, restartable paused states instead of showing
-                // downloads/seeds which have no backing network session.
+                // become Queued: truthful (no network session exists yet) and resumed
+                // automatically by StartQueuedTorrentsAsync once the host is ready. Manual
+                // pauses were persisted as Paused and stay paused.
                 if (torrent.DateSeedingStarted is not null)
                 {
                     // A persisted session start cannot distinguish app downtime from active seeding.
@@ -261,7 +283,7 @@ public partial class TorrentService : ITorrentService
                 }
                 if (torrent.Status is DownloadStatus.Downloading or DownloadStatus.Seeding)
                 {
-                    torrent.Status = DownloadStatus.Paused;
+                    torrent.Status = DownloadStatus.Queued;
                     torrent.DateSeedingStarted = null;
                     hadStateChanges = true;
                 }
@@ -294,6 +316,13 @@ public partial class TorrentService : ITorrentService
             }
             throw;
         }
+    }
+
+    /// <inheritdoc />
+    public async Task StartQueuedTorrentsAsync()
+    {
+        await InitializeAsync().ConfigureAwait(false);
+        await TryStartQueuedTorrentsAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -342,7 +371,9 @@ public partial class TorrentService : ITorrentService
             TorrentFilePath = metadata?.SourceFilePath,
             TorrentFileName = metadata?.SourceFileName,
             CachedTorrentFilePath = metadata?.CachedFilePath,
-            SavePath = DownloadLocationResolver.ResolveSavePath(settings, metadata?.DownloadSourcePath, fallbackDownloadPath)
+            SavePath = _storageService.SupportsCustomDownloadLocations
+                ? DownloadLocationResolver.ResolveSavePath(settings, metadata?.DownloadSourcePath, fallbackDownloadPath)
+                : fallbackDownloadPath
         };
 
         await _dispatcher.InvokeAsync(() =>
@@ -531,7 +562,8 @@ public partial class TorrentService : ITorrentService
         {
             torrent.DownloadSpeed = 0;
             torrent.UploadSpeed = 0;
-            torrent.Status = DownloadStatus.Paused;
+            // Queued, not Paused: the start resumes automatically in the foreground.
+            torrent.Status = DownloadStatus.Queued;
             torrent.ErrorMessage = null;
         });
         await SaveAsync();
@@ -624,7 +656,8 @@ public partial class TorrentService : ITorrentService
 
                     if (_engine is not null)
                     {
-                        await _engine.RemoveAsync(manager);
+                        // Keep fast-resume and cached magnet metadata for the next attempt.
+                        await _engine.RemoveAsync(manager, RemoveMode.KeepAllData);
                     }
                 }
                 catch (Exception cleanupEx)
@@ -786,7 +819,7 @@ public partial class TorrentService : ITorrentService
 
             if (_managers.TryGetValue(torrent.Id, out var manager))
             {
-                await manager.PauseAsync();
+                await PauseManagerAsync(manager);
             }
 
             await _dispatcher.InvokeAsync(() =>
@@ -864,9 +897,10 @@ public partial class TorrentService : ITorrentService
                 .Select(static torrent => torrent.Id)
                 .ToHashSet(StringComparer.Ordinal);
 
-            // Persist the paused intent before any manager call. Android demotes the
+            // Persist the requeued intent before any manager call. Android demotes the
             // foreground service synchronously, so the process can be killed while the
-            // best-effort network cleanup below is still running.
+            // best-effort network cleanup below is still running. Queued (not Paused) lets
+            // the transfers resume on the next foreground resume or launch.
             foreach (var id in activeIds)
             {
                 if (_downloadTokens.TryRemove(id, out var cts))
@@ -877,7 +911,7 @@ public partial class TorrentService : ITorrentService
                     }
                     catch
                     {
-                        // The persisted paused state remains authoritative.
+                        // The persisted queued state remains authoritative.
                     }
                     finally
                     {
@@ -899,7 +933,7 @@ public partial class TorrentService : ITorrentService
 
                         torrent.DownloadSpeed = 0;
                         torrent.UploadSpeed = 0;
-                        torrent.Status = DownloadStatus.Paused;
+                        torrent.Status = DownloadStatus.Queued;
                         torrent.ErrorMessage = null;
                     }
                 });
@@ -956,7 +990,7 @@ public partial class TorrentService : ITorrentService
 
                         torrent.DownloadSpeed = 0;
                         torrent.UploadSpeed = 0;
-                        torrent.Status = DownloadStatus.Paused;
+                        torrent.Status = DownloadStatus.Queued;
                         torrent.ErrorMessage = null;
                     }
                 });
@@ -976,6 +1010,9 @@ public partial class TorrentService : ITorrentService
     public void ResumeAfterBackgroundTimeout()
     {
         _backgroundExecutionSuspended = false;
+        // The app is in the foreground: re-request background execution the platform refused
+        // earlier (for example a start requested while the app was in the background).
+        UpdateBackgroundTransferState(reassert: true);
         if (_networkPolicyReady && !_disposed)
             SafeFireAndForget(ResumeNetworkAndQueueAsync());
     }
@@ -1025,7 +1062,7 @@ public partial class TorrentService : ITorrentService
 
         try
         {
-            await manager.PauseAsync().WaitAsync(ManagerStopTimeout);
+            await PauseManagerAsync(manager).WaitAsync(ManagerStopTimeout);
         }
         catch (Exception pauseException)
         {
@@ -1044,17 +1081,19 @@ public partial class TorrentService : ITorrentService
     }
 
     /// <inheritdoc />
-    public async Task RemoveTorrentAsync(TorrentItem torrent, bool deleteTorrentFile = false, bool deleteFiles = false)
+    public async Task<TorrentRemovalResult> RemoveTorrentAsync(TorrentItem torrent, bool deleteTorrentFile = false, bool deleteFiles = false)
     {
         ArgumentNullException.ThrowIfNull(torrent);
 
+        TorrentRemovalResult result;
         await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalToken))
         {
-            if (!IsTracked(torrent)) return;
+            if (!IsTracked(torrent)) return TorrentRemovalResult.NotRemoved;
 
             // Resolve ownership before removing the manager or deleting the source .torrent.
-            // A manager's file list is authoritative. If no manager has metadata yet, a local
-            // .torrent file is the only safe fallback. A display name is never ownership proof.
+            // A manager's file list is authoritative. Without one, identity-checked .torrent
+            // metadata (the app's copy, the source file, or the engine's magnet metadata cache)
+            // is the only safe fallback. A display name is never ownership proof.
             _managers.TryGetValue(torrent.Id, out var managerWithMetadata);
             var ownedDownloadFiles = deleteFiles
                 ? await ResolveOwnedDownloadFilesAsync(torrent, managerWithMetadata)
@@ -1067,6 +1106,7 @@ public partial class TorrentService : ITorrentService
                 cts.Dispose();
             }
 
+            var removedFromEngine = false;
             if (_managers.TryRemove(torrent.Id, out var manager))
             {
                 try
@@ -1075,7 +1115,9 @@ public partial class TorrentService : ITorrentService
 
                     if (_engine is not null)
                     {
+                        // The default RemoveMode also deletes this torrent's engine cache files.
                         await _engine.RemoveAsync(manager);
+                        removedFromEngine = true;
                     }
                 }
                 catch (Exception ex)
@@ -1101,15 +1143,125 @@ public partial class TorrentService : ITorrentService
                 TryDeleteTorrentFile(torrent);
             }
 
+            var filesLeftInPlace = false;
             if (deleteFiles)
             {
-                DeleteOwnedDownloadFiles(ownedDownloadFiles, torrent.TorrentFilePath, deleteTorrentFile);
+                filesLeftInPlace = ownedDownloadFiles.Paths.Count == 0
+                    ? MayHaveDownloadedData(torrent)
+                    : !DeleteOwnedDownloadFiles(ownedDownloadFiles, torrent.TorrentFilePath, deleteTorrentFile);
+            }
+
+            if (!removedFromEngine)
+            {
+                // Torrents restored after a restart have no manager, so the engine never
+                // removed their fast-resume and magnet metadata cache entries.
+                TryDeleteEngineCacheFiles(torrent);
             }
 
             await TryDeleteCachedTorrentFileAsync(torrent);
+            result = new TorrentRemovalResult(Removed: true, DownloadedFilesLeftInPlace: filesLeftInPlace);
         }
 
         await TryStartQueuedTorrentsAsync();
+        return result;
+    }
+
+    // A torrent which never received metadata or data has nothing on disk to delete.
+    private static bool MayHaveDownloadedData(TorrentItem torrent)
+        => torrent.Progress > 0 || torrent.DownloadedSize > 0 || torrent.DateCompleted is not null;
+
+    private EngineSettings GetEngineCacheSettings()
+        => _engine?.Settings ?? new EngineSettingsBuilder { CacheDirectory = EngineCacheDirectory }.ToSettings();
+
+    private static bool TryGetInfoHashes(TorrentItem torrent, out InfoHashes infoHashes)
+    {
+        infoHashes = null!;
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(torrent.MagnetLink))
+            {
+                infoHashes = MagnetLink.Parse(torrent.MagnetLink).InfoHashes;
+                return true;
+            }
+
+            var hex = torrent.InfoHash?.Trim();
+            if (hex is { Length: 40 })
+            {
+                infoHashes = InfoHashes.FromV1(InfoHash.FromHex(hex));
+                return true;
+            }
+
+            if (hex is { Length: 64 })
+            {
+                infoHashes = InfoHashes.FromV2(InfoHash.FromHex(hex));
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Could not resolve info hashes for '{torrent.Name}': {ex.Message}");
+        }
+
+        return false;
+    }
+
+    // Mirrors MonoTorrent 3.0.2's EngineSettings.GetMetadataPath/GetV2HashesPath, which are internal.
+    private static string GetEngineMetadataCachePath(EngineSettings settings, InfoHashes infoHashes)
+        => Path.Combine(settings.MetadataCacheDirectory, $"{infoHashes.V1OrV2.ToHex()}.torrent");
+
+    private string? FindEngineMetadataCachePath(TorrentItem torrent)
+    {
+        if (!TryGetInfoHashes(torrent, out var infoHashes))
+        {
+            return null;
+        }
+
+        try
+        {
+            var path = GetEngineMetadataCachePath(GetEngineCacheSettings(), infoHashes);
+            return File.Exists(path) ? path : null;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Engine metadata cache lookup failed for '{torrent.Name}': {ex.Message}");
+            return null;
+        }
+    }
+
+    private void TryDeleteEngineCacheFiles(TorrentItem torrent)
+    {
+        if (!TryGetInfoHashes(torrent, out var infoHashes))
+        {
+            return;
+        }
+
+        try
+        {
+            var settings = GetEngineCacheSettings();
+            var paths = new List<string>
+            {
+                settings.GetFastResumePath(infoHashes),
+                GetEngineMetadataCachePath(settings, infoHashes)
+            };
+            if (infoHashes.V2 is { } v2)
+            {
+                paths.Add(Path.Combine(settings.MetadataCacheDirectory, $"{v2.ToHex()}.v2hashes"));
+            }
+
+            foreach (var candidate in paths)
+            {
+                if (TryGetSafeOwnedFilePath(candidate, settings.CacheDirectory, out var path)
+                    && File.Exists(path)
+                    && !File.GetAttributes(path).HasFlag(FileAttributes.ReparsePoint))
+                {
+                    File.Delete(path);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Engine cache cleanup failed for '{torrent.Name}': {ex.Message}");
+        }
     }
 
     private async Task TryDeleteCachedTorrentFileAsync(TorrentItem torrent)
@@ -1135,7 +1287,7 @@ public partial class TorrentService : ITorrentService
         }
     }
 
-    private static async Task<OwnedDownloadFiles> ResolveOwnedDownloadFilesAsync(TorrentItem torrent, TorrentManager? manager)
+    private async Task<OwnedDownloadFiles> ResolveOwnedDownloadFilesAsync(TorrentItem torrent, TorrentManager? manager)
     {
         if (manager is { HasMetadata: true }
             && manager.Files.Count > 0
@@ -1162,7 +1314,7 @@ public partial class TorrentService : ITorrentService
             }
         }
 
-        var metadataPath = GetMetadataPath(torrent);
+        var metadataPath = GetMetadataPath(torrent) ?? FindEngineMetadataCachePath(torrent);
         if (string.IsNullOrWhiteSpace(torrent.SavePath) || metadataPath is null)
         {
             return OwnedDownloadFiles.Empty;
@@ -1192,13 +1344,15 @@ public partial class TorrentService : ITorrentService
         }
     }
 
-    private static void DeleteOwnedDownloadFiles(OwnedDownloadFiles ownedFiles, string? torrentFilePath, bool deleteTorrentFile)
+    /// <returns><see langword="false"/> when an owned file remains on disk.</returns>
+    private static bool DeleteOwnedDownloadFiles(OwnedDownloadFiles ownedFiles, string? torrentFilePath, bool deleteTorrentFile)
     {
         if (string.IsNullOrWhiteSpace(ownedFiles.BaseDirectory) || ownedFiles.Paths.Count == 0)
         {
-            return;
+            return true;
         }
 
+        var allDeleted = true;
         try
         {
             var basePath = Path.GetFullPath(ownedFiles.BaseDirectory);
@@ -1211,6 +1365,7 @@ public partial class TorrentService : ITorrentService
                 if (!TryGetSafeOwnedFilePath(candidate, basePath, out var fullPath))
                 {
                     System.Diagnostics.Debug.WriteLine($"Skipping unsafe owned-file path '{candidate}'.");
+                    allDeleted &= !File.Exists(candidate);
                     continue;
                 }
 
@@ -1230,6 +1385,7 @@ public partial class TorrentService : ITorrentService
                     if (attributes.HasFlag(FileAttributes.ReparsePoint))
                     {
                         System.Diagnostics.Debug.WriteLine($"Skipping reparse-point payload '{fullPath}'.");
+                        allDeleted = false;
                         continue;
                     }
 
@@ -1244,13 +1400,17 @@ public partial class TorrentService : ITorrentService
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine($"Error deleting owned payload '{fullPath}': {ex.Message}");
+                    allDeleted = false;
                 }
             }
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error resolving owned download paths: {ex.Message}");
+            return false;
         }
+
+        return allDeleted;
     }
 
     private static async Task<MonoTorrent.Torrent> LoadTorrentFileBoundedAsync(
@@ -1543,9 +1703,12 @@ public partial class TorrentService : ITorrentService
     }
 
     /// <inheritdoc />
+    public void UpdateKeepDeviceAwake(bool enabled) => _backgroundDownloadService.SetKeepDeviceAwake(enabled);
+
+    /// <inheritdoc />
     public void UpdateProxySettings(bool enabled, string host, int port, string username, string password)
     {
-        var newHost = host ?? string.Empty;
+        var newHost = NormalizeProxyHost(host);
         var newPort = port is > 0 and <= 65535 ? port : 1080;
         var newUsername = username ?? string.Empty;
         var newPassword = password ?? string.Empty;
@@ -1772,7 +1935,9 @@ public partial class TorrentService : ITorrentService
                     await StopManagerAsync(manager);
                     if (engineToDispose is not null)
                     {
-                        await engineToDispose.RemoveAsync(manager);
+                        // The default RemoveMode deletes the fast-resume data StopAsync just
+                        // wrote, forcing a full re-hash (and magnet metadata re-fetch) on resume.
+                        await engineToDispose.RemoveAsync(manager, RemoveMode.KeepAllData);
                     }
                 }
                 catch (Exception ex)
@@ -1788,12 +1953,13 @@ public partial class TorrentService : ITorrentService
             {
                 await _dispatcher.InvokeAsync(() =>
                 {
-                    torrent.Status = _backgroundExecutionSuspended
-                        ? DownloadStatus.Paused
-                        : DownloadStatus.Queued;
+                    // While background execution is suspended the item stays Queued for the
+                    // foreground resume instead of being restarted by this rebuild.
+                    torrent.Status = DownloadStatus.Queued;
                     torrent.DownloadSpeed = 0;
                     torrent.UploadSpeed = 0;
                 });
+                _pendingSave = true;
                 if (!_backgroundExecutionSuspended)
                 {
                     idsPendingResume.Add(id);
@@ -1856,17 +2022,9 @@ public partial class TorrentService : ITorrentService
             var keepPendingForNewerRebuild = false;
             try
             {
-                if (_backgroundExecutionSuspended)
-                {
-                    await _dispatcher.InvokeAsync(() =>
-                    {
-                        torrent.Status = DownloadStatus.Paused;
-                        torrent.DownloadSpeed = 0;
-                        torrent.UploadSpeed = 0;
-                    });
-                    await SaveAsync();
-                }
-                else if (torrent.Status == DownloadStatus.Queued)
+                // A suspended app leaves the item Queued; ResumeAfterBackgroundTimeout (or the
+                // next launch) restarts it once the app is allowed to run transfers again.
+                if (!_backgroundExecutionSuspended && torrent.Status == DownloadStatus.Queued)
                 {
                     await StartTorrentCoreAsync(torrent, proxyRebuildToken);
                     proxyRebuildToken.ThrowIfCancellationRequested();
@@ -1954,7 +2112,13 @@ public partial class TorrentService : ITorrentService
 
     private static long KbpsToBytes(int kbps) => kbps <= 0 ? 0 : kbps * 1024L;
 
-    private void UpdateBackgroundTransferState()
+    /// <param name="reassert">
+    /// Request background execution again even if it was requested before. The platform may
+    /// have refused it (Android refuses foreground-service starts from the background) or
+    /// stopped the service since. Only the foreground resume path passes this: repeating the
+    /// request from the background would be refused again.
+    /// </param>
+    private void UpdateBackgroundTransferState(bool reassert = false)
     {
         if (_disposed) return;
         bool hasActiveTransfers;
@@ -1962,20 +2126,27 @@ public partial class TorrentService : ITorrentService
         {
             hasActiveTransfers = Torrents.Any(t => t.Status is DownloadStatus.Downloading or DownloadStatus.Seeding);
         }
-        if (hasActiveTransfers == _backgroundTransferActive)
-        {
-            return;
-        }
 
-        _backgroundTransferActive = hasActiveTransfers;
+        // Serialized so concurrent callers cannot interleave Start/Stop out of order.
+        lock (_backgroundStateGate)
+        {
+            if (_disposed) return;
+            if (!hasActiveTransfers)
+            {
+                _backgroundStartRefused = false;
+                if (!_backgroundTransferActive) return;
+                _backgroundTransferActive = false;
+                _backgroundDownloadService.Stop();
+                return;
+            }
 
-        if (hasActiveTransfers)
-        {
-            _backgroundDownloadService.Start();
-        }
-        else
-        {
-            _backgroundDownloadService.Stop();
+            if (!reassert && (_backgroundTransferActive || _backgroundStartRefused))
+            {
+                return;
+            }
+
+            _backgroundTransferActive = _backgroundDownloadService.Start();
+            _backgroundStartRefused = !_backgroundTransferActive;
         }
     }
 
@@ -2430,7 +2601,7 @@ public partial class TorrentService : ITorrentService
 
                     if (managerState == TorrentState.Seeding || (managerState == TorrentState.Stopped && progress >= 100))
                     {
-                        torrent.DateCompleted ??= DateTime.Now;
+                        torrent.DateCompleted ??= _timeProvider.GetLocalNow().DateTime;
                     }
                     else if (managerState == TorrentState.Downloading && progress < 100)
                     {
@@ -2466,7 +2637,10 @@ public partial class TorrentService : ITorrentService
                     await NotifyCompletionSafelyAsync(torrent).ConfigureAwait(false);
                 }
 
-                _pendingSave = true;
+                if (previousStatus != currentStatus || (!alreadyCompleted && torrent.DateCompleted is not null))
+                    _pendingSave = true;
+                else
+                    _pendingProgressSave = true;
 
                 if (previousStatus == DownloadStatus.Downloading && currentStatus != DownloadStatus.Downloading)
                 {
@@ -2492,7 +2666,9 @@ public partial class TorrentService : ITorrentService
                     }
                 }
 
-                if (managerState == TorrentState.Stopped && progress >= 100)
+                // A stopped download is finished, and an engine error stays until the user
+                // restarts the torrent. Polling either state only rewrites unchanged data.
+                if ((managerState == TorrentState.Stopped && progress >= 100) || managerState == TorrentState.Error)
                 {
                     break;
                 }
@@ -2656,11 +2832,16 @@ public partial class TorrentService : ITorrentService
         return (int)Math.Round(availabilityScore + seedScore + peerScore, MidpointRounding.AwayFromZero);
     }
 
-    private async Task SaveIfPendingAsync()
+    private Task SaveIfPendingAsync() => SaveIfPendingCoreAsync(includeProgress: false);
+
+    private async Task SaveIfPendingCoreAsync(bool includeProgress)
     {
         try
         {
-            if (_pendingSave)
+            var progressDue = _pendingProgressSave
+                && (includeProgress
+                    || _timeProvider.GetElapsedTime(Interlocked.Read(ref _lastSaveTimestamp)) >= ProgressSaveInterval);
+            if (_pendingSave || progressDue)
             {
                 _pendingSave = false;
                 await SaveAsync().ConfigureAwait(false);
@@ -2676,11 +2857,17 @@ public partial class TorrentService : ITorrentService
     private async Task SaveAsync()
     {
         List<TorrentItem> snapshot;
+        // Every save includes current progress; a tick after this snapshot sets it again.
+        _pendingProgressSave = false;
         lock (_torrentsLock)
         {
             snapshot = [.. Torrents];
         }
-        try { await _storageService.SaveTorrentsAsync(snapshot).ConfigureAwait(false); }
+        try
+        {
+            await _storageService.SaveTorrentsAsync(snapshot).ConfigureAwait(false);
+            Interlocked.Exchange(ref _lastSaveTimestamp, _timeProvider.GetTimestamp());
+        }
         catch { _pendingSave = true; throw; }
         finally { UpdateBackgroundTransferState(); }
     }
@@ -2718,6 +2905,9 @@ public partial class TorrentService : ITorrentService
         }
     }
 
+    /// <summary>Fast-resume, magnet metadata, and DHT cache used by engines this service creates.</summary>
+    protected virtual string EngineCacheDirectory => Path.Combine(_storageService.GetAppDataPath(), "EngineCache");
+
     protected virtual ClientEngine CreateEngine()
     {
         // When a SOCKS5 proxy is active we can only tunnel outbound TCP (peer connections and
@@ -2729,8 +2919,16 @@ public partial class TorrentService : ITorrentService
         // only. UDP bootstrap trackers are likewise skipped (see GetOrCreateManagerAsync).
         var useProxy = ProxyRequested;
 
-        var cacheDirectory = Path.Combine(_storageService.GetAppDataPath(), "EngineCache");
-        EngineCacheMigration.Migrate(_storageService.GetDefaultDownloadPath(), cacheDirectory);
+        var cacheDirectory = EngineCacheDirectory;
+        try
+        {
+            EngineCacheMigration.Migrate(_storageService.GetDefaultDownloadPath(), cacheDirectory);
+        }
+        catch (Exception ex)
+        {
+            // The legacy cache only saves a re-hash. It must never prevent every transfer from starting.
+            System.Diagnostics.Debug.WriteLine($"Legacy engine cache migration skipped: {ex.Message}");
+        }
 
         var builder = new EngineSettingsBuilder
         {
@@ -2800,9 +2998,32 @@ public partial class TorrentService : ITorrentService
             new HttpTrackerConnection(uri, httpClientCreator, AddressFamily.InterNetwork),
             new HttpTrackerConnection(uri, httpClientCreator, AddressFamily.InterNetworkV6));
 
+    /// <summary>Trims the host and removes URI brackets from an IPv6 literal.</summary>
+    internal static string NormalizeProxyHost(string? host)
+    {
+        var trimmed = host?.Trim() ?? string.Empty;
+        return trimmed.Length > 2
+            && trimmed[0] == '['
+            && trimmed[^1] == ']'
+            && System.Net.IPAddress.TryParse(trimmed[1..^1], out var address)
+            && address.AddressFamily == AddressFamily.InterNetworkV6
+                ? trimmed[1..^1]
+                : trimmed;
+    }
+
+    internal static Uri BuildProxyUri(string host, int port)
+    {
+        // An IPv6 literal must be bracketed in a URI authority.
+        var authorityHost = System.Net.IPAddress.TryParse(host, out var address)
+            && address.AddressFamily == AddressFamily.InterNetworkV6
+                ? $"[{host}]"
+                : host;
+        return new Uri($"socks5://{authorityHost}:{port}");
+    }
+
     private static HttpClient CreateProxiedHttpClient(string host, int port, string username, string password)
     {
-        var proxy = new System.Net.WebProxy($"socks5://{host}:{port}");
+        var proxy = new System.Net.WebProxy(BuildProxyUri(host, port));
         if (!string.IsNullOrEmpty(username))
         {
             proxy.Credentials = new System.Net.NetworkCredential(username, password);
@@ -2908,6 +3129,11 @@ public partial class TorrentService : ITorrentService
         return manager.StopAsync(ManagerStopTimeout);
     }
 
+    private static Task PauseManagerAsync(TorrentManager manager)
+        => TorrentManagerStateRules.CanPauseInPlace(manager.State)
+            ? manager.PauseAsync()
+            : StopManagerAsync(manager);
+
     private static async Task AddPublicTrackersIfNeededAsync(TorrentManager manager, string magnetLink)
     {
         if (!MagnetTrackerBootstrapRules.ShouldAddPublicTrackers(magnetLink) || manager.TrackerManager.Private)
@@ -2977,7 +3203,10 @@ public partial class TorrentService : ITorrentService
             System.Diagnostics.Debug.WriteLine($"Save timer dispose error: {ex.Message}");
         }
 
-        _backgroundTransferActive = false;
+        lock (_backgroundStateGate)
+        {
+            _backgroundTransferActive = false;
+        }
 
         try
         {
@@ -3002,7 +3231,7 @@ public partial class TorrentService : ITorrentService
             }
         }
         _downloadTokens.Clear();
-        await SaveIfPendingAsync().ConfigureAwait(false);
+        await SaveIfPendingCoreAsync(includeProgress: true).ConfigureAwait(false);
         _torrentOperationLock.Dispose();
 
         // Cancel any pending/debounced proxy rebuild so it does not run after disposal.
@@ -3016,7 +3245,9 @@ public partial class TorrentService : ITorrentService
         // ConfigureAwait(false) is required here: Dispose() blocks on this method via
         // GetAwaiter().GetResult(). If a continuation resumed on the (blocked) UI thread,
         // shutdown would deadlock.
-        foreach (var kvp in _managers)
+        // Stop in parallel: each stop can wait for tracker announces, and the desktop close
+        // handler only allows a bounded time before the window closes.
+        await Task.WhenAll(_managers.Select(async kvp =>
         {
             try
             {
@@ -3027,7 +3258,7 @@ public partial class TorrentService : ITorrentService
                 // A missing .torrent file or network error during shutdown should not crash the app.
                 System.Diagnostics.Debug.WriteLine($"Manager stop error for {kvp.Key}: {ex.Message}");
             }
-        }
+        })).ConfigureAwait(false);
         _managers.Clear();
 
         if (_engine is not null)

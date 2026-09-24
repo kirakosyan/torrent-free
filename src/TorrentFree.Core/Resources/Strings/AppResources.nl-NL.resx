@@ -552,4 +552,16 @@
   <data name="HintQueuedForSeeding" xml:space="preserve">
     <value>Download voltooid. Wacht op een vrije plek om te seeden. De gedownloade bestanden zijn klaar voor gebruik.</value>
   </data>
+  <data name="ErrorRemoveFilesLeftInPlace" xml:space="preserve">
+    <value>De torrent is verwijderd, maar sommige gedownloade bestanden konden niet worden verwijderd. Verwijder ze handmatig als je ze niet meer nodig hebt.</value>
+  </data>
+  <data name="ProxyTrackersHint" xml:space="preserve">
+    <value>Zolang de proxy aan staat, zijn DHT en UDP-trackers uitgeschakeld zodat ze je IP-adres niet prijsgeven. Magnetlinks zonder HTTP- of HTTPS-trackers vinden mogelijk geen peers.</value>
+  </data>
+  <data name="KeepDeviceAwakeLabel" xml:space="preserve">
+    <value>Apparaat wakker houden tijdens overdrachten</value>
+  </data>
+  <data name="KeepDeviceAwakeHelp" xml:space="preserve">
+    <value>Voorkomt dat het apparaat in slaapstand gaat tijdens downloaden of seeden, zodat overdrachten doorgaan met het scherm uit. Verbruikt meer batterij.</value>
+  </data>
 </root>

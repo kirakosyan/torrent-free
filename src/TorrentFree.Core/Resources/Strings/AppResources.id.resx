@@ -552,4 +552,16 @@
   <data name="HintQueuedForSeeding" xml:space="preserve">
     <value>Unduhan selesai. Menunggu slot seeding. File yang diunduh siap digunakan.</value>
   </data>
+  <data name="ErrorRemoveFilesLeftInPlace" xml:space="preserve">
+    <value>Torrent telah dihapus, tetapi beberapa file yang diunduh tidak dapat dihapus. Hapus secara manual jika Anda tidak lagi membutuhkannya.</value>
+  </data>
+  <data name="ProxyTrackersHint" xml:space="preserve">
+    <value>Saat proxy aktif, DHT dan tracker UDP dimatikan agar tidak mengungkap alamat IP Anda. Tautan magnet tanpa tracker HTTP atau HTTPS mungkin tidak menemukan peer.</value>
+  </data>
+  <data name="KeepDeviceAwakeLabel" xml:space="preserve">
+    <value>Biarkan perangkat tetap aktif selama transfer</value>
+  </data>
+  <data name="KeepDeviceAwakeHelp" xml:space="preserve">
+    <value>Mencegah perangkat tidur saat mengunduh atau seeding, sehingga transfer tetap berjalan saat layar mati. Menggunakan lebih banyak baterai.</value>
+  </data>
 </root>

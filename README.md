@@ -5,7 +5,7 @@
 - **Android (Google Play):** https://play.google.com/store/apps/details?id=com.torrentfree.app
 - **Microsoft Store:** https://apps.microsoft.com/detail/9nnx2ztpxc26
 
-Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real engine, not simulated). Supports importing `.torrent` files and magnet links, shows live stats, and stores downloads next to the picked `.torrent` when possible.
+Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real engine, not simulated). Supports importing `.torrent` files and magnet links, shows live stats, and on Windows stores downloads next to the picked `.torrent` when possible.
 
 ![.NET MAUI](https://img.shields.io/badge/.NET-MAUI-purple)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20|%20Android%20|%20iOS-blue)
@@ -13,23 +13,35 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 
 ## ✨ Features
 
-- **Import `.torrent` files** via native file picker (magnet links supported internally)
-- **Open `.torrent` files with the app** (file association on Windows)
+- **Import `.torrent` files** via native file picker, or paste a magnet link
+- **Open magnet links and `.torrent` files from other apps** (Android share/open intents; `magnet:` links and `.torrent` file association on Windows)
 - **Real torrent engine (MonoTorrent)** for downloads
 - **Start / Pause / Stop / Remove / Start All / Stop All** controls
 - **Live stats**: progress, download/upload speed, seeds, peers, ETA
 - **Seeding state** with pause support
 - **Wi-Fi-only transfers**: automatically pause downloads and seeding when Wi-Fi is unavailable, and resume waiting torrents when it returns. Manual pauses and stops are preserved.
+- **Automatic resume**: transfers that were active when the app closed, or when Android ended background execution, resume automatically. Manual pauses are kept.
 - **Global limits**: upload/download speed caps, max active downloads/seeds, seeding ratio/time
 - **Per-torrent limits**: upload/download caps and seeding ratio/time overrides
 - **Safe delete dialog** with options to remove data and/or the `.torrent` file
 - **Duplicate protection** by info-hash and magnet link
-- **Save path** prefers the picked `.torrent` folder (if available) otherwise the default path
+- **Save path** prefers the picked `.torrent` folder on Windows (if writable), otherwise the default path
 - **Persistent storage** of torrent list and settings
 
 ## 📝 Release Overview
 
 The current app version is **v1.14**.
+
+### Unreleased
+
+- Pausing a magnet link that is still fetching metadata now really stops it.
+- Transfers that were active when the app closed resume automatically instead of coming back paused.
+- Wi-Fi and proxy changes keep fast-resume data, so transfers no longer re-check all data when they restart.
+- "Delete downloaded files" now works for magnet downloads after a restart and reports files it could not delete.
+- Android: `.torrent` files picked from other apps download to the app download folder instead of a temporary cache; magnet links and `.torrent` files can be opened from other apps; exports show progress and read large files once; optional "keep device awake" setting.
+- Windows: `magnet:` links open in the app; unmetered wired and VPN connections count for Wi-Fi-only transfers.
+- The SOCKS5 proxy password is stored in platform secure storage instead of the settings file.
+- Fewer state-file writes during transfers, and settings validation messages stay visible.
 
 ### v1.14
 
@@ -175,7 +187,7 @@ Each download in the list has action buttons:
 
 | Status | Color | Description |
 |--------|-------|-------------|
-| Queued | 🟠 Orange | Waiting to start |
+| Queued | 🟠 Orange | Waiting to start, including transfers resumed after a restart |
 | Downloading | 🔵 Blue | Actively downloading |
 | Paused | ⚪ Gray | Download paused by user |
 | Completed | 🟢 Green | Download finished successfully |
@@ -202,13 +214,21 @@ Open the **Settings** page from the app shell. Changes are saved automatically a
 - **Max Seed Ratio**: Stop seeding after the uploaded data reaches this ratio relative to the download (e.g., `1.0` means upload equals download). Use `0` for unlimited.
 - **Max Seed Minutes**: Stop seeding after this many minutes. Use `0` for unlimited.
 
+**Keep device awake during transfers** (Android only)
+
+- Holds a partial wake lock while downloads or seeding are active so transfers continue with the screen off. Off by default because it uses more battery.
+
+**SOCKS5 Proxy**
+
+- While the proxy is on, DHT, UDP trackers, local peer discovery, port forwarding and incoming connections are disabled so they cannot reveal your IP address. Magnet links need HTTP or HTTPS trackers to find peers in this mode. The password is kept in platform secure storage.
+
 **File Associations** (Windows only)
 
 - **Associate .torrent files**: Toggle whether `.torrent` files open with Torrent Free by default on supported platforms.
 
 **Validation**
 
-Values are normalized to safe ranges (e.g., non-negative, capped to maximums). If a value is out of range, the app adjusts it and shows a short warning message.
+Values are normalized to safe ranges (e.g., non-negative, capped to maximums). If a value is out of range, the app adjusts it and shows a warning message that stays until the next valid edit.
 
 ## 🗺️ Planned Features
 
@@ -240,7 +260,7 @@ src/
 
 Downloads are stored in a JSON file in the app's data directory. Actual payload files are downloaded by MonoTorrent to the designated save path.
 
-`StorageService` receives `StoragePaths` from the MAUI host. Reads and writes report failures to callers; replacing the queue requires a successful load, and successful writes retain the previous state as `torrents.json.bak`. Imported `.torrent` bytes are kept in the persistent `ImportedTorrents` directory, independent of the original file provider. Active seeding duration is persisted separately from pause time and application downtime. Legacy JSON remains readable.
+`StorageService` receives `StoragePaths` from the MAUI host. Reads and writes report failures to callers; replacing the queue requires a successful load, and successful writes rotate the previous state into `torrents.json.bak` by rename. Progress-only changes are saved at most every 30 seconds; state changes are saved immediately. The SOCKS5 proxy password is kept in `ISecretStore` (platform secure storage) and removed from the JSON file, including a password saved by older versions. Imported `.torrent` bytes are kept in the persistent `ImportedTorrents` directory, independent of the original file provider. Active seeding duration is persisted separately from pause time and application downtime. Legacy JSON remains readable.
 
 The app injects `IUiDispatcher` for observable model updates. Tests reference `TorrentFree.Core` directly, using the production models, storage, and MonoTorrent services. Only platform effects such as UI dispatch, notifications, and export destinations are substituted. Run the core suite without MAUI workloads:
 

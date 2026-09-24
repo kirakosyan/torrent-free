@@ -552,4 +552,16 @@
   <data name="HintQueuedForSeeding" xml:space="preserve">
     <value>Nedlastingen er fullført. Venter på en ledig plass for seeding. De nedlastede filene er klare til bruk.</value>
   </data>
+  <data name="ErrorRemoveFilesLeftInPlace" xml:space="preserve">
+    <value>Torrenten ble fjernet, men noen nedlastede filer kunne ikke slettes. Slett dem manuelt hvis du ikke lenger trenger dem.</value>
+  </data>
+  <data name="ProxyTrackersHint" xml:space="preserve">
+    <value>Når proxyen er på, er DHT og UDP-trackere slått av slik at de ikke avslører IP-adressen din. Magnetlenker uten HTTP- eller HTTPS-trackere finner kanskje ingen peers.</value>
+  </data>
+  <data name="KeepDeviceAwakeLabel" xml:space="preserve">
+    <value>Hold enheten våken under overføringer</value>
+  </data>
+  <data name="KeepDeviceAwakeHelp" xml:space="preserve">
+    <value>Hindrer at enheten går i dvale mens nedlasting eller deling pågår, slik at overføringer fortsetter med skjermen av. Bruker mer batteri.</value>
+  </data>
 </root>

@@ -95,4 +95,13 @@ public class AppSettings
     /// Null means the state has not been recorded yet or the platform does not support it.
     /// </summary>
     public bool? DesktopWasMaximized { get; set; }
+
+    /// <summary>
+    /// Android only: holds a partial wake lock while transfers are active so downloads keep
+    /// running with the screen off. Off by default because it increases battery use.
+    /// </summary>
+    public bool KeepDeviceAwake { get; set; }
+
+    /// <summary>Every member is a value or string, so a shallow copy is independent.</summary>
+    internal AppSettings Clone() => (AppSettings)MemberwiseClone();
 }

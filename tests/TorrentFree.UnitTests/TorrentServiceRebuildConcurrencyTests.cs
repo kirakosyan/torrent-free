@@ -319,9 +319,7 @@ public sealed class TorrentServiceRebuildConcurrencyTests
 
     private sealed class StubBackgroundDownloadService : IBackgroundDownloadService
     {
-        public void Start()
-        {
-        }
+        public bool Start() => true;
 
         public void Stop()
         {

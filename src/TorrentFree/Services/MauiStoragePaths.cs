@@ -12,7 +12,12 @@ internal static class MauiStoragePaths
 #else
         var downloadBase = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 #endif
-        return new StoragePaths(appData, Path.Combine(downloadBase, "TorrentFree", "Downloads"));
+#if ANDROID || IOS
+        const bool supportsCustomDownloadLocations = false;
+#else
+        const bool supportsCustomDownloadLocations = true;
+#endif
+        return new StoragePaths(appData, Path.Combine(downloadBase, "TorrentFree", "Downloads"), supportsCustomDownloadLocations);
     }
 
     // On Windows the MAUI FileSystem.AppDataDirectory points to the MSIX package sandbox

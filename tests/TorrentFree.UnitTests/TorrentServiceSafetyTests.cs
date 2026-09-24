@@ -263,7 +263,7 @@ public sealed class TorrentServiceSafetyTests
     }
 
     [Fact]
-    public async Task InitializeAsync_NormalizesPersistedSeedingToPausedAndPersistsIt()
+    public async Task InitializeAsync_RequeuesPersistedSeedingAndPersistsIt()
     {
         using var temporaryDirectory = new TemporaryDirectory();
         var storage = new TestStorageService(temporaryDirectory.Path)
@@ -278,15 +278,16 @@ public sealed class TorrentServiceSafetyTests
 
         await service.InitializeAsync();
 
+        // Initialization restores state only; the host starts queued transfers afterwards.
         var restored = Assert.Single(service.Torrents);
-        Assert.Equal(DownloadStatus.Paused, restored.Status);
+        Assert.Equal(DownloadStatus.Queued, restored.Status);
         Assert.Null(restored.DateSeedingStarted);
         var saved = Assert.Single(storage.SavedStatuses);
-        Assert.Equal(DownloadStatus.Paused, Assert.Single(saved).Status);
+        Assert.Equal(DownloadStatus.Queued, Assert.Single(saved).Status);
     }
 
     [Fact]
-    public async Task PauseAllForBackgroundTimeoutAsync_PausesActiveTransfersWithoutDrainingQueue()
+    public async Task PauseAllForBackgroundTimeoutAsync_RequeuesActiveTransfersWithoutDrainingQueue()
     {
         using var temporaryDirectory = new TemporaryDirectory();
         var storage = new TestStorageService(temporaryDirectory.Path);
@@ -301,11 +302,11 @@ public sealed class TorrentServiceSafetyTests
         await service.PauseAllForBackgroundTimeoutAsync();
         await service.PauseAllForBackgroundTimeoutAsync();
 
-        Assert.Equal(DownloadStatus.Paused, download.Status);
-        Assert.Equal(DownloadStatus.Paused, seed.Status);
+        Assert.Equal(DownloadStatus.Queued, download.Status);
+        Assert.Equal(DownloadStatus.Queued, seed.Status);
         Assert.Equal(DownloadStatus.Queued, queued.Status);
         var saved = Assert.Single(storage.SavedStatuses);
-        Assert.Equal(DownloadStatus.Queued, saved.Single(status => status.Id == queued.Id).Status);
+        Assert.All(saved, status => Assert.Equal(DownloadStatus.Queued, status.Status));
     }
 
     [Fact]
@@ -439,9 +440,7 @@ public sealed class TorrentServiceSafetyTests
 
     private sealed class StubBackgroundDownloadService : IBackgroundDownloadService
     {
-        public void Start()
-        {
-        }
+        public bool Start() => true;
 
         public void Stop()
         {

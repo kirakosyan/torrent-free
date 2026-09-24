@@ -552,4 +552,16 @@
   <data name="HintQueuedForSeeding" xml:space="preserve">
     <value>A letöltés befejeződött. Várakozás egy szabad megosztási helyre. A letöltött fájlok használatra készek.</value>
   </data>
+  <data name="ErrorRemoveFilesLeftInPlace" xml:space="preserve">
+    <value>A torrent eltávolítva, de néhány letöltött fájlt nem sikerült törölni. Ha már nincs rájuk szüksége, törölje őket kézzel.</value>
+  </data>
+  <data name="ProxyTrackersHint" xml:space="preserve">
+    <value>Amíg a proxy be van kapcsolva, a DHT és az UDP trackerek ki vannak kapcsolva, hogy ne fedjék fel az IP-címét. A HTTP vagy HTTPS tracker nélküli magnet linkek esetleg nem találnak partnereket.</value>
+  </data>
+  <data name="KeepDeviceAwakeLabel" xml:space="preserve">
+    <value>Az eszköz ébren tartása átvitel közben</value>
+  </data>
+  <data name="KeepDeviceAwakeHelp" xml:space="preserve">
+    <value>Megakadályozza, hogy az eszköz alvó állapotba kerüljön letöltés vagy megosztás közben, így az átvitel kikapcsolt képernyővel is folytatódik. Több akkumulátort használ.</value>
+  </data>
 </root>

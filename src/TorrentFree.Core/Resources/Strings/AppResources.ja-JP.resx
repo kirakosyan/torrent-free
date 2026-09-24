@@ -552,4 +552,16 @@
   <data name="HintQueuedForSeeding" xml:space="preserve">
     <value>ダウンロード完了。シードの空き枠を待っています。ダウンロードしたファイルは使用できます。</value>
   </data>
+  <data name="ErrorRemoveFilesLeftInPlace" xml:space="preserve">
+    <value>トレントは削除されましたが、一部のダウンロード済みファイルを削除できませんでした。不要な場合は手動で削除してください。</value>
+  </data>
+  <data name="ProxyTrackersHint" xml:space="preserve">
+    <value>プロキシがオンの間は、IP アドレスが漏れないよう DHT と UDP トラッカーはオフになります。HTTP または HTTPS トラッカーのないマグネットリンクではピアが見つからない場合があります。</value>
+  </data>
+  <data name="KeepDeviceAwakeLabel" xml:space="preserve">
+    <value>転送中はデバイスをスリープさせない</value>
+  </data>
+  <data name="KeepDeviceAwakeHelp" xml:space="preserve">
+    <value>ダウンロードやシード中にデバイスがスリープしないようにし、画面がオフでも転送を続けます。バッテリーの消費が増えます。</value>
+  </data>
 </root>

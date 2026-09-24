@@ -36,6 +36,7 @@ The app stores its queue and settings on your device. It does not upload them to
 |---|---|---|
 | Torrent list (magnet links, file metadata, download progress) | Local app data directory (JSON file) | Restore your downloads between sessions |
 | App settings (speed limits, concurrent download limits, sort preferences) | Local app data directory (JSON file) | Persist your preferences |
+| Optional SOCKS5 proxy password | Platform secure storage (Android Keystore, Apple Keychain, Windows data protection); if secure storage is unavailable on a device, the app settings file | Authenticate with the proxy you configure |
 
 You can clear app-managed data through your device's app storage settings or by uninstalling the app where the operating system removes its data. Downloaded files and exports in folders you chose may remain and can be deleted separately. Backup copies held by your operating system or synchronization provider are managed through that provider.
 
@@ -65,7 +66,7 @@ The Android version of the app requests the following permissions:
 | `ACCESS_NETWORK_STATE` | Check network availability before attempting connections |
 | `POST_NOTIFICATIONS` | Show download progress notifications |
 | `FOREGROUND_SERVICE` / `FOREGROUND_SERVICE_DATA_SYNC` | Keep downloads running when the app is in the background |
-| `WAKE_LOCK` | Prevent the CPU from sleeping during active downloads |
+| `WAKE_LOCK` | Only when you enable "Keep device awake during transfers": prevent the CPU from sleeping while downloads or seeding are active |
 
 No permission is used for any purpose other than what is described above.
 

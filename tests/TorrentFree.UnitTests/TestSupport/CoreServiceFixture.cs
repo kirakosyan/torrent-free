@@ -69,7 +69,7 @@ internal sealed class CoreServiceFixture : IAsyncDisposable
             return Task.CompletedTask;
         }
     }
-    private sealed class Background : IBackgroundDownloadService { public void Start() { } public void Stop() { } }
+    private sealed class Background : IBackgroundDownloadService { public bool Start() => true; public void Stop() { } }
 }
 
 internal sealed class ManualTimeProvider : TimeProvider

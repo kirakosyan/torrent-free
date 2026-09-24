@@ -552,4 +552,16 @@
   <data name="HintQueuedForSeeding" xml:space="preserve">
     <value>다운로드가 완료되었습니다. 시딩 슬롯을 기다리는 중입니다. 다운로드한 파일을 사용할 수 있습니다.</value>
   </data>
+  <data name="ErrorRemoveFilesLeftInPlace" xml:space="preserve">
+    <value>토렌트는 제거되었지만 일부 다운로드한 파일을 삭제하지 못했습니다. 더 이상 필요하지 않다면 직접 삭제하세요.</value>
+  </data>
+  <data name="ProxyTrackersHint" xml:space="preserve">
+    <value>프록시가 켜져 있는 동안에는 IP 주소가 노출되지 않도록 DHT와 UDP 트래커가 꺼집니다. HTTP 또는 HTTPS 트래커가 없는 마그넷 링크는 피어를 찾지 못할 수 있습니다.</value>
+  </data>
+  <data name="KeepDeviceAwakeLabel" xml:space="preserve">
+    <value>전송 중 기기 절전 방지</value>
+  </data>
+  <data name="KeepDeviceAwakeHelp" xml:space="preserve">
+    <value>다운로드 또는 시딩 중에 기기가 절전 모드로 전환되지 않도록 하여 화면이 꺼져도 전송이 계속됩니다. 배터리를 더 많이 사용합니다.</value>
+  </data>
 </root>

@@ -18,9 +18,9 @@ namespace TorrentFree.Services;
 /// (RFC 1928, with optional username/password auth per RFC 1929), and hand the
 /// tunnelled socket back so the rest of the wire protocol is unchanged.
 ///
-/// Only TCP peer connections are proxied. UDP traffic (DHT and UDP trackers) is
-/// not tunnelled — SOCKS5 UDP ASSOCIATE is not implemented — so for full privacy
-/// the engine should also rely on TCP/HTTP trackers.
+/// Only TCP is tunnelled; SOCKS5 UDP ASSOCIATE is not implemented. TorrentService
+/// therefore disables DHT, UDP trackers, local peer discovery, port forwarding, and
+/// the inbound listener whenever proxy mode is active.
 /// </summary>
 internal sealed class Socks5SocketConnector : ISocketConnector
 {

@@ -340,7 +340,7 @@ public sealed class WifiTransferTests
 
     private sealed class Background : IBackgroundDownloadService
     {
-        public void Start() { }
+        public bool Start() => true;
         public void Stop() { }
     }
 }

@@ -566,4 +566,16 @@
   <data name="HintQueuedForSeeding" xml:space="preserve">
     <value>Загрузка завершена. Ожидание свободного места для раздачи. Скачанные файлы готовы к использованию.</value>
   </data>
+  <data name="ErrorRemoveFilesLeftInPlace" xml:space="preserve">
+    <value>Торрент удалён, но некоторые скачанные файлы удалить не удалось. Удалите их вручную, если они больше не нужны.</value>
+  </data>
+  <data name="ProxyTrackersHint" xml:space="preserve">
+    <value>Пока прокси включён, DHT и UDP-трекеры отключены, чтобы не раскрывать ваш IP-адрес. Magnet-ссылки без HTTP- или HTTPS-трекеров могут не найти пиров.</value>
+  </data>
+  <data name="KeepDeviceAwakeLabel" xml:space="preserve">
+    <value>Не давать устройству засыпать во время передачи</value>
+  </data>
+  <data name="KeepDeviceAwakeHelp" xml:space="preserve">
+    <value>Не позволяет устройству переходить в спящий режим во время загрузки или раздачи, чтобы передача продолжалась при выключенном экране. Расходует больше заряда батареи.</value>
+  </data>
 </root>

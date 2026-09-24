@@ -32,7 +32,8 @@ public static class AppSettingsFactory
             ProxyPassword = existing.ProxyPassword ?? string.Empty,
             Language = existing.Language,
             Theme = ThemeSettings.Normalize(existing.Theme),
-            DesktopWasMaximized = existing.DesktopWasMaximized
+            DesktopWasMaximized = existing.DesktopWasMaximized,
+            KeepDeviceAwake = existing.KeepDeviceAwake
         };
     }
 
@@ -56,7 +57,8 @@ public static class AppSettingsFactory
         string proxyPassword,
         string? language,
         string? theme,
-        bool? wifiOnly = null)
+        bool? wifiOnly = null,
+        bool? keepDeviceAwake = null)
     {
         ArgumentNullException.ThrowIfNull(existing);
 
@@ -79,7 +81,8 @@ public static class AppSettingsFactory
             ProxyPassword = proxyPassword ?? string.Empty,
             Language = language,
             Theme = ThemeSettings.Normalize(theme),
-            DesktopWasMaximized = existing.DesktopWasMaximized
+            DesktopWasMaximized = existing.DesktopWasMaximized,
+            KeepDeviceAwake = keepDeviceAwake ?? existing.KeepDeviceAwake
         };
     }
 }

@@ -64,6 +64,52 @@ public sealed class DownloadExportServiceTests
         Assert.Equal(2, store.Completed.Count);
     }
 
+    [Fact]
+    public async Task UnchangedSourceStamp_ReusesRecordedDigestWithoutRehashingSource()
+    {
+        using var directory = new CoreTestDirectory();
+        var store = new RecordingExportStore();
+        var service = new DownloadExportService(Path.Combine(directory.Path, "state"), store);
+        var source = Path.Combine(directory.Path, "file.bin");
+        await File.WriteAllTextAsync(source, "AAAA", TestContext.Current.CancellationToken);
+        var stamp = File.GetLastWriteTimeUtc(source);
+        var first = await service.ExportAsync("owner", source, "folder");
+
+        // Same length and write time: the recorded digest is trusted (like a quick size/mtime
+        // check), so the multi-gigabyte source is not read again. Only the destination is verified.
+        await File.WriteAllTextAsync(source, "ZZZZ", TestContext.Current.CancellationToken);
+        File.SetLastWriteTimeUtc(source, stamp);
+        Assert.Equal(first, await service.ExportAsync("owner", source, "folder"));
+        Assert.Single(store.Completed);
+
+        // A changed write time is detected and exports the new content.
+        File.SetLastWriteTimeUtc(source, stamp.AddMinutes(1));
+        var second = await service.ExportAsync("owner", source, "folder");
+        Assert.NotEqual(first, second);
+        Assert.Equal("ZZZZ", store.ReadText(second));
+    }
+
+    [Fact]
+    public async Task LegacyManifestWithoutSourceStamp_IsStillReused()
+    {
+        using var directory = new CoreTestDirectory();
+        var store = new RecordingExportStore();
+        var state = Path.Combine(directory.Path, "state");
+        var source = Path.Combine(directory.Path, "file.bin");
+        await File.WriteAllTextAsync(source, "AAAA", TestContext.Current.CancellationToken);
+        var first = await new DownloadExportService(state, store).ExportAsync("owner", source, "folder");
+        var manifest = Assert.Single(Directory.GetFiles(state, "*.json"));
+        var legacy = System.Text.Json.JsonDocument.Parse(await File.ReadAllTextAsync(manifest, TestContext.Current.CancellationToken)).RootElement;
+        await File.WriteAllTextAsync(manifest, System.Text.Json.JsonSerializer.Serialize(new
+        {
+            Id = legacy.GetProperty("Id").GetString(),
+            Digest = legacy.GetProperty("Digest").GetString()
+        }), TestContext.Current.CancellationToken);
+
+        Assert.Equal(first, await new DownloadExportService(state, store).ExportAsync("owner", source, "folder"));
+        Assert.Single(store.Completed);
+    }
+
     private sealed class RecordingExportStore : IDownloadExportStore
     {
         private readonly Dictionary<string, MemoryStream> _pending = [];

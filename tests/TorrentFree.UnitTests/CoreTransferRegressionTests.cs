@@ -163,7 +163,7 @@ public sealed class CoreTransferRegressionTests
         }]);
         await fixture.Service.InitializeAsync();
         var restored = Assert.Single(fixture.Service.Torrents);
-        Assert.Equal(DownloadStatus.Paused, restored.Status);
+        Assert.Equal(DownloadStatus.Queued, restored.Status);
         Assert.Equal(30, restored.SeededSeconds);
         Assert.Null(restored.DateSeedingStarted);
     }

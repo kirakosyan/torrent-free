@@ -566,4 +566,16 @@
   <data name="HintQueuedForSeeding" xml:space="preserve">
     <value>Téléchargement terminé. En attente d’une place pour le partage. Les fichiers téléchargés sont prêts à être utilisés.</value>
   </data>
+  <data name="ErrorRemoveFilesLeftInPlace" xml:space="preserve">
+    <value>Le torrent a été supprimé, mais certains fichiers téléchargés n'ont pas pu être effacés. Supprimez-les manuellement si vous n'en avez plus besoin.</value>
+  </data>
+  <data name="ProxyTrackersHint" xml:space="preserve">
+    <value>Lorsque le proxy est activé, le DHT et les trackers UDP sont désactivés pour ne pas révéler votre adresse IP. Les liens magnet sans trackers HTTP ou HTTPS risquent de ne trouver aucun pair.</value>
+  </data>
+  <data name="KeepDeviceAwakeLabel" xml:space="preserve">
+    <value>Garder l'appareil éveillé pendant les transferts</value>
+  </data>
+  <data name="KeepDeviceAwakeHelp" xml:space="preserve">
+    <value>Empêche l'appareil de se mettre en veille pendant les téléchargements ou le partage, afin que les transferts continuent écran éteint. Consomme plus de batterie.</value>
+  </data>
 </root>

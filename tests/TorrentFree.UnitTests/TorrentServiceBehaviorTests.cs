@@ -269,9 +269,7 @@ public sealed class TorrentServiceBehaviorTests
 
     private sealed class RecordingBackgroundDownloadService : IBackgroundDownloadService
     {
-        public void Start()
-        {
-        }
+        public bool Start() => true;
 
         public void Stop()
         {
