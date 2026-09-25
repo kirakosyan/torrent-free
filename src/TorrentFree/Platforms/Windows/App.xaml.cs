@@ -92,24 +92,24 @@ public partial class App : MauiWinUIApplication
 
 	private void OnActivated(object? sender, AppActivationArguments args)
 	{
-		var paths = ExtractTorrentPaths(args);
-		if (paths.Count == 0)
+		var (paths, magnetLinks) = ExtractActivationItems(args);
+		if (paths.Count == 0 && magnetLinks.Count == 0)
 		{
 			return;
 		}
 
-		DispatchActivation(paths);
+		DispatchActivation(paths, magnetLinks);
 	}
 
-	private void DispatchActivation(IReadOnlyList<string> paths)
+	private void DispatchActivation(IReadOnlyList<string> paths, IReadOnlyList<string> magnetLinks)
 	{
 		if (_dispatcherQueue?.HasThreadAccess == true)
 		{
-			_ = ProcessActivationPathsSafelyAsync(paths);
+			_ = ProcessActivationSafelyAsync(paths, magnetLinks);
 			return;
 		}
 
-		if (_dispatcherQueue?.TryEnqueue(async () => await ProcessActivationPathsSafelyAsync(paths)) == true)
+		if (_dispatcherQueue?.TryEnqueue(async () => await ProcessActivationSafelyAsync(paths, magnetLinks)) == true)
 		{
 			return;
 		}
@@ -117,11 +117,11 @@ public partial class App : MauiWinUIApplication
 		System.Diagnostics.Debug.WriteLine("Unable to dispatch activation to the WinUI UI thread.");
 	}
 
-	private async Task ProcessActivationPathsSafelyAsync(IReadOnlyList<string> paths)
+	private async Task ProcessActivationSafelyAsync(IReadOnlyList<string> paths, IReadOnlyList<string> magnetLinks)
 	{
 		try
 		{
-			await ProcessActivationPathsAsync(paths);
+			await ProcessActivationAsync(paths, magnetLinks);
 		}
 		catch (Exception ex)
 		{
@@ -129,7 +129,7 @@ public partial class App : MauiWinUIApplication
 		}
 	}
 
-	private async Task ProcessActivationPathsAsync(IReadOnlyList<string> paths)
+	private async Task ProcessActivationAsync(IReadOnlyList<string> paths, IReadOnlyList<string> magnetLinks)
 	{
 		await _servicesReady.Task;
 		var viewModel = MauiProgram.Services.GetService<MainViewModel>();
@@ -143,12 +143,18 @@ public partial class App : MauiWinUIApplication
 			viewModel.EnsureInitializedAsync,
 			viewModel.ImportTorrentFileFromPathAsync);
 
+		foreach (var magnetLink in magnetLinks)
+		{
+			await viewModel.ImportMagnetLinkAsync(magnetLink);
+		}
+
 		ActivateMainWindow();
 	}
 
-	private static IReadOnlyList<string> ExtractTorrentPaths(AppActivationArguments args)
+	private static (IReadOnlyList<string> Paths, IReadOnlyList<string> MagnetLinks) ExtractActivationItems(AppActivationArguments args)
 	{
 		var paths = new List<string>();
+		var magnetLinks = new List<string>();
 
 		if (args.Data is IFileActivatedEventArgs fileArgs)
 		{
@@ -160,6 +166,15 @@ public partial class App : MauiWinUIApplication
 				}
 			}
 		}
+		else if (args.Data is IProtocolActivatedEventArgs protocolArgs)
+		{
+			// Declared as a windows.protocol extension: a magnet link clicked in a browser.
+			var magnetLink = protocolArgs.Uri?.OriginalString;
+			if (IsMagnetLink(magnetLink))
+			{
+				magnetLinks.Add(magnetLink!);
+			}
+		}
 		else if (args.Data is ILaunchActivatedEventArgs launchArgs)
 		{
 			foreach (var arg in ParseArguments(launchArgs.Arguments))
@@ -168,10 +183,19 @@ public partial class App : MauiWinUIApplication
 				{
 					paths.Add(arg);
 				}
+				else if (IsMagnetLink(arg))
+				{
+					magnetLinks.Add(arg);
+				}
 			}
 		}
 
-		return paths;
+		return (paths, magnetLinks);
+	}
+
+	private static bool IsMagnetLink(string? value)
+	{
+		return !string.IsNullOrWhiteSpace(value) && value.StartsWith("magnet:", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static IEnumerable<string> ParseArguments(string? commandLine)

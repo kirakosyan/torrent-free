@@ -21,9 +21,12 @@ public partial class SettingsViewModel : ObservableObject
     private AppSettings _loadedSettings = new();
     private bool _isLoadingSettings = true;
     private bool _isNormalizing;
+    private bool _isApplyingNormalizedValue;
     private bool _isUpdatingAssociation;
     private bool _isSyncingThemeOptions;
     private bool _languageChanged;
+    // The page shows no password because secure storage could not return it; saving must keep it.
+    private bool _proxyPasswordUnavailable;
 
     private const int MaxKbpsLimit = 1_000_000;
     private const int MaxActiveLimit = 200;
@@ -32,6 +35,12 @@ public partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     public partial bool WifiOnly { get; set; }
+
+    /// <summary>
+    /// Android: hold a partial wake lock while transfers run so they continue with the screen off.
+    /// </summary>
+    [ObservableProperty]
+    public partial bool KeepDeviceAwake { get; set; }
 
     /// <summary>
     /// Global download limit in KB/s (0 = unlimited).
@@ -181,12 +190,19 @@ public partial class SettingsViewModel : ObservableObject
     /// <summary>
     /// Indicates whether the custom download folder field should be shown.
     /// </summary>
-    public bool UseSpecificDownloadFolder => !DownloadToTorrentFolder;
+    public bool UseSpecificDownloadFolder => IsDownloadFolderConfigurable && !DownloadToTorrentFolder;
 
     /// <summary>
     /// Indicates whether a native folder picker button can be shown.
     /// </summary>
     public bool IsFolderPickerSupported => _folderPickerService.IsSupported;
+
+    /// <summary>
+    /// Download folders can only be chosen on desktop. Mobile platforms hand the picker a
+    /// temporary copy of a .torrent file and restrict writes outside app storage, so downloads
+    /// always use the app download folder there (see <see cref="StoragePaths"/>).
+    /// </summary>
+    public bool IsDownloadFolderConfigurable => _storageService.SupportsCustomDownloadLocations;
 
     /// <summary>
     /// Indicates whether the settings page is running on Android.
@@ -268,6 +284,7 @@ public partial class SettingsViewModel : ObservableObject
             _loadedSettings = settings;
             _languageChanged = false;
             WifiOnly = settings.WifiOnly;
+            KeepDeviceAwake = settings.KeepDeviceAwake;
 
             GlobalDownloadLimitKbps = settings.GlobalDownloadLimitKbps;
             GlobalUploadLimitKbps = settings.GlobalUploadLimitKbps;
@@ -282,6 +299,7 @@ public partial class SettingsViewModel : ObservableObject
             ProxyPort = settings.ProxyPort is > 0 and <= 65535 ? settings.ProxyPort : 1080;
             ProxyUsername = settings.ProxyUsername ?? string.Empty;
             ProxyPassword = settings.ProxyPassword ?? string.Empty;
+            _proxyPasswordUnavailable = settings.ProxyPasswordUnavailable;
 
             var languageCode = NormalizeLanguageCode(settings.Language ?? "");
             SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == languageCode)
@@ -307,7 +325,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         if (TryNormalizeInt(nameof(GlobalDownloadLimitKbps), value, 0, MaxKbpsLimit, LocalizationResourceManager.Instance["DownloadKBs"], " KB/s", out var normalized))
         {
-            GlobalDownloadLimitKbps = normalized;
+            ApplyNormalizedValue(() => GlobalDownloadLimitKbps = normalized);
             return;
         }
 
@@ -322,11 +340,18 @@ public partial class SettingsViewModel : ObservableObject
         SafeFireAndForget(PersistSettingsAsync());
     }
 
+    partial void OnKeepDeviceAwakeChanged(bool value)
+    {
+        if (_isLoadingSettings) return;
+        _torrentService.UpdateKeepDeviceAwake(value);
+        SafeFireAndForget(PersistSettingsAsync());
+    }
+
     partial void OnGlobalUploadLimitKbpsChanged(int value)
     {
         if (TryNormalizeInt(nameof(GlobalUploadLimitKbps), value, 0, MaxKbpsLimit, LocalizationResourceManager.Instance["UploadKBs"], " KB/s", out var normalized))
         {
-            GlobalUploadLimitKbps = normalized;
+            ApplyNormalizedValue(() => GlobalUploadLimitKbps = normalized);
             return;
         }
 
@@ -338,7 +363,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         if (TryNormalizeInt(nameof(MaxActiveDownloads), value, 0, MaxActiveLimit, LocalizationResourceManager.Instance["MaxActiveDownloads"], "", out var normalized))
         {
-            MaxActiveDownloads = normalized;
+            ApplyNormalizedValue(() => MaxActiveDownloads = normalized);
             return;
         }
 
@@ -350,7 +375,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         if (TryNormalizeInt(nameof(MaxActiveSeeds), value, 0, MaxActiveLimit, LocalizationResourceManager.Instance["MaxActiveSeeds"], "", out var normalized))
         {
-            MaxActiveSeeds = normalized;
+            ApplyNormalizedValue(() => MaxActiveSeeds = normalized);
             return;
         }
 
@@ -362,7 +387,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         if (TryNormalizeSeedRatio(value, out var normalized))
         {
-            GlobalMaxSeedRatio = normalized;
+            ApplyNormalizedValue(() => GlobalMaxSeedRatio = normalized);
             return;
         }
 
@@ -374,7 +399,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         if (TryNormalizeInt(nameof(GlobalMaxSeedMinutes), value, 0, MaxSeedMinutesLimit, LocalizationResourceManager.Instance["MaxSeedMinutes"], " min", out var normalized))
         {
-            GlobalMaxSeedMinutes = normalized;
+            ApplyNormalizedValue(() => GlobalMaxSeedMinutes = normalized);
             return;
         }
 
@@ -461,7 +486,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         if (TryNormalizeInt(nameof(ProxyPort), value, 1, 65535, LocalizationResourceManager.Instance["Port"], "", out var normalized))
         {
-            ProxyPort = normalized;
+            ApplyNormalizedValue(() => ProxyPort = normalized);
             return;
         }
 
@@ -480,6 +505,7 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnProxyPasswordChanged(string value)
     {
         if (_isLoadingSettings) return;
+        _proxyPasswordUnavailable = false;
         ApplyProxySettings();
         SafeFireAndForget(PersistSettingsAsync());
     }
@@ -529,6 +555,7 @@ public partial class SettingsViewModel : ObservableObject
     private void ApplySettingsToService()
     {
         SafeFireAndForget(_torrentService.UpdateWifiOnlyAsync(WifiOnly));
+        _torrentService.UpdateKeepDeviceAwake(KeepDeviceAwake);
         ApplySpeedLimits();
         ApplyQueueLimits();
         ApplySeedingLimits();
@@ -587,7 +614,9 @@ public partial class SettingsViewModel : ObservableObject
                 ProxyPassword,
                 _languageChanged ? SelectedLanguage?.Code : existingSettings.Language,
                 SelectedTheme?.Code,
-                WifiOnly));
+                WifiOnly,
+                KeepDeviceAwake,
+                _proxyPasswordUnavailable));
     }
 
     private async Task RefreshFileAssociationAsync()
@@ -681,7 +710,7 @@ public partial class SettingsViewModel : ObservableObject
             return true;
         }
 
-        ValidationMessage = null;
+        ClearValidationMessage();
         return false;
     }
 
@@ -704,8 +733,34 @@ public partial class SettingsViewModel : ObservableObject
             return true;
         }
 
-        ValidationMessage = null;
+        ClearValidationMessage();
         return false;
+    }
+
+    /// <summary>
+    /// Writes a clamped value back. The write re-enters the property's change handler, which
+    /// then applies and persists the valid value; the message explaining the adjustment must
+    /// survive that second pass.
+    /// </summary>
+    private void ApplyNormalizedValue(Action assign)
+    {
+        _isApplyingNormalizedValue = true;
+        try
+        {
+            assign();
+        }
+        finally
+        {
+            _isApplyingNormalizedValue = false;
+        }
+    }
+
+    private void ClearValidationMessage()
+    {
+        if (!_isApplyingNormalizedValue)
+        {
+            ValidationMessage = null;
+        }
     }
 
     private static int NormalizeInt(int value, int min, int max)

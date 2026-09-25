@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace TorrentFree.Models;
 
 /// <summary>
@@ -79,6 +81,14 @@ public class AppSettings
     public string ProxyPassword { get; set; } = string.Empty;
 
     /// <summary>
+    /// Set when secure storage could not return the proxy password on load. An empty
+    /// <see cref="ProxyPassword"/> then means "unknown", not "no password", and saving these
+    /// settings keeps the stored credential. Never persisted.
+    /// </summary>
+    [JsonIgnore]
+    public bool ProxyPasswordUnavailable { get; set; }
+
+    /// <summary>
     /// User-selected language code (e.g. "en", "es", "fr", "ru").
     /// Null or empty means follow system language.
     /// </summary>
@@ -95,4 +105,13 @@ public class AppSettings
     /// Null means the state has not been recorded yet or the platform does not support it.
     /// </summary>
     public bool? DesktopWasMaximized { get; set; }
+
+    /// <summary>
+    /// Android only: holds a partial wake lock while transfers are active so downloads keep
+    /// running with the screen off. Off by default because it increases battery use.
+    /// </summary>
+    public bool KeepDeviceAwake { get; set; }
+
+    /// <summary>Every member is a value or string, so a shallow copy is independent.</summary>
+    internal AppSettings Clone() => (AppSettings)MemberwiseClone();
 }

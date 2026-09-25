@@ -103,7 +103,11 @@ public sealed class TorrentServiceStartRollbackTests
         public int StartCalls { get; private set; }
         public int StopCalls { get; private set; }
 
-        public void Start() => StartCalls++;
+        public bool Start()
+        {
+            StartCalls++;
+            return true;
+        }
 
         public void Stop() => StopCalls++;
     }

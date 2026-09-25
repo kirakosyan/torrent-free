@@ -13,7 +13,27 @@ public sealed class DownloadForegroundService : Service
 {
     private const int NotificationId = 1001;
     private const string ChannelId = "torrentfree_downloads";
+    private static readonly object StateGate = new();
+    private static bool _runRequested;
+    private static bool _inForeground;
     private int _timeoutHandled;
+
+    /// <summary>
+    /// Records whether active transfers need this service.
+    /// </summary>
+    /// <returns>
+    /// <see langword="true"/> when the caller must stop a service which is already in the
+    /// foreground. A service which has not reached the foreground yet stops itself after
+    /// calling StartForeground, so it is never stopped before satisfying that requirement.
+    /// </returns>
+    internal static bool RequestRunning(bool running)
+    {
+        lock (StateGate)
+        {
+            _runRequested = running;
+            return !running && _inForeground;
+        }
+    }
 
     public override void OnCreate()
     {
@@ -25,7 +45,27 @@ public sealed class DownloadForegroundService : Service
     {
         var notification = BuildNotification();
 
-        TryStartForeground(notification);
+        if (!TryStartForeground(notification))
+        {
+            return StartCommandResult.NotSticky;
+        }
+
+        bool stopRequested;
+        lock (StateGate)
+        {
+            _inForeground = true;
+            stopRequested = !_runRequested;
+        }
+
+        if (stopRequested)
+        {
+            // Transfers ended before this service reached the foreground.
+            StopForegroundSafely();
+            StopSelf();
+            return StartCommandResult.NotSticky;
+        }
+
+        TransferWakeLock.SetServiceActive(true);
         return StartCommandResult.NotSticky;
     }
 
@@ -86,6 +126,7 @@ public sealed class DownloadForegroundService : Service
         // operation. The service itself must be stopped synchronously before Android's
         // timeout grace period expires.
         _ = PauseTransfersAfterTimeoutAsync();
+        TransferWakeLock.SetServiceActive(false);
         StopSelf();
         StopForegroundSafely();
     }
@@ -115,6 +156,12 @@ public sealed class DownloadForegroundService : Service
 
     public override void OnDestroy()
     {
+        lock (StateGate)
+        {
+            _inForeground = false;
+        }
+
+        TransferWakeLock.SetServiceActive(false);
         StopForegroundSafely();
         base.OnDestroy();
     }
@@ -153,8 +200,36 @@ public sealed class DownloadForegroundService : Service
         builder.SetCategory(NotificationCompat.CategoryService);
         builder.SetVisibility(NotificationCompat.VisibilityPublic);
         builder.SetPriority((int)NotificationPriority.Low);
+        if (CreateOpenAppIntent() is { } openApp)
+        {
+            builder.SetContentIntent(openApp);
+        }
 
         return builder.Build()!;
+    }
+
+    private PendingIntent? CreateOpenAppIntent()
+    {
+        try
+        {
+            // Same as a launcher tap: brings the existing task to the front.
+            var launch = new Intent(this, typeof(MainActivity));
+            launch.SetAction(Intent.ActionMain);
+            launch.AddCategory(Intent.CategoryLauncher);
+            launch.AddFlags(ActivityFlags.SingleTop);
+            var flags = PendingIntentFlags.UpdateCurrent;
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
+            {
+                flags |= PendingIntentFlags.Immutable;
+            }
+
+            return PendingIntent.GetActivity(this, 0, launch, flags);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Could not create the open-app notification intent: {ex}");
+            return null;
+        }
     }
 
     private void CreateNotificationChannel()

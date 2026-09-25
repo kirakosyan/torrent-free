@@ -8,8 +8,9 @@ namespace TorrentFree;
 /// </summary>
 public sealed class AndroidBackgroundDownloadService : IBackgroundDownloadService
 {
-    public void Start()
+    public bool Start()
     {
+        DownloadForegroundService.RequestRunning(true);
         try
         {
             var context = Android.App.Application.Context;
@@ -25,15 +26,29 @@ public sealed class AndroidBackgroundDownloadService : IBackgroundDownloadServic
             {
                 context.StartService(intent);
             }
+
+            return true;
         }
         catch (Exception ex)
         {
+            // Android 12+ refuses foreground-service starts while the app is in the background.
+            // TorrentService retries when the app returns to the foreground.
             System.Diagnostics.Debug.WriteLine($"Failed to start foreground service: {ex}");
+            DownloadForegroundService.RequestRunning(false);
+            return false;
         }
     }
 
     public void Stop()
     {
+        // Stopping a service started with StartForegroundService before it has called
+        // StartForeground crashes the app on several Android versions. A service which has not
+        // reached the foreground yet sees the cleared request and stops itself once it does.
+        if (!DownloadForegroundService.RequestRunning(false))
+        {
+            return;
+        }
+
         try
         {
             var context = Android.App.Application.Context;
@@ -45,4 +60,6 @@ public sealed class AndroidBackgroundDownloadService : IBackgroundDownloadServic
             System.Diagnostics.Debug.WriteLine($"Failed to stop foreground service: {ex}");
         }
     }
+
+    public void SetKeepDeviceAwake(bool enabled) => TransferWakeLock.SetEnabled(enabled);
 }

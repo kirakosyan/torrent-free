@@ -552,4 +552,16 @@
   <data name="HintQueuedForSeeding" xml:space="preserve">
     <value>डाउनलोड पूरा हो गया। सीडिंग के लिए जगह खाली होने की प्रतीक्षा है। डाउनलोड की गई फ़ाइलें उपयोग के लिए तैयार हैं।</value>
   </data>
+  <data name="ErrorRemoveFilesLeftInPlace" xml:space="preserve">
+    <value>टोरेंट हटा दिया गया, लेकिन कुछ डाउनलोड की गई फाइलें हटाई नहीं जा सकीं। अगर अब उनकी जरूरत नहीं है तो उन्हें मैन्युअल रूप से हटाएं।</value>
+  </data>
+  <data name="ProxyTrackersHint" xml:space="preserve">
+    <value>प्रॉक्सी चालू होने पर DHT और UDP ट्रैकर बंद रहते हैं ताकि वे आपका IP पता उजागर न करें। HTTP या HTTPS ट्रैकर के बिना मैग्नेट लिंक को शायद कोई पीयर न मिले।</value>
+  </data>
+  <data name="KeepDeviceAwakeLabel" xml:space="preserve">
+    <value>ट्रांसफर के दौरान डिवाइस को जागृत रखें</value>
+  </data>
+  <data name="KeepDeviceAwakeHelp" xml:space="preserve">
+    <value>डाउनलोड या सीडिंग के दौरान डिवाइस को स्लीप में जाने से रोकता है, ताकि स्क्रीन बंद होने पर भी ट्रांसफर जारी रहें। अधिक बैटरी खर्च होती है।</value>
+  </data>
 </root>

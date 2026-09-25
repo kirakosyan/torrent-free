@@ -26,6 +26,7 @@ public static class MauiProgram
         // Register Services
         builder.Services.AddSingleton(_ => MauiStoragePaths.Create());
         builder.Services.AddSingleton<IUiDispatcher, MauiUiDispatcher>();
+        builder.Services.AddSingleton<ISecretStore, MauiSecretStore>();
         builder.Services.AddSingleton<IStorageService, StorageService>();
         builder.Services.AddSingleton<IAppStore, PlatformAppStore>();
         builder.Services.AddSingleton<ILibroNestLauncher, LibroNestLauncher>();

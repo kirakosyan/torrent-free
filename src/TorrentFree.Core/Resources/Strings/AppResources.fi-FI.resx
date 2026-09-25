@@ -552,4 +552,16 @@
   <data name="HintQueuedForSeeding" xml:space="preserve">
     <value>Lataus valmis. Odotetaan vapaata jakamispaikkaa. Ladatut tiedostot ovat käyttövalmiita.</value>
   </data>
+  <data name="ErrorRemoveFilesLeftInPlace" xml:space="preserve">
+    <value>Torrent poistettiin, mutta joitakin ladattuja tiedostoja ei voitu poistaa. Poista ne käsin, jos et enää tarvitse niitä.</value>
+  </data>
+  <data name="ProxyTrackersHint" xml:space="preserve">
+    <value>Kun välityspalvelin on käytössä, DHT ja UDP-seurantapalvelimet on poistettu käytöstä, jotta ne eivät paljasta IP-osoitettasi. Magnet-linkit ilman HTTP- tai HTTPS-seurantapalvelimia eivät välttämättä löydä vertaisia.</value>
+  </data>
+  <data name="KeepDeviceAwakeLabel" xml:space="preserve">
+    <value>Pidä laite hereillä siirtojen aikana</value>
+  </data>
+  <data name="KeepDeviceAwakeHelp" xml:space="preserve">
+    <value>Estää laitetta menemästä lepotilaan latausten tai jakamisen aikana, jotta siirrot jatkuvat näytön ollessa sammuksissa. Kuluttaa enemmän akkua.</value>
+  </data>
 </root>

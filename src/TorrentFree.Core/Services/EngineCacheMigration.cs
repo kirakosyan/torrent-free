@@ -11,6 +11,14 @@ internal static class EngineCacheMigration
         var marker = Path.Combine(destinationRoot, CompletionMarker);
         if (File.Exists(marker)) return;
         Directory.CreateDirectory(destinationRoot);
+        if (!HasLegacyEntries(sourceRoot))
+        {
+            // Fresh installs (and linked or cloud-synced download folders without a legacy
+            // cache) have nothing to move, so no link check is needed.
+            File.WriteAllText(marker, "complete");
+            return;
+        }
+
         if (IsLink(sourceRoot) || IsLink(destinationRoot))
             throw new IOException("Engine cache migration cannot follow directory links.");
 
@@ -45,6 +53,11 @@ internal static class EngineCacheMigration
         if (!File.Exists(source) || IsLink(source) || File.Exists(destination) || Directory.Exists(destination)) return;
         File.Move(source, destination);
     }
+
+    private static bool HasLegacyEntries(string sourceRoot)
+        => Directory.Exists(Path.Combine(sourceRoot, "fastresume"))
+            || Directory.Exists(Path.Combine(sourceRoot, "metadata"))
+            || File.Exists(Path.Combine(sourceRoot, "dht_nodes.cache"));
 
     private static bool IsLink(string path) => File.GetAttributes(path).HasFlag(FileAttributes.ReparsePoint);
 }

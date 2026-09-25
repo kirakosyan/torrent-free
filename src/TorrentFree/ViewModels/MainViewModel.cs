@@ -247,6 +247,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         ApplyQueueLimits();
         ApplySeedingLimits();
         ApplyProxySettings();
+        _torrentService.UpdateKeepDeviceAwake(_loadedSettings.KeepDeviceAwake);
     }
 
     private void ApplyGlobalSpeedLimits()
@@ -392,9 +393,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
 #if ANDROID
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
-                if (!await TryOpenAndroidFolderAsync(torrent.Id, downloadPath, folderPath, isDirectory))
+                // Exporting copies the whole download to public storage, which can take a while.
+                var wasBusy = IsBusy;
+                IsBusy = true;
+                try
                 {
-                    ErrorMessage = LocalizationResourceManager.Instance["ErrorOpenFolder"];
+                    if (!await TryOpenAndroidFolderAsync(torrent.Id, downloadPath, folderPath, isDirectory))
+                    {
+                        ErrorMessage = LocalizationResourceManager.Instance["ErrorOpenFolder"];
+                    }
+                }
+                finally
+                {
+                    IsBusy = wasBusy;
                 }
 
                 return;
@@ -428,8 +439,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
         string? publicFolder = null;
         try
         {
-            publicFolder = await AndroidDownloadExportService.ExportToPublicDownloadsAsync(ownerId, downloadPath, isDirectory);
-            exported = !string.IsNullOrWhiteSpace(publicFolder);
+            // Android 6-9 need the runtime storage permission to write to public Downloads.
+            if (OperatingSystem.IsAndroidVersionAtLeast(29)
+                || await Permissions.RequestAsync<Permissions.StorageWrite>() == PermissionStatus.Granted)
+            {
+                publicFolder = await AndroidDownloadExportService.ExportToPublicDownloadsAsync(ownerId, downloadPath, isDirectory);
+                exported = !string.IsNullOrWhiteSpace(publicFolder);
+            }
         }
         catch (Exception ex)
         {
@@ -779,6 +795,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 StartStatsTimer();
                 _hasInitialized = true;
 
+                // Restored transfers which were active when the app closed come back Queued.
+                SafeFireAndForget(_torrentService.StartQueuedTorrentsAsync());
+
                 SafeFireAndForget(_notificationService.EnsurePermissionAsync());
                 SafeFireAndForget(PromptFileAssociationAsync());
 #if !WINDOWS
@@ -846,6 +865,58 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public Task ImportTorrentFileFromPathAsync(string filePath)
     {
         return TryAddTorrentFromFilePathAsync(filePath, notifyDuplicate: false, notifyInvalid: true);
+    }
+
+    /// <summary>
+    /// Adds and starts a magnet link opened from another app (an Android intent or a Windows
+    /// protocol activation). Call on the UI thread.
+    /// </summary>
+    public async Task ImportMagnetLinkAsync(string magnetLink)
+    {
+        try
+        {
+            await EnsureInitializedAsync();
+            var torrent = await _torrentService.AddTorrentAsync(magnetLink.Trim());
+            if (torrent is null)
+            {
+                ErrorMessage = LocalizationResourceManager.Instance["ErrorInvalidMagnet"];
+                return;
+            }
+
+            ErrorMessage = null;
+            await _torrentService.StartTorrentAsync(torrent);
+        }
+        catch (DuplicateTorrentException)
+        {
+            ErrorMessage = LocalizationResourceManager.Instance["ErrorDuplicateTorrent"];
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Magnet activation error: {ex}");
+            ErrorMessage = LocalizationResourceManager.Instance["ErrorAddTorrent"];
+        }
+    }
+
+    /// <summary>
+    /// Adds and starts .torrent content opened from another app, where no stable file path
+    /// exists (for example an Android content URI). Call on the UI thread.
+    /// </summary>
+    public async Task ImportTorrentContentAsync(string fileName, byte[] content)
+    {
+        try
+        {
+            await EnsureInitializedAsync();
+            var metadata = await _torrentImportService.PrepareAsync(new TorrentPickedFile(fileName, null, content));
+            if (await TryAddTorrentFromMetadataAsync(metadata, notifyDuplicate: true, notifyInvalid: true))
+            {
+                ErrorMessage = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Torrent activation error: {ex}");
+            ErrorMessage = LocalizationResourceManager.Instance["ErrorImportTorrent"];
+        }
     }
 
     private async Task ProcessCommandLineArgumentsAsync()
@@ -1202,9 +1273,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         if (SelectedTorrent == null) return;
 
-        var torrentToRemove = SelectedTorrent;
-        SelectedTorrent = null;
-        await RemoveTorrentCoreAsync(torrentToRemove, setBusy: true);
+        // The selection is cleared only after the removal is confirmed and completed.
+        await RemoveTorrentCoreAsync(SelectedTorrent, setBusy: true);
     }
 
     private bool CanRemoveTorrent() => SelectedTorrent != null;
@@ -1212,14 +1282,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// <summary>
     /// Starts a specific torrent (used from UI list buttons).
     /// </summary>
-    [RelayCommand]
+    // Shared by every row: without concurrent execution, one slow start disables all rows.
+    [RelayCommand(AllowConcurrentExecutions = true)]
     private Task StartSpecificTorrentAsync(TorrentItem torrent) =>
         torrent?.CanStart == true ? StartTorrentCoreAsync(torrent, setBusy: false) : Task.CompletedTask;
 
     /// <summary>
     /// Pauses a specific torrent (used from UI list buttons).
     /// </summary>
-    [RelayCommand]
+    [RelayCommand(AllowConcurrentExecutions = true)]
     private Task PauseSpecificTorrentAsync(TorrentItem torrent) =>
         torrent?.CanPause == true ? PauseTorrentCoreAsync(torrent, setBusy: false) : Task.CompletedTask;
 
@@ -1238,10 +1309,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         if (torrent == null) return;
 
-        if (SelectedTorrent == torrent)
-        {
-            SelectedTorrent = null;
-        }
         await RemoveTorrentCoreAsync(torrent, setBusy: false);
     }
 
@@ -1315,7 +1382,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 return;
             }
 
-            await _torrentService.RemoveTorrentAsync(torrent, result.DeleteTorrentFile, result.DeleteDownloadedFiles);
+            var removal = await _torrentService.RemoveTorrentAsync(torrent, result.DeleteTorrentFile, result.DeleteDownloadedFiles);
+            if (removal.Removed && ReferenceEquals(SelectedTorrent, torrent))
+            {
+                SelectedTorrent = null;
+            }
+
+            if (removal.DownloadedFilesLeftInPlace)
+            {
+                ErrorMessage = LocalizationResourceManager.Instance["ErrorRemoveFilesLeftInPlace"];
+            }
         }
         catch (Exception ex)
         {

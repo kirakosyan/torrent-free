@@ -552,4 +552,16 @@
   <data name="HintQueuedForSeeding" xml:space="preserve">
     <value>Download complete. Waiting for a seeding slot. The downloaded files are ready to use.</value>
   </data>
+  <data name="ErrorRemoveFilesLeftInPlace" xml:space="preserve">
+    <value>The torrent was removed, but some downloaded files could not be deleted. Delete them manually if you no longer need them.</value>
+  </data>
+  <data name="ProxyTrackersHint" xml:space="preserve">
+    <value>While the proxy is on, DHT and UDP trackers are turned off so they cannot reveal your IP address. Magnet links without HTTP or HTTPS trackers may not find any peers.</value>
+  </data>
+  <data name="KeepDeviceAwakeLabel" xml:space="preserve">
+    <value>Keep device awake during transfers</value>
+  </data>
+  <data name="KeepDeviceAwakeHelp" xml:space="preserve">
+    <value>Stops the device from sleeping while downloads or seeding are active, so transfers continue with the screen off. Uses more battery.</value>
+  </data>
 </root>

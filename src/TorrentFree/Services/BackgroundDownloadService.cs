@@ -5,9 +5,7 @@ namespace TorrentFree.Services;
 /// </summary>
 public sealed class BackgroundDownloadService : IBackgroundDownloadService
 {
-    public void Start()
-    {
-    }
+    public bool Start() => true;
 
     public void Stop()
     {

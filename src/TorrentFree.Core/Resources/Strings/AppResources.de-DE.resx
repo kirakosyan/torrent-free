@@ -552,4 +552,16 @@
   <data name="HintQueuedForSeeding" xml:space="preserve">
     <value>Download abgeschlossen. Wartet auf einen freien Seeding-Platz. Die heruntergeladenen Dateien können verwendet werden.</value>
   </data>
+  <data name="ErrorRemoveFilesLeftInPlace" xml:space="preserve">
+    <value>Der Torrent wurde entfernt, aber einige heruntergeladene Dateien konnten nicht gelöscht werden. Löschen Sie sie manuell, wenn Sie sie nicht mehr benötigen.</value>
+  </data>
+  <data name="ProxyTrackersHint" xml:space="preserve">
+    <value>Solange der Proxy aktiv ist, sind DHT und UDP-Tracker deaktiviert, damit sie Ihre IP-Adresse nicht preisgeben. Magnet-Links ohne HTTP- oder HTTPS-Tracker finden möglicherweise keine Peers.</value>
+  </data>
+  <data name="KeepDeviceAwakeLabel" xml:space="preserve">
+    <value>Gerät während Übertragungen wach halten</value>
+  </data>
+  <data name="KeepDeviceAwakeHelp" xml:space="preserve">
+    <value>Verhindert, dass das Gerät während Downloads oder beim Seeden in den Ruhezustand wechselt, damit Übertragungen bei ausgeschaltetem Bildschirm weiterlaufen. Verbraucht mehr Akku.</value>
+  </data>
 </root>

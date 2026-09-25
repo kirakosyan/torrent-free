@@ -552,4 +552,16 @@
   <data name="HintQueuedForSeeding" xml:space="preserve">
     <value>Tải xuống hoàn tất. Đang chờ lượt chia sẻ. Các tệp đã tải xuống sẵn sàng để sử dụng.</value>
   </data>
+  <data name="ErrorRemoveFilesLeftInPlace" xml:space="preserve">
+    <value>Đã xóa torrent, nhưng không thể xóa một số tệp đã tải xuống. Hãy xóa thủ công nếu bạn không cần chúng nữa.</value>
+  </data>
+  <data name="ProxyTrackersHint" xml:space="preserve">
+    <value>Khi bật proxy, DHT và tracker UDP bị tắt để không làm lộ địa chỉ IP của bạn. Liên kết magnet không có tracker HTTP hoặc HTTPS có thể không tìm thấy peer nào.</value>
+  </data>
+  <data name="KeepDeviceAwakeLabel" xml:space="preserve">
+    <value>Giữ thiết bị hoạt động khi truyền</value>
+  </data>
+  <data name="KeepDeviceAwakeHelp" xml:space="preserve">
+    <value>Ngăn thiết bị chuyển sang chế độ ngủ khi đang tải xuống hoặc chia sẻ, để quá trình truyền tiếp tục khi tắt màn hình. Tốn pin hơn.</value>
+  </data>
 </root>

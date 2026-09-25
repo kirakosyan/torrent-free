@@ -552,4 +552,16 @@
   <data name="HintQueuedForSeeding" xml:space="preserve">
     <value>İndirme tamamlandı. Boş bir gönderim yuvası bekleniyor. İndirilen dosyalar kullanıma hazır.</value>
   </data>
+  <data name="ErrorRemoveFilesLeftInPlace" xml:space="preserve">
+    <value>Torrent kaldırıldı, ancak indirilen bazı dosyalar silinemedi. Artık ihtiyacınız yoksa bunları elle silin.</value>
+  </data>
+  <data name="ProxyTrackersHint" xml:space="preserve">
+    <value>Proxy açıkken DHT ve UDP izleyicileri IP adresinizi açığa çıkarmamaları için kapatılır. HTTP veya HTTPS izleyicisi olmayan magnet bağlantıları hiç eş bulamayabilir.</value>
+  </data>
+  <data name="KeepDeviceAwakeLabel" xml:space="preserve">
+    <value>Aktarımlar sırasında cihazı uyanık tut</value>
+  </data>
+  <data name="KeepDeviceAwakeHelp" xml:space="preserve">
+    <value>İndirme veya paylaşım sürerken cihazın uyku moduna geçmesini engeller, böylece aktarımlar ekran kapalıyken devam eder. Daha fazla pil kullanır.</value>
+  </data>
 </root>

@@ -538,4 +538,16 @@
   <data name="HintQueuedForSeeding" xml:space="preserve">
     <value>اكتمل التنزيل. في انتظار خانة متاحة للمشاركة. الملفات المنزّلة جاهزة للاستخدام.</value>
   </data>
+  <data name="ErrorRemoveFilesLeftInPlace" xml:space="preserve">
+    <value>تمت إزالة التورنت، لكن تعذّر حذف بعض الملفات التي تم تنزيلها. احذفها يدويًا إذا لم تعد بحاجة إليها.</value>
+  </data>
+  <data name="ProxyTrackersHint" xml:space="preserve">
+    <value>أثناء تشغيل الوكيل، يتم إيقاف DHT ومتتبعات UDP حتى لا تكشف عنوان IP الخاص بك. قد لا تعثر روابط المغناطيس التي لا تحتوي على متتبعات HTTP أو HTTPS على أي نظراء.</value>
+  </data>
+  <data name="KeepDeviceAwakeLabel" xml:space="preserve">
+    <value>إبقاء الجهاز مستيقظًا أثناء النقل</value>
+  </data>
+  <data name="KeepDeviceAwakeHelp" xml:space="preserve">
+    <value>يمنع الجهاز من السكون أثناء التنزيل أو المشاركة، لتستمر عمليات النقل عند إيقاف الشاشة. يستهلك المزيد من البطارية.</value>
+  </data>
 </root>

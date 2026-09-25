@@ -552,4 +552,16 @@
   <data name="HintQueuedForSeeding" xml:space="preserve">
     <value>Stahování dokončeno. Čeká se na volné místo pro sdílení. Stažené soubory jsou připravené k použití.</value>
   </data>
+  <data name="ErrorRemoveFilesLeftInPlace" xml:space="preserve">
+    <value>Torrent byl odebrán, ale některé stažené soubory se nepodařilo smazat. Pokud je již nepotřebujete, smažte je ručně.</value>
+  </data>
+  <data name="ProxyTrackersHint" xml:space="preserve">
+    <value>Když je proxy zapnutá, jsou DHT a UDP trackery vypnuté, aby neprozradily vaši IP adresu. Magnet odkazy bez HTTP nebo HTTPS trackerů nemusí najít žádné peery.</value>
+  </data>
+  <data name="KeepDeviceAwakeLabel" xml:space="preserve">
+    <value>Nenechat zařízení usnout během přenosů</value>
+  </data>
+  <data name="KeepDeviceAwakeHelp" xml:space="preserve">
+    <value>Zabrání uspání zařízení během stahování nebo sdílení, takže přenosy pokračují i při vypnuté obrazovce. Spotřebovává více baterie.</value>
+  </data>
 </root>
