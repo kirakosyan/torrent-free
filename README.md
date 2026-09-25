@@ -30,14 +30,15 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 
 ## 📝 Release Overview
 
-The current app version is **v1.14**.
+The current app version is **v1.15**.
 
-### Unreleased
+### v1.15
 
 - Pausing a magnet link that is still fetching metadata now really stops it.
 - Transfers that were active when the app closed resume automatically instead of coming back paused.
 - Wi-Fi and proxy changes keep fast-resume data, so transfers no longer re-check all data when they restart.
 - "Delete downloaded files" now works for magnet downloads after a restart and reports files it could not delete.
+- The delete dialog selects both file-removal options by default; clear either option to keep those files.
 - Android: `.torrent` files picked from other apps download to the app download folder instead of a temporary cache; magnet links and `.torrent` files can be opened from other apps; exports show progress and read large files once; optional "keep device awake" setting.
 - Windows: `magnet:` links open in the app; unmetered wired and VPN connections count for Wi-Fi-only transfers.
 - The SOCKS5 proxy password is stored in platform secure storage instead of the settings file.

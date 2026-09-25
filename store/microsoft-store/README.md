@@ -1,5 +1,16 @@
 # Microsoft Store listings
 
+## Current release
+
+Version **1.15** (build **20**, MSIX **1.15.0.0**) includes x64 and ARM64 packages.
+See [release notes and certification information](release-notes-1.15.md).
+Localized release notes are maintained in `release-notes-1.15.json` and the
+`ReleaseNotes` row of `listings.csv`.
+
+For updates, export the current Partner Center listings and replace only its
+`ReleaseNotes` row using the matching language from the JSON file. Keep the
+export's language columns, descriptions, screenshots, and other asset URLs intact.
+
 ## Build an update
 
 Bump `AppDisplayVersion` and `AppBuildNumber` in the app project, align the Windows
