@@ -30,6 +30,7 @@ public static class AppSettingsFactory
             ProxyPort = existing.ProxyPort is > 0 and <= 65535 ? existing.ProxyPort : 1080,
             ProxyUsername = existing.ProxyUsername ?? string.Empty,
             ProxyPassword = existing.ProxyPassword ?? string.Empty,
+            ProxyPasswordUnavailable = existing.ProxyPasswordUnavailable,
             Language = existing.Language,
             Theme = ThemeSettings.Normalize(existing.Theme),
             DesktopWasMaximized = existing.DesktopWasMaximized,
@@ -40,6 +41,10 @@ public static class AppSettingsFactory
     /// <summary>
     /// Builds the settings payload for the settings page save flow.
     /// </summary>
+    /// <param name="proxyPasswordUnavailable">
+    /// True while the page shows no password because secure storage could not return it and
+    /// the user has not entered one; the latest persisted password is then kept.
+    /// </param>
     public static AppSettings CreateForSettingsPage(
         AppSettings existing,
         int globalDownloadLimitKbps,
@@ -58,9 +63,11 @@ public static class AppSettingsFactory
         string? language,
         string? theme,
         bool? wifiOnly = null,
-        bool? keepDeviceAwake = null)
+        bool? keepDeviceAwake = null,
+        bool proxyPasswordUnavailable = false)
     {
         ArgumentNullException.ThrowIfNull(existing);
+        var keepExistingPassword = proxyPasswordUnavailable && string.IsNullOrEmpty(proxyPassword);
 
         return new AppSettings
         {
@@ -78,7 +85,8 @@ public static class AppSettingsFactory
             ProxyHost = proxyHost ?? string.Empty,
             ProxyPort = proxyPort is > 0 and <= 65535 ? proxyPort : 1080,
             ProxyUsername = proxyUsername ?? string.Empty,
-            ProxyPassword = proxyPassword ?? string.Empty,
+            ProxyPassword = (keepExistingPassword ? existing.ProxyPassword : proxyPassword) ?? string.Empty,
+            ProxyPasswordUnavailable = keepExistingPassword && existing.ProxyPasswordUnavailable,
             Language = language,
             Theme = ThemeSettings.Normalize(theme),
             DesktopWasMaximized = existing.DesktopWasMaximized,

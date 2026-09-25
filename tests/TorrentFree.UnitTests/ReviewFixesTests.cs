@@ -260,6 +260,72 @@ public sealed class ReviewFixesTests
     }
 
     [Fact]
+    public async Task SecretReadFailure_DoesNotDeleteProxyPasswordOnUnrelatedSave()
+    {
+        using var directory = new CoreTestDirectory();
+        var secrets = new MemorySecretStore();
+        using var storage = new StorageService(directory.StoragePaths, secrets);
+        await storage.SaveSettingsAsync(new AppSettings { ProxyUsername = "user", ProxyPassword = "secret" });
+
+        secrets.FailingReads = 1;
+        await AppSettingsPersistence.MergeAndSaveAsync(storage, existing => AppSettingsFactory.CreateWithSortByStatus(existing, sortByStatus: true));
+
+        var reloaded = await storage.LoadSettingsAsync();
+        Assert.Equal("secret", reloaded.ProxyPassword);
+        Assert.False(reloaded.ProxyPasswordUnavailable);
+        Assert.True(reloaded.SortByStatus);
+    }
+
+    [Fact]
+    public async Task SettingsPage_KeepsProxyPasswordItCouldNotRead()
+    {
+        using var directory = new CoreTestDirectory();
+        var secrets = new MemorySecretStore();
+        using var storage = new StorageService(directory.StoragePaths, secrets);
+        await storage.SaveSettingsAsync(new AppSettings { ProxyUsername = "user", ProxyPassword = "secret" });
+        secrets.FailingReads = 1;
+        var page = await storage.LoadSettingsAsync();
+        Assert.True(page.ProxyPasswordUnavailable);
+        Assert.Equal(string.Empty, page.ProxyPassword);
+
+        // Secure storage works again by the time the page saves an unrelated change.
+        var saved = await SaveFromSettingsPageAsync(storage, page.ProxyPassword, proxyPasswordUnavailable: true);
+        Assert.Equal("secret", saved.ProxyPassword);
+        Assert.Equal("secret", secrets.Values[StorageService.ProxyPasswordSecretKey]);
+
+        // Once the user has edited the field, an empty password is a deliberate removal.
+        await SaveFromSettingsPageAsync(storage, string.Empty, proxyPasswordUnavailable: false);
+        Assert.False(secrets.Values.ContainsKey(StorageService.ProxyPasswordSecretKey));
+    }
+
+    [Fact]
+    public async Task SeedingTime_IsSavedAtTheProgressIntervalAndPromptlyWhenSeedingEnds()
+    {
+        await using var fixture = new CoreServiceFixture();
+        await fixture.Service.InitializeAsync();
+        var torrent = (await fixture.Service.AddTorrentFileAsync(await fixture.PrepareTorrentAsync()))!;
+        UpdateSeedingTime(fixture.Service, torrent, active: true);
+        await CoreServiceFixture.InvokeAsync(fixture.Service, "SaveIfPendingAsync");
+        await CoreServiceFixture.InvokeAsync(fixture.Service, "SaveAsync");
+
+        // A monitor tick of a seeding torrent must not rewrite the state file every 5 seconds.
+        fixture.Clock.Advance(TimeSpan.FromSeconds(5));
+        UpdateSeedingTime(fixture.Service, torrent, active: true);
+        await CoreServiceFixture.InvokeAsync(fixture.Service, "SaveIfPendingAsync");
+        Assert.Equal(0, await ReadSavedSeededSecondsAsync(fixture));
+
+        fixture.Clock.Advance(TimeSpan.FromSeconds(25));
+        UpdateSeedingTime(fixture.Service, torrent, active: true);
+        await CoreServiceFixture.InvokeAsync(fixture.Service, "SaveIfPendingAsync");
+        Assert.Equal(30, await ReadSavedSeededSecondsAsync(fixture));
+
+        fixture.Clock.Advance(TimeSpan.FromSeconds(2));
+        UpdateSeedingTime(fixture.Service, torrent, active: false);
+        await CoreServiceFixture.InvokeAsync(fixture.Service, "SaveIfPendingAsync");
+        Assert.Equal(32, await ReadSavedSeededSecondsAsync(fixture));
+    }
+
+    [Fact]
     public async Task MissingStateFileAfterInterruptedRotation_RecoversInsteadOfLookingEmpty()
     {
         using var directory = new CoreTestDirectory();
@@ -345,6 +411,25 @@ public sealed class ReviewFixesTests
         };
     }
 
+    private static Task<AppSettings> SaveFromSettingsPageAsync(StorageService storage, string proxyPassword, bool proxyPasswordUnavailable)
+        => AppSettingsPersistence.MergeAndSaveAsync(storage, existing => AppSettingsFactory.CreateForSettingsPage(
+            existing, existing.GlobalDownloadLimitKbps, existing.GlobalUploadLimitKbps, existing.MaxActiveDownloads,
+            existing.MaxActiveSeeds, existing.GlobalMaxSeedRatio, existing.GlobalMaxSeedMinutes,
+            existing.DownloadToTorrentFolder, existing.SpecificDownloadFolder, existing.ProxyEnabled, existing.ProxyHost,
+            existing.ProxyPort, existing.ProxyUsername, proxyPassword, existing.Language, existing.Theme,
+            proxyPasswordUnavailable: proxyPasswordUnavailable));
+
+    private static void UpdateSeedingTime(TorrentService service, TorrentItem torrent, bool active)
+        => typeof(TorrentService)
+            .GetMethod("UpdateSeedingTime", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(service, [torrent, active]);
+
+    private static async Task<double> ReadSavedSeededSecondsAsync(CoreServiceFixture fixture)
+    {
+        using var reader = new StorageService(fixture.Directory.StoragePaths);
+        return Assert.Single(await reader.LoadTorrentsAsync()).SeededSeconds;
+    }
+
     private static void InvokeUpdateBackgroundState(TorrentService service)
         => typeof(TorrentService)
             .GetMethod("UpdateBackgroundTransferState", BindingFlags.Instance | BindingFlags.NonPublic)!
@@ -369,10 +454,16 @@ public sealed class ReviewFixesTests
     {
         public Dictionary<string, string> Values { get; } = [];
         public bool Fail { get; init; }
+        public int FailingReads { get; set; }
 
         public Task<string?> GetAsync(string key)
         {
             if (Fail) throw new InvalidOperationException("Keystore unavailable");
+            if (FailingReads > 0)
+            {
+                FailingReads--;
+                throw new InvalidOperationException("Keystore temporarily unavailable");
+            }
             return Task.FromResult(Values.TryGetValue(key, out var value) ? value : null);
         }
 

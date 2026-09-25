@@ -93,7 +93,9 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
                 return settings;
             }
 
-            settings.ProxyPassword = await TryGetSecretAsync().ConfigureAwait(false) ?? string.Empty;
+            var (readSucceeded, password) = await TryGetSecretAsync().ConfigureAwait(false);
+            settings.ProxyPassword = password ?? string.Empty;
+            settings.ProxyPasswordUnavailable = !readSucceeded;
             return settings;
         }
         finally { _saveLock.Release(); }
@@ -107,7 +109,12 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
         {
             var data = await GetDataAsync().ConfigureAwait(false);
             var stored = settings.Clone();
-            if (secrets is not null && await TrySetSecretAsync(settings.ProxyPassword).ConfigureAwait(false))
+            stored.ProxyPasswordUnavailable = false;
+            // An empty password that could not be read is unknown, not cleared: writing it would
+            // turn a transient secure-storage error into a deleted credential.
+            var passwordUnknown = settings.ProxyPasswordUnavailable && string.IsNullOrEmpty(settings.ProxyPassword);
+            if (secrets is not null
+                && (passwordUnknown || await TrySetSecretAsync(settings.ProxyPassword).ConfigureAwait(false)))
             {
                 stored.ProxyPassword = string.Empty;
             }
@@ -168,14 +175,14 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
         await WriteDataAsync(data).ConfigureAwait(false);
     }
 
-    private async Task<string?> TryGetSecretAsync()
+    private async Task<(bool Succeeded, string? Value)> TryGetSecretAsync()
     {
-        try { return await secrets!.GetAsync(ProxyPasswordSecretKey).ConfigureAwait(false); }
+        try { return (true, await secrets!.GetAsync(ProxyPasswordSecretKey).ConfigureAwait(false)); }
         catch (Exception ex)
         {
             // Fail closed: a missing password makes the proxy reject the connection.
             System.Diagnostics.Debug.WriteLine($"Secret store read failed: {ex.Message}");
-            return null;
+            return (false, null);
         }
     }
 

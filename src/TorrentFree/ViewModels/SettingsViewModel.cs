@@ -25,6 +25,8 @@ public partial class SettingsViewModel : ObservableObject
     private bool _isUpdatingAssociation;
     private bool _isSyncingThemeOptions;
     private bool _languageChanged;
+    // The page shows no password because secure storage could not return it; saving must keep it.
+    private bool _proxyPasswordUnavailable;
 
     private const int MaxKbpsLimit = 1_000_000;
     private const int MaxActiveLimit = 200;
@@ -297,6 +299,7 @@ public partial class SettingsViewModel : ObservableObject
             ProxyPort = settings.ProxyPort is > 0 and <= 65535 ? settings.ProxyPort : 1080;
             ProxyUsername = settings.ProxyUsername ?? string.Empty;
             ProxyPassword = settings.ProxyPassword ?? string.Empty;
+            _proxyPasswordUnavailable = settings.ProxyPasswordUnavailable;
 
             var languageCode = NormalizeLanguageCode(settings.Language ?? "");
             SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == languageCode)
@@ -502,6 +505,7 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnProxyPasswordChanged(string value)
     {
         if (_isLoadingSettings) return;
+        _proxyPasswordUnavailable = false;
         ApplyProxySettings();
         SafeFireAndForget(PersistSettingsAsync());
     }
@@ -611,7 +615,8 @@ public partial class SettingsViewModel : ObservableObject
                 _languageChanged ? SelectedLanguage?.Code : existingSettings.Language,
                 SelectedTheme?.Code,
                 WifiOnly,
-                KeepDeviceAwake));
+                KeepDeviceAwake,
+                _proxyPasswordUnavailable));
     }
 
     private async Task RefreshFileAssociationAsync()

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace TorrentFree.Models;
 
 /// <summary>
@@ -77,6 +79,14 @@ public class AppSettings
     /// SOCKS5 proxy password (optional).
     /// </summary>
     public string ProxyPassword { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Set when secure storage could not return the proxy password on load. An empty
+    /// <see cref="ProxyPassword"/> then means "unknown", not "no password", and saving these
+    /// settings keeps the stored credential. Never persisted.
+    /// </summary>
+    [JsonIgnore]
+    public bool ProxyPasswordUnavailable { get; set; }
 
     /// <summary>
     /// User-selected language code (e.g. "en", "es", "fr", "ru").

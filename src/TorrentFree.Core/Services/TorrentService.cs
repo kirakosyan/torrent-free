@@ -2196,7 +2196,7 @@ public partial class TorrentService : ITorrentService
         }
 
         if (e.PropertyName is nameof(TorrentItem.TorrentFilePath) or nameof(TorrentItem.CachedTorrentFilePath)
-            or nameof(TorrentItem.TorrentFileName) or nameof(TorrentItem.SavePath) or nameof(TorrentItem.SeededSeconds)
+            or nameof(TorrentItem.TorrentFileName) or nameof(TorrentItem.SavePath)
             or nameof(TorrentItem.ResolvedDownloadPath)
             or nameof(TorrentItem.DownloadLimitKbps) or nameof(TorrentItem.UploadLimitKbps)
             or nameof(TorrentItem.MaxSeedRatio) or nameof(TorrentItem.MaxSeedMinutes))
@@ -2228,7 +2228,15 @@ public partial class TorrentService : ITorrentService
         {
             var now = _timeProvider.GetTimestamp();
             if (_seedingSessions.Remove(torrent.Id, out var previous))
+            {
                 torrent.SeededSeconds += Math.Max(0, _timeProvider.GetElapsedTime(previous, now).TotalSeconds);
+                // Every monitor tick of a seeding torrent adds time: that is progress, saved with
+                // ProgressSaveInterval. The final update when seeding ends is saved promptly.
+                if (active)
+                    _pendingProgressSave = true;
+                else
+                    _pendingSave = true;
+            }
 
             if (active)
             {
