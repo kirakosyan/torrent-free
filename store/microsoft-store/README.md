@@ -3,6 +3,9 @@
 ## Current release
 
 Version **1.15** (build **20**, MSIX **1.15.0.0**) includes x64 and ARM64 packages.
+Submission 15 was sent for certification on September 25, 2026, with automatic
+publication after approval. This records submission status, not confirmation that
+the update is already live.
 See [release notes and certification information](release-notes-1.15.md).
 Localized release notes are maintained in `release-notes-1.15.json` and the
 `ReleaseNotes` row of `listings.csv`.

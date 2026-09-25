@@ -5,6 +5,15 @@
 - Windows package version: 1.15.0.0
 - Architectures: x64 and ARM64
 - Partner Center submission: 15 (`1152921505701979465`)
+- Submitted: September 25, 2026
+- Status at submission: **In certification** (pre-processing started)
+- Publishing: automatically as soon as certification passes
+- Source release commit: `c923069`
+- Both packages passed Partner Center validation. Release notes were imported and
+  verified by export for all 14 existing Store listings; screenshots and other
+  listing fields were preserved.
+
+[Partner Center submission status](https://partner.microsoft.com/en-us/dashboard/products/9NNX2ZTPXC26/overview)
 
 ## Validation
 
@@ -26,4 +35,6 @@
 
 ## Certification notes
 
-This update retains the existing Store identity and user data. The app is a desktop torrent client using MonoTorrent. The existing runFullTrust capability is required for its .NET MAUI desktop process, local file access, and peer-to-peer transfers. No account is required to use the app.
+Version 1.15 (Windows package 1.15.0.0), x64 and ARM64. No account or credentials are required. This update retains the existing Store identity and user data. The app is a .NET MAUI desktop torrent client using MonoTorrent; runFullTrust is required for the desktop process, local file access, and peer-to-peer transfers.
+
+Test with a torrent or magnet link for content you have permission to download. Check start, pause, resume, and restart recovery. Windows magnet links now open in the app. Wi-Fi-only mode also allows unmetered wired and VPN connections. In the delete confirmation, both file-removal options are selected by default; clear either option to keep those files. Proxy passwords use platform secure storage when available.
