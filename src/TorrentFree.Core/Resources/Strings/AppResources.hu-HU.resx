@@ -60,7 +60,7 @@
   </resheader>
   <!-- App Title -->
   <data name="AppTitle" xml:space="preserve">
-    <value>Torrent Free</value>
+    <value>Torrent Client</value>
   </data>
   <!-- Main Page -->
   <data name="AddTorrentPlaceholder" xml:space="preserve">
@@ -298,7 +298,7 @@
     <value>.torrent fájl társítása</value>
   </data>
   <data name="AssociateTorrentMessage" xml:space="preserve">
-    <value>Alapértelmezés szerint meg szeretné nyitni a .torrent fájlt a Torrent Free alkalmazással?</value>
+    <value>Alapértelmezés szerint meg szeretné nyitni a .torrent fájlt a Torrent Client alkalmazással?</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Igen</value>
@@ -307,10 +307,10 @@
     <value>Nem</value>
   </data>
   <data name="AboutTitle" xml:space="preserve">
-    <value>A Torrent Free alkalmazásról</value>
+    <value>A Torrent Client alkalmazásról</value>
   </data>
   <data name="AboutMessage" xml:space="preserve">
-    <value>A Torrent Free ingyenesen használható.</value>
+    <value>A Torrent Client ingyenesen használható.</value>
   </data>
   <data name="AboutVersionLabel" xml:space="preserve">
     <value>Változat</value>

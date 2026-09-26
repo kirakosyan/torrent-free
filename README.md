@@ -30,7 +30,13 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 
 ## 📝 Release Overview
 
-The current app version is **v1.15**.
+The current app version is **v1.16**.
+
+### v1.16
+
+- The app is called Torrent Client in every language, and the Android launcher label is shortened to fit.
+- The rating request is offered after three completed downloads instead of five.
+- New Store and Play listings in all app languages, with screenshots of legal downloads. See [Microsoft Store listings](store/microsoft-store/README.md) and [Google Play listing](store/google-play/README.md).
 
 ### v1.15
 

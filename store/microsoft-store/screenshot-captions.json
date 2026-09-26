@@ -1,0 +1,194 @@
+{
+  "en-US": [
+    "Download torrents and magnet links with live speed, peers and ETA",
+    "Run several downloads at once and keep seeding when they finish",
+    "Wi-Fi-only mode, 24 languages, themes and your own download folder",
+    "Speed, queue and seeding limits, plus SOCKS5 proxy support",
+    "Light and dark themes, or follow Windows",
+    "Available in 24 languages"
+  ],
+  "ar": [
+    "نزّل ملفات التورنت وروابط magnet مع عرض مباشر للسرعة والنظراء والوقت المتبقي",
+    "عدة تنزيلات في وقت واحد ومشاركة بعد اكتمالها",
+    "وضع Wi-Fi فقط و24 لغة وسمات ومجلد تنزيل من اختيارك",
+    "حدود للسرعة وقائمة الانتظار والمشاركة، ودعم SOCKS5",
+    "سمة فاتحة أو داكنة، أو اتبع إعدادات Windows",
+    "متوفر بـ 24 لغة"
+  ],
+  "cs-CZ": [
+    "Stahujte torrenty a magnet odkazy s rychlostí, peery a zbývajícím časem v reálném čase",
+    "Více stahování najednou a po dokončení sdílení",
+    "Režim pouze Wi-Fi, 24 jazyků, motivy a vlastní složka pro stahování",
+    "Limity rychlosti, fronty a sdílení a proxy SOCKS5",
+    "Světlý nebo tmavý motiv, případně podle Windows",
+    "K dispozici ve 24 jazycích"
+  ],
+  "da-DK": [
+    "Download torrents og magnetlinks med live hastighed, peers og resterende tid",
+    "Flere downloads på én gang og seeding bagefter",
+    "Kun Wi-Fi, 24 sprog, temaer og din egen downloadmappe",
+    "Grænser for hastighed, kø og seeding samt SOCKS5-proxy",
+    "Lyst eller mørkt tema, eller følg Windows",
+    "Fås på 24 sprog"
+  ],
+  "de-DE": [
+    "Torrents und Magnet-Links mit Live-Geschwindigkeit, Peers und Restzeit herunterladen",
+    "Mehrere Downloads gleichzeitig – und danach weiter seeden",
+    "Nur-WLAN-Modus, 24 Sprachen, Designs und eigener Download-Ordner",
+    "Limits für Geschwindigkeit, Warteschlange und Seeding, plus SOCKS5-Proxy",
+    "Helles oder dunkles Design – oder wie Windows",
+    "In 24 Sprachen verfügbar"
+  ],
+  "es": [
+    "Descarga torrents y enlaces magnet con velocidad, pares y tiempo restante en directo",
+    "Varias descargas a la vez y siembra al terminar",
+    "Modo solo Wi-Fi, 24 idiomas, temas y tu propia carpeta de descargas",
+    "Límites de velocidad, cola y siembra, y proxy SOCKS5",
+    "Tema claro u oscuro, o el de Windows",
+    "Disponible en 24 idiomas"
+  ],
+  "fi-FI": [
+    "Lataa torrentteja ja magnet-linkkejä – näet nopeuden, peerit ja jäljellä olevan ajan",
+    "Useita latauksia yhtä aikaa ja jakaminen valmistumisen jälkeen",
+    "Vain Wi-Fi -tila, 24 kieltä, teemat ja oma latauskansio",
+    "Nopeus-, jono- ja jakamisrajat sekä SOCKS5-välityspalvelin",
+    "Vaalea tai tumma teema tai Windowsin mukaan",
+    "Saatavilla 24 kielellä"
+  ],
+  "fr": [
+    "Téléchargez torrents et liens magnet avec débits, pairs et temps restant en direct",
+    "Plusieurs téléchargements à la fois, puis partage automatique",
+    "Mode Wi-Fi uniquement, 24 langues, thèmes et dossier de téléchargement au choix",
+    "Limites de débit, de file d'attente et de partage, plus proxy SOCKS5",
+    "Thème clair ou sombre, ou celui de Windows",
+    "Disponible en 24 langues"
+  ],
+  "hi": [
+    "लाइव स्पीड, पीयर और बचे समय के साथ टोरेंट और मैग्नेट लिंक डाउनलोड करें",
+    "एक साथ कई डाउनलोड, पूरे होने पर सीडिंग",
+    "केवल Wi-Fi मोड, 24 भाषाएँ, थीम और अपना डाउनलोड फ़ोल्डर",
+    "स्पीड, कतार और सीडिंग सीमाएँ, साथ में SOCKS5 प्रॉक्सी",
+    "लाइट या डार्क थीम, या Windows के अनुसार",
+    "24 भाषाओं में उपलब्ध"
+  ],
+  "hu-HU": [
+    "Torrentek és magnet linkek letöltése élő sebességgel, peerekkel és hátralévő idővel",
+    "Több letöltés egyszerre, utána seedelés",
+    "Csak Wi-Fi mód, 24 nyelv, témák és saját letöltési mappa",
+    "Sebesség-, sor- és seedelési korlátok, valamint SOCKS5 proxy",
+    "Világos vagy sötét téma, vagy a Windows beállítása",
+    "24 nyelven elérhető"
+  ],
+  "id": [
+    "Unduh torrent dan tautan magnet dengan kecepatan, peer, dan sisa waktu secara langsung",
+    "Beberapa unduhan sekaligus, lalu seeding setelah selesai",
+    "Mode khusus Wi-Fi, 24 bahasa, tema, dan folder unduhan pilihan Anda",
+    "Batas kecepatan, antrean, dan seeding, plus proxy SOCKS5",
+    "Tema terang atau gelap, atau ikuti Windows",
+    "Tersedia dalam 24 bahasa"
+  ],
+  "it-IT": [
+    "Scarica torrent e link magnet con velocità, peer e tempo rimanente in tempo reale",
+    "Più download insieme e condivisione al termine",
+    "Solo Wi-Fi, 24 lingue, temi e la tua cartella di download",
+    "Limiti di velocità, coda e condivisione, più proxy SOCKS5",
+    "Tema chiaro o scuro, oppure quello di Windows",
+    "Disponibile in 24 lingue"
+  ],
+  "ja-JP": [
+    "torrent とマグネットリンクを、速度・ピア・残り時間を見ながらダウンロード",
+    "複数を同時にダウンロードし、完了後はそのままシード",
+    "Wi-Fi のみモード、24 言語、テーマ、保存先フォルダーの指定",
+    "速度・順番待ち・シードの上限と SOCKS5 プロキシ",
+    "ライトとダークのテーマ、または Windows に合わせる",
+    "24 言語に対応"
+  ],
+  "ko-KR": [
+    "실시간 속도, 피어, 남은 시간을 보며 토렌트와 마그넷 링크 다운로드",
+    "여러 다운로드를 동시에, 완료 후에는 시딩",
+    "Wi-Fi 전용 모드, 24개 언어, 테마, 원하는 다운로드 폴더",
+    "속도·대기열·시딩 제한과 SOCKS5 프록시",
+    "라이트 또는 다크 테마, 혹은 Windows 설정 따르기",
+    "24개 언어 지원"
+  ],
+  "nb-NO": [
+    "Last ned torrenter og magnetlenker med direkte hastighet, peers og gjenstående tid",
+    "Flere nedlastinger samtidig og deling etterpå",
+    "Bare Wi-Fi, 24 språk, temaer og din egen nedlastingsmappe",
+    "Grenser for hastighet, kø og deling, pluss SOCKS5-proxy",
+    "Lyst eller mørkt tema, eller følg Windows",
+    "Tilgjengelig på 24 språk"
+  ],
+  "nl-NL": [
+    "Download torrents en magnetlinks met live snelheid, peers en resterende tijd",
+    "Meerdere downloads tegelijk, daarna automatisch seeden",
+    "Alleen wifi, 24 talen, thema's en je eigen downloadmap",
+    "Limieten voor snelheid, wachtrij en seeden, plus SOCKS5-proxy",
+    "Licht of donker thema, of volg Windows",
+    "Beschikbaar in 24 talen"
+  ],
+  "pl-PL": [
+    "Pobieraj torrenty i linki magnet z prędkością, peerami i pozostałym czasem na żywo",
+    "Kilka pobrań naraz i seedowanie po ukończeniu",
+    "Tryb tylko Wi-Fi, 24 języki, motywy i własny folder pobierania",
+    "Limity prędkości, kolejki i seedowania oraz proxy SOCKS5",
+    "Motyw jasny, ciemny lub zgodny z Windows",
+    "Dostępna w 24 językach"
+  ],
+  "pt-BR": [
+    "Baixe torrents e links magnet com velocidade, peers e tempo restante ao vivo",
+    "Vários downloads ao mesmo tempo e compartilhamento ao terminar",
+    "Modo somente Wi-Fi, 24 idiomas, temas e sua própria pasta de downloads",
+    "Limites de velocidade, fila e compartilhamento, além de proxy SOCKS5",
+    "Tema claro ou escuro, ou o do Windows",
+    "Disponível em 24 idiomas"
+  ],
+  "ro": [
+    "Descărcați torrente și linkuri magnet cu viteză, peeri și timp rămas în timp real",
+    "Mai multe descărcări simultan, apoi partajare",
+    "Doar Wi-Fi, 24 de limbi, teme și propriul dosar de descărcare",
+    "Limite de viteză, coadă și partajare, plus proxy SOCKS5",
+    "Temă luminoasă sau întunecată, ori ca în Windows",
+    "Disponibil în 24 de limbi"
+  ],
+  "ru": [
+    "Скачивайте торренты и magnet-ссылки: скорость, пиры и оставшееся время в реальном времени",
+    "Несколько загрузок одновременно и раздача после завершения",
+    "Режим «Только Wi-Fi», 24 языка, темы и своя папка для загрузок",
+    "Ограничения скорости, очереди и раздачи, прокси SOCKS5",
+    "Светлая или тёмная тема — или как в Windows",
+    "24 языка интерфейса"
+  ],
+  "th": [
+    "ดาวน์โหลดทอร์เรนต์และลิงก์แม็กเน็ต พร้อมดูความเร็ว เพียร์ และเวลาที่เหลือแบบเรียลไทม์",
+    "ดาวน์โหลดหลายรายการพร้อมกัน แล้วซีดต่อเมื่อเสร็จ",
+    "โหมด Wi-Fi เท่านั้น 24 ภาษา ธีม และโฟลเดอร์ดาวน์โหลดของคุณเอง",
+    "จำกัดความเร็ว คิว และการซีด พร้อมพร็อกซี SOCKS5",
+    "ธีมสว่างหรือมืด หรือตาม Windows",
+    "รองรับ 24 ภาษา"
+  ],
+  "tr": [
+    "Torrent ve magnet bağlantılarını canlı hız, peer ve kalan süreyle indirin",
+    "Aynı anda birden çok indirme, bitince paylaşım",
+    "Yalnızca Wi-Fi modu, 24 dil, temalar ve kendi indirme klasörünüz",
+    "Hız, kuyruk ve paylaşım sınırları ile SOCKS5 proxy",
+    "Açık veya koyu tema ya da Windows'a uyum",
+    "24 dilde kullanılabilir"
+  ],
+  "vi": [
+    "Tải torrent và liên kết magnet với tốc độ, peer và thời gian còn lại trực tiếp",
+    "Tải nhiều tệp cùng lúc và seed khi hoàn tất",
+    "Chế độ chỉ Wi-Fi, 24 ngôn ngữ, giao diện và thư mục tải riêng",
+    "Giới hạn tốc độ, hàng đợi và seed, cùng proxy SOCKS5",
+    "Giao diện sáng hoặc tối, hoặc theo Windows",
+    "Có sẵn 24 ngôn ngữ"
+  ],
+  "zh-CN": [
+    "下载种子和磁力链接，实时查看速度、对等方和剩余时间",
+    "同时进行多个下载，完成后继续做种",
+    "仅限 Wi-Fi 模式、24 种语言、主题和自选下载文件夹",
+    "限速、队列和做种上限，并支持 SOCKS5 代理",
+    "浅色或深色主题，也可跟随 Windows",
+    "支持 24 种语言"
+  ]
+}

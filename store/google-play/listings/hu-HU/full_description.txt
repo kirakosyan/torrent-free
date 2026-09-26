@@ -1,0 +1,26 @@
+A Torrent Client ingyenes, nyílt forráskódú BitTorrent-alkalmazás és torrentletöltő Androidra. Koppintson egy magnet linkre a böngészőben, vagy nyisson meg egy .torrent fájlt, és a letöltés elindul. Nincs reklám, nincs fiók, nincsenek csomagolt ajánlatok.
+
+Letöltés és seedelés
+• Magnet linkek és .torrent fájlok megnyitása a böngészőből, a fájlkezelőből és más alkalmazásokból.
+• Kövesse a haladást, a letöltési és feltöltési sebességet, a seedeket, a peereket és a hátralévő időt.
+• Indítsa el, szüneteltesse, állítsa le és távolítsa el az átviteleket egyenként vagy egyszerre.
+• A letöltések a háttérben folytatódnak, értesítés mutatja a haladást.
+• A futó átvitelek újraindítás után automatikusan folytatódnak.
+
+Teljes irányítás
+• A Csak Wi-Fi mód mobiladat-kapcsolaton szünetelteti az átviteleket, Wi-Fin pedig folytatja őket.
+• Opcionális ébren tartás hosszú átvitelekhez kikapcsolt kijelző mellett.
+• Globális és torrentenkénti letöltési és feltöltési korlátok.
+• Korlátozza az aktív letöltéseket és seedeket, a megosztási arányt és időt.
+• A kész letöltéseket egy koppintással a telefon Letöltések mappájába másolhatja.
+
+Adatvédelem
+Nincs reklám- vagy elemző SDK. Mint minden BitTorrent-alkalmazásnál, a trackerek és a peerek látják az IP-címét; ha szeretné, a támogatott forgalmat a saját SOCKS5 proxyján keresztül is irányíthatja.
+
+Továbbá
+• A letöltött hangoskönyveket elküldheti a LibroNestbe.
+• Rendszer-, világos és sötét téma, valamint 24 felületi nyelv.
+
+Az Android akkumulátorbeállításai korlátozhatják a háttértevékenységet. Csak olyan tartalmat töltsön le és osszon meg, amelynek használatára jogosult.
+
+Forráskód: https://github.com/kirakosyan/torrent-free

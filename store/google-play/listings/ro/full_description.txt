@@ -1,0 +1,26 @@
+Torrent Client este o aplicație BitTorrent și un program de descărcare torrente gratuit și open source pentru Android. Atingeți un link magnet în browser sau deschideți un fișier .torrent, iar descărcarea începe. Fără reclame, fără cont, fără oferte la pachet.
+
+Descărcare și partajare
+• Deschideți linkuri magnet și fișiere .torrent din browser, managerul de fișiere și alte aplicații.
+• Urmăriți progresul, viteza de descărcare și încărcare, seederii, peerii și timpul rămas.
+• Porniți, întrerupeți, opriți și eliminați transferurile pe rând sau pe toate deodată.
+• Descărcările continuă în fundal, cu o notificare de progres.
+• Transferurile în curs se reiau automat după o repornire.
+
+Control deplin
+• Modul doar Wi-Fi întrerupe transferurile pe date mobile și le reia pe Wi-Fi.
+• Opțiune pentru a menține dispozitivul activ în transferurile lungi, cu ecranul stins.
+• Limite de descărcare și încărcare globale și pentru fiecare torrent.
+• Limitați descărcările și partajările active, cu limite de raport și de timp de partajare.
+• Copiați descărcările finalizate în dosarul Descărcări al telefonului cu o singură atingere.
+
+Confidențialitate
+Fără SDK-uri de publicitate sau analiză. Ca în orice aplicație BitTorrent, trackerele și peerii vă pot vedea adresa IP; dacă doriți, direcționați traficul acceptat prin propriul proxy SOCKS5.
+
+În plus
+• Trimiteți cărțile audio descărcate în LibroNest.
+• Temă de sistem, luminoasă și întunecată, plus 24 de limbi ale interfeței.
+
+Setările de baterie din Android pot limita activitatea în fundal. Descărcați și partajați doar conținut pe care aveți dreptul să îl folosiți.
+
+Cod sursă: https://github.com/kirakosyan/torrent-free

@@ -1,0 +1,26 @@
+Torrent Client es una app BitTorrent y descargador de torrents gratuito y de código abierto para Android. Toca un enlace magnet en el navegador o abre un archivo .torrent y la descarga comienza. Sin anuncios, sin cuenta y sin ofertas añadidas.
+
+Descarga y comparte
+• Abre enlaces magnet y archivos .torrent desde el navegador, el gestor de archivos y otras apps.
+• Consulta el progreso, la velocidad de bajada y subida, las semillas, los pares y el tiempo restante.
+• Inicia, pausa, detén y elimina transferencias de una en una o todas a la vez.
+• Las descargas siguen en segundo plano con una notificación de progreso.
+• Las transferencias en curso se reanudan automáticamente tras un reinicio.
+
+Tú tienes el control
+• El modo solo Wi-Fi pausa las transferencias con datos móviles y las reanuda con Wi-Fi.
+• Opción para mantener el dispositivo activo en transferencias largas con la pantalla apagada.
+• Límites de descarga y subida globales y por torrent.
+• Limita las descargas y semillas activas, con límites de ratio y tiempo de siembra.
+• Copia las descargas terminadas a la carpeta Descargas del teléfono con un toque.
+
+Privacidad
+Sin SDK de publicidad ni de análisis. Como en cualquier app BitTorrent, los trackers y los pares pueden ver tu dirección IP; si lo prefieres, dirige el tráfico compatible a través de tu propio proxy SOCKS5.
+
+Además
+• Envía los audiolibros descargados a LibroNest.
+• Tema del sistema, claro y oscuro, y 24 idiomas de interfaz.
+
+Los ajustes de batería de Android pueden limitar la actividad en segundo plano. Descarga y comparte solo contenido que tengas derecho a usar.
+
+Código fuente: https://github.com/kirakosyan/torrent-free

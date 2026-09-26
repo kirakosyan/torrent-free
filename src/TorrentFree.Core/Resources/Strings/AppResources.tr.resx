@@ -60,7 +60,7 @@
   </resheader>
   <!-- App Title -->
   <data name="AppTitle" xml:space="preserve">
-    <value>Torrent Free</value>
+    <value>Torrent Client</value>
   </data>
   <!-- Main Page -->
   <data name="AddTorrentPlaceholder" xml:space="preserve">
@@ -298,7 +298,7 @@
     <value>.torrent dosyalarını ilişkilendir</value>
   </data>
   <data name="AssociateTorrentMessage" xml:space="preserve">
-    <value>.torrent dosyalarını varsayılan olarak Torrent Free ile açmak istiyor musunuz?</value>
+    <value>.torrent dosyalarını varsayılan olarak Torrent Client ile açmak istiyor musunuz?</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Evet</value>
@@ -307,10 +307,10 @@
     <value>Hayır</value>
   </data>
   <data name="AboutTitle" xml:space="preserve">
-    <value>Torrent Free hakkında</value>
+    <value>Torrent Client hakkında</value>
   </data>
   <data name="AboutMessage" xml:space="preserve">
-    <value>Torrent Free ücretsizdir.</value>
+    <value>Torrent Client ücretsizdir.</value>
   </data>
   <data name="AboutVersionLabel" xml:space="preserve">
     <value>Sürüm</value>

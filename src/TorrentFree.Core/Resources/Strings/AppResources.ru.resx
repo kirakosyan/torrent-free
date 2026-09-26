@@ -61,7 +61,7 @@
 
   <!-- App Title -->
   <data name="AppTitle" xml:space="preserve">
-    <value>Torrent Free</value>
+    <value>Torrent Client</value>
   </data>
 
   <!-- Main Page -->
@@ -309,7 +309,7 @@
     <value>Ассоциация файлов .torrent</value>
   </data>
   <data name="AssociateTorrentMessage" xml:space="preserve">
-    <value>Хотите открывать файлы .torrent с помощью Torrent Free по умолчанию?</value>
+    <value>Хотите открывать файлы .torrent с помощью Torrent Client по умолчанию?</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Да</value>
@@ -318,10 +318,10 @@
     <value>Нет</value>
   </data>
   <data name="AboutTitle" xml:space="preserve">
-    <value>О Torrent Free</value>
+    <value>О Torrent Client</value>
   </data>
   <data name="AboutMessage" xml:space="preserve">
-    <value>Torrent Free — бесплатное приложение.</value>
+    <value>Torrent Client — бесплатное приложение.</value>
   </data>
   <data name="AboutVersionLabel" xml:space="preserve">
     <value>Версия</value>

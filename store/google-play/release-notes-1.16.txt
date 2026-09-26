@@ -1,0 +1,196 @@
+<en-US>
+• Tap magnet links and .torrent files in your browser or other apps to open them in Torrent Client.
+• Transfers that were running resume automatically after a restart.
+• Wi-Fi-only mode and an optional keep-awake setting for long transfers.
+• More reliable pausing, file deletion and download recovery.
+• The proxy password is kept in secure storage.
+</en-US>
+<ar>
+• انقر روابط magnet وملفات .torrent في المتصفح أو التطبيقات الأخرى لفتحها في Torrent Client.
+• تُستأنف عمليات النقل الجارية تلقائيًا بعد إعادة التشغيل.
+• وضع Wi-Fi فقط وخيار لإبقاء الجهاز نشطًا أثناء عمليات النقل الطويلة.
+• إيقاف مؤقت وحذف للملفات واستعادة للتنزيلات بشكل أكثر موثوقية.
+• تُحفظ كلمة مرور الخادم الوكيل في تخزين آمن.
+</ar>
+<cs-CZ>
+• Klepnutím na magnet odkaz nebo soubor .torrent v prohlížeči či jiné aplikaci jej otevřete v Torrent Client.
+• Probíhající přenosy se po restartu automaticky obnoví.
+• Režim pouze Wi-Fi a volitelné udržení zařízení vzhůru při dlouhých přenosech.
+• Spolehlivější pozastavení, mazání souborů a obnova stahování.
+• Heslo k proxy je uloženo v zabezpečeném úložišti.
+</cs-CZ>
+<da-DK>
+• Tryk på magnetlinks og .torrent-filer i browseren eller andre apps for at åbne dem i Torrent Client.
+• Igangværende overførsler genoptages automatisk efter en genstart.
+• Tilstanden Kun Wi-Fi og en indstilling, der holder enheden vågen ved lange overførsler.
+• Mere pålidelig pause, sletning af filer og gendannelse af downloads.
+• Proxy-adgangskoden gemmes i sikkert lager.
+</da-DK>
+<de-DE>
+• Magnet-Links und .torrent-Dateien im Browser oder in anderen Apps antippen, um sie in Torrent Client zu öffnen.
+• Laufende Übertragungen werden nach einem Neustart automatisch fortgesetzt.
+• Nur-WLAN-Modus und optionale Wach-Einstellung für lange Übertragungen.
+• Zuverlässigeres Pausieren, Löschen von Dateien und Wiederherstellen von Downloads.
+• Das Proxy-Passwort wird im sicheren Speicher abgelegt.
+</de-DE>
+<es-419>
+• Toca enlaces magnet y archivos .torrent en el navegador u otras apps para abrirlos en Torrent Client.
+• Las transferencias en curso se reanudan automáticamente tras un reinicio.
+• Modo solo Wi-Fi y opción para mantener el dispositivo activo en transferencias largas.
+• Pausa, eliminación de archivos y recuperación de descargas más fiables.
+• La contraseña del proxy se guarda en almacenamiento seguro.
+</es-419>
+<es-ES>
+• Toca enlaces magnet y archivos .torrent en el navegador u otras apps para abrirlos en Torrent Client.
+• Las transferencias en curso se reanudan automáticamente tras un reinicio.
+• Modo solo Wi-Fi y opción para mantener el dispositivo activo en transferencias largas.
+• Pausa, eliminación de archivos y recuperación de descargas más fiables.
+• La contraseña del proxy se guarda en almacenamiento seguro.
+</es-ES>
+<es-US>
+• Toca enlaces magnet y archivos .torrent en el navegador u otras apps para abrirlos en Torrent Client.
+• Las transferencias en curso se reanudan automáticamente tras un reinicio.
+• Modo solo Wi-Fi y opción para mantener el dispositivo activo en transferencias largas.
+• Pausa, eliminación de archivos y recuperación de descargas más fiables.
+• La contraseña del proxy se guarda en almacenamiento seguro.
+</es-US>
+<fi-FI>
+• Napauta magnet-linkkiä tai .torrent-tiedostoa selaimessa tai muussa sovelluksessa avataksesi sen Torrent Clientissa.
+• Käynnissä olleet siirrot jatkuvat automaattisesti uudelleenkäynnistyksen jälkeen.
+• Vain Wi-Fi -tila ja asetus, joka pitää laitteen hereillä pitkissä siirroissa.
+• Luotettavampi keskeytys, tiedostojen poisto ja latausten palautus.
+• Välityspalvelimen salasana säilytetään suojatussa tallennustilassa.
+</fi-FI>
+<fr-FR>
+• Touchez les liens magnet et les fichiers .torrent dans votre navigateur ou d'autres applications pour les ouvrir dans Torrent Client.
+• Les transferts en cours reprennent automatiquement après un redémarrage.
+• Mode Wi-Fi uniquement et option pour garder l'appareil éveillé pendant les longs transferts.
+• Pause, suppression des fichiers et récupération des téléchargements plus fiables.
+• Le mot de passe du proxy est conservé dans un stockage sécurisé.
+</fr-FR>
+<hi-IN>
+• ब्राउज़र या दूसरे ऐप में मैग्नेट लिंक और .torrent फ़ाइलों पर टैप करके उन्हें Torrent Client में खोलें।
+• चल रहे ट्रांसफ़र रीस्टार्ट के बाद अपने-आप फिर शुरू हो जाते हैं।
+• केवल Wi-Fi मोड और लंबे ट्रांसफ़र के लिए डिवाइस को जगाए रखने का विकल्प।
+• रोकना, फ़ाइलें हटाना और डाउनलोड वापस लाना अब ज़्यादा भरोसेमंद है।
+• प्रॉक्सी पासवर्ड सुरक्षित स्टोरेज में रखा जाता है।
+</hi-IN>
+<hu-HU>
+• Koppintson a magnet linkekre és .torrent fájlokra a böngészőben vagy más alkalmazásokban, hogy a Torrent Clientben nyíljanak meg.
+• A futó átvitelek újraindítás után automatikusan folytatódnak.
+• Csak Wi-Fi mód és ébren tartási lehetőség hosszú átvitelekhez.
+• Megbízhatóbb szüneteltetés, fájltörlés és letöltés-helyreállítás.
+• A proxy jelszava biztonságos tárolóban van.
+</hu-HU>
+<id>
+• Ketuk tautan magnet dan file .torrent di browser atau aplikasi lain untuk membukanya di Torrent Client.
+• Transfer yang sedang berjalan otomatis dilanjutkan setelah dimulai ulang.
+• Mode khusus Wi-Fi dan opsi untuk menjaga perangkat tetap aktif saat transfer panjang.
+• Jeda, penghapusan file, dan pemulihan unduhan lebih andal.
+• Kata sandi proxy disimpan di penyimpanan aman.
+</id>
+<it-IT>
+• Tocca link magnet e file .torrent nel browser o in altre app per aprirli in Torrent Client.
+• I trasferimenti in corso riprendono automaticamente dopo un riavvio.
+• Modalità solo Wi-Fi e opzione per mantenere attivo il dispositivo nei trasferimenti lunghi.
+• Pausa, eliminazione dei file e recupero dei download più affidabili.
+• La password del proxy è conservata in un archivio sicuro.
+</it-IT>
+<ja-JP>
+• ブラウザーやほかのアプリでマグネットリンクや .torrent ファイルをタップすると、Torrent Client で開きます。
+• 実行中だった転送は、再起動後に自動で再開します。
+• Wi-Fi のみモードと、長時間の転送向けのスリープ防止オプションを追加しました。
+• 一時停止、ファイルの削除、ダウンロードの復元の信頼性が向上しました。
+• プロキシのパスワードは安全なストレージに保存されます。
+</ja-JP>
+<ko-KR>
+• 브라우저나 다른 앱에서 마그넷 링크와 .torrent 파일을 탭하면 Torrent Client에서 열립니다.
+• 진행 중이던 전송은 다시 시작한 후 자동으로 재개됩니다.
+• Wi-Fi 전용 모드와 긴 전송을 위한 절전 방지 옵션이 추가되었습니다.
+• 일시 중지, 파일 삭제, 다운로드 복구가 더 안정적입니다.
+• 프록시 비밀번호는 보안 저장소에 보관됩니다.
+</ko-KR>
+<no-NO>
+• Trykk på magnetlenker og .torrent-filer i nettleseren eller andre apper for å åpne dem i Torrent Client.
+• Pågående overføringer gjenopptas automatisk etter en omstart.
+• Modusen Bare Wi-Fi og en innstilling som holder enheten våken ved lange overføringer.
+• Mer pålitelig pause, sletting av filer og gjenoppretting av nedlastinger.
+• Proxy-passordet lagres i sikker lagring.
+</no-NO>
+<nl-NL>
+• Tik op magnetlinks en .torrent-bestanden in je browser of andere apps om ze in Torrent Client te openen.
+• Lopende overdrachten worden na een herstart automatisch hervat.
+• Modus Alleen wifi en een optie om het apparaat wakker te houden bij lange overdrachten.
+• Betrouwbaarder pauzeren, bestanden verwijderen en downloads herstellen.
+• Het proxywachtwoord wordt in beveiligde opslag bewaard.
+</nl-NL>
+<pl-PL>
+• Dotknij linku magnet lub pliku .torrent w przeglądarce albo innej aplikacji, aby otworzyć go w Torrent Client.
+• Trwające transfery są automatycznie wznawiane po ponownym uruchomieniu.
+• Tryb tylko Wi-Fi i opcja utrzymywania urządzenia w stanie aktywnym przy długich transferach.
+• Bardziej niezawodne wstrzymywanie, usuwanie plików i przywracanie pobrań.
+• Hasło proxy jest przechowywane w bezpiecznym magazynie.
+</pl-PL>
+<pt-BR>
+• Toque em links magnet e arquivos .torrent no navegador ou em outros apps para abri-los no Torrent Client.
+• As transferências em andamento são retomadas automaticamente após reiniciar.
+• Modo somente Wi-Fi e opção para manter o aparelho ativo em transferências longas.
+• Pausa, exclusão de arquivos e recuperação de downloads mais confiáveis.
+• A senha do proxy fica em armazenamento seguro.
+</pt-BR>
+<ro>
+• Atingeți linkuri magnet și fișiere .torrent în browser sau în alte aplicații pentru a le deschide în Torrent Client.
+• Transferurile în curs se reiau automat după o repornire.
+• Modul doar Wi-Fi și opțiunea de a menține dispozitivul activ în transferurile lungi.
+• Întrerupere, ștergere de fișiere și recuperare a descărcărilor mai fiabile.
+• Parola proxy este păstrată într-un spațiu de stocare securizat.
+</ro>
+<ru-RU>
+• Нажимайте magnet-ссылки и файлы .torrent в браузере или других приложениях, чтобы открыть их в Torrent Client.
+• Активные передачи автоматически возобновляются после перезапуска.
+• Режим «Только Wi-Fi» и параметр, не дающий устройству уснуть при долгих загрузках.
+• Надёжнее пауза, удаление файлов и восстановление загрузок.
+• Пароль прокси хранится в защищённом хранилище.
+</ru-RU>
+<th>
+• แตะลิงก์แม็กเน็ตและไฟล์ .torrent ในเบราว์เซอร์หรือแอปอื่นเพื่อเปิดใน Torrent Client
+• การถ่ายโอนที่กำลังทำงานอยู่จะทำงานต่อโดยอัตโนมัติหลังรีสตาร์ท
+• โหมด Wi-Fi เท่านั้น และตัวเลือกไม่ให้เครื่องสลีประหว่างการถ่ายโอนนานๆ
+• การหยุดชั่วคราว การลบไฟล์ และการกู้คืนการดาวน์โหลดเสถียรขึ้น
+• รหัสผ่านพร็อกซีถูกเก็บในพื้นที่จัดเก็บที่ปลอดภัย
+</th>
+<tr-TR>
+• Magnet bağlantılarına ve .torrent dosyalarına tarayıcıda veya diğer uygulamalarda dokunarak onları Torrent Client'ta açın.
+• Devam eden aktarımlar yeniden başlatmanın ardından otomatik olarak sürer.
+• Yalnızca Wi-Fi modu ve uzun aktarımlar için cihazı uyanık tutma seçeneği.
+• Duraklatma, dosya silme ve indirme kurtarma daha güvenilir.
+• Proxy parolası güvenli depolamada saklanır.
+</tr-TR>
+<vi>
+• Chạm vào liên kết magnet và tệp .torrent trong trình duyệt hoặc ứng dụng khác để mở chúng bằng Torrent Client.
+• Các lượt truyền đang chạy sẽ tự tiếp tục sau khi khởi động lại.
+• Chế độ chỉ Wi-Fi và tùy chọn giữ thiết bị hoạt động khi truyền lâu.
+• Tạm dừng, xóa tệp và khôi phục tải xuống đáng tin cậy hơn.
+• Mật khẩu proxy được lưu trong bộ nhớ an toàn.
+</vi>
+<zh-CN>
+• 在浏览器或其他应用中点按磁力链接和 .torrent 文件，即可在 Torrent Client 中打开。
+• 重新启动后，之前进行中的传输会自动恢复。
+• 新增“仅限 Wi-Fi”模式，以及适合长时间传输的保持唤醒选项。
+• 暂停、删除文件和恢复下载更加可靠。
+• 代理密码保存在安全存储中。
+</zh-CN>
+<uk>
+• Торкайтеся magnet-посилань і файлів .torrent у браузері чи інших застосунках, щоб відкрити їх у Torrent Client.
+• Активні передачі автоматично відновлюються після перезапуску.
+• Режим «Лише Wi-Fi» та параметр, що не дає пристрою заснути під час довгих завантажень.
+• Надійніші пауза, видалення файлів і відновлення завантажень.
+• Пароль проксі зберігається в захищеному сховищі.
+</uk>
+<fa>
+• روی لینک‌های مگنت و فایل‌های .torrent در مرورگر یا برنامه‌های دیگر بزنید تا در Torrent Client باز شوند.
+• انتقال‌های در حال اجرا پس از راه‌اندازی مجدد به‌طور خودکار ادامه می‌یابند.
+• حالت «فقط Wi-Fi» و گزینه بیدار نگه داشتن دستگاه در انتقال‌های طولانی.
+• مکث، حذف فایل‌ها و بازیابی دانلودها قابل‌اعتمادتر شده است.
+• رمز عبور پراکسی در فضای ذخیره‌سازی امن نگه داشته می‌شود.
+</fa>

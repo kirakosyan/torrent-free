@@ -1,0 +1,26 @@
+Torrent Client adalah aplikasi BitTorrent dan pengunduh torrent gratis dan open source untuk Android. Ketuk tautan magnet di browser atau buka file .torrent, dan unduhan langsung dimulai. Tanpa iklan, tanpa akun, tanpa tawaran tambahan.
+
+Unduh dan seeding
+• Buka tautan magnet dan file .torrent dari browser, pengelola file, dan aplikasi lain.
+• Lihat progres, kecepatan unduh dan unggah, seed, peer, dan sisa waktu.
+• Mulai, jeda, hentikan, dan hapus transfer satu per satu atau sekaligus.
+• Unduhan tetap berjalan di latar belakang dengan notifikasi progres.
+• Transfer yang sedang berjalan otomatis dilanjutkan setelah aplikasi dimulai ulang.
+
+Kendali penuh
+• Mode khusus Wi-Fi menjeda transfer saat memakai data seluler dan melanjutkannya di Wi-Fi.
+• Opsi untuk menjaga perangkat tetap aktif saat transfer panjang dengan layar mati.
+• Batas unduh dan unggah global maupun per torrent.
+• Batasi jumlah unduhan dan seed aktif, dengan batas rasio dan waktu seeding.
+• Salin unduhan yang selesai ke folder Download ponsel dengan sekali ketuk.
+
+Privasi
+Tanpa SDK iklan atau analitik. Seperti aplikasi BitTorrent lainnya, tracker dan peer dapat melihat alamat IP Anda; jika mau, arahkan lalu lintas yang didukung melalui proxy SOCKS5 Anda sendiri.
+
+Lainnya
+• Kirim audiobook yang sudah diunduh ke LibroNest.
+• Tema sistem, terang, dan gelap, serta 24 bahasa antarmuka.
+
+Pengaturan baterai Android dapat membatasi aktivitas di latar belakang. Unduh dan bagikan hanya konten yang berhak Anda gunakan.
+
+Kode sumber: https://github.com/kirakosyan/torrent-free

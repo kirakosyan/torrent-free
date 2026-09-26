@@ -79,7 +79,7 @@ public sealed class StoreLanguageMetadataTests
                 .SingleOrDefault(element => (string?)element.Attribute("name") == "app_name")
                 ?.Value;
 
-            Assert.Equal("Torrent Client App", appName);
+            Assert.Equal("Torrent Client", appName);
         }
     }
 

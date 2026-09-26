@@ -60,7 +60,7 @@
   </resheader>
   <!-- App Title -->
   <data name="AppTitle" xml:space="preserve">
-    <value>Torrent Free</value>
+    <value>Torrent Client</value>
   </data>
   <!-- Main Page -->
   <data name="AddTorrentPlaceholder" xml:space="preserve">
@@ -298,7 +298,7 @@
     <value>Přidružit .torrent soubory</value>
   </data>
   <data name="AssociateTorrentMessage" xml:space="preserve">
-    <value>Chcete ve výchozím nastavení otevírat soubory .torrent pomocí aplikace Torrent Free?</value>
+    <value>Chcete ve výchozím nastavení otevírat soubory .torrent pomocí aplikace Torrent Client?</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Ano</value>
@@ -307,10 +307,10 @@
     <value>Ne</value>
   </data>
   <data name="AboutTitle" xml:space="preserve">
-    <value>O aplikaci Torrent Free</value>
+    <value>O aplikaci Torrent Client</value>
   </data>
   <data name="AboutMessage" xml:space="preserve">
-    <value>Torrent Free je zdarma k použití.</value>
+    <value>Torrent Client je zdarma k použití.</value>
   </data>
   <data name="AboutVersionLabel" xml:space="preserve">
     <value>Verze</value>

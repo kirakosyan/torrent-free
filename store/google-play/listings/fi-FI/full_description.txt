@@ -1,0 +1,26 @@
+Torrent Client on ilmainen avoimen lähdekoodin BitTorrent-sovellus ja torrent-lataaja Androidille. Napauta magnet-linkkiä selaimessa tai avaa .torrent-tiedosto, niin lataus alkaa. Ei mainoksia, ei tiliä, ei kylkiäistarjouksia.
+
+Lataa ja jaa
+• Avaa magnet-linkit ja .torrent-tiedostot selaimesta, tiedostonhallinnasta ja muista sovelluksista.
+• Näe edistyminen, lataus- ja lähetysnopeus, seedit, peerit ja jäljellä oleva aika.
+• Käynnistä, keskeytä, pysäytä ja poista siirrot yksitellen tai kaikki kerralla.
+• Lataukset jatkuvat taustalla, ja ilmoitus näyttää edistymisen.
+• Käynnissä olleet siirrot jatkuvat automaattisesti uudelleenkäynnistyksen jälkeen.
+
+Täysi hallinta
+• Vain Wi-Fi -tila keskeyttää siirrot mobiilidatalla ja jatkaa niitä Wi-Fi-yhteydellä.
+• Valinnainen asetus, joka pitää laitteen hereillä pitkissä siirroissa näytön ollessa pois päältä.
+• Yleiset ja torrentkohtaiset lataus- ja lähetysrajat.
+• Rajoita aktiivisia latauksia ja jakoja sekä jakosuhdetta ja jakamisaikaa.
+• Kopioi valmiit lataukset puhelimen Lataukset-kansioon yhdellä napautuksella.
+
+Yksityisyys
+Ei mainos- tai analytiikka-SDK:ita. Kuten kaikissa BitTorrent-sovelluksissa, seurantapalvelimet ja peerit näkevät IP-osoitteesi; halutessasi voit ohjata tuetun liikenteen oman SOCKS5-välityspalvelimesi kautta.
+
+Lisäksi
+• Lähetä ladatut äänikirjat LibroNestiin.
+• Järjestelmän, vaalea ja tumma teema sekä 24 käyttöliittymäkieltä.
+
+Androidin akkuasetukset voivat rajoittaa taustatoimintaa. Lataa ja jaa vain sisältöä, jonka käyttöön sinulla on oikeus.
+
+Lähdekoodi: https://github.com/kirakosyan/torrent-free

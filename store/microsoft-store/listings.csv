@@ -1,43 +1,597 @@
 ﻿Field,ID,Type (Type),default,en-us,ar,cs-cz,da-dk,de-de,es,fi-fi,fr,hi,hu-hu,id,it-it,ja-jp,ko-kr,nb-no,nl-nl,pl-pl,pt-br,ro,ru,th,tr,vi,zh-cn
 Title,4,Text,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App,Torrent Client App
-Description,2,Text,Torrent Free is a simple clean torrent downloader with no ads no subscriptions and no sign-ups. Add magnet links or .torrent files and keep downloads running in the background. Files are saved directly on your device with no cloud middleman.,Torrent Free is a simple clean torrent downloader with no ads no subscriptions and no sign-ups. Add magnet links or .torrent files and keep downloads running in the background. Files are saved directly on your device with no cloud middleman.,Torrent Free هو برنامج تنزيل تورنت بسيط ونظيف بدون إعلانات وبدون اشتراكات وبدون تسجيل. أضف روابط magnet أو ملفات .torrent واجعل التنزيلات تعمل في الخلفية. يتم حفظ الملفات مباشرة على جهازك بدون وسيط سحابي.,"Torrent Free je jednoduchý čistý stahovač torrentů bez reklam, bez předplatného a bez registrací. Přidejte odkazy magnet nebo soubory .torrent a nechte stahování spuštěné na pozadí. Soubory se ukládají přímo do vašeho zařízení bez cloudového prostředníka.","Torrent Free er en simpel ren torrent downloader uden annoncer, ingen abonnementer og ingen tilmeldinger. Tilføj magnet links eller .torrent filer og lad downloads køre i baggrunden. Filer gemmes direkte på din enhed uden skymellemmand.","Torrent Free ist ein einfacher, sauberer Torrent-Downloader ohne Werbung, ohne Abonnements und ohne Anmeldungen. Fügen Sie magnet-Links oder .torrent-Dateien hinzu und lassen Sie die Downloads im Hintergrund laufen. Dateien werden ohne Cloud-Zwischenhändler direkt auf Ihrem Gerät gespeichert.",Torrent Free es un descargador de torrents simple y limpio sin anuncios sin suscripciones y sin registros. Añade enlaces magnet o archivos .torrent y mantiene las descargas en segundo plano. Los archivos se guardan directamente en tu dispositivo sin intermediarios en la nube.,"Torrent Free on yksinkertainen puhdas torrent-latausohjelma, jossa ei ole mainoksia, ei tilauksia eikä kirjautumisia. Lisää magnet-linkkejä tai .torrent-tiedostoja ja pidä lataukset käynnissä taustalla. Tiedostot tallennetaan suoraan laitteellesi ilman pilvivälittäjää.",Torrent Free est un telechargeur de torrents simple et propre sans publicites sans abonnements et sans inscription. Ajoutez des liens magnet ou des fichiers .torrent et gardez les telechargements en arriere-plan. Les fichiers sont enregistres directement sur votre appareil sans intermediaire cloud.,Torrent Free एक सरल और साफ टोरेंट डाउनलोडर है जिसमें कोई विज्ञापन कोई सदस्यता और कोई साइन अप नहीं है। magnet लिंक या .torrent फ़ाइलें जोड़ें और डाउनलोड को पृष्ठभूमि में चलने दें। फ़ाइलें बिना क्लाउड मध्यस्थ के सीधे आपके डिवाइस पर सहेजी जाती हैं।,"A Torrent Free egy egyszerű, tiszta torrent letöltő, hirdetések nélkül, előfizetések és regisztrációk nélkül. Adjon hozzá magnet hivatkozásokat vagy .torrent fájlokat, és futtasson a letöltéseket a háttérben. A fájlok közvetlenül az eszközre kerülnek mentésre, felhőközvetítő nélkül.","Torrent Free adalah pengunduh torrent sederhana dan bersih tanpa iklan, tanpa langganan, dan tanpa pendaftaran. Tambahkan tautan magnet atau file .torrent dan biarkan unduhan tetap berjalan di latar belakang. File disimpan langsung di perangkat Anda tanpa perantara cloud.","Torrent Free è un semplice downloader torrent pulito, senza pubblicità, senza abbonamenti e senza iscrizioni. Aggiungi collegamenti magnet o file .torrent e mantieni i download in esecuzione in background. I file vengono salvati direttamente sul tuo dispositivo senza intermediari nel cloud.",Torrent Free は、広告なし、サブスクリプションなし、サインアップなしのシンプルでクリーンな torrent ダウンローダーです。 magnet リンクまたは .torrent ファイルを追加し、バックグラウンドでダウンロードを実行し続けます。ファイルはクラウド仲介者なしでデバイスに直接保存されます。,"Torrent Free은 광고도, 구독도, 가입도 없는 간단하고 깔끔한 토렌트 다운로더입니다. magnet 링크 또는 .torrent 파일을 추가하고 백그라운드에서 다운로드를 계속 실행하세요. 클라우드 중개인 없이 파일이 장치에 직접 저장됩니다.","Torrent Free er en enkel, ren torrent-nedlasting uten annonser, abonnementer og registreringer. Legg til magnet-koblinger eller .torrent-filer og la nedlastinger kjøre i bakgrunnen. Filer lagres direkte på enheten din uten skymellommann.","Torrent Free is een eenvoudige, schone torrent-downloader zonder advertenties, geen abonnementen en geen aanmeldingen. Voeg magnet links of .torrent bestanden toe en laat downloads op de achtergrond draaien. Bestanden worden rechtstreeks op uw apparaat opgeslagen, zonder tussenpersoon in de cloud.","Torrent Free to prosty, czysty program do pobierania torrentów, bez reklam, bez subskrypcji i rejestracji. Dodaj łącza magnet lub pliki .torrent i pobieraj pliki w tle. Pliki są zapisywane bezpośrednio na Twoim urządzeniu, bez pośredników w chmurze.","Torrent Free é um downloader de torrent simples e limpo, sem anúncios, sem assinaturas e sem inscrições. Adicione links magnet ou arquivos .torrent e mantenha os downloads em execução em segundo plano. Os arquivos são salvos diretamente no seu dispositivo, sem intermediários na nuvem.","Torrent Free este un simplu program de descărcare torrent, fără reclame, fără abonamente și fără înscrieri. Adăugați linkuri magnet sau fișiere .torrent și continuați să ruleze descărcările în fundal. Fișierele sunt salvate direct pe dispozitivul dvs. fără intermediar cloud.",Torrent Free это простой и чистый загрузчик торрентов без рекламы без подписок и без регистрации. Добавляйте magnet-ссылки или файлы .torrent и продолжайте загрузки в фоновом режиме. Файлы сохраняются прямо на вашем устройстве без облачного посредника.,Torrent Free เป็นเครื่องมือดาวน์โหลดทอร์เรนต์ที่เรียบง่าย ไม่มีโฆษณา ไม่มีการสมัครรับข้อมูลและไม่ต้องสมัครใช้งาน เพิ่มลิงก์ magnet หรือไฟล์ .torrent และให้การดาวน์โหลดทำงานอยู่เบื้องหลัง ไฟล์จะถูกบันทึกบนอุปกรณ์ของคุณโดยตรงโดยไม่มีคนกลางระบบคลาวด์,Torrent Free reklam abonelik ve kayıt gerektirmeyen sade ve temiz bir torrent indiricisidir. Magnet bağlantıları veya .torrent dosyaları ekleyin ve indirmeleri arka planda çalıştırın. Dosyalar bulut aracısı olmadan doğrudan cihazınıza kaydedilir.,"Torrent Free là một trình tải xuống torrent đơn giản, sạch sẽ, không có quảng cáo, không cần đăng ký và không cần đăng ký. Thêm liên kết magnet hoặc tệp .torrent và tiếp tục tải xuống chạy ở chế độ nền. Các tệp được lưu trực tiếp trên thiết bị của bạn mà không cần qua trung gian đám mây.",Torrent Free 是一个简单干净的 torrent 下载器，没有广告，没有订阅，也没有注册。添加 magnet 链接或 .torrent 文件并保持下载在后台运行。文件直接保存在您的设备上，无需云中间商。
-ShortDescription,8,Text,Fast clean and free torrent downloader. No ads. No tracking.,Fast clean and free torrent downloader. No ads. No tracking.,برنامج تنزيل تورنت سريع ونظيف ومجاني. بدون إعلانات. بدون تتبع.,Rychlý čistý a bezplatný stahovač torrentů. Žádné reklamy. Žádné sledování.,Hurtig ren og gratis torrent downloader. Ingen annoncer. Ingen sporing.,"Schneller, sauberer und kostenloser Torrent-Downloader. Keine Werbung. Keine Nachverfolgung.",Descargador de torrents rapido limpio y gratuito. Sin anuncios. Sin seguimiento.,Nopea puhdas ja ilmainen torrent-latausohjelma. Ei mainoksia. Ei seurantaa.,Telechargeur de torrents rapide propre et gratuit. Sans publicite. Sans suivi.,तेज साफ और मुफ्त टोरेंट डाउनलोडर। कोई विज्ञापन नहीं। कोई ट्रैकिंग नहीं।,Gyors tiszta és ingyenes torrent letöltő. Nincsenek hirdetések. Nincs nyomon követés.,"Pengunduh torrent yang cepat, bersih, dan gratis. Tidak ada iklan. Tidak ada pelacakan.","Downloader torrent veloce, pulito e gratuito. Nessuna pubblicità. Nessun tracciamento.",高速でクリーンな無料の torrent ダウンローダー。広告はありません。追跡はありません。,빠르고 깨끗한 무료 토렌트 다운로더. 광고가 없습니다. 추적이 없습니다.,Rask ren og gratis torrent-nedlasting. Ingen annonser. Ingen sporing.,"Snelle, schone en gratis torrent-downloader. Geen advertenties. Geen tracking.","Szybki, czysty i darmowy program do pobierania torrentów. Brak reklam. Brak śledzenia.","Downloader de torrent rápido, limpo e gratuito. Sem anúncios. Sem rastreamento.",Descărcător de torrent gratuit și curățat rapid. Fără reclame. Fără urmărire.,Быстрый чистый и бесплатный загрузчик торрентов. Без рекламы. Без отслеживания.,โปรแกรมดาวน์โหลดทอร์เรนท์ที่สะอาดรวดเร็วและฟรี ไม่มีโฆษณา ไม่มีการติดตาม,Hızlı sade ve ücretsiz torrent indirici. Reklam yok. İzleme yok.,Trình tải xuống torrent nhanh chóng và sạch sẽ. Không có quảng cáo. Không theo dõi.,快速、干净且免费的 torrent 下载器。没有广告。没有跟踪。
-ReleaseNotes,3,Text,"Version 1.15
-Open Windows magnet links in the app. Improved transfer recovery, pausing, file deletion, and proxy password storage. Unmetered wired and VPN connections now work with Wi-Fi-only transfers. Both file-removal options are selected by default; clear either option to keep those files.","Version 1.15
-Open Windows magnet links in the app. Improved transfer recovery, pausing, file deletion, and proxy password storage. Unmetered wired and VPN connections now work with Wi-Fi-only transfers. Both file-removal options are selected by default; clear either option to keep those files.","الإصدار 1.15
-افتح روابط magnet في Windows داخل التطبيق. تحسين استعادة عمليات النقل والإيقاف المؤقت وحذف الملفات وتخزين كلمة مرور الوكيل. تعمل الاتصالات السلكية واتصالات VPN غير المحدودة الآن مع وضع Wi-Fi فقط. يُحدد خيارا حذف الملفات افتراضيًا؛ ألغِ تحديد أي خيار للاحتفاظ بملفاته.","Verze 1.15
-Otevírejte magnet odkazy ve Windows přímo v aplikaci. Vylepšené obnovení přenosů, pozastavení, mazání souborů a ukládání hesla proxy. Režim pouze Wi-Fi nyní podporuje neměřená kabelová připojení a VPN. Obě možnosti mazání jsou ve výchozím nastavení vybrány; pro zachování souborů příslušnou možnost zrušte.","Version 1.15
-Åbn magnetlinks i Windows direkte i appen. Forbedret gendannelse af overførsler, pause, filsletning og lagring af proxyadgangskoder. Forbindelser via kabel og VPN uden forbrugsafregning fungerer nu med kun Wi-Fi. Begge sletningsvalg er valgt som standard; fjern markeringen for at beholde filerne.","Version 1.15
-Magnet-Links unter Windows direkt in der App öffnen. Verbesserte Wiederaufnahme von Übertragungen, Pausenfunktion, Dateilöschung und Speicherung des Proxy-Passworts. Nicht getaktete Kabel- und VPN-Verbindungen funktionieren jetzt im WLAN-Modus. Beide Löschoptionen sind standardmäßig aktiviert; deaktivieren Sie die jeweilige Option, um die Dateien zu behalten.","Versión 1.15
-Abre enlaces magnet de Windows en la aplicación. Mejoras en la recuperación de transferencias, las pausas, la eliminación de archivos y el almacenamiento de contraseñas del proxy. El modo solo Wi-Fi admite conexiones por cable y VPN no medidas. Ambas opciones de eliminación están seleccionadas de forma predeterminada; desmarca la opción correspondiente para conservar esos archivos.","Versio 1.15
-Avaa Windowsin magnet-linkit sovelluksessa. Parannuksia siirtojen palautukseen, keskeyttämiseen, tiedostojen poistoon ja välityspalvelimen salasanan tallennukseen. Vain Wi-Fi -tila tukee nyt käytön mukaan laskuttamattomia kaapeli- ja VPN-yhteyksiä. Molemmat poistovalinnat ovat oletuksena käytössä; poista valinta säilyttääksesi kyseiset tiedostot.","Version 1.15
-Ouvrez les liens magnet de Windows dans l’application. Amélioration de la reprise des transferts, de la pause, de la suppression des fichiers et du stockage du mot de passe du proxy. Le mode Wi-Fi uniquement accepte les connexions filaires et VPN non limitées. Les deux options de suppression sont cochées par défaut ; décochez l’option voulue pour conserver les fichiers correspondants.","संस्करण 1.15
-Windows के magnet लिंक ऐप में खोलें। ट्रांसफ़र बहाली, रोकने, फ़ाइल हटाने और प्रॉक्सी पासवर्ड संग्रहण में सुधार। केवल Wi-Fi मोड में अब बिना डेटा सीमा वाले वायर्ड और VPN कनेक्शन भी काम करते हैं। फ़ाइल हटाने के दोनों विकल्प डिफ़ॉल्ट रूप से चुने जाते हैं; संबंधित फ़ाइलें रखने के लिए विकल्प हटाएँ।","1.15-ös verzió
-A Windows magnet hivatkozásai megnyithatók az alkalmazásban. Javult az átvitelek helyreállítása, szüneteltetése, a fájltörlés és a proxyjelszó tárolása. A csak Wi-Fi mód már a nem forgalmi díjas vezetékes és VPN-kapcsolatokat is támogatja. Alapértelmezés szerint mindkét törlési lehetőség be van jelölve; a fájlok megtartásához törölje a megfelelő jelölést.","Versi 1.15
-Buka tautan magnet Windows di aplikasi. Peningkatan pemulihan transfer, jeda, penghapusan file, dan penyimpanan kata sandi proxy. Koneksi kabel dan VPN tanpa batas kuota kini dapat digunakan dalam mode hanya Wi-Fi. Kedua opsi penghapusan dipilih secara default; hapus centang opsi terkait untuk menyimpan file tersebut.","Versione 1.15
-Apri i link magnet di Windows nell’app. Migliorati il ripristino dei trasferimenti, la pausa, l’eliminazione dei file e l’archiviazione della password proxy. La modalità solo Wi-Fi supporta connessioni cablate e VPN non a consumo. Entrambe le opzioni di eliminazione sono selezionate per impostazione predefinita; deseleziona l’opzione desiderata per conservare i relativi file.","バージョン1.15
-Windowsのmagnetリンクをアプリで開けます。転送の復元、一時停止、ファイル削除、プロキシパスワードの保存を改善しました。Wi-Fi限定モードで従量制課金ではない有線接続とVPN接続を利用できます。削除の両方のオプションが既定で選択されます。ファイルを残す場合は該当する選択を解除してください。","버전 1.15
-Windows magnet 링크를 앱에서 엽니다. 전송 복구, 일시 중지, 파일 삭제 및 프록시 암호 저장을 개선했습니다. Wi-Fi 전용 모드에서 데이터 통신 요금이 부과되지 않는 유선 및 VPN 연결을 지원합니다. 두 파일 삭제 옵션이 기본으로 선택됩니다. 파일을 보관하려면 해당 옵션의 선택을 해제하세요.","Versjon 1.15
-Åpne magnetlenker i Windows direkte i appen. Forbedret gjenoppretting av overføringer, pause, filsletting og lagring av proxypassord. Kablede tilkoblinger og VPN uten forbruksmåling fungerer nå med kun Wi-Fi. Begge slettevalg er valgt som standard; fjern avmerkingen for å beholde de aktuelle filene.","Versie 1.15
-Open Windows-magnetlinks in de app. Verbeterd herstel van overdrachten, pauzeren, verwijderen van bestanden en opslaan van proxywachtwoorden. De modus alleen wifi ondersteunt nu bekabelde en VPN-verbindingen zonder datalimiet. Beide verwijderopties zijn standaard geselecteerd; schakel de gewenste optie uit om die bestanden te behouden.","Wersja 1.15
-Otwieraj łącza magnet systemu Windows w aplikacji. Ulepszono przywracanie transferów, wstrzymywanie, usuwanie plików i przechowywanie hasła proxy. Tryb tylko Wi-Fi obsługuje teraz nielimitowane połączenia przewodowe i VPN. Obie opcje usuwania są domyślnie zaznaczone; odznacz odpowiednią opcję, aby zachować dane pliki.","Versão 1.15
-Abra links magnet do Windows no aplicativo. Melhorias na recuperação de transferências, pausa, exclusão de arquivos e armazenamento da senha do proxy. O modo somente Wi-Fi aceita conexões com fio e VPN não limitadas. Ambas as opções de exclusão ficam selecionadas por padrão; desmarque a opção correspondente para manter esses arquivos.","Versiunea 1.15
-Deschideți linkurile magnet din Windows în aplicație. Îmbunătățiri la recuperarea transferurilor, pauză, ștergerea fișierelor și stocarea parolei proxy. Modul doar Wi-Fi acceptă conexiuni prin cablu și VPN necontorizate. Ambele opțiuni de ștergere sunt selectate implicit; debifați opțiunea corespunzătoare pentru a păstra fișierele.","Версия 1.15
-Открывайте magnet-ссылки Windows в приложении. Улучшены восстановление передач, пауза, удаление файлов и хранение пароля прокси. Режим «Только Wi-Fi» теперь поддерживает безлимитные проводные и VPN-подключения. Оба параметра удаления выбраны по умолчанию; снимите нужный флажок, чтобы сохранить соответствующие файлы.","เวอร์ชัน 1.15
-เปิดลิงก์ magnet ของ Windows ในแอป ปรับปรุงการกู้คืนการถ่ายโอน การหยุดชั่วคราว การลบไฟล์ และการจัดเก็บรหัสผ่านพร็อกซี โหมด Wi-Fi เท่านั้นรองรับการเชื่อมต่อแบบสายและ VPN ที่ไม่คิดค่าบริการตามปริมาณข้อมูลแล้ว ตัวเลือกการลบทั้งสองถูกเลือกไว้โดยค่าเริ่มต้น ยกเลิกตัวเลือกที่ต้องการเพื่อเก็บไฟล์เหล่านั้นไว้","Sürüm 1.15
-Windows magnet bağlantılarını uygulamada açın. Aktarımların kurtarılması, duraklatma, dosya silme ve proxy parolası saklama iyileştirildi. Yalnızca Wi-Fi modu artık tarifesiz kablolu ve VPN bağlantılarını destekliyor. Her iki silme seçeneği varsayılan olarak seçilidir; ilgili dosyaları saklamak için seçimi kaldırın.","Phiên bản 1.15
-Mở liên kết magnet của Windows trong ứng dụng. Cải thiện khôi phục truyền dữ liệu, tạm dừng, xóa tệp và lưu mật khẩu proxy. Chế độ chỉ Wi-Fi hiện hỗ trợ kết nối có dây và VPN không tính phí theo lưu lượng. Cả hai tùy chọn xóa được chọn theo mặc định; bỏ chọn tùy chọn tương ứng để giữ các tệp đó.","版本 1.15
-在应用中打开 Windows 磁力链接。改进了传输恢复、暂停、文件删除和代理密码存储。仅 Wi-Fi 模式现支持非按流量计费的有线和 VPN 连接。两个文件删除选项均默认选中；如需保留相应文件，请取消勾选。"
-Feature1,700,Text,Add magnet links,Add magnet links,إضافة روابط magnet,Přidejte odkazy magnet,Tilføj magnet links,Fügen Sie magnet-Links hinzu,Añade enlaces magnet,Lisää magnet linkkejä,Ajoutez des liens magnet,magnet लिंक जोड़ें,magnet linkek hozzáadása,Tambahkan tautan magnet,Aggiungi collegamenti magnet,magnet リンクを追加,magnet 링크 추가,Legg til magnet-lenker,Voeg magnet-links toe,Dodaj linki magnet,Adicionar links magnet,Adăugați linkuri magnet,Добавление magnet-ссылок,เพิ่มลิงก์ magnet,Magnet bağlantıları ekleyin,Thêm liên kết magnet,添加 magnet 链接
-Feature2,701,Text,Open .torrent files,Open .torrent files,فتح ملفات .torrent,Otevřete soubory .torrent,Åbn .torrent filer,Öffnen Sie .torrent-Dateien,Abre archivos .torrent,Avaa .torrent tiedostoa,Ouvrez des fichiers .torrent,.torrent फ़ाइलें खोलें,Nyisson meg .torrent fájlt,Buka file .torrent,Apri file .torrent,.torrent ファイルを開く,.torrent 파일 열기,Åpne .torrent filer,Open .torrent bestanden,Otwórz pliki .torrent,Abra arquivos .torrent,Deschideți fișierele .torrent,Открытие файлов .torrent,เปิดไฟล์ .torrent,.torrent dosyalarını açın,Mở tệp .torrent,打开 .torrent 文件
-Feature3,702,Text,Background downloads,Background downloads,تنزيلات في الخلفية,Stahování na pozadí,Baggrundsdownloads,Hintergrund-Downloads,Descargas en segundo plano,Taustalataukset,Telechargements en arriere-plan,पृष्ठभूमि में डाउनलोड,Letöltések a háttérben,Unduhan latar belakang,Download in background,バックグラウンドダウンロード,백그라운드 다운로드,Bakgrunnsnedlastinger,Achtergronddownloads,Pobieranie w tle,Downloads em segundo plano,Descărcări de fundal,Фоновые загрузки,ดาวน์โหลดพื้นหลัง,Arka planda indirmeler,Tải xuống nền,后台下载
-Feature4,703,Text,Download speed limits,Download speed limits,حدود سرعة التنزيل,Omezení rychlosti stahování,Download hastighedsgrænser,Geschwindigkeitsbegrenzungen herunterladen,Limites de velocidad de descarga,Lataa nopeusrajoitukset,Limites de vitesse de telechargement,डाउनलोड गति सीमाएं,Letöltési sebességkorlátozások,Batas kecepatan unduh,Scarica i limiti di velocità,ダウンロード速度制限,다운로드 속도 제한,Last ned fartsgrenser,Snelheidslimieten downloaden,Pobierz ograniczenia prędkości,Limites de velocidade de download,Descărcați limite de viteză,Ограничения скорости загрузки,ดาวน์โหลดขีดจำกัดความเร็ว,İndirme hızı sınırları,Giới hạn tốc độ tải xuống,下载速度限制
-Feature5,704,Text,Upload speed limits,Upload speed limits,حدود سرعة الرفع,Omezení rychlosti nahrávání,Upload hastighedsgrænser,Geschwindigkeitsbegrenzungen hochladen,Limites de velocidad de subida,Latauksen nopeusrajoitukset,Limites de vitesse d'envoi,अपलोड गति सीमाएं,Feltöltési sebességkorlátozások,Batas kecepatan unggah,Carica i limiti di velocità,アップロード速度制限,업로드 속도 제한,Last opp fartsgrenser,Snelheidslimieten uploaden,Przesyłaj ograniczenia prędkości,Limites de velocidade de upload,Încărcați limite de viteză,Ограничения скорости отдачи,อัพโหลดจำกัดความเร็ว,Yükleme hızı sınırları,Giới hạn tốc độ tải lên,上传速度限制
-Feature6,705,Text,Progress notifications,Progress notifications,إشعارات التقدم,Oznámení o průběhu,Statusmeddelelser,Fortschrittsbenachrichtigungen,Notificaciones de progreso,Edistymisilmoitukset,Notifications de progression,प्रगति सूचनाएं,Haladásról szóló értesítések,Pemberitahuan kemajuan,Notifiche di avanzamento,進捗通知,진행상황 알림,Fremdriftsvarsler,Voortgangsmeldingen,Powiadomienia o postępie,Notificações de progresso,Notificări de progres,Уведомления о ходе загрузки,การแจ้งเตือนความคืบหน้า,İlerleme bildirimleri,Thông báo tiến độ,进度通知
-Feature7,706,Text,Simple download queue,Simple download queue,قائمة تنزيل بسيطة,Jednoduchá fronta stahování,Simpel downloadkø,Einfache Download-Warteschlange,Cola de descargas simple,Yksinkertainen latausjono,File de telechargement simple,सरल डाउनलोड कतार,Egyszerű letöltési sor,Antrian unduhan sederhana,Coda di download semplice,単純なダウンロードキュー,단순 다운로드 대기열,Enkel nedlastingskø,Eenvoudige downloadwachtrij,Prosta kolejka pobierania,Fila de download simples,Coadă simplă de descărcare,Простая очередь загрузок,คิวดาวน์โหลดง่ายๆ,Basit indirme kuyruğu,Hàng đợi tải xuống đơn giản,简单的下载队列
-Feature8,707,Text,Save files directly to your device,Save files directly to your device,حفظ الملفات مباشرة على جهازك,Ukládejte soubory přímo do svého zařízení,Gem filer direkte på din enhed,Speichern Sie Dateien direkt auf Ihrem Gerät,Guarda archivos directamente en tu dispositivo,Tallenna tiedostot suoraan laitteellesi,Enregistrez les fichiers directement sur votre appareil,फ़ाइलें सीधे अपने डिवाइस पर सहेजें,Mentse el a fájlokat közvetlenül a készülékére,Simpan file langsung ke perangkat Anda,Salva i file direttamente sul tuo dispositivo,ファイルをデバイスに直接保存する,파일을 장치에 직접 저장,Lagre filer direkte på enheten din,Sla bestanden rechtstreeks op uw apparaat op,Zapisuj pliki bezpośrednio na swoim urządzeniu,Salve arquivos diretamente no seu dispositivo,Salvați fișierele direct pe dispozitiv,Сохранение файлов прямо на устройство,บันทึกไฟล์ลงในอุปกรณ์ของคุณโดยตรง,Dosyaları doğrudan cihazınıza kaydedin,Lưu tập tin trực tiếp vào thiết bị của bạn,将文件直接保存到您的设备
-Feature9,708,Text,No ads and no tracking,No ads and no tracking,بدون إعلانات وبدون تتبع,Žádné reklamy a žádné sledování,Ingen annoncer og ingen sporing,Keine Werbung und kein Tracking,Sin anuncios y sin seguimiento,Ei mainoksia eikä seurantaa,Sans publicite et sans suivi,कोई विज्ञापन और कोई ट्रैकिंग नहीं,Nincsenek hirdetések és nincs nyomon követés,Tidak ada iklan dan tidak ada pelacakan,Nessuna pubblicità e nessun tracciamento,広告も追跡もありません,광고 없음 및 추적 없음,Ingen annonser og ingen sporing,Geen advertenties en geen tracking,Bez reklam i bez śledzenia,Sem anúncios e sem rastreamento,Fără reclame și fără urmărire,Без рекламы и без отслеживания,ไม่มีโฆษณาและไม่มีการติดตาม,Reklam yok ve izleme yok,Không có quảng cáo và không theo dõi,没有广告，没有跟踪
-Feature10,709,Text,Free and open source,Free and open source,مجاني ومفتوح المصدر,Zdarma a open source,Gratis og open source,Kostenlos und open source,Gratis y de codigo abierto,Ilmainen ja open source,Gratuit et open source,मुफ्त और ओपन सोर्स,Ingyenes és open source,Gratis dan open source,Gratuito e open source,無料でopen source,무료 및 open source,Gratis og open source,Gratis en open source,Bezpłatne i open source,Gratuito e open source,Gratuit și open source,Бесплатно и с открытым исходным кодом,ฟรีและ open source,Ücretsiz ve açık kaynaklı,Miễn phí và open source,免费且open source
+Description,2,Text,"Torrent Client App is a free, open-source BitTorrent client and torrent downloader for Windows 10 and 11. Click a magnet link in your browser or double-click a .torrent file, and the download starts. No ads, no account, no bundled offers.
+
+Download and seed
+• Open magnet links from your browser and .torrent files from File Explorer.
+• See progress, download and upload speed, seeds, peers and time remaining.
+• Start, pause, stop and remove transfers one at a time or all at once.
+• Transfers that were running resume automatically after a restart.
+
+Stay in control
+• Wi-Fi-only mode keeps transfers off mobile broadband and resumes them when you reconnect.
+• Global and per-torrent download and upload limits.
+• Limit active downloads and seeds, with seeding ratio and time limits.
+• Choose where downloads are saved.
+
+Privacy
+No advertising or analytics SDKs. As with any BitTorrent app, trackers and peers can see your IP address; route supported traffic through your own SOCKS5 proxy if you prefer.
+
+More
+• Send finished audiobook downloads to LibroNest.
+• System, light and dark themes, and 24 interface languages.
+• Native x64 and ARM64 builds, including Snapdragon-powered Surface Pro and Surface Laptop.
+
+Transfers run while the app is open and the PC is awake. Download and share only content you have the right to use.","Torrent Client App is a free, open-source BitTorrent client and torrent downloader for Windows 10 and 11. Click a magnet link in your browser or double-click a .torrent file, and the download starts. No ads, no account, no bundled offers.
+
+Download and seed
+• Open magnet links from your browser and .torrent files from File Explorer.
+• See progress, download and upload speed, seeds, peers and time remaining.
+• Start, pause, stop and remove transfers one at a time or all at once.
+• Transfers that were running resume automatically after a restart.
+
+Stay in control
+• Wi-Fi-only mode keeps transfers off mobile broadband and resumes them when you reconnect.
+• Global and per-torrent download and upload limits.
+• Limit active downloads and seeds, with seeding ratio and time limits.
+• Choose where downloads are saved.
+
+Privacy
+No advertising or analytics SDKs. As with any BitTorrent app, trackers and peers can see your IP address; route supported traffic through your own SOCKS5 proxy if you prefer.
+
+More
+• Send finished audiobook downloads to LibroNest.
+• System, light and dark themes, and 24 interface languages.
+• Native x64 and ARM64 builds, including Snapdragon-powered Surface Pro and Surface Laptop.
+
+Transfers run while the app is open and the PC is awake. Download and share only content you have the right to use.","Torrent Client App هو عميل BitTorrent وبرنامج تنزيل تورنت مجاني ومفتوح المصدر لنظامي Windows 10 و11. انقر رابط magnet في المتصفح أو انقر نقرًا مزدوجًا على ملف .torrent ليبدأ التنزيل. بلا إعلانات، وبلا حساب، وبلا عروض مرفقة.
+
+التنزيل والمشاركة
+• افتح روابط magnet من المتصفح وملفات .torrent من مستكشف الملفات.
+• تابع التقدم وسرعة التنزيل والرفع وعدد البذور والنظراء والوقت المتبقي.
+• ابدأ عمليات النقل أو أوقفها مؤقتًا أو أوقفها أو احذفها واحدةً تلو الأخرى أو كلها معًا.
+• تُستأنف عمليات النقل الجارية تلقائيًا بعد إعادة التشغيل.
+
+تحكّم كامل
+• يُبقي وضع Wi-Fi فقط عمليات النقل بعيدًا عن النطاق العريض للجوال ويستأنفها عند إعادة الاتصال.
+• حدود عامة وخاصة بكل تورنت لسرعة التنزيل والرفع.
+• حدّد عدد التنزيلات والمشاركات النشطة، مع حدود لنسبة المشاركة ومدتها.
+• اختر مكان حفظ التنزيلات.
+
+الخصوصية
+لا توجد أي حزم SDK للإعلانات أو التحليلات. كما في أي تطبيق BitTorrent، يمكن للمتتبعات والنظراء رؤية عنوان IP الخاص بك؛ ويمكنك إن أردت تمرير حركة البيانات المدعومة عبر خادم SOCKS5 الوكيل الخاص بك.
+
+المزيد
+• أرسل الكتب الصوتية التي نزّلتها إلى LibroNest.
+• سمة النظام والسمتان الفاتحة والداكنة، و24 لغة للواجهة.
+• إصدارات أصلية لمعالجات x64 وARM64، بما في ذلك Surface Pro وSurface Laptop بمعالج Snapdragon.
+
+تعمل عمليات النقل ما دام التطبيق مفتوحًا والكمبيوتر غير نائم. نزّل وشارك فقط المحتوى الذي يحق لك استخدامه.","Torrent Client App je bezplatný open-source klient BitTorrent a stahovač torrentů pro Windows 10 a 11. Klikněte na magnet odkaz v prohlížeči nebo poklikejte na soubor .torrent a stahování začne. Žádné reklamy, žádný účet, žádné přibalené nabídky.
+
+Stahování a sdílení
+• Otevírejte magnet odkazy z prohlížeče a soubory .torrent z Průzkumníka souborů.
+• Sledujte průběh, rychlost stahování a odesílání, seedy, peery a zbývající čas.
+• Spouštějte, pozastavujte, zastavujte a odebírejte přenosy jednotlivě nebo všechny najednou.
+• Probíhající přenosy se po restartu automaticky obnoví.
+
+Vše pod kontrolou
+• Režim pouze Wi-Fi nepouští přenosy do mobilního připojení a po opětovném připojení je obnoví.
+• Globální i samostatné limity stahování a odesílání pro každý torrent.
+• Omezte počet aktivních stahování a seedů, nastavte limity poměru a doby sdílení.
+• Vyberte, kam se stažené soubory ukládají.
+
+Soukromí
+Žádné reklamní ani analytické SDK. Jako u každé aplikace BitTorrent vidí trackery a peery vaši IP adresu; podporovaný provoz můžete směrovat přes vlastní proxy SOCKS5.
+
+Dále
+• Posílejte stažené audioknihy do aplikace LibroNest.
+• Systémový, světlý a tmavý motiv a 24 jazyků rozhraní.
+• Nativní verze pro x64 a ARM64, včetně Surface Pro a Surface Laptop s procesorem Snapdragon.
+
+Přenosy běží, dokud je aplikace otevřená a počítač není v režimu spánku. Stahujte a sdílejte pouze obsah, k jehož používání máte právo.","Torrent Client App er en gratis BitTorrent-klient og torrent-downloader med åben kildekode til Windows 10 og 11. Klik på et magnetlink i browseren, eller dobbeltklik på en .torrent-fil, så starter downloaden. Ingen reklamer, ingen konto, ingen medfølgende tilbud.
+
+Download og seed
+• Åbn magnetlinks fra browseren og .torrent-filer fra Stifinder.
+• Se fremskridt, download- og uploadhastighed, seeds, peers og resterende tid.
+• Start, sæt på pause, stop og fjern overførsler enkeltvis eller alle på én gang.
+• Igangværende overførsler genoptages automatisk efter en genstart.
+
+Du har styr på det
+• Tilstanden Kun Wi-Fi holder overførsler væk fra mobilt bredbånd og genoptager dem, når du er forbundet igen.
+• Globale grænser og grænser pr. torrent for download og upload.
+• Begræns antallet af aktive downloads og seeds med grænser for seed-ratio og seed-tid.
+• Vælg, hvor downloads gemmes.
+
+Privatliv
+Ingen SDK'er til reklamer eller analyse. Som i alle BitTorrent-apps kan trackere og peers se din IP-adresse; hvis du vil, kan du sende understøttet trafik gennem din egen SOCKS5-proxy.
+
+Derudover
+• Send downloadede lydbøger til LibroNest.
+• System-, lyst og mørkt tema samt 24 sprog i brugerfladen.
+• Native x64- og ARM64-versioner, også til Surface Pro og Surface Laptop med Snapdragon.
+
+Overførsler kører, mens appen er åben, og pc'en ikke er i dvale. Download og del kun indhold, du har ret til at bruge.","Torrent Client App ist ein kostenloser Open-Source-BitTorrent-Client und Torrent-Downloader für Windows 10 und 11. Klicken Sie im Browser auf einen Magnet-Link oder doppelklicken Sie auf eine .torrent-Datei, und der Download startet. Keine Werbung, kein Konto, keine gebündelten Angebote.
+
+Herunterladen und seeden
+• Magnet-Links aus dem Browser und .torrent-Dateien aus dem Datei-Explorer öffnen.
+• Fortschritt, Download- und Upload-Geschwindigkeit, Seeds, Peers und Restzeit im Blick.
+• Übertragungen einzeln oder alle auf einmal starten, pausieren, stoppen und entfernen.
+• Laufende Übertragungen werden nach einem Neustart automatisch fortgesetzt.
+
+Volle Kontrolle
+• Der Nur-WLAN-Modus hält Übertragungen vom Mobilfunknetz fern und setzt sie nach der Wiederverbindung fort.
+• Globale und torrentbezogene Download- und Upload-Limits.
+• Aktive Downloads und Seeds begrenzen, mit Limits für Seed-Verhältnis und Seed-Zeit.
+• Speicherort für Downloads frei wählen.
+
+Datenschutz
+Keine Werbe- oder Analyse-SDKs. Wie bei jeder BitTorrent-App können Tracker und Peers Ihre IP-Adresse sehen; unterstützten Datenverkehr können Sie über Ihren eigenen SOCKS5-Proxy leiten.
+
+Außerdem
+• Fertige Hörbuch-Downloads an LibroNest senden.
+• System-, helles und dunkles Design sowie 24 Oberflächensprachen.
+• Native x64- und ARM64-Versionen, auch für Surface Pro und Surface Laptop mit Snapdragon.
+
+Übertragungen laufen, solange die App geöffnet ist und der PC nicht im Ruhezustand ist. Laden und teilen Sie nur Inhalte, zu deren Nutzung Sie berechtigt sind.","Torrent Client App es un cliente BitTorrent y descargador de torrents gratuito y de código abierto para Windows 10 y 11. Haz clic en un enlace magnet en el navegador o doble clic en un archivo .torrent y la descarga comienza. Sin anuncios, sin cuenta y sin ofertas añadidas.
+
+Descarga y comparte
+• Abre enlaces magnet desde el navegador y archivos .torrent desde el Explorador de archivos.
+• Consulta el progreso, la velocidad de bajada y subida, las semillas, los pares y el tiempo restante.
+• Inicia, pausa, detén y elimina transferencias de una en una o todas a la vez.
+• Las transferencias en curso se reanudan automáticamente tras un reinicio.
+
+Tú tienes el control
+• El modo solo Wi-Fi mantiene las transferencias fuera de la banda ancha móvil y las reanuda al volver a conectarte.
+• Límites de descarga y subida globales y por torrent.
+• Limita las descargas y semillas activas, con límites de ratio y tiempo de siembra.
+• Elige dónde se guardan las descargas.
+
+Privacidad
+Sin SDK de publicidad ni de análisis. Como en cualquier app BitTorrent, los trackers y los pares pueden ver tu dirección IP; si lo prefieres, dirige el tráfico compatible a través de tu propio proxy SOCKS5.
+
+Además
+• Envía los audiolibros descargados a LibroNest.
+• Tema del sistema, claro y oscuro, y 24 idiomas de interfaz.
+• Versiones nativas x64 y ARM64, incluidos Surface Pro y Surface Laptop con Snapdragon.
+
+Las transferencias funcionan mientras la app está abierta y el PC no está en suspensión. Descarga y comparte solo contenido que tengas derecho a usar.","Torrent Client App on ilmainen avoimen lähdekoodin BitTorrent-asiakasohjelma ja torrent-lataaja Windows 10:lle ja 11:lle. Napsauta magnet-linkkiä selaimessa tai kaksoisnapsauta .torrent-tiedostoa, niin lataus alkaa. Ei mainoksia, ei tiliä, ei kylkiäistarjouksia.
+
+Lataa ja jaa
+• Avaa magnet-linkit selaimesta ja .torrent-tiedostot Resurssienhallinnasta.
+• Näe edistyminen, lataus- ja lähetysnopeus, seedit, peerit ja jäljellä oleva aika.
+• Käynnistä, keskeytä, pysäytä ja poista siirrot yksitellen tai kaikki kerralla.
+• Käynnissä olleet siirrot jatkuvat automaattisesti uudelleenkäynnistyksen jälkeen.
+
+Täysi hallinta
+• Vain Wi-Fi -tila pitää siirrot poissa mobiililaajakaistasta ja jatkaa niitä, kun yhteys palaa.
+• Yleiset ja torrentkohtaiset lataus- ja lähetysrajat.
+• Rajoita aktiivisia latauksia ja jakoja sekä jakosuhdetta ja jakamisaikaa.
+• Valitse, minne lataukset tallennetaan.
+
+Yksityisyys
+Ei mainos- tai analytiikka-SDK:ita. Kuten kaikissa BitTorrent-sovelluksissa, seurantapalvelimet ja peerit näkevät IP-osoitteesi; halutessasi voit ohjata tuetun liikenteen oman SOCKS5-välityspalvelimesi kautta.
+
+Lisäksi
+• Lähetä ladatut äänikirjat LibroNestiin.
+• Järjestelmän, vaalea ja tumma teema sekä 24 käyttöliittymäkieltä.
+• Natiivit x64- ja ARM64-versiot, myös Snapdragon-pohjaisille Surface Pro- ja Surface Laptop -laitteille.
+
+Siirrot toimivat, kun sovellus on auki eikä tietokone ole lepotilassa. Lataa ja jaa vain sisältöä, jonka käyttöön sinulla on oikeus.","Torrent Client App est un client BitTorrent et un téléchargeur de torrents gratuit et open source pour Windows 10 et 11. Cliquez sur un lien magnet dans votre navigateur ou double-cliquez sur un fichier .torrent, et le téléchargement démarre. Sans publicité, sans compte, sans offres groupées.
+
+Télécharger et partager
+• Ouvrez les liens magnet depuis votre navigateur et les fichiers .torrent depuis l'Explorateur de fichiers.
+• Suivez la progression, les débits de téléchargement et d'envoi, les seeds, les pairs et le temps restant.
+• Démarrez, mettez en pause, arrêtez et supprimez les transferts un par un ou tous à la fois.
+• Les transferts en cours reprennent automatiquement après un redémarrage.
+
+Gardez le contrôle
+• Le mode Wi-Fi uniquement tient les transferts à l'écart du haut débit mobile et les reprend à la reconnexion.
+• Limites de téléchargement et d'envoi globales et par torrent.
+• Limitez les téléchargements et les partages actifs, avec des limites de ratio et de durée de partage.
+• Choisissez où enregistrer les téléchargements.
+
+Confidentialité
+Aucun SDK de publicité ni de statistiques. Comme avec toute application BitTorrent, les trackers et les pairs peuvent voir votre adresse IP ; vous pouvez faire passer le trafic pris en charge par votre propre proxy SOCKS5.
+
+Et aussi
+• Envoyez les livres audio téléchargés vers LibroNest.
+• Thèmes système, clair et sombre, et 24 langues d'interface.
+• Versions natives x64 et ARM64, y compris pour les Surface Pro et Surface Laptop équipés de Snapdragon.
+
+Les transferts s'exécutent tant que l'application est ouverte et que le PC n'est pas en veille. Téléchargez et partagez uniquement des contenus que vous avez le droit d'utiliser.","Torrent Client App, Windows 10 और 11 के लिए एक मुफ़्त और ओपन-सोर्स BitTorrent क्लाइंट और टोरेंट डाउनलोडर है। ब्राउज़र में मैग्नेट लिंक पर क्लिक करें या किसी .torrent फ़ाइल पर डबल-क्लिक करें, और डाउनलोड शुरू हो जाएगा। कोई विज्ञापन नहीं, कोई खाता नहीं, कोई बंडल ऑफ़र नहीं।
+
+डाउनलोड और सीडिंग
+• ब्राउज़र से मैग्नेट लिंक और फ़ाइल एक्सप्लोरर से .torrent फ़ाइलें खोलें।
+• प्रगति, डाउनलोड और अपलोड स्पीड, सीड, पीयर और बचा हुआ समय देखें।
+• ट्रांसफ़र को एक-एक करके या सभी को एक साथ शुरू करें, रोकें, बंद करें और हटाएँ।
+• चल रहे ट्रांसफ़र रीस्टार्ट के बाद अपने-आप फिर शुरू हो जाते हैं।
+
+पूरा नियंत्रण
+• केवल Wi-Fi मोड ट्रांसफ़र को मोबाइल ब्रॉडबैंड पर नहीं चलने देता और दोबारा कनेक्ट होने पर फिर शुरू करता है।
+• कुल और हर टोरेंट के लिए अलग डाउनलोड और अपलोड लिमिट।
+• सक्रिय डाउनलोड और सीड की संख्या सीमित करें, साथ ही सीडिंग अनुपात और समय की सीमा तय करें।
+• चुनें कि डाउनलोड कहाँ सहेजे जाएँ।
+
+निजता
+कोई विज्ञापन या एनालिटिक्स SDK नहीं। किसी भी BitTorrent ऐप की तरह ट्रैकर और पीयर आपका IP पता देख सकते हैं; चाहें तो समर्थित ट्रैफ़िक को अपने SOCKS5 प्रॉक्सी से भेजें।
+
+और भी
+• डाउनलोड की गई ऑडियोबुक LibroNest में भेजें।
+• सिस्टम, लाइट और डार्क थीम, और 24 इंटरफ़ेस भाषाएँ।
+• x64 और ARM64 के लिए नेटिव बिल्ड, Snapdragon वाले Surface Pro और Surface Laptop सहित।
+
+ट्रांसफ़र तभी चलते हैं जब ऐप खुला हो और PC स्लीप में न हो। केवल वही सामग्री डाउनलोड और साझा करें जिसका उपयोग करने का आपको अधिकार है।","A Torrent Client App ingyenes, nyílt forráskódú BitTorrent-kliens és torrentletöltő Windows 10-hez és 11-hez. Kattintson egy magnet linkre a böngészőben, vagy kattintson duplán egy .torrent fájlra, és a letöltés elindul. Nincs reklám, nincs fiók, nincsenek csomagolt ajánlatok.
+
+Letöltés és seedelés
+• Magnet linkek megnyitása a böngészőből, .torrent fájloké a Fájlkezelőből.
+• Kövesse a haladást, a letöltési és feltöltési sebességet, a seedeket, a peereket és a hátralévő időt.
+• Indítsa el, szüneteltesse, állítsa le és távolítsa el az átviteleket egyenként vagy egyszerre.
+• A futó átvitelek újraindítás után automatikusan folytatódnak.
+
+Teljes irányítás
+• A Csak Wi-Fi mód távol tartja az átviteleket a mobil szélessávtól, és újracsatlakozáskor folytatja őket.
+• Globális és torrentenkénti letöltési és feltöltési korlátok.
+• Korlátozza az aktív letöltéseket és seedeket, a megosztási arányt és időt.
+• Válassza ki, hová kerüljenek a letöltések.
+
+Adatvédelem
+Nincs reklám- vagy elemző SDK. Mint minden BitTorrent-alkalmazásnál, a trackerek és a peerek látják az IP-címét; ha szeretné, a támogatott forgalmat a saját SOCKS5 proxyján keresztül is irányíthatja.
+
+Továbbá
+• A letöltött hangoskönyveket elküldheti a LibroNestbe.
+• Rendszer-, világos és sötét téma, valamint 24 felületi nyelv.
+• Natív x64- és ARM64-verziók, a Snapdragon-alapú Surface Pro és Surface Laptop gépekre is.
+
+Az átvitelek addig futnak, amíg az alkalmazás nyitva van, és a számítógép nincs alvó állapotban. Csak olyan tartalmat töltsön le és osszon meg, amelynek használatára jogosult.","Torrent Client App adalah klien BitTorrent dan pengunduh torrent gratis dan open source untuk Windows 10 dan 11. Klik tautan magnet di browser atau klik dua kali file .torrent, dan unduhan langsung dimulai. Tanpa iklan, tanpa akun, tanpa tawaran tambahan.
+
+Unduh dan seeding
+• Buka tautan magnet dari browser dan file .torrent dari File Explorer.
+• Lihat progres, kecepatan unduh dan unggah, seed, peer, dan sisa waktu.
+• Mulai, jeda, hentikan, dan hapus transfer satu per satu atau sekaligus.
+• Transfer yang sedang berjalan otomatis dilanjutkan setelah aplikasi dimulai ulang.
+
+Kendali penuh
+• Mode khusus Wi-Fi menjauhkan transfer dari broadband seluler dan melanjutkannya saat Anda tersambung lagi.
+• Batas unduh dan unggah global maupun per torrent.
+• Batasi jumlah unduhan dan seed aktif, dengan batas rasio dan waktu seeding.
+• Pilih lokasi penyimpanan unduhan.
+
+Privasi
+Tanpa SDK iklan atau analitik. Seperti aplikasi BitTorrent lainnya, tracker dan peer dapat melihat alamat IP Anda; jika mau, arahkan lalu lintas yang didukung melalui proxy SOCKS5 Anda sendiri.
+
+Lainnya
+• Kirim audiobook yang sudah diunduh ke LibroNest.
+• Tema sistem, terang, dan gelap, serta 24 bahasa antarmuka.
+• Build asli x64 dan ARM64, termasuk untuk Surface Pro dan Surface Laptop bertenaga Snapdragon.
+
+Transfer berjalan selama aplikasi terbuka dan PC tidak dalam mode tidur. Unduh dan bagikan hanya konten yang berhak Anda gunakan.","Torrent Client App è un client BitTorrent e downloader di torrent gratuito e open source per Windows 10 e 11. Fai clic su un link magnet nel browser o doppio clic su un file .torrent e il download parte. Niente pubblicità, niente account, niente offerte aggiuntive.
+
+Scarica e condividi
+• Apri i link magnet dal browser e i file .torrent da Esplora file.
+• Controlla avanzamento, velocità di download e upload, seed, peer e tempo rimanente.
+• Avvia, metti in pausa, ferma e rimuovi i trasferimenti uno alla volta o tutti insieme.
+• I trasferimenti in corso riprendono automaticamente dopo un riavvio.
+
+Tutto sotto controllo
+• La modalità solo Wi-Fi tiene i trasferimenti lontani dalla banda larga mobile e li riprende quando ti riconnetti.
+• Limiti di download e upload globali e per singolo torrent.
+• Limita i download e i seed attivi, con limiti di rapporto e di tempo di condivisione.
+• Scegli dove salvare i download.
+
+Privacy
+Nessun SDK pubblicitario o di analisi. Come in ogni app BitTorrent, tracker e peer possono vedere il tuo indirizzo IP; se preferisci, instrada il traffico supportato tramite il tuo proxy SOCKS5.
+
+Inoltre
+• Invia gli audiolibri scaricati a LibroNest.
+• Tema di sistema, chiaro e scuro, e 24 lingue dell'interfaccia.
+• Versioni native x64 e ARM64, anche per Surface Pro e Surface Laptop con Snapdragon.
+
+I trasferimenti funzionano mentre l'app è aperta e il PC non è in sospensione. Scarica e condividi solo contenuti che hai il diritto di usare.","Torrent Client App は、Windows 10 / 11 向けの無料・オープンソースの BitTorrent クライアント兼 torrent ダウンローダーです。ブラウザーでマグネットリンクをクリックするか、.torrent ファイルをダブルクリックするだけでダウンロードが始まります。広告なし、アカウント不要、抱き合わせのオファーもありません。
+
+ダウンロードとシード
+• ブラウザーからマグネットリンクを、エクスプローラーから .torrent ファイルを開けます。
+• 進行状況、ダウンロード・アップロード速度、シード数、ピア数、残り時間を表示します。
+• 転送を個別に、またはまとめて開始・一時停止・停止・削除できます。
+• 実行中だった転送は、再起動後に自動で再開します。
+
+思いどおりに管理
+• Wi-Fi のみモードでは、モバイル ブロードバンドでは転送せず、再接続すると再開します。
+• 全体および torrent ごとのダウンロード・アップロード速度制限。
+• 同時ダウンロード数とシード数を制限し、共有比率と共有時間の上限も設定できます。
+• ダウンロードの保存先を選べます。
+
+プライバシー
+広告や分析用の SDK は含まれていません。ほかの BitTorrent アプリと同様に、トラッカーやピアからは IP アドレスが見えます。必要に応じて、対応する通信をご自身の SOCKS5 プロキシ経由にできます。
+
+その他
+• ダウンロードしたオーディオブックを LibroNest に送れます。
+• システム・ライト・ダークのテーマと、24 のインターフェース言語。
+• x64 と ARM64 にネイティブ対応。Snapdragon 搭載の Surface Pro や Surface Laptop でも快適です。
+
+転送は、アプリが開いていて PC がスリープしていない間に行われます。利用する権利のあるコンテンツのみをダウンロード・共有してください。","Torrent Client App은 Windows 10 및 11용 무료 오픈 소스 BitTorrent 클라이언트이자 토렌트 다운로더입니다. 브라우저에서 마그넷 링크를 클릭하거나 .torrent 파일을 두 번 클릭하면 다운로드가 시작됩니다. 광고도, 계정도, 끼워 팔기도 없습니다.
+
+다운로드와 시딩
+• 브라우저에서 마그넷 링크를, 파일 탐색기에서 .torrent 파일을 엽니다.
+• 진행률, 다운로드 및 업로드 속도, 시드, 피어, 남은 시간을 확인하세요.
+• 전송을 하나씩 또는 한꺼번에 시작, 일시 중지, 중지, 삭제할 수 있습니다.
+• 진행 중이던 전송은 다시 시작한 후 자동으로 재개됩니다.
+
+원하는 대로 제어
+• Wi-Fi 전용 모드는 모바일 광대역에서는 전송하지 않고 다시 연결되면 재개합니다.
+• 전체 및 토렌트별 다운로드·업로드 속도 제한.
+• 활성 다운로드와 시드 수를 제한하고, 공유 비율과 시딩 시간 제한도 설정할 수 있습니다.
+• 다운로드를 저장할 위치를 선택하세요.
+
+개인정보 보호
+광고나 분석 SDK가 없습니다. 모든 BitTorrent 앱과 마찬가지로 트래커와 피어는 IP 주소를 볼 수 있으며, 원하면 지원되는 트래픽을 자신의 SOCKS5 프록시로 보낼 수 있습니다.
+
+그 밖에
+• 다운로드한 오디오북을 LibroNest로 보낼 수 있습니다.
+• 시스템, 라이트, 다크 테마와 24개 인터페이스 언어.
+• x64 및 ARM64 네이티브 빌드로, Snapdragon 기반 Surface Pro와 Surface Laptop도 지원합니다.
+
+전송은 앱이 열려 있고 PC가 절전 모드가 아닐 때 진행됩니다. 사용할 권리가 있는 콘텐츠만 다운로드하고 공유하세요.","Torrent Client App er en gratis BitTorrent-klient og torrentnedlaster med åpen kildekode for Windows 10 og 11. Klikk på en magnetlenke i nettleseren eller dobbeltklikk på en .torrent-fil, så starter nedlastingen. Ingen reklame, ingen konto, ingen medfølgende tilbud.
+
+Last ned og del
+• Åpne magnetlenker fra nettleseren og .torrent-filer fra Filutforsker.
+• Se fremdrift, nedlastings- og opplastingshastighet, seeds, peers og gjenstående tid.
+• Start, sett på pause, stopp og fjern overføringer én og én eller alle samtidig.
+• Pågående overføringer gjenopptas automatisk etter en omstart.
+
+Full kontroll
+• Modusen Bare Wi-Fi holder overføringer unna mobilt bredbånd og gjenopptar dem når du er tilkoblet igjen.
+• Globale grenser og grenser per torrent for nedlasting og opplasting.
+• Begrens aktive nedlastinger og deling, med grenser for delingsforhold og delingstid.
+• Velg hvor nedlastinger lagres.
+
+Personvern
+Ingen SDK-er for reklame eller analyse. Som i alle BitTorrent-apper kan trackere og peers se IP-adressen din; om du vil, kan du sende støttet trafikk gjennom din egen SOCKS5-proxy.
+
+I tillegg
+• Send nedlastede lydbøker til LibroNest.
+• System-, lyst og mørkt tema, og 24 språk i grensesnittet.
+• Native x64- og ARM64-versjoner, også for Surface Pro og Surface Laptop med Snapdragon.
+
+Overføringer kjører mens appen er åpen og PC-en ikke er i hvilemodus. Last ned og del bare innhold du har rett til å bruke.","Torrent Client App is een gratis, opensource BitTorrent-client en torrentdownloader voor Windows 10 en 11. Klik op een magnetlink in je browser of dubbelklik op een .torrent-bestand en de download begint. Geen advertenties, geen account, geen meegeleverde aanbiedingen.
+
+Downloaden en seeden
+• Open magnetlinks vanuit je browser en .torrent-bestanden vanuit Verkenner.
+• Bekijk voortgang, download- en uploadsnelheid, seeds, peers en resterende tijd.
+• Start, pauzeer, stop en verwijder overdrachten één voor één of allemaal tegelijk.
+• Lopende overdrachten worden na een herstart automatisch hervat.
+
+Zelf in controle
+• De modus Alleen wifi houdt overdrachten weg van mobiel breedband en hervat ze zodra je weer verbonden bent.
+• Algemene en per-torrent limieten voor downloaden en uploaden.
+• Beperk actieve downloads en seeds, met limieten voor seedratio en seedtijd.
+• Kies waar downloads worden opgeslagen.
+
+Privacy
+Geen advertentie- of analyse-SDK's. Zoals bij elke BitTorrent-app kunnen trackers en peers je IP-adres zien; stuur ondersteund verkeer desgewenst via je eigen SOCKS5-proxy.
+
+Verder
+• Stuur gedownloade audioboeken naar LibroNest.
+• Systeem-, licht en donker thema, en 24 interfacetalen.
+• Native x64- en ARM64-versies, ook voor Surface Pro en Surface Laptop met Snapdragon.
+
+Overdrachten lopen zolang de app open is en de pc niet in slaapstand staat. Download en deel alleen inhoud die je mag gebruiken.","Torrent Client App to darmowy klient BitTorrent i program do pobierania torrentów o otwartym kodzie źródłowym dla Windows 10 i 11. Kliknij link magnet w przeglądarce lub dwukrotnie kliknij plik .torrent, a pobieranie się rozpocznie. Bez reklam, bez konta i bez dołączanych ofert.
+
+Pobieranie i udostępnianie
+• Otwieraj linki magnet z przeglądarki i pliki .torrent z Eksploratora plików.
+• Sprawdzaj postęp, prędkość pobierania i wysyłania, seedy, peery i pozostały czas.
+• Uruchamiaj, wstrzymuj, zatrzymuj i usuwaj transfery pojedynczo lub wszystkie naraz.
+• Trwające transfery są automatycznie wznawiane po ponownym uruchomieniu.
+
+Pełna kontrola
+• Tryb tylko Wi-Fi nie używa mobilnego internetu i wznawia transfery po ponownym połączeniu.
+• Globalne i indywidualne limity pobierania i wysyłania dla każdego torrenta.
+• Ograniczaj liczbę aktywnych pobrań i seedów, ustawiaj limity ratio i czasu seedowania.
+• Wybierz, gdzie zapisywać pobrane pliki.
+
+Prywatność
+Brak SDK reklamowych i analitycznych. Jak w każdej aplikacji BitTorrent, trackery i peery widzą Twój adres IP; jeśli chcesz, kieruj obsługiwany ruch przez własne proxy SOCKS5.
+
+Ponadto
+• Wysyłaj pobrane audiobooki do LibroNest.
+• Motyw systemowy, jasny i ciemny oraz 24 języki interfejsu.
+• Natywne wersje x64 i ARM64, także dla Surface Pro i Surface Laptop ze Snapdragonem.
+
+Transfery działają, gdy aplikacja jest otwarta, a komputer nie jest uśpiony. Pobieraj i udostępniaj tylko treści, do których masz prawo.","Torrent Client App é um cliente BitTorrent e baixador de torrents gratuito e de código aberto para Windows 10 e 11. Clique em um link magnet no navegador ou dê um clique duplo em um arquivo .torrent, e o download começa. Sem anúncios, sem conta e sem ofertas embutidas.
+
+Baixe e compartilhe
+• Abra links magnet pelo navegador e arquivos .torrent pelo Explorador de Arquivos.
+• Acompanhe o progresso, as velocidades de download e upload, seeds, peers e o tempo restante.
+• Inicie, pause, pare e remova transferências uma a uma ou todas de uma vez.
+• As transferências em andamento são retomadas automaticamente após reiniciar.
+
+Tudo sob controle
+• O modo somente Wi-Fi mantém as transferências fora da banda larga móvel e as retoma quando você se reconecta.
+• Limites de download e upload globais e por torrent.
+• Limite downloads e seeds ativos, com limites de proporção e tempo de compartilhamento.
+• Escolha onde os downloads são salvos.
+
+Privacidade
+Nenhum SDK de publicidade ou de análise. Como em qualquer app BitTorrent, trackers e peers podem ver seu endereço IP; se preferir, envie o tráfego compatível pelo seu próprio proxy SOCKS5.
+
+E mais
+• Envie audiolivros baixados para o LibroNest.
+• Tema do sistema, claro e escuro, e 24 idiomas de interface.
+• Versões nativas x64 e ARM64, incluindo Surface Pro e Surface Laptop com Snapdragon.
+
+As transferências funcionam enquanto o app está aberto e o PC não está em suspensão. Baixe e compartilhe apenas conteúdo que você tem o direito de usar.","Torrent Client App este un client BitTorrent și un program de descărcare torrente gratuit și open source pentru Windows 10 și 11. Faceți clic pe un link magnet în browser sau dublu clic pe un fișier .torrent, iar descărcarea începe. Fără reclame, fără cont, fără oferte la pachet.
+
+Descărcare și partajare
+• Deschideți linkuri magnet din browser și fișiere .torrent din Explorer.
+• Urmăriți progresul, viteza de descărcare și încărcare, seederii, peerii și timpul rămas.
+• Porniți, întrerupeți, opriți și eliminați transferurile pe rând sau pe toate deodată.
+• Transferurile în curs se reiau automat după o repornire.
+
+Control deplin
+• Modul doar Wi-Fi ține transferurile departe de banda largă mobilă și le reia când vă reconectați.
+• Limite de descărcare și încărcare globale și pentru fiecare torrent.
+• Limitați descărcările și partajările active, cu limite de raport și de timp de partajare.
+• Alegeți unde se salvează descărcările.
+
+Confidențialitate
+Fără SDK-uri de publicitate sau analiză. Ca în orice aplicație BitTorrent, trackerele și peerii vă pot vedea adresa IP; dacă doriți, direcționați traficul acceptat prin propriul proxy SOCKS5.
+
+În plus
+• Trimiteți cărțile audio descărcate în LibroNest.
+• Temă de sistem, luminoasă și întunecată, plus 24 de limbi ale interfeței.
+• Versiuni native x64 și ARM64, inclusiv pentru Surface Pro și Surface Laptop cu Snapdragon.
+
+Transferurile rulează cât timp aplicația este deschisă și PC-ul nu este în repaus. Descărcați și partajați doar conținut pe care aveți dreptul să îl folosiți.","Torrent Client App — бесплатный торрент-клиент BitTorrent с открытым исходным кодом для Windows 10 и 11. Нажмите magnet-ссылку в браузере или дважды щёлкните файл .torrent — и загрузка начнётся. Без рекламы, без аккаунта, без навязанных предложений.
+
+Скачивание и раздача
+• Открывайте magnet-ссылки из браузера и файлы .torrent из Проводника.
+• Следите за прогрессом, скоростью загрузки и отдачи, сидами, пирами и оставшимся временем.
+• Запускайте, приостанавливайте, останавливайте и удаляйте передачи по одной или все сразу.
+• Активные передачи автоматически возобновляются после перезапуска.
+
+Всё под контролем
+• Режим «Только Wi-Fi» не пускает передачи в мобильную сеть и возобновляет их после переподключения.
+• Общие ограничения скорости загрузки и отдачи и отдельные для каждого торрента.
+• Ограничивайте число активных загрузок и раздач, задавайте рейтинг и время раздачи.
+• Выбирайте, куда сохранять загрузки.
+
+Конфиденциальность
+Никаких рекламных и аналитических SDK. Как и в любом BitTorrent-приложении, трекеры и пиры видят ваш IP-адрес; при желании направляйте поддерживаемый трафик через свой прокси SOCKS5.
+
+Также
+• Отправляйте скачанные аудиокниги в LibroNest.
+• Системная, светлая и тёмная темы, 24 языка интерфейса.
+• Нативные версии для x64 и ARM64, в том числе для Surface Pro и Surface Laptop на Snapdragon.
+
+Передачи работают, пока приложение открыто и компьютер не в спящем режиме. Скачивайте и раздавайте только тот контент, на использование которого у вас есть право.","Torrent Client App คือไคลเอนต์ BitTorrent และโปรแกรมดาวน์โหลดทอร์เรนต์ฟรีแบบโอเพนซอร์สสำหรับ Windows 10 และ 11 คลิกลิงก์แม็กเน็ตในเบราว์เซอร์หรือดับเบิลคลิกไฟล์ .torrent แล้วการดาวน์โหลดจะเริ่มทันที ไม่มีโฆษณา ไม่ต้องมีบัญชี ไม่มีข้อเสนอพ่วง
+
+ดาวน์โหลดและซีด
+• เปิดลิงก์แม็กเน็ตจากเบราว์เซอร์และไฟล์ .torrent จาก File Explorer
+• ดูความคืบหน้า ความเร็วดาวน์โหลดและอัปโหลด จำนวนซีด เพียร์ และเวลาที่เหลือ
+• เริ่ม หยุดชั่วคราว หยุด และลบการถ่ายโอนทีละรายการหรือทั้งหมดพร้อมกัน
+• การถ่ายโอนที่กำลังทำงานอยู่จะกลับมาทำงานต่อโดยอัตโนมัติหลังรีสตาร์ท
+
+ควบคุมได้ทุกอย่าง
+• โหมด Wi-Fi เท่านั้นจะไม่ถ่ายโอนผ่านบรอดแบนด์มือถือ และทำงานต่อเมื่อเชื่อมต่อใหม่
+• จำกัดความเร็วดาวน์โหลดและอัปโหลดทั้งแบบรวมและแยกตามทอร์เรนต์
+• จำกัดจำนวนการดาวน์โหลดและการซีดที่ทำงานพร้อมกัน พร้อมจำกัดอัตราส่วนและเวลาในการซีด
+• เลือกตำแหน่งบันทึกไฟล์ที่ดาวน์โหลด
+
+ความเป็นส่วนตัว
+ไม่มี SDK โฆษณาหรือการวิเคราะห์ เช่นเดียวกับแอป BitTorrent ทั่วไป แทร็กเกอร์และเพียร์สามารถเห็นที่อยู่ IP ของคุณได้ หากต้องการ คุณสามารถส่งทราฟฟิกที่รองรับผ่านพร็อกซี SOCKS5 ของคุณเองได้
+
+และอื่นๆ
+• ส่งหนังสือเสียงที่ดาวน์โหลดแล้วไปยัง LibroNest
+• ธีมตามระบบ ธีมสว่างและธีมมืด พร้อมภาษาอินเทอร์เฟซ 24 ภาษา
+• รองรับ x64 และ ARM64 แบบเนทีฟ รวมถึง Surface Pro และ Surface Laptop ที่ใช้ Snapdragon
+
+การถ่ายโอนจะทำงานขณะเปิดแอปและพีซีไม่ได้อยู่ในโหมดสลีป ดาวน์โหลดและแชร์เฉพาะเนื้อหาที่คุณมีสิทธิ์ใช้งานเท่านั้น","Torrent Client App, Windows 10 ve 11 için ücretsiz ve açık kaynaklı bir BitTorrent istemcisi ve torrent indiricisidir. Tarayıcıda bir magnet bağlantısına tıklayın ya da bir .torrent dosyasına çift tıklayın; indirme hemen başlar. Reklam yok, hesap yok, paket teklif yok.
+
+İndirin ve paylaşın
+• Magnet bağlantılarını tarayıcıdan, .torrent dosyalarını Dosya Gezgini'nden açın.
+• İlerlemeyi, indirme ve yükleme hızını, seed ve peer sayısını ve kalan süreyi görün.
+• Aktarımları tek tek ya da hepsini birden başlatın, duraklatın, durdurun ve kaldırın.
+• Devam eden aktarımlar yeniden başlatmanın ardından otomatik olarak sürer.
+
+Kontrol sizde
+• Yalnızca Wi-Fi modu, aktarımları mobil geniş bantta çalıştırmaz ve yeniden bağlandığınızda sürdürür.
+• Genel ve torrent başına indirme ve yükleme sınırları.
+• Etkin indirme ve seed sayısını sınırlayın; paylaşım oranı ve süresi için sınır koyun.
+• İndirmelerin kaydedileceği yeri seçin.
+
+Gizlilik
+Reklam veya analiz SDK'sı yok. Her BitTorrent uygulamasında olduğu gibi tracker'lar ve peer'lar IP adresinizi görebilir; isterseniz desteklenen trafiği kendi SOCKS5 proxy'niz üzerinden yönlendirin.
+
+Ayrıca
+• İndirilen sesli kitapları LibroNest'e gönderin.
+• Sistem, açık ve koyu tema ile 24 arayüz dili.
+• Snapdragon işlemcili Surface Pro ve Surface Laptop dahil, yerel x64 ve ARM64 sürümleri.
+
+Aktarımlar, uygulama açık olduğu ve bilgisayar uyku modunda olmadığı sürece çalışır. Yalnızca kullanma hakkına sahip olduğunuz içerikleri indirin ve paylaşın.","Torrent Client App là ứng dụng BitTorrent và trình tải torrent miễn phí, mã nguồn mở cho Windows 10 và 11. Nhấp vào liên kết magnet trong trình duyệt hoặc nhấp đúp vào tệp .torrent là quá trình tải bắt đầu. Không quảng cáo, không tài khoản, không ưu đãi đi kèm.
+
+Tải xuống và chia sẻ
+• Mở liên kết magnet từ trình duyệt và tệp .torrent từ File Explorer.
+• Xem tiến độ, tốc độ tải xuống và tải lên, số seed, peer và thời gian còn lại.
+• Bắt đầu, tạm dừng, dừng và xóa từng lượt truyền hoặc tất cả cùng lúc.
+• Các lượt truyền đang chạy sẽ tự tiếp tục sau khi khởi động lại.
+
+Toàn quyền kiểm soát
+• Chế độ chỉ Wi-Fi không truyền dữ liệu qua băng rộng di động và tự tiếp tục khi bạn kết nối lại.
+• Giới hạn tải xuống và tải lên chung và cho từng torrent.
+• Giới hạn số lượt tải và seed đang hoạt động, kèm giới hạn tỷ lệ và thời gian seed.
+• Chọn nơi lưu các tệp tải xuống.
+
+Quyền riêng tư
+Không có SDK quảng cáo hay phân tích. Như mọi ứng dụng BitTorrent, tracker và peer có thể thấy địa chỉ IP của bạn; nếu muốn, hãy định tuyến lưu lượng được hỗ trợ qua proxy SOCKS5 của riêng bạn.
+
+Ngoài ra
+• Gửi sách nói đã tải xuống sang LibroNest.
+• Giao diện theo hệ thống, sáng và tối, cùng 24 ngôn ngữ.
+• Bản gốc cho x64 và ARM64, kể cả Surface Pro và Surface Laptop dùng chip Snapdragon.
+
+Việc truyền chỉ chạy khi ứng dụng đang mở và PC không ở chế độ ngủ. Chỉ tải xuống và chia sẻ nội dung bạn có quyền sử dụng.","Torrent Client App 是一款适用于 Windows 10 和 11 的免费开源 BitTorrent 客户端和种子下载器。在浏览器中点击磁力链接或双击 .torrent 文件，即可开始下载。无广告、无需账号、无捆绑推广。
+
+下载与做种
+• 从浏览器打开磁力链接，从文件资源管理器打开 .torrent 文件。
+• 查看进度、下载和上传速度、种子数、对等方和剩余时间。
+• 逐个或一次性开始、暂停、停止和删除传输任务。
+• 重新启动后，之前进行中的传输会自动恢复。
+
+尽在掌控
+• “仅限 Wi-Fi”模式不会使用移动宽带传输，并在重新连接后自动恢复。
+• 全局和单个种子的下载、上传限速。
+• 限制同时下载和做种的数量，并可设置分享率和做种时间上限。
+• 自选下载保存位置。
+
+隐私
+不含任何广告或数据分析 SDK。与所有 BitTorrent 应用一样，Tracker 和对等方可以看到你的 IP 地址；如有需要，可通过你自己的 SOCKS5 代理转发支持的流量。
+
+更多
+• 将下载好的有声书发送到 LibroNest。
+• 跟随系统、浅色和深色主题，支持 24 种界面语言。
+• 原生支持 x64 和 ARM64，包括搭载 Snapdragon 的 Surface Pro 和 Surface Laptop。
+
+应用打开且电脑未睡眠时才会进行传输。请仅下载和分享你有权使用的内容。"
+ShortDescription,8,Text,"Download torrents and magnet links on Windows with no ads, no account and no analytics. Click a magnet link in your browser and it opens right in the app. Set speed limits, queue downloads and choose where files are saved.","Download torrents and magnet links on Windows with no ads, no account and no analytics. Click a magnet link in your browser and it opens right in the app. Set speed limits, queue downloads and choose where files are saved.",نزّل ملفات التورنت وروابط magnet على Windows بلا إعلانات ولا حساب ولا تحليلات. انقر رابط magnet في المتصفح ليُفتح مباشرةً في التطبيق. حدّد السرعة، ورتّب التنزيلات في قائمة انتظار، واختر مكان حفظ الملفات.,"Stahujte torrenty a magnet odkazy ve Windows bez reklam, bez účtu a bez analytiky. Klikněte na magnet odkaz v prohlížeči a otevře se rovnou v aplikaci. Omezte rychlost, zařaďte stahování do fronty a vyberte, kam se mají soubory ukládat.","Download torrents og magnetlinks på Windows uden reklamer, uden konto og uden brugsanalyse. Klik på et magnetlink i browseren, så åbner det direkte i appen. Begræns hastigheden, sæt downloads i kø, og vælg, hvor filerne skal gemmes.","Torrents und Magnet-Links unter Windows herunterladen – ohne Werbung, ohne Konto und ohne Analyse. Ein Klick auf einen Magnet-Link im Browser öffnet ihn direkt in der App. Geschwindigkeit begrenzen, Downloads einreihen und Speicherort wählen.","Descarga torrents y enlaces magnet en Windows sin anuncios, sin cuenta y sin análisis de uso. Haz clic en un enlace magnet en el navegador y se abre directamente en la app. Limita la velocidad, pon descargas en cola y elige dónde guardar los archivos.","Lataa torrentteja ja magnet-linkkejä Windowsissa ilman mainoksia, tiliä tai käyttöanalytiikkaa. Napsauta magnet-linkkiä selaimessa, niin se avautuu suoraan sovelluksessa. Rajoita nopeutta, lisää latauksia jonoon ja valitse tallennuspaikka.","Téléchargez des torrents et des liens magnet sur Windows, sans publicité, sans compte ni statistiques. Un clic sur un lien magnet dans le navigateur l'ouvre directement dans l'application. Limitez les débits, gérez la file d'attente et choisissez le dossier.","Windows पर बिना विज्ञापन, बिना खाते और बिना एनालिटिक्स के टोरेंट और मैग्नेट लिंक डाउनलोड करें। ब्राउज़र में मैग्नेट लिंक पर क्लिक करें और वह सीधे ऐप में खुल जाएगा। स्पीड लिमिट सेट करें, डाउनलोड कतार में लगाएँ और फ़ाइलें सहेजने की जगह चुनें।","Töltsön le torrenteket és magnet linkeket Windowson reklámok, fiók és használati elemzés nélkül. Kattintson egy magnet linkre a böngészőben, és az rögtön megnyílik az alkalmazásban. Korlátozza a sebességet, állítsa sorba a letöltéseket, és válassza ki a mentés helyét.","Unduh torrent dan tautan magnet di Windows tanpa iklan, tanpa akun, dan tanpa analitik. Klik tautan magnet di browser dan tautan langsung terbuka di aplikasi. Atur batas kecepatan, antrekan unduhan, dan pilih lokasi penyimpanan file.","Scarica torrent e link magnet su Windows senza pubblicità, senza account e senza statistiche d'uso. Fai clic su un link magnet nel browser e si apre subito nell'app. Limita la velocità, metti in coda i download e scegli dove salvare i file.",Windows で torrent とマグネットリンクをダウンロード。広告なし、アカウント不要、利用状況の分析なし。ブラウザーでマグネットリンクをクリックするとアプリで直接開きます。速度制限、ダウンロードの順番待ち、保存先の指定も可能です。,"광고, 계정, 사용 분석 없이 Windows에서 토렌트와 마그넷 링크를 다운로드하세요. 브라우저에서 마그넷 링크를 클릭하면 앱에서 바로 열립니다. 속도 제한, 다운로드 대기열, 저장 위치 선택도 지원합니다.","Last ned torrenter og magnetlenker på Windows uten reklame, uten konto og uten bruksanalyse. Klikk på en magnetlenke i nettleseren, så åpnes den rett i appen. Begrens hastigheten, sett nedlastinger i kø og velg hvor filene skal lagres.","Download torrents en magnetlinks op Windows zonder advertenties, zonder account en zonder gebruiksanalyse. Klik op een magnetlink in je browser en die opent direct in de app. Beperk de snelheid, zet downloads in de wachtrij en kies waar bestanden komen.","Pobieraj torrenty i linki magnet w systemie Windows bez reklam, bez konta i bez analityki. Kliknij link magnet w przeglądarce, a otworzy się od razu w aplikacji. Ograniczaj prędkość, ustawiaj kolejkę pobierania i wybieraj, gdzie zapisać pliki.","Baixe torrents e links magnet no Windows sem anúncios, sem conta e sem coleta de dados de uso. Clique em um link magnet no navegador e ele abre direto no app. Limite a velocidade, organize a fila de downloads e escolha onde salvar os arquivos.","Descărcați torrente și linkuri magnet pe Windows fără reclame, fără cont și fără analize de utilizare. Faceți clic pe un link magnet în browser și se deschide direct în aplicație. Limitați viteza, puneți descărcările în coadă și alegeți unde se salvează fișierele.","Скачивайте торренты и magnet-ссылки в Windows без рекламы, без аккаунта и без сбора статистики. Нажмите magnet-ссылку в браузере — и она сразу откроется в приложении. Ограничивайте скорость, ставьте загрузки в очередь и выбирайте папку для файлов.",ดาวน์โหลดทอร์เรนต์และลิงก์แม็กเน็ตบน Windows โดยไม่มีโฆษณา ไม่ต้องมีบัญชี และไม่มีการเก็บข้อมูลวิเคราะห์ คลิกลิงก์แม็กเน็ตในเบราว์เซอร์แล้วเปิดในแอปได้ทันที ตั้งค่าจำกัดความเร็ว จัดคิวดาวน์โหลด และเลือกตำแหน่งบันทึกไฟล์ได้,"Windows'ta torrent ve magnet bağlantılarını reklamsız, hesapsız ve kullanım analizi olmadan indirin. Tarayıcıda bir magnet bağlantısına tıklayın, doğrudan uygulamada açılsın. Hız sınırı koyun, indirmeleri sıraya alın ve dosyaların kaydedileceği yeri seçin.","Tải torrent và liên kết magnet trên Windows mà không có quảng cáo, không cần tài khoản, không thu thập phân tích. Nhấp vào liên kết magnet trong trình duyệt là mở ngay trong ứng dụng. Giới hạn tốc độ, xếp hàng tải xuống và chọn nơi lưu tệp.",在 Windows 上下载种子和磁力链接，无广告、无需账号、不收集使用数据。在浏览器中点击磁力链接即可直接在应用中打开。支持限速、下载队列，并可自选保存位置。
+ReleaseNotes,3,Text,"Version 1.16
+The app now shows the Torrent Client name in every language, with stability improvements.","Version 1.16
+The app now shows the Torrent Client name in every language, with stability improvements.","الإصدار 1.16
+يظهر التطبيق الآن باسم Torrent Client في جميع اللغات، مع تحسينات في الثبات.","Verze 1.16
+Aplikace se nyní ve všech jazycích jmenuje Torrent Client; vylepšili jsme stabilitu.","Version 1.16
+Appen hedder nu Torrent Client på alle sprog, og stabiliteten er forbedret.","Version 1.16
+Die App zeigt jetzt in allen Sprachen den Namen Torrent Client, dazu Stabilitätsverbesserungen.","Versión 1.16
+La app ahora muestra el nombre Torrent Client en todos los idiomas, con mejoras de estabilidad.","Versio 1.16
+Sovelluksen nimi on nyt Torrent Client kaikilla kielillä, ja vakautta on parannettu.","Version 1.16
+L'application affiche désormais le nom Torrent Client dans toutes les langues, avec des améliorations de stabilité.","संस्करण 1.16
+ऐप अब हर भाषा में Torrent Client नाम से दिखता है, और स्थिरता में सुधार किए गए हैं।","Verzió 1.16
+Az alkalmazás neve mostantól minden nyelven Torrent Client, és javult a stabilitás.","Versi 1.16
+Aplikasi kini menampilkan nama Torrent Client di semua bahasa, dengan peningkatan stabilitas.","Versione 1.16
+L'app ora mostra il nome Torrent Client in tutte le lingue, con miglioramenti di stabilità.","バージョン 1.16
+すべての言語でアプリ名が Torrent Client と表示されるようになりました。安定性も向上しています。","버전 1.16
+이제 모든 언어에서 앱 이름이 Torrent Client로 표시되며, 안정성이 향상되었습니다.","Versjon 1.16
+Appen heter nå Torrent Client på alle språk, og stabiliteten er forbedret.","Versie 1.16
+De app toont nu in alle talen de naam Torrent Client, met verbeteringen in stabiliteit.","Wersja 1.16
+Aplikacja we wszystkich językach nosi teraz nazwę Torrent Client; poprawiono stabilność.","Versão 1.16
+O app agora mostra o nome Torrent Client em todos os idiomas, com melhorias de estabilidade.","Versiunea 1.16
+Aplicația se numește acum Torrent Client în toate limbile; stabilitatea a fost îmbunătățită.","Версия 1.16
+Приложение теперь называется Torrent Client на всех языках; улучшена стабильность.","เวอร์ชัน 1.16
+แอปแสดงชื่อ Torrent Client ในทุกภาษาแล้ว พร้อมปรับปรุงความเสถียร","Sürüm 1.16
+Uygulama artık tüm dillerde Torrent Client adıyla görünüyor; kararlılık iyileştirmeleri yapıldı.","Phiên bản 1.16
+Ứng dụng giờ hiển thị tên Torrent Client ở mọi ngôn ngữ, kèm các cải tiến về độ ổn định.","版本 1.16
+应用名称现已在所有语言中统一显示为 Torrent Client，并提升了稳定性。"
+Feature1,700,Text,Open magnet links from your browser,Open magnet links from your browser,فتح روابط magnet من المتصفح,Otevírání magnet odkazů z prohlížeče,Åbn magnetlinks fra browseren,Magnet-Links direkt aus dem Browser öffnen,Abre enlaces magnet desde el navegador,Avaa magnet-linkit selaimesta,Ouvrir les liens magnet depuis le navigateur,ब्राउज़र से मैग्नेट लिंक खोलें,Magnet linkek megnyitása a böngészőből,Buka tautan magnet dari browser,Apri i link magnet dal browser,ブラウザーからマグネットリンクを開く,브라우저에서 마그넷 링크 열기,Åpne magnetlenker fra nettleseren,Magnetlinks openen vanuit de browser,Otwieranie linków magnet z przeglądarki,Abra links magnet pelo navegador,Deschideți linkuri magnet din browser,Открытие magnet-ссылок из браузера,เปิดลิงก์แม็กเน็ตจากเบราว์เซอร์,Magnet bağlantılarını tarayıcıdan açma,Mở liên kết magnet từ trình duyệt,从浏览器打开磁力链接
+Feature2,701,Text,Open .torrent files from File Explorer,Open .torrent files from File Explorer,فتح ملفات .torrent من مستكشف الملفات,Otevírání souborů .torrent z Průzkumníka souborů,Åbn .torrent-filer fra Stifinder,.torrent-Dateien aus dem Datei-Explorer öffnen,Abre archivos .torrent desde el Explorador de archivos,Avaa .torrent-tiedostot Resurssienhallinnasta,Ouvrir les fichiers .torrent depuis l'Explorateur de fichiers,फ़ाइल एक्सप्लोरर से .torrent फ़ाइलें खोलें,.torrent fájlok megnyitása a Fájlkezelőből,Buka file .torrent dari File Explorer,Apri i file .torrent da Esplora file,エクスプローラーから .torrent ファイルを開く,파일 탐색기에서 .torrent 파일 열기,Åpne .torrent-filer fra Filutforsker,.torrent-bestanden openen vanuit Verkenner,Otwieranie plików .torrent z Eksploratora plików,Abra arquivos .torrent pelo Explorador de Arquivos,Deschideți fișiere .torrent din Explorer,Открытие файлов .torrent из Проводника,เปิดไฟล์ .torrent จาก File Explorer,.torrent dosyalarını Dosya Gezgini'nden açma,Mở tệp .torrent từ File Explorer,从文件资源管理器打开 .torrent 文件
+Feature3,702,Text,"Live speeds, peers, seeds and ETA","Live speeds, peers, seeds and ETA",السرعة والنظراء والبذور والوقت المتبقي مباشرةً,"Rychlost, peery, seedy a zbývající čas v reálném čase","Live hastighed, peers, seeds og resterende tid","Live-Geschwindigkeit, Peers, Seeds und Restzeit","Velocidad, pares, semillas y tiempo restante en directo","Reaaliaikainen nopeus, peerit, seedit ja jäljellä oleva aika","Débits, pairs, seeds et temps restant en direct","लाइव स्पीड, पीयर, सीड और बचा हुआ समय","Élő sebesség, peerek, seedek és hátralévő idő","Kecepatan, peer, seed, dan sisa waktu secara langsung","Velocità, peer, seed e tempo rimanente in tempo reale",速度、ピア、シード、残り時間をリアルタイム表示,"실시간 속도, 피어, 시드, 남은 시간","Direkte hastighet, peers, seeds og gjenstående tid","Live snelheid, peers, seeds en resterende tijd","Prędkość, peery, seedy i pozostały czas na żywo","Velocidade, peers, seeds e tempo restante ao vivo","Viteză, peeri, seederi și timp rămas în timp real","Скорость, пиры, сиды и оставшееся время в реальном времени",ความเร็ว เพียร์ ซีด และเวลาที่เหลือแบบเรียลไทม์,"Canlı hız, peer, seed ve kalan süre","Tốc độ, peer, seed và thời gian còn lại trực tiếp",实时显示速度、对等方、种子数和剩余时间
+Feature4,703,Text,"Pause, resume or stop all transfers at once","Pause, resume or stop all transfers at once",إيقاف كل عمليات النقل مؤقتًا أو استئنافها أو إيقافها دفعةً واحدة,"Pozastavení, obnovení a zastavení všech přenosů najednou","Sæt alle overførsler på pause, genoptag eller stop dem på én gang","Alle Übertragungen auf einmal pausieren, fortsetzen oder stoppen","Pausa, reanuda o detén todas las transferencias a la vez","Keskeytä, jatka tai pysäytä kaikki siirrot kerralla","Mettre en pause, reprendre ou arrêter tous les transferts","सभी ट्रांसफ़र एक साथ रोकें, फिर शुरू करें या बंद करें","Minden átvitel szüneteltetése, folytatása vagy leállítása egyszerre","Jeda, lanjutkan, atau hentikan semua transfer sekaligus","Metti in pausa, riprendi o ferma tutti i trasferimenti",すべての転送をまとめて一時停止・再開・停止,"모든 전송을 한 번에 일시 중지, 재개, 중지","Sett alle overføringer på pause, gjenoppta eller stopp dem samtidig","Alle overdrachten tegelijk pauzeren, hervatten of stoppen","Wstrzymywanie, wznawianie i zatrzymywanie wszystkich transferów","Pause, retome ou pare todas as transferências de uma vez","Întrerupeți, reluați sau opriți toate transferurile deodată","Пауза, возобновление и остановка всех передач сразу",หยุดชั่วคราว ทำต่อ หรือหยุดการถ่ายโอนทั้งหมดพร้อมกัน,"Tüm aktarımları tek seferde duraklatma, sürdürme veya durdurma","Tạm dừng, tiếp tục hoặc dừng tất cả lượt truyền cùng lúc",一键暂停、恢复或停止全部传输
+Feature5,704,Text,Automatic resume after restart,Automatic resume after restart,استئناف تلقائي بعد إعادة التشغيل,Automatické obnovení po restartu,Automatisk genoptagelse efter genstart,Automatische Fortsetzung nach Neustart,Reanudación automática tras reiniciar,Automaattinen jatkaminen uudelleenkäynnistyksen jälkeen,Reprise automatique après redémarrage,रीस्टार्ट के बाद अपने-आप फिर शुरू,Automatikus folytatás újraindítás után,Lanjut otomatis setelah dimulai ulang,Ripresa automatica dopo il riavvio,再起動後の自動再開,다시 시작 후 자동 재개,Automatisk gjenopptak etter omstart,Automatisch hervatten na herstart,Automatyczne wznawianie po ponownym uruchomieniu,Retomada automática após reiniciar,Reluare automată după repornire,Автоматическое возобновление после перезапуска,ทำงานต่ออัตโนมัติหลังรีสตาร์ท,Yeniden başlatma sonrası otomatik devam,Tự tiếp tục sau khi khởi động lại,重启后自动恢复
+Feature6,705,Text,Global and per-torrent speed limits,Global and per-torrent speed limits,حدود سرعة عامة ولكل تورنت,Globální limity rychlosti i pro každý torrent,Globale hastighedsgrænser og grænser pr. torrent,Globale und torrentbezogene Geschwindigkeitslimits,Límites de velocidad globales y por torrent,Yleiset ja torrentkohtaiset nopeusrajat,Limites de débit globales et par torrent,कुल और हर टोरेंट के लिए स्पीड लिमिट,Globális és torrentenkénti sebességkorlátok,Batas kecepatan global dan per torrent,Limiti di velocità globali e per torrent,全体および torrent ごとの速度制限,전체 및 토렌트별 속도 제한,Globale hastighetsgrenser og grenser per torrent,Algemene en per-torrent snelheidslimieten,Globalne i indywidualne limity prędkości,Limites de velocidade globais e por torrent,Limite de viteză globale și pentru fiecare torrent,Общие и отдельные ограничения скорости,จำกัดความเร็วแบบรวมและแยกตามทอร์เรนต์,Genel ve torrent başına hız sınırları,Giới hạn tốc độ chung và cho từng torrent,全局和单个种子限速
+Feature7,706,Text,Download queue and seeding limits,Download queue and seeding limits,قائمة انتظار للتنزيل وحدود للمشاركة,Fronta stahování a limity sdílení,Downloadkø og seed-grænser,Download-Warteschlange und Seed-Limits,Cola de descargas y límites de siembra,Latausjono ja jakamisrajat,File d'attente et limites de partage,डाउनलोड कतार और सीडिंग सीमा,Letöltési sor és seedelési korlátok,Antrean unduhan dan batas seeding,Coda di download e limiti di condivisione,ダウンロードの順番待ちとシードの上限,다운로드 대기열과 시딩 제한,Nedlastingskø og delingsgrenser,Downloadwachtrij en seedlimieten,Kolejka pobierania i limity seedowania,Fila de downloads e limites de compartilhamento,Coadă de descărcare și limite de partajare,Очередь загрузок и ограничения раздачи,คิวดาวน์โหลดและขีดจำกัดการซีด,İndirme kuyruğu ve paylaşım sınırları,Hàng đợi tải xuống và giới hạn seed,下载队列和做种上限
+Feature8,707,Text,Wi-Fi-only mode,Wi-Fi-only mode,وضع Wi-Fi فقط,Režim pouze Wi-Fi,Tilstanden Kun Wi-Fi,Nur-WLAN-Modus,Modo solo Wi-Fi,Vain Wi-Fi -tila,Mode Wi-Fi uniquement,केवल Wi-Fi मोड,Csak Wi-Fi mód,Mode khusus Wi-Fi,Modalità solo Wi-Fi,Wi-Fi のみモード,Wi-Fi 전용 모드,Modusen Bare Wi-Fi,Modus Alleen wifi,Tryb tylko Wi-Fi,Modo somente Wi-Fi,Modul doar Wi-Fi,Режим «Только Wi-Fi»,โหมด Wi-Fi เท่านั้น,Yalnızca Wi-Fi modu,Chế độ chỉ Wi-Fi,仅限 Wi-Fi 模式
+Feature9,708,Text,SOCKS5 proxy support,SOCKS5 proxy support,دعم خادم SOCKS5 الوكيل,Podpora proxy SOCKS5,Understøtter SOCKS5-proxy,SOCKS5-Proxy-Unterstützung,Compatible con proxy SOCKS5,SOCKS5-välityspalvelimen tuki,Prise en charge du proxy SOCKS5,SOCKS5 प्रॉक्सी समर्थन,SOCKS5 proxy támogatása,Dukungan proxy SOCKS5,Supporto proxy SOCKS5,SOCKS5 プロキシ対応,SOCKS5 프록시 지원,Støtte for SOCKS5-proxy,Ondersteuning voor SOCKS5-proxy,Obsługa proxy SOCKS5,Suporte a proxy SOCKS5,Suport pentru proxy SOCKS5,Поддержка прокси SOCKS5,รองรับพร็อกซี SOCKS5,SOCKS5 proxy desteği,Hỗ trợ proxy SOCKS5,支持 SOCKS5 代理
+Feature10,709,Text,Choose your download folder,Choose your download folder,اختيار مجلد التنزيل,Výběr složky pro stahování,Vælg din downloadmappe,Eigener Download-Ordner,Elige tu carpeta de descargas,Valitse latauskansio,Dossier de téléchargement au choix,अपना डाउनलोड फ़ोल्डर चुनें,Választható letöltési mappa,Pilih folder unduhan,Scegli la cartella di download,ダウンロード先フォルダーを選択,다운로드 폴더 선택,Velg nedlastingsmappe,Kies je downloadmap,Wybór folderu pobierania,Escolha sua pasta de downloads,Alegeți dosarul de descărcare,Выбор папки для загрузок,เลือกโฟลเดอร์ดาวน์โหลดเองได้,İndirme klasörünü seçme,Chọn thư mục tải xuống,自选下载文件夹
+Feature11,710,Text,"Light, dark and system themes","Light, dark and system themes",سمات فاتحة وداكنة وسمة النظام,"Světlý, tmavý a systémový motiv","Lyst, mørkt og systemtema","Helles, dunkles und System-Design","Temas claro, oscuro y del sistema","Vaalea, tumma ja järjestelmän teema","Thèmes clair, sombre et système","लाइट, डार्क और सिस्टम थीम","Világos, sötét és rendszertéma","Tema terang, gelap, dan sistem","Tema chiaro, scuro e di sistema",ライト、ダーク、システムのテーマ,"라이트, 다크, 시스템 테마","Lyst, mørkt og systemtema","Licht, donker en systeemthema","Motyw jasny, ciemny i systemowy","Temas claro, escuro e do sistema","Temă luminoasă, întunecată și de sistem","Светлая, тёмная и системная темы",ธีมสว่าง ธีมมืด และตามระบบ,"Açık, koyu ve sistem teması","Giao diện sáng, tối và theo hệ thống",浅色、深色和跟随系统主题
+Feature12,711,Text,"24 languages, native x64 and ARM64","24 languages, native x64 and ARM64",24 لغة، ودعم أصلي لـ x64 وARM64,"24 jazyků, nativně x64 a ARM64","24 sprog, native x64 og ARM64","24 Sprachen, nativ für x64 und ARM64","24 idiomas, nativo x64 y ARM64","24 kieltä, natiivisti x64 ja ARM64","24 langues, natif x64 et ARM64","24 भाषाएँ, x64 और ARM64 के लिए नेटिव","24 nyelv, natív x64 és ARM64","24 bahasa, asli x64 dan ARM64","24 lingue, nativo x64 e ARM64",24 言語、x64 と ARM64 にネイティブ対応,"24개 언어, x64 및 ARM64 네이티브","24 språk, native x64 og ARM64","24 talen, native x64 en ARM64","24 języki, natywnie x64 i ARM64","24 idiomas, nativo x64 e ARM64","24 de limbi, nativ x64 și ARM64","24 языка, нативно для x64 и ARM64",24 ภาษา รองรับ x64 และ ARM64 แบบเนทีฟ,"24 dil, yerel x64 ve ARM64","24 ngôn ngữ, gốc x64 và ARM64",24 种语言，原生支持 x64 和 ARM64
+Feature13,712,Text,"No ads, analytics or account","No ads, analytics or account",بلا إعلانات أو تحليلات أو حساب,"Bez reklam, analytiky a účtu","Ingen reklamer, analyse eller konto","Keine Werbung, keine Analyse, kein Konto","Sin anuncios, análisis ni cuenta","Ei mainoksia, analytiikkaa tai tiliä","Sans publicité, statistiques ni compte","कोई विज्ञापन, एनालिटिक्स या खाता नहीं","Nincs reklám, elemzés vagy fiók","Tanpa iklan, analitik, atau akun","Niente pubblicità, statistiche o account",広告・分析・アカウントなし,"광고, 분석, 계정 없음","Ingen reklame, analyse eller konto","Geen advertenties, analyse of account","Bez reklam, analityki i konta","Sem anúncios, coleta de dados ou conta","Fără reclame, analize sau cont","Без рекламы, аналитики и аккаунта",ไม่มีโฆษณา ไม่มีการวิเคราะห์ ไม่ต้องมีบัญชี,"Reklam, analiz ve hesap yok","Không quảng cáo, phân tích hay tài khoản",无广告、无数据分析、无需账号
+Feature14,713,Text,Free and open source,Free and open source,مجاني ومفتوح المصدر,Zdarma a open source,Gratis og open source,Kostenlos und Open Source,Gratis y de código abierto,Ilmainen ja avoin lähdekoodi,Gratuit et open source,मुफ़्त और ओपन सोर्स,Ingyenes és nyílt forráskódú,Gratis dan open source,Gratuito e open source,無料でオープンソース,무료 오픈 소스,Gratis og åpen kildekode,Gratis en opensource,Darmowy i otwartoźródłowy,Grátis e de código aberto,Gratuit și open source,Бесплатно и с открытым исходным кодом,ฟรีและโอเพนซอร์ส,Ücretsiz ve açık kaynak,Miễn phí và mã nguồn mở,免费开源
 StoreLogo300x300,602,Relative path (or URL to file in Partner Center),microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png,microsoft-store/assets/StoreLogo300x300.png
 StoreLogoOverride150x150,604,Relative path (or URL to file in Partner Center),microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png,microsoft-store/assets/StoreLogo150x150.png
 StoreLogoOverride71x71,605,Relative path (or URL to file in Partner Center),microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png,microsoft-store/assets/StoreLogo71x71.png

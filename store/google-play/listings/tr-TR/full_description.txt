@@ -1,0 +1,26 @@
+Torrent Client, Android için ücretsiz ve açık kaynaklı bir BitTorrent uygulaması ve torrent indiricisidir. Tarayıcıda bir magnet bağlantısına dokunun ya da bir .torrent dosyası açın; indirme hemen başlar. Reklam yok, hesap yok, paket teklif yok.
+
+İndirin ve paylaşın
+• Magnet bağlantılarını ve .torrent dosyalarını tarayıcıdan, dosya yöneticisinden ve diğer uygulamalardan açın.
+• İlerlemeyi, indirme ve yükleme hızını, seed ve peer sayısını ve kalan süreyi görün.
+• Aktarımları tek tek ya da hepsini birden başlatın, duraklatın, durdurun ve kaldırın.
+• İndirmeler, ilerleme bildirimiyle arka planda devam eder.
+• Devam eden aktarımlar yeniden başlatmanın ardından otomatik olarak sürer.
+
+Kontrol sizde
+• Yalnızca Wi-Fi modu, mobil veride aktarımları duraklatır ve Wi-Fi'da sürdürür.
+• Ekran kapalıyken uzun aktarımlar için cihazı uyanık tutma seçeneği.
+• Genel ve torrent başına indirme ve yükleme sınırları.
+• Etkin indirme ve seed sayısını sınırlayın; paylaşım oranı ve süresi için sınır koyun.
+• Tamamlanan indirmeleri tek dokunuşla telefonun İndirilenler klasörüne kopyalayın.
+
+Gizlilik
+Reklam veya analiz SDK'sı yok. Her BitTorrent uygulamasında olduğu gibi tracker'lar ve peer'lar IP adresinizi görebilir; isterseniz desteklenen trafiği kendi SOCKS5 proxy'niz üzerinden yönlendirin.
+
+Ayrıca
+• İndirilen sesli kitapları LibroNest'e gönderin.
+• Sistem, açık ve koyu tema ile 24 arayüz dili.
+
+Android pil ayarları arka plan etkinliğini sınırlayabilir. Yalnızca kullanma hakkına sahip olduğunuz içerikleri indirin ve paylaşın.
+
+Kaynak kodu: https://github.com/kirakosyan/torrent-free

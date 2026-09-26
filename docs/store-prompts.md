@@ -14,7 +14,7 @@ These features are implemented for Windows and Android. No store release or vers
 ## Review prompts
 
 - Count a newly verified, completed torrent once, including transitions into seeding. Restored historical completions are not backfilled. Pauses, restarts, repeated callbacks and re-adding the same info-hash do not add another count.
-- The first request becomes eligible after five unique completions. Background downloads count, but the banner is offered only on the foreground Downloads page.
+- The first request becomes eligible after three unique completions. Background downloads count, but the banner is offered only on the foreground Downloads page.
 - Offering the banner is persisted immediately. Choosing Later, canceling the Windows review dialog, or restarting after an offer requires both ten additional completions and 30 elapsed days before another offer.
 - Don't ask again permanently opts out in local app data.
 - If the device clock moves backwards behind the last offer, the saved offer time is corrected and a fresh 30-day cooldown begins. Download thresholds and opt-outs are preserved.
@@ -34,7 +34,7 @@ The native store interactions require real eligible installations and cannot be 
 
 1. Install an older Store-signed Windows package and a Play-delivered Android build; make a higher version eligible for the test account/device. Confirm the update banner and correct listing on both platforms.
 2. Verify current-version, offline, unavailable-store and staged-rollout cases; app startup/downloads must remain responsive.
-3. Complete five distinct downloads; verify first offer, background/foreground handling, narrow-screen button wrapping, dark theme and RTL.
+3. Complete three distinct downloads; verify first offer, background/foreground handling, narrow-screen button wrapping, dark theme and RTL.
 4. Test Later and opt-out, then restart/update the app. Verify the counter survives removal of completed torrent rows and is unaffected by settings changes.
 5. On Windows, submit and cancel the native review dialog separately. On Android, verify Play handoff and opt-out without claiming submission.
 6. On Android, exercise navigation and fragment-hosted MAUI controls on a device with Fragment/KTX 1.9.0. The clean build does not replace runtime validation of the dependency alignment required by Play App Update.

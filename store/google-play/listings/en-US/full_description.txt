@@ -1,0 +1,26 @@
+Torrent Client is a free, open-source BitTorrent app and torrent downloader for Android. Tap a magnet link in your browser or open a .torrent file, and the download starts. No ads, no account, no bundled offers.
+
+Download and seed
+• Open magnet links and .torrent files from your browser, file manager and other apps.
+• See progress, download and upload speed, seeds, peers and time remaining.
+• Start, pause, stop and remove transfers one at a time or all at once.
+• Downloads keep running in the background with a progress notification.
+• Transfers that were running resume automatically after a restart.
+
+Stay in control
+• Wi-Fi-only mode pauses transfers on mobile data and resumes them on Wi-Fi.
+• Optional keep-awake setting for long transfers with the screen off.
+• Global and per-torrent download and upload limits.
+• Limit active downloads and seeds, with seeding ratio and time limits.
+• Copy finished downloads to your phone's Downloads folder with one tap.
+
+Privacy
+No advertising or analytics SDKs. As with any BitTorrent app, trackers and peers can see your IP address; route supported traffic through your own SOCKS5 proxy if you prefer.
+
+More
+• Send finished audiobook downloads to LibroNest.
+• System, light and dark themes, and 24 interface languages.
+
+Android battery settings may limit background activity. Download and share only content you have the right to use.
+
+Source code: https://github.com/kirakosyan/torrent-free

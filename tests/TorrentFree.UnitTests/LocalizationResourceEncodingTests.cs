@@ -24,8 +24,8 @@ public sealed class LocalizationResourceEncodingTests
 
         Assert.Contains("Arrêter", content, StringComparison.Ordinal);
         Assert.DoesNotContain("ArrÃªter", content, StringComparison.Ordinal);
-        Assert.Contains("À propos de Torrent Free", content, StringComparison.Ordinal);
-        Assert.DoesNotContain("Ã€ propos de Torrent Free", content, StringComparison.Ordinal);
+        Assert.Contains("À propos de Torrent Client", content, StringComparison.Ordinal);
+        Assert.DoesNotContain("Ã€ propos de Torrent Client", content, StringComparison.Ordinal);
         Assert.Contains("Version du fichier", content, StringComparison.Ordinal);
     }
 

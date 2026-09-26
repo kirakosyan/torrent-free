@@ -4,6 +4,16 @@ internal static class MauiStoragePaths
 {
     public static StoragePaths Create()
     {
+#if DEBUG && WINDOWS
+        // Debug builds share the Store app's data folder; screenshot and test sessions can
+        // point at an isolated queue instead so real torrents and settings stay untouched.
+        var isolatedRoot = Environment.GetEnvironmentVariable("TORRENTFREE_DATA_DIR");
+        if (!string.IsNullOrWhiteSpace(isolatedRoot))
+        {
+            Directory.CreateDirectory(isolatedRoot);
+            return new StoragePaths(isolatedRoot, Path.Combine(isolatedRoot, "Downloads"));
+        }
+#endif
         var appData = GetAppDataDirectory();
 #if ANDROID
         var downloadBase = Android.App.Application.Context.GetExternalFilesDir(Android.OS.Environment.DirectoryDownloads)?.AbsolutePath ?? appData;

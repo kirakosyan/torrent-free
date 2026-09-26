@@ -60,7 +60,7 @@
   </resheader>
   <!-- App Title -->
   <data name="AppTitle" xml:space="preserve">
-    <value>Torrent Free</value>
+    <value>Torrent Client</value>
   </data>
   <!-- Main Page -->
   <data name="AddTorrentPlaceholder" xml:space="preserve">
@@ -298,7 +298,7 @@
     <value>.torrent ファイルを関連付ける</value>
   </data>
   <data name="AssociateTorrentMessage" xml:space="preserve">
-    <value>デフォルトで .torrent ファイルを Torrent Free で開きますか?</value>
+    <value>デフォルトで .torrent ファイルを Torrent Client で開きますか?</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>はい</value>
@@ -307,10 +307,10 @@
     <value>いいえ</value>
   </data>
   <data name="AboutTitle" xml:space="preserve">
-    <value>Torrent Free について</value>
+    <value>Torrent Client について</value>
   </data>
   <data name="AboutMessage" xml:space="preserve">
-    <value>Torrent Free は無料で使用できます。</value>
+    <value>Torrent Client は無料で使用できます。</value>
   </data>
   <data name="AboutVersionLabel" xml:space="preserve">
     <value>バージョン</value>

@@ -11,6 +11,9 @@ public partial class AppPromptService(
     IAppStore store, IAppPromptStateStore stateStore, IUiDispatcher dispatcher,
     TimeProvider? timeProvider = null) : ObservableObject, IDownloadCompletionObserver
 {
+    internal const int FirstReviewCompletions = 3;
+    internal const int ReviewReminderCompletions = 10;
+
     private readonly TimeProvider _clock = timeProvider ?? TimeProvider.System;
     private readonly SemaphoreSlim _stateLock = new(1, 1);
     private readonly SemaphoreSlim _updateLock = new(1, 1);
@@ -165,9 +168,9 @@ public partial class AppPromptService(
     }
 
     internal static bool IsReviewDue(AppPromptState state, DateTimeOffset now) =>
-        !state.ReviewPromptsDisabled && state.CompletedDownloadIds.Length >= 5
+        !state.ReviewPromptsDisabled && state.CompletedDownloadIds.Length >= FirstReviewCompletions
         && (state.LastReviewPromptUtc is null
-            || (state.CompletedDownloadIds.Length - state.DownloadsAtLastReviewPrompt >= 10
+            || (state.CompletedDownloadIds.Length - state.DownloadsAtLastReviewPrompt >= ReviewReminderCompletions
                 && now - state.LastReviewPromptUtc >= TimeSpan.FromDays(30)));
 
     [RelayCommand]

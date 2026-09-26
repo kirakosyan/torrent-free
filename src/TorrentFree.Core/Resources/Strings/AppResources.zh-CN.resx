@@ -60,7 +60,7 @@
   </resheader>
   <!-- App Title -->
   <data name="AppTitle" xml:space="preserve">
-    <value>Torrent Free</value>
+    <value>Torrent Client</value>
   </data>
   <!-- Main Page -->
   <data name="AddTorrentPlaceholder" xml:space="preserve">
@@ -298,7 +298,7 @@
     <value>关联 .torrent 文件</value>
   </data>
   <data name="AssociateTorrentMessage" xml:space="preserve">
-    <value>您想默认使用 Torrent Free 打开 .torrent 文件吗？</value>
+    <value>您想默认使用 Torrent Client 打开 .torrent 文件吗？</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>是</value>
@@ -307,10 +307,10 @@
     <value>否</value>
   </data>
   <data name="AboutTitle" xml:space="preserve">
-    <value>关于Torrent Free</value>
+    <value>关于Torrent Client</value>
   </data>
   <data name="AboutMessage" xml:space="preserve">
-    <value>Torrent Free 可免费使用。</value>
+    <value>Torrent Client 可免费使用。</value>
   </data>
   <data name="AboutVersionLabel" xml:space="preserve">
     <value>版本</value>

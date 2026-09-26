@@ -1,0 +1,26 @@
+Torrent Client je bezplatná open-source aplikace BitTorrent a stahovač torrentů pro Android. Klepněte na magnet odkaz v prohlížeči nebo otevřete soubor .torrent a stahování začne. Žádné reklamy, žádný účet, žádné přibalené nabídky.
+
+Stahování a sdílení
+• Otevírejte magnet odkazy a soubory .torrent z prohlížeče, správce souborů a dalších aplikací.
+• Sledujte průběh, rychlost stahování a odesílání, seedy, peery a zbývající čas.
+• Spouštějte, pozastavujte, zastavujte a odebírejte přenosy jednotlivě nebo všechny najednou.
+• Stahování pokračuje na pozadí s oznámením o průběhu.
+• Probíhající přenosy se po restartu automaticky obnoví.
+
+Vše pod kontrolou
+• Režim pouze Wi-Fi pozastaví přenosy na mobilních datech a obnoví je na Wi-Fi.
+• Volitelné udržení zařízení vzhůru při dlouhých přenosech se zhasnutým displejem.
+• Globální i samostatné limity stahování a odesílání pro každý torrent.
+• Omezte počet aktivních stahování a seedů, nastavte limity poměru a doby sdílení.
+• Zkopírujte dokončená stahování jedním klepnutím do složky Stažené v telefonu.
+
+Soukromí
+Žádné reklamní ani analytické SDK. Jako u každé aplikace BitTorrent vidí trackery a peery vaši IP adresu; podporovaný provoz můžete směrovat přes vlastní proxy SOCKS5.
+
+Dále
+• Posílejte stažené audioknihy do aplikace LibroNest.
+• Systémový, světlý a tmavý motiv a 24 jazyků rozhraní.
+
+Nastavení baterie v Androidu může omezit činnost na pozadí. Stahujte a sdílejte pouze obsah, k jehož používání máte právo.
+
+Zdrojový kód: https://github.com/kirakosyan/torrent-free

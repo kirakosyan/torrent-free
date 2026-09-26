@@ -6,16 +6,18 @@ namespace TorrentFree.UnitTests;
 
 public sealed class AppPromptServiceTests
 {
+    private const int First = AppPromptService.FirstReviewCompletions;
+
     [Fact]
-    public async Task FiveUniqueCompletions_OfferOnlyInForeground_AndPersistOfferBeforeRestart()
+    public async Task FirstReviewCompletions_OfferOnlyInForeground_AndPersistOfferBeforeRestart()
     {
         var fixture = new Fixture();
-        await fixture.CompleteAsync(0, 5);
+        await fixture.CompleteAsync(0, First);
         Assert.False(fixture.Service.IsReviewBannerVisible);
         Assert.Null(fixture.Persistence.State.LastReviewPromptUtc);
         await fixture.Service.SetForegroundAsync(true);
         Assert.True(fixture.Service.IsReviewBannerVisible);
-        Assert.Equal(5, fixture.Persistence.State.DownloadsAtLastReviewPrompt);
+        Assert.Equal(First, fixture.Persistence.State.DownloadsAtLastReviewPrompt);
 
         var restarted = fixture.Restart();
         await restarted.SetForegroundAsync(true);
@@ -27,13 +29,13 @@ public sealed class AppPromptServiceTests
     {
         var fixture = new Fixture();
         await fixture.Service.SetForegroundAsync(true);
-        await fixture.CompleteAsync(0, 4);
+        await fixture.CompleteAsync(0, First - 1);
         await fixture.Service.OnDownloadCompletedAsync(WithId("readded"));
         await fixture.Service.OnDownloadCompletedAsync(new TorrentItem { Id = "partial", Progress = 99 });
         await fixture.Service.OnDownloadCompletedAsync(new TorrentItem { Id = "unverified", Progress = 100 });
-        Assert.Equal(4, fixture.Persistence.State.CompletedDownloadIds.Length);
+        Assert.Equal(First - 1, fixture.Persistence.State.CompletedDownloadIds.Length);
         Assert.False(fixture.Service.IsReviewBannerVisible);
-        await fixture.CompleteAsync(4, 1);
+        await fixture.CompleteAsync(First - 1, 1);
         Assert.True(fixture.Service.IsReviewBannerVisible);
 
         TorrentItem WithId(string id)
@@ -66,7 +68,7 @@ public sealed class AppPromptServiceTests
         var fixture = new Fixture();
         var correctTime = fixture.Clock.Now;
         fixture.Clock.Now = correctTime.AddYears(10);
-        await fixture.CompleteAsync(0, 5);
+        await fixture.CompleteAsync(0, First);
         await fixture.Service.SetForegroundAsync(true);
         await fixture.Service.ReviewLaterCommand.ExecuteAsync(null);
 
@@ -74,9 +76,9 @@ public sealed class AppPromptServiceTests
         var restarted = fixture.Restart();
         await restarted.SetForegroundAsync(true);
         Assert.Equal(correctTime, fixture.Persistence.State.LastReviewPromptUtc);
-        Assert.Equal(5, fixture.Persistence.State.DownloadsAtLastReviewPrompt);
+        Assert.Equal(First, fixture.Persistence.State.DownloadsAtLastReviewPrompt);
         Assert.False(restarted.IsReviewBannerVisible);
-        for (var i = 5; i < 15; i++) await restarted.OnDownloadCompletedAsync(Completed(i));
+        for (var i = First; i < First + 10; i++) await restarted.OnDownloadCompletedAsync(Completed(i));
         Assert.False(restarted.IsReviewBannerVisible);
         fixture.Clock.Now += TimeSpan.FromDays(29);
         await restarted.SetForegroundAsync(true);
@@ -90,7 +92,7 @@ public sealed class AppPromptServiceTests
     public async Task CorrectedClock_DoesNotUndoOptOut()
     {
         var fixture = new Fixture();
-        await fixture.CompleteAsync(0, 5);
+        await fixture.CompleteAsync(0, First);
         await fixture.Service.SetForegroundAsync(true);
         await fixture.Service.DisableReviewsCommand.ExecuteAsync(null);
         fixture.Clock.Now = fixture.Clock.Now.AddYears(-10);
@@ -107,7 +109,7 @@ public sealed class AppPromptServiceTests
     {
         var fixture = new Fixture();
         await fixture.Service.SetForegroundAsync(true);
-        await fixture.CompleteAsync(0, 4);
+        await fixture.CompleteAsync(0, First - 1);
         var savingOffer = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var releaseSave = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         fixture.Persistence.BeforeSave = async state =>
@@ -118,7 +120,7 @@ public sealed class AppPromptServiceTests
                 await releaseSave.Task;
             }
         };
-        var completing = fixture.CompleteAsync(4, 1);
+        var completing = fixture.CompleteAsync(First - 1, 1);
         await savingOffer.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
         fixture.Store.ReviewResult = AppReviewResult.Canceled;
         var dismissing = canceledReview
@@ -138,7 +140,7 @@ public sealed class AppPromptServiceTests
         var dispatcher = new ControlledDispatcher();
         var fixture = new Fixture(dispatcher);
         await fixture.Service.SetForegroundAsync(true);
-        await fixture.CompleteAsync(0, 4);
+        await fixture.CompleteAsync(0, First - 1);
         var visibleTransitions = 0;
         fixture.Service.PropertyChanged += (_, args) =>
         {
@@ -146,7 +148,7 @@ public sealed class AppPromptServiceTests
                 Interlocked.Increment(ref visibleTransitions);
         };
         var pause = dispatcher.PauseNext();
-        var completing = fixture.CompleteAsync(4, 1);
+        var completing = fixture.CompleteAsync(First - 1, 1);
         await pause.Entered.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
         var stopping = fixture.Service.SetForegroundAsync(false);
         try { Assert.False(stopping.IsCompleted); }
@@ -164,7 +166,7 @@ public sealed class AppPromptServiceTests
         var dispatcher = new ControlledDispatcher();
         var fixture = new Fixture(dispatcher);
         await fixture.Service.SetForegroundAsync(true);
-        await fixture.CompleteAsync(0, 5);
+        await fixture.CompleteAsync(0, First);
         dispatcher.Fail = true;
         await fixture.Service.SetForegroundAsync(false);
         await fixture.Service.SetForegroundAsync(true);
@@ -183,9 +185,9 @@ public sealed class AppPromptServiceTests
     {
         var fixture = new Fixture();
         await fixture.Service.SetForegroundAsync(true);
-        await fixture.CompleteAsync(0, 5);
+        await fixture.CompleteAsync(0, First);
         await fixture.Service.ReviewLaterCommand.ExecuteAsync(null);
-        await fixture.CompleteAsync(5, 10);
+        await fixture.CompleteAsync(First, 10);
         Assert.False(fixture.Service.IsReviewBannerVisible);
         fixture.Clock.Now += TimeSpan.FromDays(29);
         await fixture.Service.SetForegroundAsync(true);
@@ -196,9 +198,9 @@ public sealed class AppPromptServiceTests
 
         await fixture.Service.ReviewLaterCommand.ExecuteAsync(null);
         fixture.Clock.Now += TimeSpan.FromDays(31);
-        await fixture.CompleteAsync(15, 9);
+        await fixture.CompleteAsync(First + 10, 9);
         Assert.False(fixture.Service.IsReviewBannerVisible);
-        await fixture.CompleteAsync(24, 1);
+        await fixture.CompleteAsync(First + 19, 1);
         Assert.True(fixture.Service.IsReviewBannerVisible);
     }
 
@@ -209,7 +211,7 @@ public sealed class AppPromptServiceTests
     {
         var fixture = new Fixture();
         await fixture.Service.SetForegroundAsync(true);
-        await fixture.CompleteAsync(0, 5);
+        await fixture.CompleteAsync(0, First);
         fixture.Store.ReviewResult = result;
         await fixture.Service.RateAppCommand.ExecuteAsync(null);
         Assert.True(fixture.Persistence.State.ReviewPromptsDisabled);
@@ -217,7 +219,7 @@ public sealed class AppPromptServiceTests
         Assert.False(fixture.Service.IsReviewBannerVisible);
         fixture.Clock.Now += TimeSpan.FromDays(90);
         var restarted = fixture.Restart();
-        for (var i = 5; i < 30; i++) await restarted.OnDownloadCompletedAsync(Completed(i));
+        for (var i = First; i < 30; i++) await restarted.OnDownloadCompletedAsync(Completed(i));
         await restarted.SetForegroundAsync(true);
         Assert.False(restarted.IsReviewBannerVisible);
     }
@@ -226,7 +228,7 @@ public sealed class AppPromptServiceTests
     public async Task DontAskAgain_SurvivesRestart()
     {
         var fixture = new Fixture();
-        await fixture.CompleteAsync(0, 5);
+        await fixture.CompleteAsync(0, First);
         await fixture.Service.SetForegroundAsync(true);
         await fixture.Service.DisableReviewsCommand.ExecuteAsync(null);
         Assert.True(fixture.Persistence.State.ReviewPromptsDisabled);
@@ -240,7 +242,7 @@ public sealed class AppPromptServiceTests
     {
         var fixture = new Fixture();
         await fixture.Service.SetForegroundAsync(true);
-        await fixture.CompleteAsync(0, 5);
+        await fixture.CompleteAsync(0, First);
         fixture.Store.ReviewResult = AppReviewResult.Failed;
         await fixture.Service.RateAppCommand.ExecuteAsync(null);
         Assert.True(fixture.Service.IsReviewBannerVisible);
@@ -260,7 +262,7 @@ public sealed class AppPromptServiceTests
     {
         var fixture = new Fixture();
         fixture.Store.Availability = AppUpdateAvailability.Available;
-        await fixture.CompleteAsync(0, 5);
+        await fixture.CompleteAsync(0, First);
         await fixture.Service.SetForegroundAsync(true);
         Assert.True(fixture.Service.IsUpdateBannerVisible);
         Assert.False(fixture.Service.IsReviewBannerVisible);
@@ -325,7 +327,7 @@ public sealed class AppPromptServiceTests
     public async Task BackgroundingDuringStoreCheck_NeverOffersReviewUntilReturn()
     {
         var fixture = new Fixture();
-        await fixture.CompleteAsync(0, 5);
+        await fixture.CompleteAsync(0, First);
         var pending = new TaskCompletionSource<AppUpdateAvailability>(TaskCreationOptions.RunContinuationsAsynchronously);
         fixture.Store.PendingUpdate = pending.Task;
         var activating = fixture.Service.SetForegroundAsync(true);
@@ -344,7 +346,7 @@ public sealed class AppPromptServiceTests
         var fixture = new Fixture();
         fixture.Persistence.FailReads = true;
         await fixture.Service.SetForegroundAsync(true);
-        await fixture.CompleteAsync(0, 5);
+        await fixture.CompleteAsync(0, First);
         Assert.False(fixture.Service.HasBanner);
         Assert.Equal(0, fixture.Persistence.Writes);
     }
@@ -356,13 +358,13 @@ public sealed class AppPromptServiceTests
     public async Task PendingUpdateCheck_DoesNotBlockCompletionsAndReevaluatesReviewOnReturn(AppUpdateAvailability availability)
     {
         var fixture = new Fixture();
-        await fixture.CompleteAsync(0, 4);
+        await fixture.CompleteAsync(0, First - 1);
         var pending = new TaskCompletionSource<AppUpdateAvailability>(TaskCreationOptions.RunContinuationsAsynchronously);
         fixture.Store.PendingUpdate = pending.Task;
         var activating = fixture.Service.SetForegroundAsync(true);
-        await fixture.CompleteAsync(4, 1);
+        await fixture.CompleteAsync(First - 1, 1);
         await fixture.Service.SetForegroundAsync(true); // A duplicate lifecycle event while checking.
-        Assert.Equal(5, fixture.Persistence.State.CompletedDownloadIds.Length);
+        Assert.Equal(First, fixture.Persistence.State.CompletedDownloadIds.Length);
         Assert.False(fixture.Service.IsReviewBannerVisible);
         Assert.Null(fixture.Persistence.State.LastReviewPromptUtc);
         pending.SetResult(availability);
@@ -377,10 +379,10 @@ public sealed class AppPromptServiceTests
     {
         var fixture = new Fixture();
         fixture.Persistence.FailWrites = true;
-        await fixture.CompleteAsync(0, 5);
+        await fixture.CompleteAsync(0, First);
         Assert.Empty(fixture.Persistence.State.CompletedDownloadIds);
         fixture.Persistence.FailWrites = false;
-        await fixture.CompleteAsync(0, 5);
+        await fixture.CompleteAsync(0, First);
         fixture.Persistence.FailWrites = true;
         await fixture.Service.SetForegroundAsync(true);
         Assert.False(fixture.Service.IsReviewBannerVisible);
@@ -392,7 +394,7 @@ public sealed class AppPromptServiceTests
     {
         var fixture = new Fixture();
         fixture.Store.IsSupported = false;
-        await fixture.CompleteAsync(0, 5);
+        await fixture.CompleteAsync(0, First);
         await fixture.Service.SetForegroundAsync(true);
         Assert.False(fixture.Service.HasBanner);
         Assert.Equal(0, fixture.Store.UpdateRequests);

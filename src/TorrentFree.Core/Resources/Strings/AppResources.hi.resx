@@ -60,7 +60,7 @@
   </resheader>
   <!-- App Title -->
   <data name="AppTitle" xml:space="preserve">
-    <value>Torrent Free</value>
+    <value>Torrent Client</value>
   </data>
   <!-- Main Page -->
   <data name="AddTorrentPlaceholder" xml:space="preserve">
@@ -298,7 +298,7 @@
     <value>.torrent फाइलों को संबद्ध करें</value>
   </data>
   <data name="AssociateTorrentMessage" xml:space="preserve">
-    <value>क्या आप .torrent फाइलों को डिफ़ॉल्ट रूप से Torrent Free से खोलना चाहते हैं?</value>
+    <value>क्या आप .torrent फाइलों को डिफ़ॉल्ट रूप से Torrent Client से खोलना चाहते हैं?</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>हाँ</value>
@@ -307,10 +307,10 @@
     <value>नहीं</value>
   </data>
   <data name="AboutTitle" xml:space="preserve">
-    <value>Torrent Free के बारे में</value>
+    <value>Torrent Client के बारे में</value>
   </data>
   <data name="AboutMessage" xml:space="preserve">
-    <value>Torrent Free मुफ्त है।</value>
+    <value>Torrent Client मुफ्त है।</value>
   </data>
   <data name="AboutVersionLabel" xml:space="preserve">
     <value>संस्करण</value>

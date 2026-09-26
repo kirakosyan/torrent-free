@@ -2,17 +2,49 @@
 
 ## Current release
 
-Version **1.15** (build **20**, MSIX **1.15.0.0**) includes x64 and ARM64 packages.
-Submission 15 was sent for certification on September 25, 2026, with automatic
-publication after approval. This records submission status, not confirmation that
-the update is already live.
-See [release notes and certification information](release-notes-1.15.md).
-Localized release notes are maintained in `release-notes-1.15.json` and the
-`ReleaseNotes` row of `listings.csv`.
+Version **1.16** (build **21**, MSIX **1.16.0.0**) includes x64 and ARM64 packages.
+The public Store listing showed the 1.15 release notes on September 26, 2026.
+See [release notes and certification information](release-notes-1.16.md).
 
-For updates, export the current Partner Center listings and replace only its
-`ReleaseNotes` row using the matching language from the JSON file. Keep the
-export's language columns, descriptions, screenshots, and other asset URLs intact.
+## Listing text and screenshots
+
+All listing text lives in `store/listing-text/<language>.json`, one file per app
+language. Run `python store/build_listings.py` after editing them; it validates the
+Store and Play length limits and regenerates:
+
+- `listings.csv` (title, description, short description, release notes, 14 features, logos)
+- `release-notes-1.16.json` and `screenshot-captions.json`
+- `STORE_DESCRIPTION.md` and the Google Play files under `store/google-play`
+
+Screenshots are 2880×1620 captures of an unpackaged Debug build (no debugger attached,
+so no XAML toolbar) on a 200% display,
+running legal downloads (Debian images and Blender open movies). Set **light** is the
+default listing; set **dark** is the product page experiment variant. Enter the matching
+line from `screenshot-captions.json` in each screenshot's caption field; Microsoft asks
+for no marketing text on the images themselves.
+
+| # | Light (default) | Dark (experiment) |
+|---|---|---|
+| 1 | Active downloads | Active downloads |
+| 2 | Download list | Download list |
+| 3 | Settings: Wi-Fi only, language, theme, folder | Same |
+| 4 | Speed, queue, seeding and proxy settings | Same |
+| 5 | Dark theme | Light theme |
+| 6 | Japanese interface | Japanese interface |
+
+To capture new screenshots without touching the Store app's queue, run a Debug build
+with `TORRENTFREE_DATA_DIR` pointing at an empty folder; Debug builds honour it and
+keep all state and downloads there.
+
+### Partner Center settings
+
+- **Device families:** keep Windows 10/11 Desktop and Windows 10 Team (Surface Hub);
+  clear Mobile and Holographic, which cannot run a full-trust desktop app.
+- **Sort title:** `Torrent Free`, so searches for the name used before 1.16 still find the listing.
+- **Listing languages:** one listing per app language; remove the duplicate regional
+  listings (`es-es`, `fr-fr`, `hi-in`, `ru-ru`, `tr-tr`) that older submissions created.
+- **Product page experiment:** after the update is published, create an experiment with the
+  **dark** screenshots at a 50% split. Do not change the default screenshots while it runs.
 
 ## Build an update
 
@@ -49,13 +81,18 @@ for certification.
 
 ## Listing imports
 
-Use `listings.csv` with Partner Center's **Import listings** action after uploading the MSIX packages.
+Export the current listing from Partner Center, then copy the rows of the generated
+`listings.csv` into that export so screenshot and trailer URLs are kept. To upload new
+screenshots, add `DesktopScreenshot1`–`6` paths (for example
+`microsoft-store/screenshots/light/01.png`) and `DesktopScreenshotCaption1`–`6` text,
+then choose **Import folder** and select the `store/microsoft-store` folder. The CSV paths
+include the root folder name as Partner Center expects for folder imports. Clearing an
+image cell does not remove the old image; replace slots or remove extra screenshots in
+Partner Center.
 
-To upload the included Store logo PNGs, choose **Import folder** and select the `store/microsoft-store` folder. The CSV paths include the root folder name (`microsoft-store/assets/...`) as Partner Center expects for folder imports.
-
-The MSIX package manifest controls the languages shown under **Languages supported in packages**. The CSV controls the customer-facing Store listing text for each language. Partner Center keeps these as separate submission metadata.
-
-If Partner Center's exported CSV already contains screenshot URLs, keep those asset rows from the export and copy these language columns into that latest exported template before importing. Microsoft requires a description and at least one screenshot for every completed listing.
+The MSIX package manifest controls the languages shown under **Languages supported in
+packages**. The CSV controls the customer-facing Store listing text for each language.
+Microsoft requires a description and at least one screenshot for every listing.
 
 ## Store update error 0x80073CFB on a development PC
 

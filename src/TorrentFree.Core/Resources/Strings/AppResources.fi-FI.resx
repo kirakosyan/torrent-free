@@ -60,7 +60,7 @@
   </resheader>
   <!-- App Title -->
   <data name="AppTitle" xml:space="preserve">
-    <value>Torrent Free</value>
+    <value>Torrent Client</value>
   </data>
   <!-- Main Page -->
   <data name="AddTorrentPlaceholder" xml:space="preserve">
@@ -298,7 +298,7 @@
     <value>Yhdistä .torrent tiedostoa</value>
   </data>
   <data name="AssociateTorrentMessage" xml:space="preserve">
-    <value>Haluatko avata .torrent tiedostoa sovelluksella Torrent Free oletuksena?</value>
+    <value>Haluatko avata .torrent tiedostoa sovelluksella Torrent Client oletuksena?</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Kyllä</value>
@@ -307,10 +307,10 @@
     <value>Ei</value>
   </data>
   <data name="AboutTitle" xml:space="preserve">
-    <value>Tietoja sovelluksesta Torrent Free</value>
+    <value>Tietoja sovelluksesta Torrent Client</value>
   </data>
   <data name="AboutMessage" xml:space="preserve">
-    <value>Torrent Free on ilmainen käyttää.</value>
+    <value>Torrent Client on ilmainen käyttää.</value>
   </data>
   <data name="AboutVersionLabel" xml:space="preserve">
     <value>Versio</value>

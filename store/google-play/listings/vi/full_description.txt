@@ -1,0 +1,26 @@
+Torrent Client là ứng dụng BitTorrent và trình tải torrent miễn phí, mã nguồn mở cho Android. Chạm vào liên kết magnet trong trình duyệt hoặc mở tệp .torrent là quá trình tải bắt đầu. Không quảng cáo, không tài khoản, không ưu đãi đi kèm.
+
+Tải xuống và chia sẻ
+• Mở liên kết magnet và tệp .torrent từ trình duyệt, trình quản lý tệp và ứng dụng khác.
+• Xem tiến độ, tốc độ tải xuống và tải lên, số seed, peer và thời gian còn lại.
+• Bắt đầu, tạm dừng, dừng và xóa từng lượt truyền hoặc tất cả cùng lúc.
+• Việc tải xuống tiếp tục chạy nền kèm thông báo tiến độ.
+• Các lượt truyền đang chạy sẽ tự tiếp tục sau khi khởi động lại.
+
+Toàn quyền kiểm soát
+• Chế độ chỉ Wi-Fi tạm dừng truyền khi dùng dữ liệu di động và tiếp tục khi có Wi-Fi.
+• Tùy chọn giữ thiết bị hoạt động khi truyền lâu lúc tắt màn hình.
+• Giới hạn tải xuống và tải lên chung và cho từng torrent.
+• Giới hạn số lượt tải và seed đang hoạt động, kèm giới hạn tỷ lệ và thời gian seed.
+• Sao chép tệp đã tải xong vào thư mục Download của điện thoại chỉ với một chạm.
+
+Quyền riêng tư
+Không có SDK quảng cáo hay phân tích. Như mọi ứng dụng BitTorrent, tracker và peer có thể thấy địa chỉ IP của bạn; nếu muốn, hãy định tuyến lưu lượng được hỗ trợ qua proxy SOCKS5 của riêng bạn.
+
+Ngoài ra
+• Gửi sách nói đã tải xuống sang LibroNest.
+• Giao diện theo hệ thống, sáng và tối, cùng 24 ngôn ngữ.
+
+Cài đặt pin của Android có thể giới hạn hoạt động nền. Chỉ tải xuống và chia sẻ nội dung bạn có quyền sử dụng.
+
+Mã nguồn: https://github.com/kirakosyan/torrent-free
