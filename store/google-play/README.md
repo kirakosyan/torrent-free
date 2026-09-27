@@ -7,11 +7,16 @@ Package `com.torrentfree.app`, listed as **Torrent Client**.
 `listings/<play-locale>/` holds `title.txt` (30 characters), `short_description.txt`
 (80) and `full_description.txt` (4,000) for every Play Console language. They are
 generated from `store/listing-text/*.json` by `python store/build_listings.py`, which
-also checks the length limits. Spanish is written once and used for `es-419`, `es-ES`
-and `es-US`; Ukrainian and Farsi exist only on Play.
+also checks the length limits. The Play default language is en-GB (filled from the
+English text). Spanish is written once for `es-419` and `es-ES`; Ukrainian exists only
+on Play.
 
 `release-notes-1.16.txt` is in Play Console's multi-language format: paste it into the
 release notes box of the production release as is.
+
+Translations inherit the default graphics, so only the text needs updating per language.
+Version 1.16 (code 21) and this listing were sent for review on September 27, 2026, with
+a full production rollout once approved.
 
 ## Graphics
 

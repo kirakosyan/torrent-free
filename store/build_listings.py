@@ -18,13 +18,13 @@ MS_TITLE = "Torrent Client App"
 MS_LANGUAGES = ["en-US", "ar", "cs-CZ", "da-DK", "de-DE", "es", "fi-FI", "fr", "hi", "hu-HU", "id", "it-IT",
                 "ja-JP", "ko-KR", "nb-NO", "nl-NL", "pl-PL", "pt-BR", "ro", "ru", "th", "tr", "vi", "zh-CN"]
 
-# Play Console locale codes for each source file.
+# Play Console locale codes for each source file. The Play listing's default language is en-GB.
 PLAY_LOCALES = {
-    "en-US": ["en-US"], "ar": ["ar"], "cs-CZ": ["cs-CZ"], "da-DK": ["da-DK"], "de-DE": ["de-DE"],
-    "es": ["es-419", "es-ES", "es-US"], "fi-FI": ["fi-FI"], "fr": ["fr-FR"], "hi": ["hi-IN"], "hu-HU": ["hu-HU"],
+    "en-US": ["en-GB"], "ar": ["ar"], "cs-CZ": ["cs-CZ"], "da-DK": ["da-DK"], "de-DE": ["de-DE"],
+    "es": ["es-419", "es-ES"], "fi-FI": ["fi-FI"], "fr": ["fr-FR"], "hi": ["hi-IN"], "hu-HU": ["hu-HU"],
     "id": ["id"], "it-IT": ["it-IT"], "ja-JP": ["ja-JP"], "ko-KR": ["ko-KR"], "nb-NO": ["no-NO"], "nl-NL": ["nl-NL"],
     "pl-PL": ["pl-PL"], "pt-BR": ["pt-BR"], "ro": ["ro"], "ru": ["ru-RU"], "th": ["th"], "tr": ["tr-TR"],
-    "vi": ["vi"], "zh-CN": ["zh-CN"], "uk": ["uk"], "fa": ["fa"],
+    "vi": ["vi"], "zh-CN": ["zh-CN"], "uk": ["uk"],
 }
 
 LOGO_ROWS = [

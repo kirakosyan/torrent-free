@@ -81,18 +81,24 @@ for certification.
 
 ## Listing imports
 
-Export the current listing from Partner Center, then copy the rows of the generated
-`listings.csv` into that export so screenshot and trailer URLs are kept. To upload new
-screenshots, add `DesktopScreenshot1`–`6` paths (for example
-`microsoft-store/screenshots/light/01.png`) and `DesktopScreenshotCaption1`–`6` text,
-then choose **Import folder** and select the `store/microsoft-store` folder. The CSV paths
-include the root folder name as Partner Center expects for folder imports. Clearing an
-image cell does not remove the old image; replace slots or remove extra screenshots in
-Partner Center.
+1. Upload the six **light** screenshots to the en-us listing in the new submission (the
+   first upload replaces an existing slot) and save.
+2. Export listings, then build the import from that export:
 
-The MSIX package manifest controls the languages shown under **Languages supported in
-packages**. The CSV controls the customer-facing Store listing text for each language.
-Microsoft requires a description and at least one screenshot for every listing.
+   ```powershell
+   python store/tools/ms_listing_import.py "<export.csv>" "<import.csv>"
+   ```
+
+   Every language gets the new text, 14 features, seven search terms, the sort title,
+   the en-us screenshot URLs and its own captions. Missing languages are added as new
+   columns and regional duplicates (`es-es`, `fr-fr`, `hi-in`, `ru-ru`, `tr-tr`, `ar-ae`,
+   `en`) receive the matching language's text.
+3. Choose **Import listings → Upload .csv**. Partner Center saves the languages one by
+   one; keep the page open until it finishes.
+
+The exported CSV still carries `SearchTerm1`–`SearchTerm7`. The MSIX package manifest
+controls the languages shown under **Languages supported in packages**; the CSV controls
+the customer-facing listing text for each language.
 
 ## Store update error 0x80073CFB on a development PC
 
