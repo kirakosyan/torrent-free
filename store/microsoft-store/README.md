@@ -3,7 +3,8 @@
 ## Current release
 
 Version **1.16** (build **21**, MSIX **1.16.0.0**) includes x64 and ARM64 packages.
-The public Store listing showed the 1.15 release notes on September 26, 2026.
+Submission 16 (1.16, with the new listing in 31 languages) was submitted for
+certification on September 27, 2026 and publishes as soon as it passes.
 See [release notes and certification information](release-notes-1.16.md).
 
 ## Listing text and screenshots
@@ -41,10 +42,12 @@ keep all state and downloads there.
 - **Device families:** keep Windows 10/11 Desktop and Windows 10 Team (Surface Hub);
   clear Mobile and Holographic, which cannot run a full-trust desktop app.
 - **Sort title:** `Torrent Free`, so searches for the name used before 1.16 still find the listing.
-- **Listing languages:** one listing per app language; remove the duplicate regional
-  listings (`es-es`, `fr-fr`, `hi-in`, `ru-ru`, `tr-tr`) that older submissions created.
-- **Product page experiment:** after the update is published, create an experiment with the
-  **dark** screenshots at a 50% split. Do not change the default screenshots while it runs.
+- **Listing languages:** one listing per app language, plus the regional listings older
+  submissions created (`ar-ae`, `en`, `es-es`, `fr-fr`, `hi-in`, `ru-ru`, `tr-tr`); the
+  import fills those with the matching language's text.
+- **Product page experiment:** the draft *Dark screenshots vs light (1.16)* holds the
+  **dark** set. Submit it at a 50% split only after 1.16 is published, so the control is
+  the new listing. Do not change the default screenshots while it runs.
 
 ## Build an update
 

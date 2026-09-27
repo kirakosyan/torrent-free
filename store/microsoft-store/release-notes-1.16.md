@@ -16,4 +16,4 @@
 
 Version 1.16 (Windows package 1.16.0.0), x64 and ARM64. No account or credentials are required. This update keeps the existing Store identity and user data. The app is a .NET MAUI desktop torrent client using MonoTorrent; runFullTrust is required for the desktop process, local file access, and peer-to-peer transfers.
 
-Test with a torrent or magnet link for content you have permission to download, for example a Debian installation image from debian.org. Magnet links clicked in a browser open in the app. The in-app title now reads Torrent Client; the listing screenshots show only openly licensed downloads.
+Test with a torrent or magnet link for content you have permission to download, for example a Debian installation image from debian.org. Check start, pause, resume, and restart recovery. Magnet links clicked in a browser open in the app. The in-app title now reads Torrent Client; the listing screenshots show only openly licensed downloads.
