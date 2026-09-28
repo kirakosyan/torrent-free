@@ -564,4 +564,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>다운로드 또는 시딩 중에 기기가 절전 모드로 전환되지 않도록 하여 화면이 꺼져도 전송이 계속됩니다. 배터리를 더 많이 사용합니다.</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>시스템 기본값</value>
+  </data>
 </root>

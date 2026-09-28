@@ -41,31 +41,43 @@ public partial class App : MauiWinUIApplication
 		var initialActivation = currentInstance.GetActivatedEventArgs();
 		_initialActivation = initialActivation;
 		_mainInstance = AppInstance.FindOrRegisterForKey(InstanceKey);
-		if (!_mainInstance.IsCurrent)
+		if (_mainInstance.IsCurrent)
 		{
-			var redirectCompleted = false;
-			try
-			{
-				var redirectOperation = _mainInstance.RedirectActivationToAsync(initialActivation);
-				redirectCompleted = WaitForRedirectCompletion(redirectOperation);
-			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine($"Activation redirection failed: {ex}");
-			}
-			if (!redirectCompleted)
-			{
-				System.Diagnostics.Debug.WriteLine("Activation redirection did not complete; exiting the secondary process to protect shared state.");
-			}
-			Environment.Exit(0);
-			return;
+			_mainInstance.Activated += OnActivated;
 		}
-
-		_mainInstance.Activated += OnActivated;
 
 		// The Activated event is raised for activations redirected from later
 		// processes. The cold-start arguments are dispatched from CreateMauiApp,
 		// after the service provider has been built.
+	}
+
+	protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+	{
+		if (_mainInstance.IsCurrent)
+		{
+			base.OnLaunched(args);
+			return;
+		}
+
+		// MAUI builds its services and creates the window in base.OnLaunched. A
+		// secondary process only redirects; awaiting here also keeps its STA pumping
+		// the COM work needed to transfer file/protocol activation to the first process.
+		try
+		{
+			var activation = Interlocked.Exchange(ref _initialActivation, null);
+			if (activation is not null)
+			{
+				await WaitForRedirectCompletionAsync(_mainInstance.RedirectActivationToAsync(activation));
+			}
+		}
+		catch (Exception ex)
+		{
+			System.Diagnostics.Debug.WriteLine($"Activation redirection failed: {ex}");
+		}
+		finally
+		{
+			Environment.Exit(0);
+		}
 	}
 
 	protected override MauiApp CreateMauiApp()
@@ -248,55 +260,28 @@ public partial class App : MauiWinUIApplication
 		}
 	}
 
-	private static bool WaitForRedirectCompletion(object? redirectOperation)
+	private static async Task WaitForRedirectCompletionAsync(object? redirectOperation)
 	{
 		if (redirectOperation is null)
 		{
-			return true;
+			return;
 		}
-
-		const int initialTimeoutMs = 5000;
-		const int fallbackTimeoutMs = 25000;
-
+		var task = redirectOperation switch
+		{
+			Task managedTask => managedTask,
+			IAsyncAction asyncAction => asyncAction.AsTask(),
+			_ => throw new InvalidOperationException("Unsupported activation redirection operation.")
+		};
 		try
 		{
-			if (redirectOperation is Task task)
-			{
-				return WaitWithTimeouts(task, initialTimeoutMs, fallbackTimeoutMs);
-			}
-
-			if (redirectOperation is IAsyncAction asyncAction)
-			{
-				var completed = WaitWithTimeouts(asyncAction.AsTask(), initialTimeoutMs, fallbackTimeoutMs);
-				if (!completed) asyncAction.Cancel();
-				return completed;
-			}
+			await task.WaitAsync(TimeSpan.FromSeconds(30));
 		}
-		catch (Exception ex)
+		catch (TimeoutException)
 		{
-			System.Diagnostics.Debug.WriteLine($"Activation redirection wait failed: {ex}");
+			if (redirectOperation is IAsyncAction asyncAction) asyncAction.Cancel();
+			_ = task.ContinueWith(failed => System.Diagnostics.Debug.WriteLine(failed.Exception),
+				TaskContinuationOptions.OnlyOnFaulted);
+			System.Diagnostics.Debug.WriteLine("Activation redirection timed out; exiting the secondary process to protect shared state.");
 		}
-
-		return false;
-	}
-
-	private static bool WaitWithTimeouts(Task task, int initialTimeoutMs, int fallbackTimeoutMs)
-	{
-		if (task.Wait(initialTimeoutMs))
-		{
-			return true;
-		}
-
-		System.Diagnostics.Debug.WriteLine($"Activation redirection did not complete within {initialTimeoutMs / 1000} seconds; waiting up to {fallbackTimeoutMs / 1000} seconds longer.");
-
-		if (task.Wait(fallbackTimeoutMs))
-		{
-			return true;
-		}
-
-		System.Diagnostics.Debug.WriteLine("Activation redirection timed out; the secondary process will exit.");
-		_ = task.ContinueWith(failed => System.Diagnostics.Debug.WriteLine(failed.Exception),
-			TaskContinuationOptions.OnlyOnFaulted);
-		return false;
 	}
 }

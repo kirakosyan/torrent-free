@@ -407,14 +407,48 @@ public partial class TorrentService : ITorrentService
         }
 
         var magnet = BuildMagnetLink(metadata.InfoHashHex, metadata.Name, metadata.Trackers);
+        if (!IsValidMagnetLink(magnet)) return null;
         await InitializeAsync();
         var cachePath = TorrentImportService.GetCachePath(_storageService.GetAppDataPath(), metadata.InfoHashHex);
         await using var cacheLock = await TorrentImportService.LockCacheAsync(cachePath, _disposalToken);
-        // Preparation can precede removal of the previous item. Restore its cached bytes
-        // under the same lock used by cleanup, and hold it until the new item is published.
-        if (metadata.CachedContent is not null && PathsEqual(metadata.CachedFilePath, cachePath) && !File.Exists(cachePath))
-            await TorrentImportService.WriteCacheAsync(cachePath, metadata.CachedContent, _disposalToken);
-        return await AddTorrentCoreAsync(magnet, metadata);
+        if (IsDuplicate(metadata.InfoHashHex, magnet))
+            throw new DuplicateTorrentException("This torrent is already added.");
+
+        var cacheCreated = false;
+        TorrentItem? addedTorrent = null;
+        try
+        {
+            // Commit prepared bytes only when importing. Hold the cache lock through
+            // publication so removal of an older item cannot delete the new item's data.
+            if (metadata.CachedContent is not null && PathsEqual(metadata.CachedFilePath, cachePath) && !File.Exists(cachePath))
+            {
+                await TorrentImportService.WriteCacheAsync(cachePath, metadata.CachedContent, _disposalToken);
+                cacheCreated = true;
+            }
+            addedTorrent = await AddTorrentCoreAsync(magnet, metadata);
+            return addedTorrent;
+        }
+        finally
+        {
+            if (cacheCreated && addedTorrent is null)
+            {
+                try
+                {
+                    // A competing magnet import can win the duplicate check, while a
+                    // failed state save can leave this item tracked. Preserve any cache
+                    // still owned by a tracked item, as well as all pre-existing files.
+                    lock (_torrentsLock)
+                    {
+                        if (!Torrents.Any(t => PathsEqual(t.CachedTorrentFilePath, cachePath)))
+                            File.Delete(cachePath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed import cache cleanup: {ex.Message}");
+                }
+            }
+        }
     }
 
     private static string BuildMagnetLink(string infoHashHex, string? displayName, IEnumerable<string> trackers)
@@ -640,6 +674,9 @@ public partial class TorrentService : ITorrentService
         }
         catch (Exception ex)
         {
+            // Shutdown owns manager cleanup and already saved the active state for restore.
+            // A start interrupted by engine disposal must not replace it with Failed.
+            _disposalToken.ThrowIfCancellationRequested();
             var proxyRebuildWasSuperseded = ex is OperationCanceledException
                 && proxyRebuildToken.IsCancellationRequested;
 
@@ -672,6 +709,9 @@ public partial class TorrentService : ITorrentService
 
             await _dispatcher.InvokeAsync(() =>
             {
+                // Disposal may have begun while rollback was stopping the manager or
+                // waiting for the UI dispatcher.
+                _disposalToken.ThrowIfCancellationRequested();
                 UpdateSeedingTime(torrent, active: false);
                 torrent.Status = ex is WifiUnavailableException
                     ? DownloadStatus.WaitingForWifi
@@ -1907,9 +1947,10 @@ public partial class TorrentService : ITorrentService
             .ToArray();
         var idsPendingResume = pendingResumeAtSnapshot;
 
-        // Every teardown is serialized with Pause/Stop/Remove/Start for that torrent. A
-        // state change which wins the lock first is observed here and is not overwritten.
-        foreach (var id in idsToTearDown)
+        // Independent managers stop in parallel so slow tracker announces cost one stop
+        // timeout, not one per torrent. Keep each torrent's operation lock: a manual state
+        // change which wins that lock first is still observed and is not overwritten.
+        await Task.WhenAll(idsToTearDown.Select(async id =>
         {
             await using var operationLock = await _torrentOperationLock.AcquireAsync(id, _disposalToken);
 
@@ -1962,11 +2003,12 @@ public partial class TorrentService : ITorrentService
                 _pendingSave = true;
                 if (!_backgroundExecutionSuspended)
                 {
-                    idsPendingResume.Add(id);
+                    lock (idsPendingResume)
+                        idsPendingResume.Add(id);
                     _proxyRebuildPendingResumeIds[id] = 0;
                 }
             }
-        }
+        })).ConfigureAwait(false);
 
         if (engineToDispose is not null)
         {
@@ -3127,7 +3169,7 @@ public partial class TorrentService : ITorrentService
 
     protected virtual Task StartManagerAsync(TorrentManager manager) => manager.StartAsync();
 
-    private static Task StopManagerAsync(TorrentManager manager)
+    protected virtual Task StopManagerAsync(TorrentManager manager)
     {
         if (!TorrentManagerStateRules.RequiresFullStop(manager.State))
         {
@@ -3137,7 +3179,7 @@ public partial class TorrentService : ITorrentService
         return manager.StopAsync(ManagerStopTimeout);
     }
 
-    private static Task PauseManagerAsync(TorrentManager manager)
+    private Task PauseManagerAsync(TorrentManager manager)
         => TorrentManagerStateRules.CanPauseInPlace(manager.State)
             ? manager.PauseAsync()
             : StopManagerAsync(manager);

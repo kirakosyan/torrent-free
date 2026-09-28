@@ -3,7 +3,7 @@
 **App name:** Torrent Client App (Torrent Free)
 **App ID:** com.torrentfree.app  
 **Platforms:** Android, iOS, macOS, Windows  
-**Last updated:** 2026-09-05
+**Last updated:** 2026-09-28
 
 ---
 
@@ -36,6 +36,8 @@ The app stores its queue and settings on your device. It does not upload them to
 |---|---|---|
 | Torrent list (magnet links, file metadata, download progress) | Local app data directory (JSON file) | Restore your downloads between sessions |
 | App settings (speed limits, concurrent download limits, sort preferences) | Local app data directory (JSON file) | Persist your preferences |
+| Imported `.torrent` metadata and engine resume caches | Local app data directory | Restore transfers independently of the original file provider |
+| Local crash diagnostics (`crash.log` and its rotated backup) | Local app data directory | Diagnose errors; exception messages and stack traces may include local paths and torrent or network details. These logs are not uploaded to the developers |
 | Optional SOCKS5 proxy password | Platform secure storage (Android Keystore, Apple Keychain, Windows data protection); if secure storage is unavailable on a device, the app settings file | Authenticate with the proxy you configure |
 
 You can clear app-managed data through your device's app storage settings or by uninstalling the app where the operating system removes its data. Downloaded files and exports in folders you chose may remain and can be deleted separately. Backup copies held by your operating system or synchronization provider are managed through that provider.
@@ -67,6 +69,8 @@ The Android version of the app requests the following permissions:
 | `POST_NOTIFICATIONS` | Show download progress notifications |
 | `FOREGROUND_SERVICE` / `FOREGROUND_SERVICE_DATA_SYNC` | Keep downloads running when the app is in the background |
 | `WAKE_LOCK` | Only when you enable "Keep device awake during transfers": prevent the CPU from sleeping while downloads or seeding are active |
+| `READ_EXTERNAL_STORAGE` (declared through Android 12L / API 32) | Legacy shared-storage access for file import and export on Android versions where this permission applies; modern file access uses the system picker and MediaStore |
+| `WRITE_EXTERNAL_STORAGE` (through Android 9 / API 28) | Save exports to public Downloads on older Android versions; requested when you export a download |
 
 No permission is used for any purpose other than what is described above.
 

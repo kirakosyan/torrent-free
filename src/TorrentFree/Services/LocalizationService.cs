@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Resources;
 
 namespace TorrentFree.Services;
 
@@ -8,11 +7,6 @@ namespace TorrentFree.Services;
 /// </summary>
 public interface ILocalizationService
 {
-    /// <summary>
-    /// Gets a localized string by key.
-    /// </summary>
-    string GetString(string key);
-
     /// <summary>
     /// Gets the current culture.
     /// </summary>
@@ -29,34 +23,15 @@ public interface ILocalizationService
 /// </summary>
 public class LocalizationService : ILocalizationService
 {
-    private readonly ResourceManager _resourceManager;
     private CultureInfo _currentCulture;
 
     public LocalizationService()
     {
-        _resourceManager = new ResourceManager(
-            "TorrentFree.Resources.Strings.AppResources",
-            typeof(LocalizationResourceManager).Assembly);
-        _currentCulture = CultureInfo.CurrentUICulture;
+        _currentCulture = LocalizationResourceManager.OriginalSystemCulture;
     }
 
     /// <inheritdoc />
     public CultureInfo CurrentCulture => _currentCulture;
-
-    /// <inheritdoc />
-    public string GetString(string key)
-    {
-        try
-        {
-            return _resourceManager.GetString(key, _currentCulture) ?? key;
-        }
-        catch (Exception ex)
-        {
-            // Log the error for debugging - helps identify missing or corrupted resources
-            System.Diagnostics.Debug.WriteLine($"Localization error for key '{key}': {ex.Message}");
-            return key;
-        }
-    }
 
     /// <inheritdoc />
     public void SetCulture(CultureInfo culture)

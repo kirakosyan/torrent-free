@@ -216,7 +216,7 @@ public sealed class ReviewRegressionTests
         await using var fixture = new CoreServiceFixture();
         await fixture.Service.InitializeAsync();
         var original = await fixture.PrepareTorrentAsync();
-        var data = BEncodedValue.Decode<BEncodedDictionary>(await File.ReadAllBytesAsync(original.CachedFilePath!, TestContext.Current.CancellationToken));
+        var data = BEncodedValue.Decode<BEncodedDictionary>(original.CachedContent!);
         ((BEncodedDictionary)data["info"])["name"] = new BEncodedString("Name: Part 2");
         var metadata = await new TorrentImportService(fixture.Directory.StoragePaths, new TorrentFileParser())
             .PrepareAsync(new TorrentPickedFile("renamed.torrent", null, data.Encode()), TestContext.Current.CancellationToken);

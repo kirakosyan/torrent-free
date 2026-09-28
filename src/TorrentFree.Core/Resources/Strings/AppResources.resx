@@ -564,4 +564,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>Stops the device from sleeping while downloads or seeding are active, so transfers continue with the screen off. Uses more battery.</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>System default</value>
+  </data>
 </root>

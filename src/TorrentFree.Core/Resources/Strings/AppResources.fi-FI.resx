@@ -564,4 +564,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>Estää laitetta menemästä lepotilaan latausten tai jakamisen aikana, jotta siirrot jatkuvat näytön ollessa sammuksissa. Kuluttaa enemmän akkua.</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>Järjestelmän oletus</value>
+  </data>
 </root>

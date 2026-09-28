@@ -564,4 +564,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>Mencegah perangkat tidur saat mengunduh atau seeding, sehingga transfer tetap berjalan saat layar mati. Menggunakan lebih banyak baterai.</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>Default sistem</value>
+  </data>
 </root>

@@ -564,4 +564,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>Verhindert, dass das Gerät während Downloads oder beim Seeden in den Ruhezustand wechselt, damit Übertragungen bei ausgeschaltetem Bildschirm weiterlaufen. Verbraucht mehr Akku.</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>Systemstandard</value>
+  </data>
 </root>

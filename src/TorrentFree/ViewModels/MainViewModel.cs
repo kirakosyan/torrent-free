@@ -32,6 +32,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private PeriodicTimer? _statsTimer;
     private CancellationTokenSource? _statsTimerCts;
     private CancellationTokenSource? _magnetAutoStartCts;
+    private bool _magnetRequiresExplicitStart;
     private bool _statsTimerStarted;
     private readonly SemaphoreSlim _initializationLock = new(1, 1);
     private bool _hasInitialized;
@@ -143,6 +144,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// </summary>
     public bool IsEmpty => Torrents.Count == 0;
 
+    public bool IsInitialized => _hasInitialized;
+
+    public bool RequiresMagnetConfirmation => _magnetRequiresExplicitStart;
+
     /// <summary>
     /// Indicates whether any torrent can be started or resumed.
     /// </summary>
@@ -179,7 +184,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
         CancelPendingMagnetAutoStart();
 
         var trimmed = value?.Trim() ?? string.Empty;
-        if (IsBusy || string.IsNullOrWhiteSpace(trimmed) || !_torrentService.IsValidMagnetLink(trimmed))
+        if (trimmed.Length == 0)
+        {
+            _magnetRequiresExplicitStart = false;
+            OnPropertyChanged(nameof(RequiresMagnetConfirmation));
+        }
+
+        if (_magnetRequiresExplicitStart || IsBusy || string.IsNullOrWhiteSpace(trimmed) || !_torrentService.IsValidMagnetLink(trimmed))
         {
             return;
         }
@@ -758,6 +769,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         try
         {
             await EnsureInitializedAsync();
+            await PromptFileAssociationAsync();
         }
         catch
         {
@@ -799,7 +811,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 SafeFireAndForget(_torrentService.StartQueuedTorrentsAsync());
 
                 SafeFireAndForget(_notificationService.EnsurePermissionAsync());
-                SafeFireAndForget(PromptFileAssociationAsync());
 #if !WINDOWS
                 SafeFireAndForget(ProcessCommandLineArgumentsAsync());
 #endif
@@ -868,27 +879,28 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
     /// <summary>
-    /// Adds and starts a magnet link opened from another app (an Android intent or a Windows
-    /// protocol activation). Call on the UI thread.
+    /// Previews a magnet link opened from another app. The user must press Download before
+    /// the link is added or any tracker/peer connections are made. Call on the UI thread.
     /// </summary>
     public async Task ImportMagnetLinkAsync(string magnetLink)
     {
         try
         {
             await EnsureInitializedAsync();
-            var torrent = await _torrentService.AddTorrentAsync(magnetLink.Trim());
-            if (torrent is null)
+            var trimmed = magnetLink.Trim();
+            if (!_torrentService.IsValidMagnetLink(trimmed))
             {
                 ErrorMessage = LocalizationResourceManager.Instance["ErrorInvalidMagnet"];
                 return;
             }
 
             ErrorMessage = null;
-            await _torrentService.StartTorrentAsync(torrent);
-        }
-        catch (DuplicateTorrentException)
-        {
-            ErrorMessage = LocalizationResourceManager.Instance["ErrorDuplicateTorrent"];
+            CancelPendingMagnetAutoStart();
+            _magnetRequiresExplicitStart = true;
+            MagnetLinkInput = trimmed;
+            OnPropertyChanged(nameof(RequiresMagnetConfirmation));
+            if (Shell.Current is { } shell)
+                await shell.GoToAsync("//MainPage");
         }
         catch (Exception ex)
         {
@@ -1013,18 +1025,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return;
         }
 
-        Preferences.Default.Set(promptKey, true);
-
-        if (Shell.Current is null)
+        var shell = Shell.Current;
+        if (shell is null)
         {
             return;
         }
 
-        var shouldAssociate = await Shell.Current.DisplayAlertAsync(
+        var shouldAssociate = await shell.DisplayAlertAsync(
             LocalizationResourceManager.Instance["AssociateTorrentTitle"],
             LocalizationResourceManager.Instance["AssociateTorrentMessage"],
             LocalizationResourceManager.Instance["Yes"],
             LocalizationResourceManager.Instance["No"]);
+
+        Preferences.Default.Set(promptKey, true);
 
         if (shouldAssociate)
         {
@@ -1043,10 +1056,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
         ErrorMessage = null;
         try
         {
-            var result = await _torrentService.AddTorrentAsync(MagnetLinkInput.Trim());
+            var submittedLink = MagnetLinkInput.Trim();
+            var result = await _torrentService.AddTorrentAsync(submittedLink);
             if (result != null)
             {
-                MagnetLinkInput = string.Empty;
+                // A protocol activation may preview another link while this add is awaiting storage.
+                if (string.Equals(MagnetLinkInput.Trim(), submittedLink, StringComparison.Ordinal))
+                    MagnetLinkInput = string.Empty;
                 // Auto-start the download
                 await _torrentService.StartTorrentAsync(result);
             }

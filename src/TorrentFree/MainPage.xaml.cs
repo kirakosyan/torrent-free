@@ -16,6 +16,7 @@ public partial class MainPage : ContentPage
     {
         InitializeComponent();
         BindingContext = viewModel;
+        NotificationService.DownloadNotificationTapped += OnDownloadNotificationTapped;
     }
 
     protected override async void OnAppearing()
@@ -26,6 +27,7 @@ public partial class MainPage : ContentPage
         if (BindingContext is MainViewModel vm)
         {
             await vm.InitializeCommand.ExecuteAsync(null);
+            SelectPendingNotification(vm);
             if (!_isPageVisible) return;
             if (_promptWindow != Window)
             {
@@ -39,6 +41,41 @@ public partial class MainPage : ContentPage
             }
             await SetPromptForegroundSafelyAsync(true);
         }
+    }
+
+    private void OnDownloadNotificationTapped()
+    {
+        MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            try
+            {
+                // Leave a cold-start tap pending until the first page has appeared.
+                if (Shell.Current is not { } shell || Window is null) return;
+                await shell.GoToAsync("//MainPage");
+                if (BindingContext is MainViewModel viewModel)
+                {
+                    await viewModel.EnsureInitializedAsync();
+                    SelectPendingNotification(viewModel);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Opening completed download notification failed: {ex}");
+            }
+        });
+    }
+
+    private static void SelectPendingNotification(MainViewModel viewModel)
+    {
+        // InitializeCommand reports errors in the UI rather than throwing. Keep a
+        // cold-start tap queued until its torrent list has actually been restored.
+        if (!viewModel.IsInitialized) return;
+        var id = NotificationService.TakePendingTorrentId();
+        if (id is null) return;
+        var torrent = viewModel.Torrents.FirstOrDefault(item => item.Id == id);
+        if (torrent is null) return;
+        viewModel.SelectedTorrent = torrent;
+        viewModel.ShowSelectedTorrentDetails = true;
     }
 
     protected override void OnDisappearing()

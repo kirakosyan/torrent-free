@@ -8,6 +8,47 @@ namespace TorrentFree.UnitTests;
 public sealed class StorageServiceTests
 {
     [Fact]
+    public async Task UnrelatedSettingsEdits_DoNotRewriteStoredPassword()
+    {
+        using var directory = new CoreTestDirectory();
+        var secrets = new CountingSecretStore();
+        using var storage = new StorageService(directory.StoragePaths, secrets);
+        var settings = new AppSettings { ProxyPassword = "saved-password" };
+        await storage.SaveSettingsAsync(settings);
+        for (var i = 1; i <= 10; i++)
+        {
+            settings = await storage.LoadSettingsAsync();
+            settings.GlobalDownloadLimitKbps = i;
+            await storage.SaveSettingsAsync(settings);
+        }
+        Assert.Equal(1, secrets.Writes);
+
+        settings.ProxyPassword = "changed-password";
+        await storage.SaveSettingsAsync(settings);
+        Assert.Equal(2, secrets.Writes);
+        settings.ProxyPassword = string.Empty;
+        await storage.SaveSettingsAsync(settings);
+        await storage.SaveSettingsAsync(settings);
+        Assert.Equal(3, secrets.Writes);
+        Assert.Null(secrets.Value);
+    }
+
+    [Fact]
+    public async Task FailedSecretWrite_IsRetriedEvenWhenPasswordDoesNotChange()
+    {
+        using var directory = new CoreTestDirectory();
+        var secrets = new CountingSecretStore { FailNextWrite = true };
+        using var storage = new StorageService(directory.StoragePaths, secrets);
+        var settings = new AppSettings { ProxyPassword = "retry-password" };
+        await storage.SaveSettingsAsync(settings);
+        await storage.SaveSettingsAsync(settings);
+        Assert.Equal(2, secrets.Writes);
+        Assert.Equal(settings.ProxyPassword, secrets.Value);
+        Assert.DoesNotContain(settings.ProxyPassword,
+            await File.ReadAllTextAsync(Path.Combine(directory.Path, "torrents.json"), TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
     public async Task FailedRead_ThrowsAndBlocksReplacementUntilSuccessfulReload()
     {
         using var directory = new CoreTestDirectory();
@@ -97,5 +138,24 @@ public sealed class StorageServiceTests
         Assert.Equal(0, torrent.SeededSeconds);
         Assert.True((await storage.LoadSettingsAsync()).SortByStatus);
         await storage.SaveTorrentsAsync([torrent]);
+    }
+
+    private sealed class CountingSecretStore : ISecretStore
+    {
+        public int Writes { get; private set; }
+        public string? Value { get; private set; }
+        public bool FailNextWrite { get; set; }
+        public Task<string?> GetAsync(string key) => Task.FromResult(Value);
+        public Task SetAsync(string key, string? value)
+        {
+            Writes++;
+            if (FailNextWrite)
+            {
+                FailNextWrite = false;
+                throw new IOException("Injected secret write failure");
+            }
+            Value = value;
+            return Task.CompletedTask;
+        }
     }
 }

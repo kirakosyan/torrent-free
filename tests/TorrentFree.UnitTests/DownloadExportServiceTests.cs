@@ -52,7 +52,10 @@ public sealed class DownloadExportServiceTests
         var source = Path.Combine(directory.Path, "file.bin");
         await File.WriteAllTextAsync(source, "AAAA", TestContext.Current.CancellationToken);
         var first = await service.ExportAsync("owner", source, "folder");
+        var originalWriteTime = File.GetLastWriteTimeUtc(source);
         await File.WriteAllTextAsync(source, replacement, TestContext.Current.CancellationToken);
+        // A quick same-length rewrite can share a filesystem timestamp tick.
+        File.SetLastWriteTimeUtc(source, originalWriteTime.AddMinutes(1));
         store.FailCompletion = true;
         await Assert.ThrowsAsync<IOException>(() => service.ExportAsync("owner", source, "folder"));
         Assert.Equal("AAAA", store.ReadText(first));

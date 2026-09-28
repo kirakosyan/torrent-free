@@ -23,7 +23,7 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 - **Automatic resume**: transfers that were active when the app closed, or when Android ended background execution, resume automatically. Manual pauses are kept.
 - **Global limits**: upload/download speed caps, max active downloads/seeds, seeding ratio/time
 - **Per-torrent limits**: upload/download caps and seeding ratio/time overrides
-- **Safe delete dialog** with options to remove data and/or the `.torrent` file
+- **Safe delete dialog** that preserves files by default, with options to remove data and/or the `.torrent` file
 - **Duplicate protection** by info-hash and magnet link
 - **Save path** prefers the picked `.torrent` folder on Windows (if writable), otherwise the default path
 - **Persistent storage** of torrent list and settings
@@ -31,6 +31,8 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 ## 📝 Release Overview
 
 The current app version is **v1.16**.
+
+See the [review findings and validation](docs/review-findings.md) for the current reliability, privacy, accessibility and build improvements, including remaining platform checks.
 
 ### v1.16
 
@@ -119,14 +121,14 @@ The current app version is **v1.16**.
 |----------|--------|
 | Windows | ✅ Supported (WinUI) |
 | Android | ✅ Supported |
-| iOS | ✅ Supported (requires macOS) |
-| macOS | ✅ Supported (Mac Catalyst) |
+| iOS | Experimental; requires macOS and device validation |
+| macOS | Experimental (Mac Catalyst); sandbox/listener validation pending |
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- .NET 8/10 SDK with .NET MAUI workload installed
+- .NET 10 SDK with .NET MAUI workload installed
 - Android SDK/Emulator for Android builds
 - Windows App SDK (WinUI) for Windows builds
 - Xcode 15+ (on macOS) for iOS/macOS
@@ -178,6 +180,8 @@ dotnet run --project src/TorrentFree/TorrentFree.csproj -f net10.0-windows10.0.1
 
 1. Tap **Browse** and pick a `.torrent` file (magnet links are parsed internally)
 2. The torrent is added and starts automatically (unless a duplicate is detected)
+
+Magnet links opened from other apps appear in the input field for review. Press **Download** to add and start them.
 
 ### Managing Downloads
 

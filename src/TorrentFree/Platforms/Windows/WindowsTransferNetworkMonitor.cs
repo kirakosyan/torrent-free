@@ -9,7 +9,7 @@ public sealed class WindowsTransferNetworkMonitor : ITransferNetworkMonitor, IDi
     /// <summary>
     /// Wi-Fi-only exists to keep transfers off mobile data. On Windows the internet profile is
     /// often wired or a VPN, which have no Wi-Fi flag, so those qualify unless they are mobile
-    /// broadband or metered. Wi-Fi always qualifies, as on Android.
+    /// broadband or metered. Metered Wi-Fi (including phone hotspots) is excluded too.
     /// </summary>
     public bool IsWifiConnected
     {
@@ -23,17 +23,16 @@ public sealed class WindowsTransferNetworkMonitor : ITransferNetworkMonitor, IDi
                     return false;
                 }
 
-                if (profile.IsWlanConnectionProfile)
-                {
-                    return true;
-                }
-
                 if (profile.IsWwanConnectionProfile)
                 {
                     return false;
                 }
 
-                return profile.GetConnectionCost()?.NetworkCostType is NetworkCostType.Unrestricted or NetworkCostType.Unknown;
+                var cost = profile.GetConnectionCost();
+                return cost is not null
+                    && !cost.Roaming
+                    && !cost.OverDataLimit
+                    && cost.NetworkCostType is NetworkCostType.Unrestricted or NetworkCostType.Unknown;
             }
             catch (Exception ex)
             {

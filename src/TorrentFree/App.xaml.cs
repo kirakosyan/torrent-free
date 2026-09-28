@@ -7,8 +7,7 @@ namespace TorrentFree;
 
 public partial class App : Application
 {
-    private static readonly object CrashLogLock = new();
-    private static readonly string CrashLogPath = GetCrashLogPath();
+    private static readonly BoundedCrashLog CrashLog = new(GetCrashLogPath());
 
     private readonly AppShell _appShell;
     private readonly IStorageService _storageService;
@@ -49,12 +48,6 @@ public partial class App : Application
     {
         try
         {
-            var dir = Path.GetDirectoryName(CrashLogPath);
-            if (dir is not null)
-            {
-                Directory.CreateDirectory(dir);
-            }
-
             var details = ex?.ToString() ?? rawValue?.ToString() ?? "(no exception information)";
             var entry = $"""
                 [{DateTime.UtcNow:O}] {source}
@@ -62,10 +55,7 @@ public partial class App : Application
                 ---
 
                 """;
-            lock (CrashLogLock)
-            {
-                File.AppendAllText(CrashLogPath, entry);
-            }
+            CrashLog.Append(entry);
         }
         catch
         {

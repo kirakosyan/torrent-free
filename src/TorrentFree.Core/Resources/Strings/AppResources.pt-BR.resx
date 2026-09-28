@@ -564,4 +564,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>Impede que o dispositivo entre em suspensão durante downloads ou compartilhamento, para que as transferências continuem com a tela desligada. Usa mais bateria.</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>Padrão do sistema</value>
+  </data>
 </root>

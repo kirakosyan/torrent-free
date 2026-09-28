@@ -6,6 +6,8 @@ namespace TorrentFree;
 
 public partial class SettingsPage : ContentPage
 {
+    private Window? _settingsWindow;
+
     public SettingsPage()
         : this(GetRequiredService<SettingsViewModel>())
     {
@@ -27,6 +29,12 @@ public partial class SettingsPage : ContentPage
         {
             try
             {
+                if (_settingsWindow is null && Window is { } window)
+                {
+                    _settingsWindow = window;
+                    window.Stopped += OnWindowStopped;
+                    window.Destroying += OnWindowStopped;
+                }
                 await vm.InitializeCommand.ExecuteAsync(null);
             }
             catch (Exception ex)
@@ -34,6 +42,31 @@ public partial class SettingsPage : ContentPage
                 // async void: an unhandled exception here would crash the app.
                 System.Diagnostics.Debug.WriteLine($"Settings page appearing error: {ex}");
             }
+        }
+    }
+
+    protected override async void OnDisappearing()
+    {
+        base.OnDisappearing();
+        if (_settingsWindow is { } window)
+        {
+            window.Stopped -= OnWindowStopped;
+            window.Destroying -= OnWindowStopped;
+            _settingsWindow = null;
+        }
+        await FlushPendingSettingsAsync();
+    }
+
+    private async void OnWindowStopped(object? sender, EventArgs e) => await FlushPendingSettingsAsync();
+
+    private async Task FlushPendingSettingsAsync()
+    {
+        if (BindingContext is not SettingsViewModel vm) return;
+        try { await vm.FlushPendingSettingsAsync(); }
+        catch (Exception ex)
+        {
+            vm.ValidationMessage = ex.Message;
+            System.Diagnostics.Debug.WriteLine($"Settings flush failed: {ex}");
         }
     }
 
@@ -99,6 +132,7 @@ public partial class SettingsPage : ContentPage
     {
         try
         {
+            if (BindingContext is SettingsViewModel vm) await vm.FlushPendingSettingsAsync();
             if (Shell.Current is not null)
             {
                 await Shell.Current.GoToAsync("..");
@@ -113,6 +147,7 @@ public partial class SettingsPage : ContentPage
         catch (Exception ex)
         {
             // async void: an unhandled exception here would crash the app.
+            if (BindingContext is SettingsViewModel vm) vm.ValidationMessage = ex.Message;
             System.Diagnostics.Debug.WriteLine($"Settings back navigation error: {ex}");
         }
     }

@@ -564,4 +564,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>ป้องกันไม่ให้อุปกรณ์เข้าสู่โหมดสลีปขณะดาวน์โหลดหรือซีด เพื่อให้การถ่ายโอนดำเนินต่อไปแม้ปิดหน้าจอ ใช้แบตเตอรี่มากขึ้น</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>ค่าเริ่มต้นของระบบ</value>
+  </data>
 </root>

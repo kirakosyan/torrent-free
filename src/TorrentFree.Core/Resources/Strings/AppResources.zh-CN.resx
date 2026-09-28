@@ -564,4 +564,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>在下载或做种期间阻止设备休眠，使传输在屏幕关闭时继续进行。会消耗更多电量。</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>系统默认</value>
+  </data>
 </root>

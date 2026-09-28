@@ -578,4 +578,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>Не позволяет устройству переходить в спящий режим во время загрузки или раздачи, чтобы передача продолжалась при выключенном экране. Расходует больше заряда батареи.</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>Язык системы</value>
+  </data>
 </root>

@@ -4,6 +4,7 @@ using Android.Content.PM;
 using Android.OS;
 using AndroidX.Core.App;
 using Microsoft.Extensions.DependencyInjection;
+using DownloadStatus = TorrentFree.Models.DownloadStatus;
 using TorrentFree.Services;
 
 namespace TorrentFree;
@@ -17,6 +18,7 @@ public sealed class DownloadForegroundService : Service
     private static bool _runRequested;
     private static bool _inForeground;
     private int _timeoutHandled;
+    private CancellationTokenSource? _notificationUpdates;
 
     /// <summary>
     /// Records whether active transfers need this service.
@@ -66,6 +68,11 @@ public sealed class DownloadForegroundService : Service
         }
 
         TransferWakeLock.SetServiceActive(true);
+        if (_notificationUpdates is null)
+        {
+            _notificationUpdates = new CancellationTokenSource();
+            _ = RefreshNotificationAsync(_notificationUpdates.Token);
+        }
         return StartCommandResult.NotSticky;
     }
 
@@ -168,6 +175,9 @@ public sealed class DownloadForegroundService : Service
 
     private void StopForegroundSafely()
     {
+        var updates = Interlocked.Exchange(ref _notificationUpdates, null);
+        updates?.Cancel();
+        updates?.Dispose();
         try
         {
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Tiramisu)
@@ -194,6 +204,22 @@ public sealed class DownloadForegroundService : Service
         var builder = new NotificationCompat.Builder(this, ChannelId);
         builder.SetContentTitle(LocalizationResourceManager.Instance["AppTitle"]);
         builder.SetContentText(LocalizationResourceManager.Instance["BackgroundDownloadNotificationText"]);
+        var torrents = MauiProgram.Services?.GetService<ITorrentService>()?.Torrents;
+        var downloading = torrents?.Where(torrent => torrent.Status == DownloadStatus.Downloading).ToArray() ?? [];
+        if (downloading.Length > 0)
+        {
+            var totalSize = downloading.Sum(torrent => (double)Math.Max(0, torrent.TotalSize));
+            var downloadedSize = downloading.Sum(torrent => (double)Math.Clamp(torrent.DownloadedSize, 0, Math.Max(0, torrent.TotalSize)));
+            var indeterminate = downloading.Any(torrent => torrent.TotalSize <= 0);
+            var progress = totalSize > 0 ? Math.Clamp(downloadedSize / totalSize * 100, 0, 100) : 0;
+            var status = $"{LocalizationResourceManager.Instance["StatusDownloading"]}: {downloading.Length}";
+            builder.SetContentText(indeterminate ? status : $"{status} · {progress:F1}%");
+            builder.SetProgress(100, (int)progress, indeterminate);
+        }
+        else if (torrents?.Count(torrent => torrent.Status == DownloadStatus.Seeding) is > 0 and var seeding)
+        {
+            builder.SetContentText($"{LocalizationResourceManager.Instance["StatusSeeding"]}: {seeding}");
+        }
         builder.SetSmallIcon(Resource.Mipmap.appicon);
         builder.SetOngoing(true);
         builder.SetOnlyAlertOnce(true);
@@ -206,6 +232,32 @@ public sealed class DownloadForegroundService : Service
         }
 
         return builder.Build()!;
+    }
+
+    private async Task RefreshNotificationAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            using var timer = new PeriodicTimer(TimeSpan.FromSeconds(2));
+            while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
+            {
+                // Torrent collections and properties are published on the MAUI UI thread.
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    if (cancellationToken.IsCancellationRequested) return;
+                    var manager = (NotificationManager?)GetSystemService(NotificationService);
+                    using var notification = BuildNotification();
+                    manager?.Notify(NotificationId, notification);
+                });
+            }
+        }
+        catch (System.OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Refreshing transfer notification failed: {ex}");
+        }
     }
 
     private PendingIntent? CreateOpenAppIntent()

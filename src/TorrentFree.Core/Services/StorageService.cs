@@ -37,6 +37,8 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
     private readonly SemaphoreSlim _saveLock = new(1, 1);
     private bool _torrentsLoaded;
     private TorrentStorageData? _cachedData;
+    private bool _secretValueKnown;
+    private string? _lastSecretValue;
 
     public async Task<List<TorrentItem>> LoadTorrentsAsync()
     {
@@ -177,9 +179,16 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
 
     private async Task<(bool Succeeded, string? Value)> TryGetSecretAsync()
     {
-        try { return (true, await secrets!.GetAsync(ProxyPasswordSecretKey).ConfigureAwait(false)); }
+        try
+        {
+            var value = await secrets!.GetAsync(ProxyPasswordSecretKey).ConfigureAwait(false);
+            _lastSecretValue = string.IsNullOrEmpty(value) ? null : value;
+            _secretValueKnown = true;
+            return (true, value);
+        }
         catch (Exception ex)
         {
+            _secretValueKnown = false;
             // Fail closed: a missing password makes the proxy reject the connection.
             System.Diagnostics.Debug.WriteLine($"Secret store read failed: {ex.Message}");
             return (false, null);
@@ -188,13 +197,20 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
 
     private async Task<bool> TrySetSecretAsync(string? value)
     {
+        value = string.IsNullOrEmpty(value) ? null : value;
+        if (_secretValueKnown && string.Equals(value, _lastSecretValue, StringComparison.Ordinal))
+            return true;
+
         try
         {
-            await secrets!.SetAsync(ProxyPasswordSecretKey, string.IsNullOrEmpty(value) ? null : value).ConfigureAwait(false);
+            await secrets!.SetAsync(ProxyPasswordSecretKey, value).ConfigureAwait(false);
+            _lastSecretValue = value;
+            _secretValueKnown = true;
             return true;
         }
         catch (Exception ex)
         {
+            _secretValueKnown = false;
             // Keep the proxy usable on devices whose secure storage is broken; the password
             // then stays in the state file, as it did before secure storage was introduced.
             System.Diagnostics.Debug.WriteLine($"Secret store write failed: {ex.Message}");

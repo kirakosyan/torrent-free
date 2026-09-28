@@ -4,11 +4,10 @@
     <RootNamespace>TorrentFree</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <PackageReference Include="MonoTorrent" Version="3.0.2" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="MonoTorrent" />
     <InternalsVisibleTo Include="TorrentFree" />
     <InternalsVisibleTo Include="TorrentFree.UnitTests" />
   </ItemGroup>

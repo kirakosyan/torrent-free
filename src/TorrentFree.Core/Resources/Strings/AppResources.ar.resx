@@ -550,4 +550,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>يمنع الجهاز من السكون أثناء التنزيل أو المشاركة، لتستمر عمليات النقل عند إيقاف الشاشة. يستهلك المزيد من البطارية.</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>الإعداد الافتراضي للنظام</value>
+  </data>
 </root>

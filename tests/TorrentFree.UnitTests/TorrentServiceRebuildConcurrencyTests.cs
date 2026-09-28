@@ -9,6 +9,36 @@ namespace TorrentFree.UnitTests;
 public sealed class TorrentServiceRebuildConcurrencyTests
 {
     [Fact]
+    public async Task Rebuild_StopsIndependentManagersInParallel()
+    {
+        var storage = new StubStorageService();
+        await using var service = new BlockingStopTorrentService(storage);
+        var first = CreateTorrent(storage);
+        var second = CreateTorrent(storage, "89abcdef0123456789abcdef0123456789abcdef");
+        service.Torrents.Add(first);
+        service.Torrents.Add(second);
+        await service.StartTorrentAsync(first);
+        await service.StartTorrentAsync(second);
+
+        var rebuildTask = InvokePrivateTask(service, "RebuildEngineAsync");
+        try
+        {
+            // Both stops must enter before either can finish. Sequential teardown would
+            // wait forever on the first stop instead of reaching the second manager.
+            await service.BothStopsEntered.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+            Assert.False(rebuildTask.IsCompleted);
+        }
+        finally
+        {
+            service.ReleaseStops.TrySetResult();
+            await rebuildTask.WaitAsync(TestContext.Current.CancellationToken);
+        }
+
+        Assert.Equal(DownloadStatus.Downloading, first.Status);
+        Assert.Equal(DownloadStatus.Downloading, second.Status);
+    }
+
+    [Fact]
     public async Task FailedRebuildResume_OffersFreedSlotToQueueAfterReleasingBarrier()
     {
         var storage = new StubStorageService();
@@ -219,6 +249,23 @@ public sealed class TorrentServiceRebuildConcurrencyTests
         {
             AttemptedStarts.Enqueue(torrent.Id);
             throw new InvalidOperationException("Injected manager creation failure");
+        }
+    }
+
+    private sealed class BlockingStopTorrentService(IStorageService storageService)
+        : TorrentService(storageService, new StubNotificationService(), new StubBackgroundDownloadService(), ImmediateDispatcher.Instance)
+    {
+        private int _stopCount;
+        public TaskCompletionSource BothStopsEntered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public TaskCompletionSource ReleaseStops { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        protected override Task StartManagerAsync(TorrentManager manager) => Task.CompletedTask;
+
+        protected override async Task StopManagerAsync(TorrentManager manager)
+        {
+            if (Interlocked.Increment(ref _stopCount) == 2)
+                BothStopsEntered.TrySetResult();
+            await ReleaseStops.Task;
         }
     }
 

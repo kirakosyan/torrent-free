@@ -82,8 +82,9 @@ public partial class DeleteTorrentDialogViewModel : ObservableObject
     public DeleteTorrentDialogViewModel(string torrentName)
     {
         TorrentName = torrentName;
-        DeleteTorrentFile = true;
-        DeleteDownloadedFiles = true;
+        // Removing a queue entry preserves user files unless deletion is explicitly chosen.
+        DeleteTorrentFile = false;
+        DeleteDownloadedFiles = false;
     }
 
     /// <summary>

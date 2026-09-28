@@ -564,4 +564,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>Megakadályozza, hogy az eszköz alvó állapotba kerüljön letöltés vagy megosztás közben, így az átvitel kikapcsolt képernyővel is folytatódik. Több akkumulátort használ.</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>Rendszer alapértelmezése</value>
+  </data>
 </root>

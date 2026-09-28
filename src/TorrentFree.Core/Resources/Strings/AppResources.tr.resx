@@ -564,4 +564,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>İndirme veya paylaşım sürerken cihazın uyku moduna geçmesini engeller, böylece aktarımlar ekran kapalıyken devam eder. Daha fazla pil kullanır.</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>Sistem varsayılanı</value>
+  </data>
 </root>

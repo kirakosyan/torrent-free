@@ -18,12 +18,14 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ILocalizationService _localizationService;
     private readonly IFolderPickerService _folderPickerService;
     private readonly IThemeService _themeService;
+    private readonly DebouncedSettingsSave _settingsSave;
     private AppSettings _loadedSettings = new();
     private bool _isLoadingSettings = true;
     private bool _isNormalizing;
     private bool _isApplyingNormalizedValue;
     private bool _isUpdatingAssociation;
     private bool _isSyncingThemeOptions;
+    private bool _isSyncingLanguageOptions;
     private bool _languageChanged;
     // The page shows no password because secure storage could not return it; saving must keep it.
     private bool _proxyPasswordUnavailable;
@@ -143,7 +145,7 @@ public partial class SettingsViewModel : ObservableObject
     /// </summary>
     public ObservableCollection<LanguageOption> AvailableLanguages { get; } =
     [
-        new("System Default", ""),
+        new(LocalizationResourceManager.Instance["SystemDefaultLanguage"], ""),
         new("English", "en"),
         new("\u0627\u0644\u0639\u0631\u0628\u064A\u0629", "ar"),
         new("\u7B80\u4F53\u4E2D\u6587", "zh-CN"),
@@ -227,6 +229,7 @@ public partial class SettingsViewModel : ObservableObject
         _localizationService = localizationService;
         _folderPickerService = folderPickerService;
         _themeService = themeService;
+        _settingsSave = new DebouncedSettingsSave(SaveSettingsCoreAsync, TimeSpan.FromMilliseconds(400));
         IsFileAssociationSupported = _fileAssociationService.IsSupported;
         SelectedLanguage = AvailableLanguages[0];
         RebuildThemeOptions(ThemeSettings.System);
@@ -238,6 +241,14 @@ public partial class SettingsViewModel : ObservableObject
     private void OnLocalizationChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         RebuildThemeOptions(SelectedTheme?.Code ?? ThemeSettings.System);
+        _isSyncingLanguageOptions = true;
+        try
+        {
+            var followsSystem = string.IsNullOrEmpty(SelectedLanguage?.Code);
+            AvailableLanguages[0] = new LanguageOption(LocalizationResourceManager.Instance["SystemDefaultLanguage"], "");
+            if (followsSystem) SelectedLanguage = AvailableLanguages[0];
+        }
+        finally { _isSyncingLanguageOptions = false; }
     }
 
     /// <summary>
@@ -277,6 +288,8 @@ public partial class SettingsViewModel : ObservableObject
 
     private async Task LoadSettingsCoreAsync()
     {
+        // Reopening the page immediately after an edit must not reload an older snapshot.
+        await FlushPendingSettingsAsync();
         _isLoadingSettings = true;
         try
         {
@@ -522,7 +535,7 @@ public partial class SettingsViewModel : ObservableObject
 
     partial void OnSelectedLanguageChanged(LanguageOption value)
     {
-        if (_isLoadingSettings || value is null) return;
+        if (_isLoadingSettings || _isSyncingLanguageOptions || value is null) return;
         _languageChanged = true;
 
         var culture = string.IsNullOrEmpty(value.Code)
@@ -586,13 +599,20 @@ public partial class SettingsViewModel : ObservableObject
         _torrentService.UpdateProxySettings(ProxyEnabled, ProxyHost, ProxyPort, ProxyUsername, ProxyPassword);
     }
 
-    private async Task PersistSettingsAsync()
+    private Task PersistSettingsAsync()
     {
         if (_isLoadingSettings || _isNormalizing)
         {
-            return;
+            return Task.CompletedTask;
         }
 
+        return _settingsSave.ScheduleAsync();
+    }
+
+    public Task FlushPendingSettingsAsync() => _settingsSave.FlushAsync();
+
+    private async Task SaveSettingsCoreAsync()
+    {
         // Merge with the latest snapshot under the shared view-model update lock so a
         // concurrent sort toggle cannot be replaced by this page's older snapshot.
         _loadedSettings = await AppSettingsPersistence.MergeAndSaveAsync(

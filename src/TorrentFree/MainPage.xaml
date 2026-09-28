@@ -246,6 +246,7 @@
                                    <RoundRectangle CornerRadius="12"/>
                             </Border.StrokeShape>
                             <Grid ColumnDefinitions="*,Auto,Auto"
+                                  RowDefinitions="Auto,Auto"
                                   ColumnSpacing="8">
                                     <Entry Grid.Column="0"
                                            Placeholder="{helpers:Translate AddTorrentPlaceholder}"
@@ -281,6 +282,13 @@
                                            CornerRadius="8"
                                            Padding="16,8"
                                            HeightRequest="44"/>
+                                    <Button Grid.Row="1" Grid.ColumnSpan="3"
+                                            Text="{helpers:Translate AddButton}"
+                                            Command="{Binding AddTorrentCommand}"
+                                            IsVisible="{Binding RequiresMagnetConfirmation}"
+                                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                                            Margin="0,8,0,0"
+                                            HorizontalOptions="End"/>
                             </Grid>
                      </Border>
 
@@ -555,7 +563,7 @@
                                                                       </Border.StrokeShape>
                                                                       <Label Text="{Binding StatusText}"
                                                                              FontSize="11"
-                                                                             TextColor="White"
+                                                                             TextColor="#17212B"
                                                                              FontAttributes="Bold"/>
                                                                </Border>
                                                         </Grid>

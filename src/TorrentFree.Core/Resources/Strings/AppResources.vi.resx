@@ -564,4 +564,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>Ngăn thiết bị chuyển sang chế độ ngủ khi đang tải xuống hoặc chia sẻ, để quá trình truyền tiếp tục khi tắt màn hình. Tốn pin hơn.</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>Mặc định hệ thống</value>
+  </data>
 </root>

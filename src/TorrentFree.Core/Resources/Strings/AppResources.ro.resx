@@ -564,4 +564,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>Împiedică intrarea dispozitivului în repaus în timpul descărcărilor sau al partajării, astfel încât transferurile continuă cu ecranul stins. Consumă mai multă baterie.</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>Implicit pentru sistem</value>
+  </data>
 </root>

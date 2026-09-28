@@ -27,9 +27,9 @@ public sealed class AudiobookFilesTests : IDisposable
         Directory.CreateDirectory(Path.Combine(root, "Book", "Disc 2"));
         var first = Path.Combine(root, "Book", "01.MP3");
         var second = Path.Combine(root, "Book", "Disc 2", "02.flac");
-        foreach (var file in new[] { first, second, Path.Combine(root, "Book", "cover.jpg"), Path.Combine(root, "Other.m4b") })
+        foreach (var file in new[] { second, first, Path.Combine(root, "Book", "cover.jpg"), Path.Combine(root, "Other.m4b") })
             File.WriteAllText(file, "test");
-        Assert.Equal(new[] { first, second }.Order(), AudiobookFiles.Enumerate(Path.Combine(root, "Book")).Order());
+        Assert.Equal([first, second], AudiobookFiles.Enumerate(Path.Combine(root, "Book")));
         Assert.Equal([first], AudiobookFiles.Enumerate(first));
         File.Delete(first);
         Assert.Empty(AudiobookFiles.Enumerate(first));

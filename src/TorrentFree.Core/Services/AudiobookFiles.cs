@@ -25,7 +25,9 @@ public static class AudiobookFiles
             AttributesToSkip = FileAttributes.ReparsePoint,
             IgnoreInaccessible = true
         };
-        foreach (var file in Directory.EnumerateFiles(path, "*", options))
-            if (IsSupported(file)) yield return file;
+        foreach (var file in Directory.EnumerateFiles(path, "*", options)
+                     .Where(IsSupported)
+                     .OrderBy(static file => file, StringComparer.OrdinalIgnoreCase))
+            yield return file;
     }
 }

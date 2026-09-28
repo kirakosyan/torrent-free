@@ -564,4 +564,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>ダウンロードやシード中にデバイスがスリープしないようにし、画面がオフでも転送を続けます。バッテリーの消費が増えます。</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>システムのデフォルト</value>
+  </data>
 </root>

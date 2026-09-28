@@ -564,4 +564,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>Hindrer at enheten går i dvale mens nedlasting eller deling pågår, slik at overføringer fortsetter med skjermen av. Bruker mer batteri.</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>Systemstandard</value>
+  </data>
 </root>

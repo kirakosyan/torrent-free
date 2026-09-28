@@ -578,4 +578,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>Evita que el dispositivo entre en suspensión mientras hay descargas o se comparte, para que las transferencias continúen con la pantalla apagada. Consume más batería.</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>Predeterminado del sistema</value>
+  </data>
 </root>

@@ -16,14 +16,15 @@ public sealed class AndroidTransferNetworkMonitor : ITransferNetworkMonitor, IDi
     {
         _manager = Android.App.Application.Context.GetSystemService(Context.ConnectivityService) as ConnectivityManager;
         _wifiConnected = ReadDefaultWifi();
-        if (_manager is not null && OperatingSystem.IsAndroidVersionAtLeast(24))
+        if (_manager is not null && OperatingSystem.IsAndroidVersionAtLeast(26))
         {
             _callback = new DefaultNetworkCallback(this);
             _manager.RegisterDefaultNetworkCallback(_callback);
         }
         else
         {
-            // Android 6 has ActiveNetwork but not RegisterDefaultNetworkCallback.
+            // Android 8 guarantees an ordered capabilities callback immediately after
+            // OnAvailable. Earlier versions use the connectivity event and a snapshot.
             Connectivity.Current.ConnectivityChanged += OnLegacyConnectivityChanged;
         }
     }
@@ -71,7 +72,9 @@ public sealed class AndroidTransferNetworkMonitor : ITransferNetworkMonitor, IDi
         public override void OnAvailable(Network network)
         {
             _current = network;
-            owner.Update(false);
+            // OnAvailable does not describe the transport. Wait for the immediately
+            // following capabilities callback rather than publishing a false Wi-Fi loss
+            // during handover. Android warns against synchronous capability queries here.
         }
 
         public override void OnCapabilitiesChanged(Network network, NetworkCapabilities capabilities)

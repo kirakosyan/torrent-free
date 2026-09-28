@@ -564,4 +564,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>Zapobiega usypianiu urządzenia podczas pobierania lub udostępniania, dzięki czemu transfery trwają przy wyłączonym ekranie. Zużywa więcej baterii.</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>Domyślny język systemu</value>
+  </data>
 </root>

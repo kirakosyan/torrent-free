@@ -1,7 +1,9 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Controls;
 using Microsoft.UI.Windowing;
 using TorrentFree.Models;
 using TorrentFree.Services;
+using TorrentFree.ViewModels;
 using WinRT.Interop;
 
 namespace TorrentFree;
@@ -93,9 +95,8 @@ public partial class App
         _desktopShutdownStarted = true;
         try
         {
-            await Task.WhenAll(
-                PersistDesktopWindowStateAsync(GetDesktopWindowMaximized(sender)),
-                _torrentService.DisposeAsync().AsTask()).WaitAsync(TimeSpan.FromSeconds(10));
+            await FlushAndShutdownDesktopAsync(GetDesktopWindowMaximized(sender))
+                .WaitAsync(TimeSpan.FromSeconds(10));
         }
         catch (Exception ex)
         {
@@ -110,6 +111,26 @@ public partial class App
                 System.Diagnostics.Debug.WriteLine($"Desktop window close failed: {ex.Message}");
             }
         }
+    }
+
+    private async Task FlushAndShutdownDesktopAsync(bool? desktopWasMaximized)
+    {
+        // Destroying cannot delay process exit. Flush the settings debounce while Closing
+        // is still cancelled, before disposing the service which consumes those settings.
+        try
+        {
+            if (MauiProgram.Services.GetService<SettingsViewModel>() is { } settings)
+                await settings.FlushPendingSettingsAsync();
+        }
+        catch (Exception ex)
+        {
+            // A storage failure must not prevent the transfer engine from shutting down.
+            System.Diagnostics.Debug.WriteLine($"Desktop settings flush failed: {ex.Message}");
+        }
+
+        await Task.WhenAll(
+            PersistDesktopWindowStateAsync(desktopWasMaximized),
+            _torrentService.DisposeAsync().AsTask());
     }
 
     private void OnDesktopWindowDestroying(object? sender, EventArgs e)

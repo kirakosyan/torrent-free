@@ -1,6 +1,6 @@
 namespace TorrentFree.Services;
 
-/// <summary>Retains imported metadata before publishing the torrent to the queue.</summary>
+/// <summary>Parses imported metadata; the queue retains it when the import is accepted.</summary>
 public sealed class TorrentImportService(StoragePaths paths, ITorrentFileParser parser)
 {
     private static readonly AsyncKeyedLocker CacheLocks = new();
@@ -30,22 +30,21 @@ public sealed class TorrentImportService(StoragePaths paths, ITorrentFileParser 
         finally { File.Delete(temporaryPath); }
     }
 
-    public async Task<TorrentMetadata> PrepareAsync(TorrentPickedFile picked, CancellationToken cancellationToken = default)
+    public Task<TorrentMetadata> PrepareAsync(TorrentPickedFile picked, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         var metadata = parser.Parse(picked.Content);
         var cachePath = GetCachePath(paths.AppDataDirectory, metadata.InfoHashHex);
-        await using (await LockCacheAsync(cachePath, cancellationToken))
-            await WriteCacheAsync(cachePath, picked.Content, cancellationToken);
 
         var sourcePath = GetLocalSourcePath(picked.FullPath);
-        return metadata with
+        return Task.FromResult(metadata with
         {
             CachedFilePath = cachePath,
             CachedContent = picked.Content.ToArray(),
             SourceFilePath = sourcePath,
             SourceFileName = picked.FileName,
             DownloadSourcePath = IsSourceFolderWritable(sourcePath) ? sourcePath : null
-        };
+        });
     }
 
     private static string? GetLocalSourcePath(string? path)

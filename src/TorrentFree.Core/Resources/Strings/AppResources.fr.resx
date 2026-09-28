@@ -578,4 +578,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>Empêche l'appareil de se mettre en veille pendant les téléchargements ou le partage, afin que les transferts continuent écran éteint. Consomme plus de batterie.</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>Langue du système</value>
+  </data>
 </root>

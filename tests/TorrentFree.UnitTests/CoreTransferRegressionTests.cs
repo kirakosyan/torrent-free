@@ -15,12 +15,12 @@ public sealed class CoreTransferRegressionTests
         var metadata = await fixture.PrepareTorrentAsync();
         Assert.Null(metadata.SourceFilePath);
         Assert.Null(metadata.DownloadSourcePath);
-        Assert.True(File.Exists(metadata.CachedFilePath));
+        Assert.False(File.Exists(metadata.CachedFilePath));
         var originalBytes = await File.ReadAllBytesAsync(Path.Combine(fixture.Directory.Path, "payload.bin.torrent"), TestContext.Current.CancellationToken);
-        Assert.Equal(originalBytes, await File.ReadAllBytesAsync(metadata.CachedFilePath!, TestContext.Current.CancellationToken));
         File.Delete(Path.Combine(fixture.Directory.Path, "payload.bin.torrent"));
 
         var torrent = (await fixture.Service.AddTorrentFileAsync(metadata))!;
+        Assert.Equal(originalBytes, await File.ReadAllBytesAsync(metadata.CachedFilePath!, TestContext.Current.CancellationToken));
         var persisted = Assert.Single(await fixture.Storage.LoadTorrentsAsync());
         Assert.Equal(metadata.CachedFilePath, persisted.CachedTorrentFilePath);
         Assert.Equal(fixture.Storage.GetDefaultDownloadPath(), torrent.SavePath);

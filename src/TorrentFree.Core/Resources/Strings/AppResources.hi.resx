@@ -564,4 +564,7 @@
   <data name="KeepDeviceAwakeHelp" xml:space="preserve">
     <value>डाउनलोड या सीडिंग के दौरान डिवाइस को स्लीप में जाने से रोकता है, ताकि स्क्रीन बंद होने पर भी ट्रांसफर जारी रहें। अधिक बैटरी खर्च होती है।</value>
   </data>
+  <data name="SystemDefaultLanguage" xml:space="preserve">
+    <value>सिस्टम डिफ़ॉल्ट</value>
+  </data>
 </root>

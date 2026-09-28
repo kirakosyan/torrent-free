@@ -13,29 +13,9 @@ public static class AppSettingsFactory
     {
         ArgumentNullException.ThrowIfNull(existing);
 
-        return new AppSettings
-        {
-            GlobalDownloadLimitKbps = existing.GlobalDownloadLimitKbps,
-            GlobalUploadLimitKbps = existing.GlobalUploadLimitKbps,
-            MaxActiveDownloads = existing.MaxActiveDownloads,
-            MaxActiveSeeds = existing.MaxActiveSeeds,
-            GlobalMaxSeedRatio = existing.GlobalMaxSeedRatio,
-            GlobalMaxSeedMinutes = existing.GlobalMaxSeedMinutes,
-            SortByStatus = sortByStatus,
-            WifiOnly = existing.WifiOnly,
-            DownloadToTorrentFolder = existing.DownloadToTorrentFolder,
-            SpecificDownloadFolder = existing.SpecificDownloadFolder ?? string.Empty,
-            ProxyEnabled = existing.ProxyEnabled,
-            ProxyHost = existing.ProxyHost ?? string.Empty,
-            ProxyPort = existing.ProxyPort is > 0 and <= 65535 ? existing.ProxyPort : 1080,
-            ProxyUsername = existing.ProxyUsername ?? string.Empty,
-            ProxyPassword = existing.ProxyPassword ?? string.Empty,
-            ProxyPasswordUnavailable = existing.ProxyPasswordUnavailable,
-            Language = existing.Language,
-            Theme = ThemeSettings.Normalize(existing.Theme),
-            DesktopWasMaximized = existing.DesktopWasMaximized,
-            KeepDeviceAwake = existing.KeepDeviceAwake
-        };
+        var updated = existing.Clone();
+        updated.SortByStatus = sortByStatus;
+        return updated;
     }
 
     /// <summary>
@@ -69,28 +49,25 @@ public static class AppSettingsFactory
         ArgumentNullException.ThrowIfNull(existing);
         var keepExistingPassword = proxyPasswordUnavailable && string.IsNullOrEmpty(proxyPassword);
 
-        return new AppSettings
-        {
-            GlobalDownloadLimitKbps = globalDownloadLimitKbps,
-            GlobalUploadLimitKbps = globalUploadLimitKbps,
-            MaxActiveDownloads = maxActiveDownloads,
-            MaxActiveSeeds = maxActiveSeeds,
-            GlobalMaxSeedRatio = globalMaxSeedRatio,
-            GlobalMaxSeedMinutes = globalMaxSeedMinutes,
-            SortByStatus = existing.SortByStatus,
-            WifiOnly = wifiOnly ?? existing.WifiOnly,
-            DownloadToTorrentFolder = downloadToTorrentFolder,
-            SpecificDownloadFolder = specificDownloadFolder?.Trim() ?? string.Empty,
-            ProxyEnabled = proxyEnabled,
-            ProxyHost = proxyHost ?? string.Empty,
-            ProxyPort = proxyPort is > 0 and <= 65535 ? proxyPort : 1080,
-            ProxyUsername = proxyUsername ?? string.Empty,
-            ProxyPassword = (keepExistingPassword ? existing.ProxyPassword : proxyPassword) ?? string.Empty,
-            ProxyPasswordUnavailable = keepExistingPassword && existing.ProxyPasswordUnavailable,
-            Language = language,
-            Theme = ThemeSettings.Normalize(theme),
-            DesktopWasMaximized = existing.DesktopWasMaximized,
-            KeepDeviceAwake = keepDeviceAwake ?? existing.KeepDeviceAwake
-        };
+        var updated = existing.Clone();
+        updated.GlobalDownloadLimitKbps = globalDownloadLimitKbps;
+        updated.GlobalUploadLimitKbps = globalUploadLimitKbps;
+        updated.MaxActiveDownloads = maxActiveDownloads;
+        updated.MaxActiveSeeds = maxActiveSeeds;
+        updated.GlobalMaxSeedRatio = globalMaxSeedRatio;
+        updated.GlobalMaxSeedMinutes = globalMaxSeedMinutes;
+        updated.WifiOnly = wifiOnly ?? existing.WifiOnly;
+        updated.DownloadToTorrentFolder = downloadToTorrentFolder;
+        updated.SpecificDownloadFolder = specificDownloadFolder?.Trim() ?? string.Empty;
+        updated.ProxyEnabled = proxyEnabled;
+        updated.ProxyHost = proxyHost ?? string.Empty;
+        updated.ProxyPort = proxyPort is > 0 and <= 65535 ? proxyPort : 1080;
+        updated.ProxyUsername = proxyUsername ?? string.Empty;
+        updated.ProxyPassword = (keepExistingPassword ? existing.ProxyPassword : proxyPassword) ?? string.Empty;
+        updated.ProxyPasswordUnavailable = keepExistingPassword && existing.ProxyPasswordUnavailable;
+        updated.Language = language;
+        updated.Theme = ThemeSettings.Normalize(theme);
+        updated.KeepDeviceAwake = keepDeviceAwake ?? existing.KeepDeviceAwake;
+        return updated;
     }
 }
