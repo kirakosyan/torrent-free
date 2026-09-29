@@ -19,7 +19,6 @@
                      <!-- Converters (defined locally to ensure availability) -->
                      <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
                      <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
-                     <converters:ObjectNotNullConverter x:Key="ObjectNotNullConverter"/>
                      <converters:ProgressConverter x:Key="ProgressConverter"/>
                      <converters:StatusColorConverter x:Key="StatusColorConverter"/>
                      <converters:OddIndexConverter x:Key="OddIndexConverter"/>
@@ -160,11 +159,16 @@
               </ResourceDictionary>
        </ContentPage.Resources>
 
-       <Grid RowDefinitions="Auto,Auto,Auto,*"
-             Padding="16,12">
+       <Grid x:Name="DashboardGrid"
+             RowDefinitions="Auto,Auto,Auto,*"
+             Padding="16,12"
+             SizeChanged="OnDashboardLayoutChanged">
 
               <!-- Header Section -->
-              <Grid Grid.Row="0"
+              <Grid x:Name="DashboardHeader"
+                    Grid.Row="0"
+                    IsVisible="{Binding CanShowSelectedTorrentDetails, Converter={StaticResource InverseBoolConverter}}"
+                    SizeChanged="OnDashboardLayoutChanged"
                     ColumnDefinitions="*,Auto,Auto"
                     RowDefinitions="Auto"
                     ColumnSpacing="12">
@@ -202,8 +206,10 @@
               </Grid>
 
               <!-- Store prompts: wrapping actions keep the banner usable on narrow screens. -->
-              <VerticalStackLayout Grid.Row="1"
+              <VerticalStackLayout x:Name="StorePrompts"
+                                   Grid.Row="1"
                                    IsVisible="{Binding Prompts.HasBanner}"
+                                   SizeChanged="OnDashboardLayoutChanged"
                                    Margin="0,12,0,0" Spacing="6">
                      <Border IsVisible="{Binding Prompts.IsUpdateBannerVisible}"
                              Padding="12" Stroke="{StaticResource AccentColor}"
@@ -236,7 +242,10 @@
               </VerticalStackLayout>
 
               <!-- Input Section -->
-              <VerticalStackLayout Grid.Row="2"
+              <VerticalStackLayout x:Name="MagnetInput"
+                                   Grid.Row="2"
+                                   IsVisible="{Binding CanShowSelectedTorrentDetails, Converter={StaticResource InverseBoolConverter}}"
+                                   SizeChanged="OnDashboardLayoutChanged"
                                    Spacing="8"
                                    Margin="0,16,0,16">
                      <Border Padding="12"
@@ -302,9 +311,14 @@
               </VerticalStackLayout>
 
               <!-- Downloads Section -->
-              <Grid Grid.Row="3" RowDefinitions="Auto,Auto,*">
+              <Grid Grid.Row="3"
+                    RowDefinitions="Auto,*"
+                    IsVisible="{Binding CanShowSelectedTorrentDetails, Converter={StaticResource InverseBoolConverter}}">
                      <VerticalStackLayout Grid.Row="0" Spacing="8" Margin="0,0,0,12">
-                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <Grid x:Name="DownloadsHeading"
+                                  ColumnDefinitions="*,Auto"
+                                  ColumnSpacing="8"
+                                  SizeChanged="OnDashboardLayoutChanged">
                                    <Label Text="{helpers:Translate DownloadsTitle}"
                                           FontSize="18"
                                           FontAttributes="Bold"
@@ -312,15 +326,16 @@
                                    <Button Grid.Column="1"
                                            Text="{Binding DownloadControlsButtonText}"
                                            Command="{Binding ToggleDownloadControlsCommand}"
+                                           Style="{StaticResource ActionButton}"
+                                           SemanticProperties.Description="{Binding DownloadControlsButtonText}"
+                                           SemanticProperties.Hint="{Binding DownloadControlsAccessibilityHint}"
                                            BackgroundColor="#EEF2FF"
                                            TextColor="#4F46E5"
-                                           FontSize="12"
-                                           CornerRadius="10"
-                                           Padding="12,8"
-                                           MinimumHeightRequest="44"/>
+                                           HeightRequest="44"/>
                             </Grid>
-                            <ScrollView IsVisible="{Binding ShowDownloadControls}"
-                                        MaximumHeightRequest="280"
+                            <ScrollView x:Name="DownloadControlsScroll"
+                                        IsVisible="{Binding ShowDownloadControls}"
+                                        MaximumHeightRequest="160"
                                         VerticalScrollBarVisibility="Default">
                                    <VerticalStackLayout Spacing="8">
                                           <Border Padding="12"
@@ -402,86 +417,13 @@
                                                  LineBreakMode="WordWrap"
                                                  TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                                  IsVisible="{Binding NeedsTorrentSelection}"/>
-                                          <Border Padding="12"
-                                                  Stroke="{StaticResource CardBorderColor}"
-                                                  Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                                                  IsVisible="{Binding CanShowSelectedTorrentDetails}">
-                                                 <Border.StrokeShape>
-                                                        <RoundRectangle CornerRadius="12"/>
-                                                 </Border.StrokeShape>
-                                                 <Grid RowDefinitions="Auto,Auto,Auto"
-                                                       ColumnDefinitions="*,*"
-                                                       ColumnSpacing="12"
-                                                       RowSpacing="8">
-                                                        <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2" Spacing="4">
-                                                               <Label Text="{helpers:Translate SelectedTorrentLimits}"
-                                                                      FontSize="13"
-                                                                      FontAttributes="Bold"/>
-                                                               <Label Text="{Binding SelectedTorrent.Name}"
-                                                                      FontSize="12"
-                                                                      LineBreakMode="WordWrap"
-                                                                      TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                                        </VerticalStackLayout>
 
-                                                        <VerticalStackLayout Grid.Row="1"
-                                                                             Grid.Column="0"
-                                                                             Spacing="4">
-                                                               <Label Text="{helpers:Translate DownloadKBs}"
-                                                                      FontSize="10"
-                                                                      TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                                                <Entry Text="{Binding SelectedTorrent.DownloadLimitKbps}"
-                                                                      SemanticProperties.Description="{helpers:Translate DownloadKBs}"
-                                                                      SemanticProperties.Hint="{helpers:Translate GlobalHint}"
-                                                                      Keyboard="Numeric"
-                                                                      Placeholder="{helpers:Translate GlobalHint}"/>
-                                                        </VerticalStackLayout>
-
-                                                        <VerticalStackLayout Grid.Row="1"
-                                                                             Grid.Column="1"
-                                                                             Spacing="4">
-                                                               <Label Text="{helpers:Translate UploadKBs}"
-                                                                      FontSize="10"
-                                                                      TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                                                <Entry Text="{Binding SelectedTorrent.UploadLimitKbps}"
-                                                                      SemanticProperties.Description="{helpers:Translate UploadKBs}"
-                                                                      SemanticProperties.Hint="{helpers:Translate GlobalHint}"
-                                                                      Keyboard="Numeric"
-                                                                      Placeholder="{helpers:Translate GlobalHint}"/>
-                                                        </VerticalStackLayout>
-
-                                                        <VerticalStackLayout Grid.Row="2"
-                                                                             Grid.Column="0"
-                                                                             Spacing="4">
-                                                               <Label Text="{helpers:Translate MaxSeedRatio}"
-                                                                      FontSize="10"
-                                                                      TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                                                <Entry Text="{Binding SelectedTorrent.MaxSeedRatio}"
-                                                                      SemanticProperties.Description="{helpers:Translate MaxSeedRatio}"
-                                                                      SemanticProperties.Hint="{helpers:Translate UnlimitedHint}"
-                                                                      Keyboard="Numeric"
-                                                                      Placeholder="{helpers:Translate GlobalHint}"/>
-                                                        </VerticalStackLayout>
-
-                                                        <VerticalStackLayout Grid.Row="2"
-                                                                             Grid.Column="1"
-                                                                             Spacing="4">
-                                                               <Label Text="{helpers:Translate MaxSeedMinutes}"
-                                                                      FontSize="10"
-                                                                      TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                                                <Entry Text="{Binding SelectedTorrent.MaxSeedMinutes}"
-                                                                      SemanticProperties.Description="{helpers:Translate MaxSeedMinutes}"
-                                                                      SemanticProperties.Hint="{helpers:Translate UnlimitedHint}"
-                                                                      Keyboard="Numeric"
-                                                                      Placeholder="{helpers:Translate GlobalHint}"/>
-                                                        </VerticalStackLayout>
-                                                 </Grid>
-                                          </Border>
                                    </VerticalStackLayout>
                             </ScrollView>
                      </VerticalStackLayout>
 
                      <!-- Empty State -->
-                     <VerticalStackLayout Grid.Row="2"
+                     <VerticalStackLayout Grid.Row="1"
                                           IsVisible="{Binding IsEmpty}"
                                           VerticalOptions="Center"
                                           HorizontalOptions="Center"
@@ -497,7 +439,7 @@
                      </VerticalStackLayout>
 
                      <!-- Downloads List -->
-                      <CollectionView Grid.Row="2"
+                      <CollectionView Grid.Row="1"
                                       ItemsSource="{Binding DisplayTorrents}"
                                       SemanticProperties.Description="{helpers:Translate DownloadsTitle}"
                                       SelectionMode="Single"
@@ -785,6 +727,101 @@
                                   Color="{StaticResource AccentColor}"
                                  VerticalOptions="Center"
                                  HorizontalOptions="Center"/>
+
+              <!-- Limits occupy the page so numeric fields remain scrollable above the keyboard. -->
+              <Grid Grid.RowSpan="4"
+                    RowDefinitions="Auto,*"
+                    RowSpacing="12"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}"
+                    IsVisible="{Binding CanShowSelectedTorrentDetails}">
+                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <Label Text="{helpers:Translate SelectedTorrentLimits}"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"/>
+                            <Button Grid.Column="1"
+                                    Text="{helpers:Translate HideTorrentLimits}"
+                                    SemanticProperties.Description="{helpers:Translate HideTorrentLimits}"
+                                    Style="{StaticResource ActionButton}"
+                                    BackgroundColor="#EEF2FF"
+                                    TextColor="#4F46E5"
+                                    Command="{Binding ToggleSelectedTorrentDetailsCommand}"
+                                    HeightRequest="44"/>
+                     </Grid>
+                     <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Default">
+                            <Border Padding="12"
+                                    VerticalOptions="Start"
+                                    Stroke="{StaticResource CardBorderColor}"
+                                    Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
+                                   <Border.StrokeShape>
+                                          <RoundRectangle CornerRadius="12"/>
+                                   </Border.StrokeShape>
+                                   <Grid RowDefinitions="Auto,Auto,Auto"
+                                         ColumnDefinitions="*,*"
+                                         ColumnSpacing="12"
+                                         RowSpacing="8">
+                                          <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2" Spacing="4">
+                                                 <Label Text="{Binding SelectedTorrent.Name}"
+                                                        FontSize="12"
+                                                        LineBreakMode="WordWrap"
+                                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                          </VerticalStackLayout>
+
+                                          <VerticalStackLayout Grid.Row="1"
+                                                               Grid.Column="0"
+                                                               Spacing="4">
+                                                 <Label Text="{helpers:Translate DownloadKBs}"
+                                                        FontSize="10"
+                                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                                  <Entry Text="{Binding SelectedTorrent.DownloadLimitKbps}"
+                                                        SemanticProperties.Description="{helpers:Translate DownloadKBs}"
+                                                        SemanticProperties.Hint="{helpers:Translate GlobalHint}"
+                                                        Keyboard="Numeric"
+                                                        Placeholder="{helpers:Translate GlobalHint}"/>
+                                          </VerticalStackLayout>
+
+                                          <VerticalStackLayout Grid.Row="1"
+                                                               Grid.Column="1"
+                                                               Spacing="4">
+                                                 <Label Text="{helpers:Translate UploadKBs}"
+                                                        FontSize="10"
+                                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                                  <Entry Text="{Binding SelectedTorrent.UploadLimitKbps}"
+                                                        SemanticProperties.Description="{helpers:Translate UploadKBs}"
+                                                        SemanticProperties.Hint="{helpers:Translate GlobalHint}"
+                                                        Keyboard="Numeric"
+                                                        Placeholder="{helpers:Translate GlobalHint}"/>
+                                          </VerticalStackLayout>
+
+                                          <VerticalStackLayout Grid.Row="2"
+                                                               Grid.Column="0"
+                                                               Spacing="4">
+                                                 <Label Text="{helpers:Translate MaxSeedRatio}"
+                                                        FontSize="10"
+                                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                                  <Entry Text="{Binding SelectedTorrent.MaxSeedRatio}"
+                                                        SemanticProperties.Description="{helpers:Translate MaxSeedRatio}"
+                                                        SemanticProperties.Hint="{helpers:Translate UnlimitedHint}"
+                                                        Keyboard="Numeric"
+                                                        Placeholder="{helpers:Translate GlobalHint}"/>
+                                          </VerticalStackLayout>
+
+                                          <VerticalStackLayout Grid.Row="2"
+                                                               Grid.Column="1"
+                                                               Spacing="4">
+                                                 <Label Text="{helpers:Translate MaxSeedMinutes}"
+                                                        FontSize="10"
+                                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                                                  <Entry Text="{Binding SelectedTorrent.MaxSeedMinutes}"
+                                                        SemanticProperties.Description="{helpers:Translate MaxSeedMinutes}"
+                                                        SemanticProperties.Hint="{helpers:Translate UnlimitedHint}"
+                                                        Keyboard="Numeric"
+                                                        Placeholder="{helpers:Translate GlobalHint}"/>
+                                          </VerticalStackLayout>
+                                   </Grid>
+                            </Border>
+                     </ScrollView>
+              </Grid>
        </Grid>
 
 </ContentPage>

@@ -188,8 +188,9 @@ Magnet links opened from other apps appear in the input field for review. Press 
 The bandwidth charts and bulk controls start collapsed. Tap **Show controls** above
 the downloads to access **Start All**, **Stop All**, and **Downloading on top**.
 Select a download card, then choose **Show limits** to edit that download's speed
-and seeding limits. The selected card is highlighted and its name appears above
-the limit fields. **Hide controls** collapses the whole section again.
+and seeding limits in a full-page editor. The selected card is highlighted and
+its name appears above the limit fields. **Hide limits** returns to Downloads;
+**Hide controls** collapses the bandwidth and bulk controls.
 
 Each download in the list has action buttons:
 

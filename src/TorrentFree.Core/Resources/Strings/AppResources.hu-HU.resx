@@ -158,9 +158,6 @@
   <data name="DownloadingOnTop" xml:space="preserve">
     <value>Letöltés a tetején</value>
   </data>
-  <data name="Details" xml:space="preserve">
-    <value>Részletek</value>
-  </data>
   <data name="SelectedTorrentLimits" xml:space="preserve">
     <value>Kiválasztott torrentkorlátok</value>
   </data>

@@ -158,9 +158,6 @@
   <data name="DownloadingOnTop" xml:space="preserve">
     <value>Mengunduh di atas</value>
   </data>
-  <data name="Details" xml:space="preserve">
-    <value>Detail</value>
-  </data>
   <data name="SelectedTorrentLimits" xml:space="preserve">
     <value>Batas torrent yang dipilih</value>
   </data>

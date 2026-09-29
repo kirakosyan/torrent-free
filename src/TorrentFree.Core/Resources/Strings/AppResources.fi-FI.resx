@@ -158,9 +158,6 @@
   <data name="DownloadingOnTop" xml:space="preserve">
     <value>Lataus päällä</value>
   </data>
-  <data name="Details" xml:space="preserve">
-    <value>Yksityiskohdat</value>
-  </data>
   <data name="SelectedTorrentLimits" xml:space="preserve">
     <value>Valitut torrent-rajat</value>
   </data>

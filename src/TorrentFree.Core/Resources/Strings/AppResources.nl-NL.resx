@@ -158,9 +158,6 @@
   <data name="DownloadingOnTop" xml:space="preserve">
     <value>Bovenaan downloaden</value>
   </data>
-  <data name="Details" xml:space="preserve">
-    <value>Gegevens</value>
-  </data>
   <data name="SelectedTorrentLimits" xml:space="preserve">
     <value>Geselecteerde torrent-limieten</value>
   </data>

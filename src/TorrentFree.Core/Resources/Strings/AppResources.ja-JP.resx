@@ -158,9 +158,6 @@
   <data name="DownloadingOnTop" xml:space="preserve">
     <value>一番上でダウンロード中</value>
   </data>
-  <data name="Details" xml:space="preserve">
-    <value>詳細</value>
-  </data>
   <data name="SelectedTorrentLimits" xml:space="preserve">
     <value>選択されたトレント制限</value>
   </data>

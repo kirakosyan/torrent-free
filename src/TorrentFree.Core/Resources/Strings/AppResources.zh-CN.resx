@@ -158,9 +158,6 @@
   <data name="DownloadingOnTop" xml:space="preserve">
     <value>在上面下载</value>
   </data>
-  <data name="Details" xml:space="preserve">
-    <value>详情</value>
-  </data>
   <data name="SelectedTorrentLimits" xml:space="preserve">
     <value>选定的种子限制</value>
   </data>

@@ -158,9 +158,6 @@
   <data name="DownloadingOnTop" xml:space="preserve">
     <value>상단에서 다운로드 중</value>
   </data>
-  <data name="Details" xml:space="preserve">
-    <value>세부정보</value>
-  </data>
   <data name="SelectedTorrentLimits" xml:space="preserve">
     <value>선택된 토렌트 제한</value>
   </data>

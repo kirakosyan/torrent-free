@@ -158,9 +158,6 @@
   <data name="DownloadingOnTop" xml:space="preserve">
     <value>Stahování nahoře</value>
   </data>
-  <data name="Details" xml:space="preserve">
-    <value>Podrobnosti</value>
-  </data>
   <data name="SelectedTorrentLimits" xml:space="preserve">
     <value>Vybrané limity torrentu</value>
   </data>

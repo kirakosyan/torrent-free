@@ -44,22 +44,6 @@ public class StringNotEmptyConverter : IValueConverter
 }
 
 /// <summary>
-/// Converts a reference to a boolean indicating if it's not null.
-/// </summary>
-public class ObjectNotNullConverter : IValueConverter
-{
-    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        return value is not null;
-    }
-
-    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-/// <summary>
 /// Converts download progress (0-100) to ProgressBar progress (0-1).
 /// </summary>
 public class ProgressConverter : IValueConverter

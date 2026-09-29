@@ -165,9 +165,6 @@
   <data name="DownloadingOnTop" xml:space="preserve">
     <value>Descargando arriba</value>
   </data>
-  <data name="Details" xml:space="preserve">
-    <value>Detalles</value>
-  </data>
   <data name="SelectedTorrentLimits" xml:space="preserve">
     <value>Límites del torrent seleccionado</value>
   </data>
