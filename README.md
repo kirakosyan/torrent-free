@@ -30,9 +30,16 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 
 ## 📝 Release Overview
 
-The current app version is **v1.16**.
+The current app version is **v1.17**.
 
 See the [review findings and validation](docs/review-findings.md) for the current reliability, privacy, accessibility and build improvements, including remaining platform checks.
+
+### v1.17
+
+- Download controls and bandwidth charts start collapsed to give the torrent list more room.
+- Each torrent has a compact limits icon beside its delete button, opening that torrent's existing limits editor.
+- Improved button spacing, status badges and small-screen layouts.
+- More reliable settings, imports and notifications; removing a torrent keeps its files by default.
 
 ### v1.16
 

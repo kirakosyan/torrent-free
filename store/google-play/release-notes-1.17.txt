@@ -1,0 +1,156 @@
+<en-GB>
+• Download controls and bandwidth charts start collapsed to leave more room for your torrents.
+• Open each torrent's limits with the sliders icon beside its delete button.
+• Improved button spacing, status badges and small-screen layouts.
+• More reliable settings, imports and notifications; removing a torrent keeps its files by default.
+</en-GB>
+<ar>
+• تبدأ عناصر التحكم بالتنزيل ومخططات النطاق الترددي مطوية لتوفير مساحة أكبر للتورنتات.
+• افتح حدود كل تورنت من رمز أشرطة التمرير بجوار زر الحذف.
+• تحسين تباعد الأزرار وشارات الحالة والتخطيط للشاشات الصغيرة.
+• تحسين موثوقية الإعدادات والاستيراد والإشعارات؛ إزالة التورنت تُبقي ملفاته افتراضيًا.
+</ar>
+<cs-CZ>
+• Ovládání stahování a grafy přenosů jsou při spuštění sbalené, aby zůstalo více místa pro torrenty.
+• Limity každého torrentu otevřete ikonou posuvníků vedle tlačítka smazání.
+• Lepší rozestupy tlačítek, stavové štítky a rozložení na malých obrazovkách.
+• Spolehlivější nastavení, importy a oznámení; odebrání torrentu ve výchozím nastavení zachová soubory.
+</cs-CZ>
+<da-DK>
+• Downloadkontroller og båndbreddegrafer er foldet sammen ved start, så der er mere plads til dine torrents.
+• Åbn en torrents grænser via skyderikonet ved siden af sletteknappen.
+• Bedre knapafstand, statusmærker og layout på små skærme.
+• Mere pålidelige indstillinger, importer og meddelelser; fjernelse af en torrent bevarer som standard filerne.
+</da-DK>
+<de-DE>
+• Downloadsteuerung und Bandbreitendiagramme sind beim Start eingeklappt und lassen mehr Platz für Torrents.
+• Die Limits jedes Torrents öffnen Sie über das Regler-Symbol neben der Löschtaste.
+• Verbesserte Tastenabstände, Statusanzeigen und Layouts für kleine Bildschirme.
+• Zuverlässigere Einstellungen, Importe und Benachrichtigungen; beim Entfernen eines Torrents bleiben seine Dateien standardmäßig erhalten.
+</de-DE>
+<es-419>
+• Los controles de descarga y gráficos de ancho de banda se inician contraídos para dejar más espacio a los torrents.
+• Abre los límites de cada torrent con el icono de ajustes junto al botón de eliminar.
+• Mejoras en el espaciado de botones, las etiquetas de estado y el diseño en pantallas pequeñas.
+• Ajustes, importaciones y notificaciones más fiables; al quitar un torrent se conservan sus archivos de forma predeterminada.
+</es-419>
+<es-ES>
+• Los controles de descarga y gráficos de ancho de banda se inician contraídos para dejar más espacio a los torrents.
+• Abre los límites de cada torrent con el icono de ajustes junto al botón de eliminar.
+• Mejoras en el espaciado de botones, las etiquetas de estado y el diseño en pantallas pequeñas.
+• Ajustes, importaciones y notificaciones más fiables; al quitar un torrent se conservan sus archivos de forma predeterminada.
+</es-ES>
+<fi-FI>
+• Latauksen ohjaimet ja kaistanleveyskaaviot ovat aluksi supistettuina, jotta torrenteille jää enemmän tilaa.
+• Avaa torrentin rajat poistopainikkeen vieressä olevasta liukusäädinkuvakkeesta.
+• Parannettu painikkeiden välistys, tilatunnukset ja pienten näyttöjen asettelu.
+• Luotettavammat asetukset, tuonnit ja ilmoitukset; torrentin poistaminen säilyttää oletuksena sen tiedostot.
+</fi-FI>
+<fr-FR>
+• Les commandes et graphiques de débit sont repliés au démarrage pour laisser plus de place aux torrents.
+• Ouvrez les limites de chaque torrent avec l’icône de réglages près du bouton de suppression.
+• Espacement des boutons, indicateurs d’état et affichage sur petit écran améliorés.
+• Réglages, importations et notifications plus fiables ; retirer un torrent conserve ses fichiers par défaut.
+</fr-FR>
+<hi-IN>
+• टोरेंट के लिए अधिक जगह देने हेतु डाउनलोड नियंत्रण और बैंडविड्थ चार्ट शुरू में संकुचित रहते हैं।
+• हर टोरेंट की सीमाएँ उसके हटाने वाले बटन के पास स्लाइडर आइकन से खोलें।
+• बटनों के बीच दूरी, स्थिति संकेतक और छोटी स्क्रीन का लेआउट बेहतर हुआ है।
+• सेटिंग, आयात और सूचनाएँ अधिक विश्वसनीय; टोरेंट हटाने पर डिफ़ॉल्ट रूप से उसकी फ़ाइलें सुरक्षित रहती हैं।
+</hi-IN>
+<hu-HU>
+• A letöltési vezérlők és sávszélességgrafikonok induláskor összecsukva jelennek meg, így több hely jut a torrenteknek.
+• A torrent korlátait a törlés gomb melletti csúszkaikonnal nyithatja meg.
+• Javított gombközök, állapotjelzések és elrendezés kis képernyőkön.
+• Megbízhatóbb beállítások, importálás és értesítések; a torrent eltávolítása alapértelmezés szerint megtartja a fájlokat.
+</hu-HU>
+<id>
+• Kontrol unduhan dan grafik bandwidth diciutkan saat mulai agar torrent mendapat lebih banyak ruang.
+• Buka batas tiap torrent dengan ikon penggeser di samping tombol hapus.
+• Jarak tombol, label status, dan tata letak layar kecil ditingkatkan.
+• Pengaturan, impor, dan notifikasi lebih andal; menghapus torrent tetap menyimpan berkasnya secara default.
+</id>
+<it-IT>
+• I controlli di download e i grafici della banda sono inizialmente compressi per lasciare più spazio ai torrent.
+• Apri i limiti di ogni torrent con l’icona dei cursori accanto al pulsante di eliminazione.
+• Migliorati spaziatura dei pulsanti, indicatori di stato e layout su schermi piccoli.
+• Impostazioni, importazioni e notifiche più affidabili; rimuovere un torrent conserva i file per impostazione predefinita.
+</it-IT>
+<ja-JP>
+• ダウンロード操作と帯域グラフを起動時に折りたたみ、トレント一覧の表示領域を広げました。
+• 各トレントの削除ボタンの横にあるスライダーアイコンから制限を開けます。
+• ボタンの間隔、状態表示、小さい画面でのレイアウトを改善しました。
+• 設定、インポート、通知の信頼性を向上。トレントを削除しても、既定ではファイルを保持します。
+</ja-JP>
+<ko-KR>
+• 시작 시 다운로드 제어와 대역폭 그래프를 접어 토렌트 목록을 더 넓게 표시합니다.
+• 각 토렌트의 삭제 버튼 옆 슬라이더 아이콘으로 제한 설정을 열 수 있습니다.
+• 버튼 간격, 상태 표시, 작은 화면의 레이아웃을 개선했습니다.
+• 설정, 가져오기, 알림의 안정성을 높였으며 토렌트 제거 시 기본적으로 파일을 유지합니다.
+</ko-KR>
+<no-NO>
+• Nedlastingskontroller og båndbreddegrafer er sammenfoldet ved oppstart, slik at torrentene får mer plass.
+• Åpne grensene for hver torrent med skyveknappikonet ved siden av sletteknappen.
+• Bedre knappemellomrom, statusmerker og oppsett på små skjermer.
+• Mer pålitelige innstillinger, importer og varsler; fjerning av en torrent beholder filene som standard.
+</no-NO>
+<nl-NL>
+• Downloadknoppen en bandbreedtegrafieken starten ingeklapt, zodat er meer ruimte is voor torrents.
+• Open de limieten van elke torrent met het schuifregelaarpictogram naast de verwijderknop.
+• Betere knopafstand, statuslabels en indeling op kleine schermen.
+• Betrouwbaardere instellingen, imports en meldingen; bij het verwijderen van een torrent blijven de bestanden standaard behouden.
+</nl-NL>
+<pl-PL>
+• Kontrolki pobierania i wykresy przepustowości są początkowo zwinięte, pozostawiając więcej miejsca na torrenty.
+• Limity każdego torrenta otworzysz ikoną suwaków obok przycisku usuwania.
+• Poprawiono odstępy przycisków, oznaczenia stanu i układ na małych ekranach.
+• Niezawodniejsze ustawienia, importy i powiadomienia; usunięcie torrenta domyślnie zachowuje jego pliki.
+</pl-PL>
+<pt-BR>
+• Os controles de download e gráficos de banda começam recolhidos para dar mais espaço aos torrents.
+• Abra os limites de cada torrent pelo ícone de ajustes ao lado do botão de excluir.
+• Melhorias no espaçamento dos botões, indicadores de status e layout em telas pequenas.
+• Configurações, importações e notificações mais confiáveis; remover um torrent mantém os arquivos por padrão.
+</pt-BR>
+<ro>
+• Comenzile de descărcare și graficele de bandă sunt restrânse la pornire, lăsând mai mult loc torrentelor.
+• Deschide limitele fiecărui torrent din pictograma glisoarelor de lângă butonul de ștergere.
+• Spațiere, indicatoare de stare și aspect pe ecrane mici îmbunătățite.
+• Setări, importuri și notificări mai fiabile; eliminarea unui torrent păstrează implicit fișierele.
+</ro>
+<ru-RU>
+• Панель управления загрузками и графики скорости свёрнуты при запуске, оставляя больше места для торрентов.
+• Лимиты каждого торрента открываются значком регуляторов рядом с кнопкой удаления.
+• Улучшены отступы кнопок, метки состояния и интерфейс на небольших экранах.
+• Повышена надёжность настроек, импорта и уведомлений; при удалении торрента его файлы по умолчанию сохраняются.
+</ru-RU>
+<th>
+• ส่วนควบคุมการดาวน์โหลดและกราฟแบนด์วิดท์จะยุบไว้เมื่อเริ่มแอป เพื่อเพิ่มพื้นที่ให้รายการทอร์เรนต์
+• เปิดขีดจำกัดของแต่ละทอร์เรนต์ด้วยไอคอนแถบเลื่อนข้างปุ่มลบ
+• ปรับระยะห่างปุ่ม ป้ายสถานะ และการจัดวางบนหน้าจอขนาดเล็ก
+• เพิ่มความเสถียรของการตั้งค่า การนำเข้า และการแจ้งเตือน โดยการลบทอร์เรนต์จะเก็บไฟล์ไว้ตามค่าเริ่มต้น
+</th>
+<tr-TR>
+• İndirme kontrolleri ve bant genişliği grafikleri başlangıçta daraltılarak torrentlere daha fazla yer bırakılır.
+• Her torrentin sınırlarını silme düğmesinin yanındaki ayar simgesinden açın.
+• Düğme aralıkları, durum etiketleri ve küçük ekran düzenleri iyileştirildi.
+• Ayarlar, içe aktarma ve bildirimler daha güvenilir; torrent kaldırıldığında dosyalar varsayılan olarak korunur.
+</tr-TR>
+<vi>
+• Bảng điều khiển tải xuống và biểu đồ băng thông được thu gọn khi khởi động để dành thêm chỗ cho torrent.
+• Mở giới hạn của từng torrent bằng biểu tượng thanh trượt cạnh nút xóa.
+• Cải thiện khoảng cách nút, nhãn trạng thái và bố cục trên màn hình nhỏ.
+• Cài đặt, nhập và thông báo đáng tin cậy hơn; xóa torrent mặc định vẫn giữ lại tệp.
+</vi>
+<zh-CN>
+• 下载控件和带宽图表在启动时默认折叠，为种子列表留出更多空间。
+• 点击每个种子删除按钮旁的滑块图标，即可打开该种子的限制设置。
+• 改进了按钮间距、状态标签和小屏幕布局。
+• 提升了设置、导入和通知的可靠性；移除种子时默认保留文件。
+</zh-CN>
+<uk>
+• Панель керування завантаженнями та графіки швидкості згорнуті при запуску, залишаючи більше місця для торрентів.
+• Ліміти кожного торрента відкриваються значком регуляторів біля кнопки видалення.
+• Поліпшено відступи кнопок, позначки стану та інтерфейс на малих екранах.
+• Надійніші налаштування, імпорт і сповіщення; видалення торрента типово зберігає його файли.
+</uk>
