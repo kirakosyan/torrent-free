@@ -329,11 +329,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
         NotifyDownloadControlsStateChanged();
     }
 
-    private bool CanToggleSelectedTorrentDetails() => _downloadControls.CanToggleSelectedTorrentDetails;
+    private bool CanToggleSelectedTorrentDetails() => SelectedTorrent is not null || DisplayTorrents.Count > 0;
 
     [RelayCommand(CanExecute = nameof(CanToggleSelectedTorrentDetails))]
     private void ToggleSelectedTorrentDetails()
     {
+        SelectedTorrent ??= DisplayTorrents.FirstOrDefault();
+        if (SelectedTorrent is null) return;
         _downloadControls.ToggleSelectedTorrentDetails();
         NotifyDownloadControlsStateChanged();
     }
@@ -586,6 +588,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         UpdateTorrentHandlers(e);
         SyncDisplayTorrents();
         UpdateBulkActionState();
+        ToggleSelectedTorrentDetailsCommand.NotifyCanExecuteChanged();
     }
 
     private void InitializeDisplayTorrents()

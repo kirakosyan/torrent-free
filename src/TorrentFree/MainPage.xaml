@@ -56,7 +56,7 @@
                             <Setter Property="CornerRadius"
                                     Value="10"/>
                             <Setter Property="HeightRequest"
-                                    Value="36"/>
+                                    Value="44"/>
                             <Setter Property="MinimumWidthRequest"
                                     Value="70"/>
                      </Style>
@@ -335,7 +335,7 @@
                             </Grid>
                             <ScrollView x:Name="DownloadControlsScroll"
                                         IsVisible="{Binding ShowDownloadControls}"
-                                        MaximumHeightRequest="160"
+                                        MaximumHeightRequest="280"
                                         VerticalScrollBarVisibility="Default">
                                    <VerticalStackLayout Spacing="8">
                                           <Border Padding="12"
@@ -373,51 +373,41 @@
                                                         </Grid>
                                                  </VerticalStackLayout>
                                           </Border>
-                                          <FlexLayout Direction="Row"
-                                                      Wrap="Wrap"
-                                                      AlignItems="Center"
-                                                      JustifyContent="Start">
-                                                 <Button Text="{helpers:Translate StartAllButton}"
-                                                         SemanticProperties.Description="{helpers:Translate StartAllButton}"
-                                                         Style="{StaticResource ActionButton}"
-                                                         BackgroundColor="#ECFDF3"
-                                                         TextColor="#16A34A"
-                                                         Command="{Binding StartAllTorrentsCommand}"
-                                                         IsEnabled="{Binding CanStartAllTorrents}"
-                                                         Margin="0,0,8,8"/>
-                                                 <Button Text="{helpers:Translate StopAllButton}"
-                                                         SemanticProperties.Description="{helpers:Translate StopAllButton}"
-                                                         Style="{StaticResource ActionButton}"
-                                                         BackgroundColor="#FEF2F2"
-                                                         TextColor="#DC2626"
-                                                         Command="{Binding StopAllTorrentsCommand}"
-                                                         IsEnabled="{Binding CanStopAllTorrents}"
-                                                         Margin="0,0,12,8"/>
-                                                 <HorizontalStackLayout Spacing="6"
-                                                                        VerticalOptions="Center"
-                                                                        Margin="0,0,12,8">
+                                          <VerticalStackLayout Spacing="8">
+                                                 <HorizontalStackLayout Spacing="8">
+                                                        <Button Text="{helpers:Translate StartAllButton}"
+                                                                SemanticProperties.Description="{helpers:Translate StartAllButton}"
+                                                                Style="{StaticResource ActionButton}"
+                                                                BackgroundColor="#ECFDF3"
+                                                                TextColor="#16A34A"
+                                                                Command="{Binding StartAllTorrentsCommand}"
+                                                                IsEnabled="{Binding CanStartAllTorrents}"/>
+                                                        <Button Text="{helpers:Translate StopAllButton}"
+                                                                SemanticProperties.Description="{helpers:Translate StopAllButton}"
+                                                                Style="{StaticResource ActionButton}"
+                                                                BackgroundColor="#FEF2F2"
+                                                                TextColor="#DC2626"
+                                                                Command="{Binding StopAllTorrentsCommand}"
+                                                                IsEnabled="{Binding CanStopAllTorrents}"/>
+                                                        <Button Text="{Binding TorrentLimitsButtonText}"
+                                                                SemanticProperties.Hint="{helpers:Translate TorrentLimitsHint}"
+                                                                Style="{StaticResource ActionButton}"
+                                                                BackgroundColor="#EEF2FF"
+                                                                TextColor="#4F46E5"
+                                                                Command="{Binding ToggleSelectedTorrentDetailsCommand}"/>
+                                                 </HorizontalStackLayout>
+                                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
                                                         <CheckBox IsChecked="{Binding SortByStatus}"
                                                                   SemanticProperties.Description="{helpers:Translate DownloadingOnTop}"
                                                                   SemanticProperties.Hint="{helpers:Translate DownloadingOnTopHint}"/>
-                                                        <Label Text="{helpers:Translate DownloadingOnTop}"
+                                                        <Label Grid.Column="1"
+                                                               Text="{helpers:Translate DownloadingOnTop}"
                                                                FontSize="12"
+                                                               LineBreakMode="WordWrap"
                                                                TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                                                VerticalOptions="Center"/>
-                                                 </HorizontalStackLayout>
-                                                 <Button Text="{Binding TorrentLimitsButtonText}"
-                                                         SemanticProperties.Hint="{helpers:Translate TorrentLimitsHint}"
-                                                         Style="{StaticResource ActionButton}"
-                                                         BackgroundColor="#EEF2FF"
-                                                         TextColor="#4F46E5"
-                                                         Command="{Binding ToggleSelectedTorrentDetailsCommand}"
-                                                         Margin="0,0,0,8"/>
-                                          </FlexLayout>
-                                          <Label Text="{helpers:Translate SelectDownloadForLimits}"
-                                                 FontSize="12"
-                                                 LineBreakMode="WordWrap"
-                                                 TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
-                                                 IsVisible="{Binding NeedsTorrentSelection}"/>
-
+                                                 </Grid>
+                                          </VerticalStackLayout>
                                    </VerticalStackLayout>
                             </ScrollView>
                      </VerticalStackLayout>
@@ -478,7 +468,7 @@
 
                                                         <!-- Row 0: Name and Status -->
                                                         <Grid Grid.Row="0"
-                                                              ColumnDefinitions="*,Auto,Auto"
+                                                              ColumnDefinitions="*,Auto"
                                                               ColumnSpacing="8">
                                                                <VerticalStackLayout Grid.Column="0"
                                                                                     Spacing="2">
@@ -512,7 +502,11 @@
                                                                               Command="{Binding OpenInLibroNestCommand}"
                                                                               CommandParameter="{Binding .}"/>
                                                                </VerticalStackLayout>
-                                                               <Button Grid.Column="1"
+                                                               <HorizontalStackLayout Grid.Column="1"
+                                                                                      Spacing="8"
+                                                                                      HorizontalOptions="End"
+                                                                                      VerticalOptions="Start">
+                                                               <Button
                                                                        Text="📂"
                                                                        SemanticProperties.Description="{helpers:Translate ShowInFolder}"
                                                                        Style="{StaticResource FolderButton}"
@@ -529,8 +523,9 @@
                                                                              </DataTrigger>
                                                                       </Button.Triggers>
                                                                </Button>
-                                                               <Border Grid.Column="2"
+                                                               <Border
                                                                        Padding="8,4"
+                                                                       VerticalOptions="Center"
                                                                        Stroke="Transparent"
                                                                        Background="{Binding Status, Converter={StaticResource StatusColorConverter}}">
                                                                       <Border.StrokeShape>
@@ -541,6 +536,7 @@
                                                                              TextColor="#17212B"
                                                                              FontAttributes="Bold"/>
                                                                </Border>
+                                                               </HorizontalStackLayout>
                                                         </Grid>
 
                                                         <!-- Row 1: Progress Bar -->

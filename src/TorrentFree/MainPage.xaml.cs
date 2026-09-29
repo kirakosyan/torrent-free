@@ -29,7 +29,7 @@ public partial class MainPage : ContentPage
         // Preserve room for the download list as the window, banner, or keyboard changes size.
         var available = DashboardGrid.Height - DashboardHeader.Height - StorePrompts.Height
             - MagnetInput.Height - DownloadsHeading.Height - 36 - 120;
-        var maximum = Math.Clamp(available, 56, 160);
+        var maximum = Math.Clamp(available, 56, 280);
         if (Math.Abs(DownloadControlsScroll.MaximumHeightRequest - maximum) > 1)
             DownloadControlsScroll.MaximumHeightRequest = maximum;
     }
