@@ -2,10 +2,11 @@
 
 ## Current release
 
-Version **1.16** (build **21**, MSIX **1.16.0.0**) includes x64 and ARM64 packages.
-Submission 16 (1.16, with the new listing in 31 languages) was submitted for
-certification on September 27, 2026 and publishes as soon as it passes.
-See [release notes and certification information](release-notes-1.16.md).
+Version **1.17** (build **22**, MSIX **1.17.0.0**) includes x64 and ARM64 packages.
+Submission 17 (`1152921505702004251`) was submitted on September 29, 2026.
+Partner Center shows **In certification**, with automatic publication after approval.
+The update includes release notes in all 31 existing listing languages.
+See [release notes, validation and submission record](release-notes-1.17.md).
 
 ## Listing text and screenshots
 
@@ -16,6 +17,10 @@ Store and Play length limits and regenerates:
 - `listings.csv` (title, description, short description, release notes, 14 features, logos)
 - `release-notes-1.16.json` and `screenshot-captions.json`
 - `STORE_DESCRIPTION.md` and the Google Play files under `store/google-play`
+
+The generator retains the 1.16 base listing. The current update uses
+`release-notes-1.17.json`; its import replaced only the release-notes row in a fresh
+Partner Center export, preserving the descriptions, screenshots and other assets.
 
 Screenshots are 2880×1620 captures of an unpackaged Debug build (no debugger attached,
 so no XAML toolbar) on a 200% display,

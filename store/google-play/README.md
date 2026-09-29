@@ -2,6 +2,14 @@
 
 Package `com.torrentfree.app`, listed as **Torrent Client**.
 
+## Current release
+
+Version **1.17** (code **22**) was submitted to production on September 29, 2026.
+Publishing overview shows **Changes in review**, with automatic checks running at
+submission. Managed publishing is off: the full rollout to the existing 178
+countries starts after approval. The release includes 26 localized release notes,
+ReTrace mapping and native debug symbols for both supported ABIs.
+
 ## Listing text
 
 `listings/<play-locale>/` holds `title.txt` (30 characters), `short_description.txt`
@@ -11,12 +19,13 @@ also checks the length limits. The Play default language is en-GB (filled from t
 English text). Spanish is written once for `es-419` and `es-ES`; Ukrainian exists only
 on Play.
 
-`release-notes-1.16.txt` is in Play Console's multi-language format: paste it into the
-release notes box of the production release as is.
+`release-notes-1.17.txt` is in Play Console's multi-language format: paste it into the
+release notes box of the production release as is. The generator retains the 1.16
+base listing; the 1.17 notes are maintained separately.
 
 Translations inherit the default graphics, so only the text needs updating per language.
-Version 1.16 (code 21) and this listing were sent for review on September 27, 2026, with
-a full production rollout once approved.
+Version 1.16 (code 21) and this listing were sent for review on September 27, 2026,
+and were live before the 1.17 submission.
 
 ## Graphics
 
@@ -35,4 +44,4 @@ encourage copyright infringement.
 ## Release
 
 Build the signed AAB as described in `.codex/AGENTS.md`, upload it to the production track
-with `release-notes-1.16.txt`, and upload the matching native debug symbols ZIP.
+with `release-notes-1.17.txt`, and upload the matching native debug symbols ZIP.
