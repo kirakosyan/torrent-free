@@ -131,6 +131,24 @@
                                     Value="#2563EB"/>
                      </Style>
 
+                     <Style x:Key="LimitsButton"
+                            TargetType="ImageButton">
+                            <Setter Property="HeightRequest"
+                                    Value="44"/>
+                            <Setter Property="WidthRequest"
+                                    Value="36"/>
+                            <Setter Property="Padding"
+                                    Value="7"/>
+                            <Setter Property="CornerRadius"
+                                    Value="10"/>
+                            <Setter Property="BackgroundColor"
+                                    Value="#EEF2FF"/>
+                            <Setter Property="BorderColor"
+                                    Value="#E5E7EB"/>
+                            <Setter Property="BorderWidth"
+                                    Value="1"/>
+                     </Style>
+
                      <Style x:Key="HeaderIconButton"
                             TargetType="Button">
                             <Setter Property="HeightRequest"
@@ -389,12 +407,6 @@
                                                                 TextColor="#DC2626"
                                                                 Command="{Binding StopAllTorrentsCommand}"
                                                                 IsEnabled="{Binding CanStopAllTorrents}"/>
-                                                        <Button Text="{Binding TorrentLimitsButtonText}"
-                                                                SemanticProperties.Hint="{helpers:Translate TorrentLimitsHint}"
-                                                                Style="{StaticResource ActionButton}"
-                                                                BackgroundColor="#EEF2FF"
-                                                                TextColor="#4F46E5"
-                                                                Command="{Binding ToggleSelectedTorrentDetailsCommand}"/>
                                                  </HorizontalStackLayout>
                                                  <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
                                                         <CheckBox IsChecked="{Binding SortByStatus}"
@@ -702,6 +714,13 @@
                                                                        Command="{Binding StopSpecificTorrentCommand}"
                                                                        CommandParameter="{Binding .}"
                                                                        IsVisible="{Binding CanStop}"/>
+                                                                <ImageButton Source="limits_icon.png"
+                                                                             SemanticProperties.Description="{helpers:Translate ShowTorrentLimits}"
+                                                                             SemanticProperties.Hint="{helpers:Translate TorrentLimitsHint}"
+                                                                             ToolTipProperties.Text="{helpers:Translate ShowTorrentLimits}"
+                                                                             Style="{StaticResource LimitsButton}"
+                                                                             Command="{Binding ShowSpecificTorrentLimitsCommand}"
+                                                                             CommandParameter="{Binding .}"/>
                                                                 <Button Text="🗑️"
                                                                         SemanticProperties.Description="{helpers:Translate RemoveButton}"
                                                                         Style="{StaticResource RemoveButton}"

@@ -6,15 +6,13 @@ namespace TorrentFree.UnitTests;
 public sealed class DownloadControlsStateTests
 {
     [Fact]
-    public void StartsCollapsed_AndExplainsSelectionOnlyWhenDownloadsExist()
+    public void StartsCollapsed_AndDoesNotOpenLimitsWithoutSelection()
     {
         var state = new DownloadControlsState();
 
         Assert.False(state.ShowDownloadControls);
         Assert.False(state.CanShowSelectedTorrentDetails);
         Assert.False(state.CanToggleSelectedTorrentDetails);
-        Assert.False(state.NeedsTorrentSelection(hasDownloads: false));
-        Assert.True(state.NeedsTorrentSelection(hasDownloads: true));
         state.ToggleSelectedTorrentDetails();
         Assert.False(state.ShowSelectedTorrentDetails);
     }
@@ -25,6 +23,7 @@ public sealed class DownloadControlsStateTests
         var state = new DownloadControlsState();
         state.SetSelection(true);
         Assert.True(state.CanToggleSelectedTorrentDetails);
+        state.ToggleDownloadControls();
         state.ToggleSelectedTorrentDetails();
 
         Assert.True(state.ShowDownloadControls);
@@ -35,14 +34,14 @@ public sealed class DownloadControlsStateTests
     }
 
     [Fact]
-    public void NotificationRevealOpensControlsAndLimitsOnlyWithSelection()
+    public void NotificationRevealOpensLimitsWithoutExpandingControls()
     {
         var state = new DownloadControlsState();
         Assert.False(state.RevealSelectedTorrentDetails());
         state.SetSelection(true);
 
         Assert.True(state.RevealSelectedTorrentDetails());
-        Assert.True(state.ShowDownloadControls);
+        Assert.False(state.ShowDownloadControls);
         Assert.True(state.CanShowSelectedTorrentDetails);
     }
 
@@ -58,6 +57,5 @@ public sealed class DownloadControlsStateTests
         state.SetSelection(false);
         Assert.False(state.CanToggleSelectedTorrentDetails);
         Assert.False(state.CanShowSelectedTorrentDetails);
-        Assert.True(state.NeedsTorrentSelection(hasDownloads: true));
     }
 }

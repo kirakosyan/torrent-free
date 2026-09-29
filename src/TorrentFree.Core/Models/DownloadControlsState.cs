@@ -9,7 +9,6 @@ public sealed class DownloadControlsState
 
     public bool CanToggleSelectedTorrentDetails => HasSelection;
     public bool CanShowSelectedTorrentDetails => ShowSelectedTorrentDetails && HasSelection;
-    public bool NeedsTorrentSelection(bool hasDownloads) => hasDownloads && !HasSelection;
 
     public void ToggleDownloadControls()
     {
@@ -28,14 +27,12 @@ public sealed class DownloadControlsState
     public void ToggleSelectedTorrentDetails()
     {
         if (!HasSelection) return;
-        ShowDownloadControls = true;
         ShowSelectedTorrentDetails = !ShowSelectedTorrentDetails;
     }
 
     public bool RevealSelectedTorrentDetails()
     {
         if (!HasSelection) return false;
-        ShowDownloadControls = true;
         ShowSelectedTorrentDetails = true;
         return true;
     }

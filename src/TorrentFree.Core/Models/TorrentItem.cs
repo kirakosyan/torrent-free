@@ -250,6 +250,9 @@ public partial class TorrentItem : ObservableObject
     [JsonIgnore]
     public ICommand? RemoveSpecificTorrentCommand { get; set; }
 
+    [JsonIgnore]
+    public ICommand? ShowSpecificTorrentLimitsCommand { get; set; }
+
     /// <summary>
     /// Gets the full path to the downloaded file or folder.
     /// </summary>
