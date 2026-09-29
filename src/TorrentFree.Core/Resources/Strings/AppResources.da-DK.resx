@@ -158,9 +158,6 @@
   <data name="DownloadingOnTop" xml:space="preserve">
     <value>Downloader på toppen</value>
   </data>
-  <data name="Details" xml:space="preserve">
-    <value>Detaljer</value>
-  </data>
   <data name="SelectedTorrentLimits" xml:space="preserve">
     <value>Valgte torrentgrænser</value>
   </data>
@@ -566,5 +563,23 @@
   </data>
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>Systemstandard</value>
+  </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>Vis betjening</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>Skjul betjening</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>Vis grænser</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>Skjul grænser</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>Vælg en download nedenfor for at ændre dens hastigheds- og seeding-grænser.</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>Skift hastigheds- og seeding-grænser for den valgte download.</value>
   </data>
 </root>

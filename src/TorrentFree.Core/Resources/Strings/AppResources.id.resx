@@ -158,9 +158,6 @@
   <data name="DownloadingOnTop" xml:space="preserve">
     <value>Mengunduh di atas</value>
   </data>
-  <data name="Details" xml:space="preserve">
-    <value>Detail</value>
-  </data>
   <data name="SelectedTorrentLimits" xml:space="preserve">
     <value>Batas torrent yang dipilih</value>
   </data>
@@ -566,5 +563,23 @@
   </data>
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>Default sistem</value>
+  </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>Tampilkan kontrol</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>Sembunyikan kontrol</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>Tampilkan batas</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>Sembunyikan batas</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>Pilih unduhan di bawah untuk mengubah batas kecepatan dan seeding-nya.</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>Ubah batas kecepatan dan seeding untuk unduhan yang dipilih.</value>
   </data>
 </root>

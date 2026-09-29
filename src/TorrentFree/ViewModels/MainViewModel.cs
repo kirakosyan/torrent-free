@@ -25,6 +25,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly INotificationService _notificationService;
     private readonly ILibroNestLauncher _libroNestLauncher;
     private readonly AudiobookAvailabilityCache _audiobookAvailability = new();
+    private readonly DownloadControlsState _downloadControls = new();
     private bool _disposed;
     private bool _isLoadingSettings;
     private bool _processedCommandLine;
@@ -72,6 +73,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [NotifyCanExecuteChangedFor(nameof(PauseTorrentCommand))]
     [NotifyCanExecuteChangedFor(nameof(StopTorrentCommand))]
     [NotifyCanExecuteChangedFor(nameof(RemoveTorrentCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ToggleSelectedTorrentDetailsCommand))]
     public partial TorrentItem? SelectedTorrent { get; set; }
 
     /// <summary>
@@ -129,15 +131,28 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public partial int GlobalMaxSeedMinutes { get; set; }
 
     /// <summary>
+    /// Controls visibility of bandwidth and download controls. Starts collapsed each session.
+    /// </summary>
+    public bool ShowDownloadControls => _downloadControls.ShowDownloadControls;
+
+    public string DownloadControlsButtonText => LocalizationResourceManager.Instance[
+        ShowDownloadControls ? "HideDownloadControls" : "ShowDownloadControls"];
+
+    public string DownloadControlsAccessibilityHint => string.Join(", ",
+        LocalizationResourceManager.Instance["Bandwidth"],
+        LocalizationResourceManager.Instance["StartAllButton"],
+        LocalizationResourceManager.Instance["StopAllButton"],
+        LocalizationResourceManager.Instance["DownloadingOnTop"]);
+
+    /// <summary>
     /// Controls visibility of selected torrent details.
     /// </summary>
-    [ObservableProperty]
-    public partial bool ShowSelectedTorrentDetails { get; set; }
+    public bool ShowSelectedTorrentDetails => _downloadControls.ShowSelectedTorrentDetails;
 
     /// <summary>
     /// Indicates if selected torrent details should be shown.
     /// </summary>
-    public bool CanShowSelectedTorrentDetails => ShowSelectedTorrentDetails && SelectedTorrent != null;
+    public bool CanShowSelectedTorrentDetails => _downloadControls.CanShowSelectedTorrentDetails;
 
     /// <summary>
     /// Indicates if there are no torrents in the list.
@@ -241,15 +256,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
         ApplySeedingLimits();
     }
 
-    partial void OnShowSelectedTorrentDetailsChanged(bool value)
-    {
-        OnPropertyChanged(nameof(CanShowSelectedTorrentDetails));
-    }
-
     partial void OnSelectedTorrentChanged(TorrentItem? value)
     {
-        ShowSelectedTorrentDetails = false;
+        _downloadControls.SetSelection(value is not null);
+        NotifyDownloadControlsStateChanged();
+    }
+
+    private void NotifyDownloadControlsStateChanged()
+    {
+        OnPropertyChanged(nameof(ShowDownloadControls));
+        OnPropertyChanged(nameof(ShowSelectedTorrentDetails));
         OnPropertyChanged(nameof(CanShowSelectedTorrentDetails));
+        OnPropertyChanged(nameof(DownloadControlsButtonText));
     }
 
     private void ApplyGlobalSettings()
@@ -298,9 +316,34 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
+    private void ToggleDownloadControls()
+    {
+        _downloadControls.ToggleDownloadControls();
+        NotifyDownloadControlsStateChanged();
+    }
+
+    private bool CanToggleSelectedTorrentDetails() => _downloadControls.CanToggleSelectedTorrentDetails;
+
+    [RelayCommand(CanExecute = nameof(CanToggleSelectedTorrentDetails))]
     private void ToggleSelectedTorrentDetails()
     {
-        ShowSelectedTorrentDetails = !ShowSelectedTorrentDetails;
+        _downloadControls.ToggleSelectedTorrentDetails();
+        NotifyDownloadControlsStateChanged();
+    }
+
+    [RelayCommand]
+    private void ShowSpecificTorrentLimits(TorrentItem? torrent)
+    {
+        if (torrent is null) return;
+        SelectedTorrent = torrent;
+        RevealSelectedTorrentDetails();
+    }
+
+    public bool RevealSelectedTorrentDetails()
+    {
+        if (!_downloadControls.RevealSelectedTorrentDetails()) return false;
+        NotifyDownloadControlsStateChanged();
+        return true;
     }
 
     private async Task PersistSortPreferenceAsync()
@@ -535,6 +578,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void OnTorrentsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
+        var selected = SelectedTorrent;
+        if (selected is not null && !Torrents.Contains(selected))
+            SelectedTorrent = Torrents.FirstOrDefault(torrent => torrent.Id == selected.Id);
+
         OnPropertyChanged(nameof(IsEmpty));
         UpdateTorrentHandlers(e);
         SyncDisplayTorrents();
@@ -600,6 +647,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void OnLocalizationChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
+        OnPropertyChanged(nameof(DownloadControlsButtonText));
+        OnPropertyChanged(nameof(DownloadControlsAccessibilityHint));
+
         foreach (var torrent in DisplayTorrents)
         {
             torrent.RefreshLocalizableProperties();
@@ -615,6 +665,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         torrent.PauseSpecificTorrentCommand = PauseSpecificTorrentCommand;
         torrent.StopSpecificTorrentCommand = StopSpecificTorrentCommand;
         torrent.RemoveSpecificTorrentCommand = RemoveSpecificTorrentCommand;
+        torrent.ShowSpecificTorrentLimitsCommand = ShowSpecificTorrentLimitsCommand;
     }
 
     private void OnTorrentPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

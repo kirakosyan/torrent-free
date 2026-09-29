@@ -151,9 +151,6 @@
   <data name="DownloadingOnTop" xml:space="preserve">
     <value>التنزيلات النشطة في الأعلى</value>
   </data>
-  <data name="Details" xml:space="preserve">
-    <value>التفاصيل</value>
-  </data>
   <data name="SelectedTorrentLimits" xml:space="preserve">
     <value>حدود التورنت المحدد</value>
   </data>
@@ -552,5 +549,23 @@
   </data>
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>الإعداد الافتراضي للنظام</value>
+  </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>إظهار عناصر التحكم</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>إخفاء عناصر التحكم</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>إظهار الحدود</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>إخفاء الحدود</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>حدد تنزيلاً أدناه لتغيير حدود السرعة والبذر الخاصة به.</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>غيّر حدود السرعة والبذر للتنزيل المحدد.</value>
   </data>
 </root>

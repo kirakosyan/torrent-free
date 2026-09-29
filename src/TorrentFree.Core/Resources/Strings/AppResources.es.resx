@@ -165,9 +165,6 @@
   <data name="DownloadingOnTop" xml:space="preserve">
     <value>Descargando arriba</value>
   </data>
-  <data name="Details" xml:space="preserve">
-    <value>Detalles</value>
-  </data>
   <data name="SelectedTorrentLimits" xml:space="preserve">
     <value>Límites del torrent seleccionado</value>
   </data>
@@ -580,5 +577,23 @@
   </data>
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>Predeterminado del sistema</value>
+  </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>Mostrar controles</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>Ocultar controles</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>Mostrar límites</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>Ocultar límites</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>Selecciona una descarga a continuación para cambiar sus límites de velocidad y siembra.</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>Cambia los límites de velocidad y siembra de la descarga seleccionada.</value>
   </data>
 </root>

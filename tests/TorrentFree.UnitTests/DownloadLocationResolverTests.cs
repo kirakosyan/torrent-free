@@ -14,9 +14,10 @@ public sealed class DownloadLocationResolverTests
             SpecificDownloadFolder = @"D:\Ignored"
         };
 
-        var path = DownloadLocationResolver.ResolveSavePath(settings, @"C:\Torrents\ubuntu.torrent", @"E:\Fallback");
+        var sourcePath = Path.Combine(Path.GetTempPath(), "Torrents", "ubuntu.torrent");
+        var path = DownloadLocationResolver.ResolveSavePath(settings, sourcePath, @"E:\Fallback");
 
-        Assert.Equal(@"C:\Torrents", path);
+        Assert.Equal(Path.GetDirectoryName(sourcePath), path);
     }
 
     [Fact]

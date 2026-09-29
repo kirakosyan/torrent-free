@@ -51,6 +51,9 @@ public sealed class AppPromptStateStoreTests
     [Fact]
     public async Task FailedReplacement_PreservesExistingOptOutAndCleansTemporaryFile()
     {
+        // Unix allows replacing an open file, so this sharing-violation case is Windows-specific.
+        if (!OperatingSystem.IsWindows()) return;
+
         using var directory = new CoreTestDirectory();
         var store = new AppPromptStateStore(directory.StoragePaths);
         await store.SaveAsync(new AppPromptState { ReviewPromptsDisabled = true });

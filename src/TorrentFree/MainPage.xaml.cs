@@ -19,6 +19,21 @@ public partial class MainPage : ContentPage
         NotificationService.DownloadNotificationTapped += OnDownloadNotificationTapped;
     }
 
+    private void OnDashboardLayoutChanged(object? sender, EventArgs e)
+    {
+        if (DashboardGrid is null || DashboardHeader is null || StorePrompts is null
+            || MagnetInput is null || DownloadsHeading is null || DownloadControlsScroll is null
+            || DashboardGrid.Height <= 0)
+            return;
+
+        // Preserve room for the download list as the window, banner, or keyboard changes size.
+        var available = DashboardGrid.Height - DashboardHeader.Height - StorePrompts.Height
+            - MagnetInput.Height - DownloadsHeading.Height - 36 - 120;
+        var maximum = Math.Clamp(available, 56, 280);
+        if (Math.Abs(DownloadControlsScroll.MaximumHeightRequest - maximum) > 1)
+            DownloadControlsScroll.MaximumHeightRequest = maximum;
+    }
+
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -75,7 +90,7 @@ public partial class MainPage : ContentPage
         var torrent = viewModel.Torrents.FirstOrDefault(item => item.Id == id);
         if (torrent is null) return;
         viewModel.SelectedTorrent = torrent;
-        viewModel.ShowSelectedTorrentDetails = true;
+        viewModel.RevealSelectedTorrentDetails();
     }
 
     protected override void OnDisappearing()

@@ -158,9 +158,6 @@
   <data name="DownloadingOnTop" xml:space="preserve">
     <value>กำลังดาวน์โหลดอยู่ด้านบน</value>
   </data>
-  <data name="Details" xml:space="preserve">
-    <value>รายละเอียด</value>
-  </data>
   <data name="SelectedTorrentLimits" xml:space="preserve">
     <value>ขีดจำกัดของ torrent ที่เลือก</value>
   </data>
@@ -566,5 +563,23 @@
   </data>
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>ค่าเริ่มต้นของระบบ</value>
+  </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>แสดงส่วนควบคุม</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>ซ่อนส่วนควบคุม</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>แสดงขีดจำกัด</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>ซ่อนขีดจำกัด</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>เลือกการดาวน์โหลดด้านล่างเพื่อเปลี่ยนขีดจำกัดความเร็วและการแบ่งปัน</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>เปลี่ยนขีดจำกัดความเร็วและการแบ่งปันสำหรับการดาวน์โหลดที่เลือก</value>
   </data>
 </root>

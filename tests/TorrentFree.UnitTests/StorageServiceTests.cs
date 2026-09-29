@@ -70,6 +70,9 @@ public sealed class StorageServiceTests
     [Fact]
     public async Task FailedWrite_IsObservableAndLeavesPreviousStateIntact()
     {
+        // Unix allows replacing an open file, so this sharing-violation case is Windows-specific.
+        if (!OperatingSystem.IsWindows()) return;
+
         using var directory = new CoreTestDirectory();
         using var storage = new StorageService(directory.StoragePaths);
         await storage.LoadTorrentsAsync();
