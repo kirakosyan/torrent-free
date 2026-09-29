@@ -5,8 +5,8 @@ Package `com.torrentfree.app`, listed as **Torrent Client**.
 ## Current release
 
 Version **1.17** (code **22**) was submitted to production on September 29, 2026.
-Publishing overview shows **Changes in review**, with automatic checks running at
-submission. Managed publishing is off: the full rollout to the existing 178
+Publishing overview shows **Changes in review**, with automatic checks completed.
+Managed publishing is off: the full rollout to the existing 178
 countries starts after approval. The release includes 26 localized release notes,
 ReTrace mapping and native debug symbols for both supported ABIs.
 

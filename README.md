@@ -30,7 +30,17 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 
 ## 📝 Release Overview
 
-The current app version is **v1.17**.
+The latest release is **v1.17**, submitted to both stores on **September 29, 2026**.
+
+| Store | Version | Verified release status |
+|-------|---------|-------------------------|
+| Google Play | 1.17 (build 22) | In review; automatic checks completed |
+| Microsoft Store | 1.17.0.0 (x64 and ARM64) | In certification |
+
+Both stores will publish the update automatically after approval. Version 1.17 is
+not yet confirmed live. See the [release notes and submission record](store/microsoft-store/release-notes-1.17.md),
+[Microsoft Store release details](store/microsoft-store/README.md), and
+[Google Play release details](store/google-play/README.md).
 
 See the [review findings and validation](docs/review-findings.md) for the current reliability, privacy, accessibility and build improvements, including remaining platform checks.
 
@@ -194,10 +204,10 @@ Magnet links opened from other apps appear in the input field for review. Press 
 
 The bandwidth charts and bulk controls start collapsed. Tap **Show controls** above
 the downloads to access **Start All**, **Stop All**, and **Downloading on top**.
-Select a download card, then choose **Show limits** to edit that download's speed
-and seeding limits in a full-page editor. The selected card is highlighted and
-its name appears above the limit fields. **Hide limits** returns to Downloads;
-**Hide controls** collapses the bandwidth and bulk controls.
+Tap the **sliders icon** beside a torrent's delete button to edit that torrent's
+speed and seeding limits in a full-page editor. Its name appears above the limit
+fields. **Hide limits** returns to Downloads and preserves whether the controls
+were collapsed. **Hide controls** collapses the bandwidth and bulk controls.
 
 Each download in the list has action buttons:
 
@@ -206,6 +216,7 @@ Each download in the list has action buttons:
 | ▶️ | Start or resume a paused/stopped download |
 | ⏸️ | Pause an active download |
 | ⏹️ | Stop and reset a download |
+| Sliders icon | Open this torrent's speed and seeding limits |
 | 🗑️ | Remove the download from the list |
 
 ### Download Status

@@ -57,6 +57,11 @@ Suggested commands:
 The test project uses Microsoft.Testing.Platform. Use `rtk proxy` for this command;
 the filtered `rtk dotnet test` wrapper can report zero tests with this runner.
 
+## Store release documentation
+
+- After every submission or publication to Microsoft Store or Google Play, update the root `README.md` before considering the release task complete. Include the latest display version and platform build/package numbers, release highlights, submission/publication date, and the verified status for each store. Distinguish submitted, in review/certification, and live; never describe a pending release as published.
+- Keep the relevant `store/microsoft-store/README.md`, `store/google-play/README.md`, and versioned release notes consistent with the root README. Update usage instructions when release changes affect the UI, and commit the documentation with the release work. When publishing or pushing is authorized, push these updates to the release branch or `main` as appropriate.
+
 ## Android Store Package Generation
 - For Google Play releases, bump `AppBuildNumber` in `src/TorrentFree/TorrentFree.csproj`; bump `AppDisplayVersion` only when the public version should change. Keep `tests/TorrentFree.UnitTests/VersionMetadataConsistencyTests.cs` and the Windows manifest version aligned.
 - Release Android builds should keep R8 mapping generation enabled with `AndroidLinkTool` set to `r8` and `AndroidCreateProguardMappingFile` set to `true`. The signed AAB should contain `BUNDLE-METADATA/com.android.tools.build.obfuscation/proguard.map`; also copy `mapping.txt` to `C:\temp` as a manual upload fallback.
