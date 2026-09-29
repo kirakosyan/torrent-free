@@ -567,4 +567,22 @@
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>システムのデフォルト</value>
   </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>操作パネルを表示</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>操作パネルを非表示</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>制限を表示</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>制限を非表示</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>速度とシードの制限を変更するには、下のダウンロードを選択してください。</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>選択したダウンロードの速度とシードの制限を変更します。</value>
+  </data>
 </root>

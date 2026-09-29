@@ -567,4 +567,22 @@
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>Systeemstandaard</value>
   </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>Bediening tonen</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>Bediening verbergen</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>Limieten tonen</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>Limieten verbergen</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>Selecteer hieronder een download om de snelheids- en seedinglimieten te wijzigen.</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>Wijzig de snelheids- en seedinglimieten voor de geselecteerde download.</value>
+  </data>
 </root>

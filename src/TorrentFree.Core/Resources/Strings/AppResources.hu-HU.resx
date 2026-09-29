@@ -567,4 +567,22 @@
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>Rendszer alapértelmezése</value>
   </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>Vezérlők megjelenítése</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>Vezérlők elrejtése</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>Korlátok megjelenítése</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>Korlátok elrejtése</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>Válasszon ki egy letöltést az alábbiak közül a sebesség- és megosztási korlátok módosításához.</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>Módosítsa a kiválasztott letöltés sebesség- és megosztási korlátait.</value>
+  </data>
 </root>

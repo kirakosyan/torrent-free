@@ -567,4 +567,22 @@
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>Mặc định hệ thống</value>
   </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>Hiện điều khiển</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>Ẩn điều khiển</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>Hiện giới hạn</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>Ẩn giới hạn</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>Chọn một bản tải xuống bên dưới để thay đổi giới hạn tốc độ và chia sẻ.</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>Thay đổi giới hạn tốc độ và chia sẻ cho bản tải xuống đã chọn.</value>
+  </data>
 </root>

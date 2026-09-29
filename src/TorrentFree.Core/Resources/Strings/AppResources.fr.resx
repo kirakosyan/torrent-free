@@ -581,4 +581,22 @@
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>Langue du système</value>
   </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>Afficher les commandes</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>Masquer les commandes</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>Afficher les limites</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>Masquer les limites</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>Sélectionnez un téléchargement ci-dessous pour modifier ses limites de vitesse et de partage.</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>Modifiez les limites de vitesse et de partage du téléchargement sélectionné.</value>
+  </data>
 </root>

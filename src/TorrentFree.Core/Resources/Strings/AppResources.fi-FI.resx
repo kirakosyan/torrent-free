@@ -567,4 +567,22 @@
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>Järjestelmän oletus</value>
   </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>Näytä säätimet</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>Piilota säätimet</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>Näytä rajoitukset</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>Piilota rajoitukset</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>Valitse lataus alta muuttaaksesi sen nopeus- ja jakorajoituksia.</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>Muuta valitun latauksen nopeus- ja jakorajoituksia.</value>
+  </data>
 </root>

@@ -567,4 +567,22 @@
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>系统默认</value>
   </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>显示控件</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>隐藏控件</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>显示限制</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>隐藏限制</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>选择下方的下载任务以更改其速度和做种限制。</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>更改所选下载任务的速度和做种限制。</value>
+  </data>
 </root>

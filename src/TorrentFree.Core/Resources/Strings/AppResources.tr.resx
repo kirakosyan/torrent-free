@@ -567,4 +567,22 @@
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>Sistem varsayılanı</value>
   </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>Denetimleri göster</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>Denetimleri gizle</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>Sınırları göster</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>Sınırları gizle</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>Hız ve paylaşım sınırlarını değiştirmek için aşağıdan bir indirme seçin.</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>Seçili indirmenin hız ve paylaşım sınırlarını değiştirin.</value>
+  </data>
 </root>

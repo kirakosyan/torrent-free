@@ -567,4 +567,22 @@
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>System default</value>
   </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>Show controls</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>Hide controls</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>Show limits</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>Hide limits</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>Select a download below to change its speed and seeding limits.</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>Change speed and seeding limits for the selected download.</value>
+  </data>
 </root>

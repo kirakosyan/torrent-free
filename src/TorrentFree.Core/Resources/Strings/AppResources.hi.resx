@@ -567,4 +567,22 @@
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>सिस्टम डिफ़ॉल्ट</value>
   </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>नियंत्रण दिखाएँ</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>नियंत्रण छिपाएँ</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>सीमाएँ दिखाएँ</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>सीमाएँ छिपाएँ</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>गति और सीडिंग सीमाएँ बदलने के लिए नीचे कोई डाउनलोड चुनें।</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>चुने गए डाउनलोड की गति और सीडिंग सीमाएँ बदलें।</value>
+  </data>
 </root>

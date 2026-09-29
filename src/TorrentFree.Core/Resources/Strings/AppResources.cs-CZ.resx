@@ -567,4 +567,22 @@
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>Výchozí jazyk systému</value>
   </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>Zobrazit ovládání</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>Skrýt ovládání</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>Zobrazit limity</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>Skrýt limity</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>Vyberte stahování níže a změňte jeho limity rychlosti a sdílení.</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>Změňte limity rychlosti a sdílení pro vybrané stahování.</value>
+  </data>
 </root>

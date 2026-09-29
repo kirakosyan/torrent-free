@@ -567,4 +567,22 @@
   <data name="SystemDefaultLanguage" xml:space="preserve">
     <value>Implicit pentru sistem</value>
   </data>
+  <data name="ShowDownloadControls" xml:space="preserve">
+    <value>Afișează comenzile</value>
+  </data>
+  <data name="HideDownloadControls" xml:space="preserve">
+    <value>Ascunde comenzile</value>
+  </data>
+  <data name="ShowTorrentLimits" xml:space="preserve">
+    <value>Afișează limitele</value>
+  </data>
+  <data name="HideTorrentLimits" xml:space="preserve">
+    <value>Ascunde limitele</value>
+  </data>
+  <data name="SelectDownloadForLimits" xml:space="preserve">
+    <value>Selectează o descărcare de mai jos pentru a-i modifica limitele de viteză și seeding.</value>
+  </data>
+  <data name="TorrentLimitsHint" xml:space="preserve">
+    <value>Modifică limitele de viteză și seeding pentru descărcarea selectată.</value>
+  </data>
 </root>

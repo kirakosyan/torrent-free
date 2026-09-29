@@ -72,6 +72,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [NotifyCanExecuteChangedFor(nameof(PauseTorrentCommand))]
     [NotifyCanExecuteChangedFor(nameof(StopTorrentCommand))]
     [NotifyCanExecuteChangedFor(nameof(RemoveTorrentCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ToggleSelectedTorrentDetailsCommand))]
     public partial TorrentItem? SelectedTorrent { get; set; }
 
     /// <summary>
@@ -129,6 +130,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public partial int GlobalMaxSeedMinutes { get; set; }
 
     /// <summary>
+    /// Controls visibility of bandwidth and download controls. Starts collapsed each session.
+    /// </summary>
+    [ObservableProperty]
+    public partial bool ShowDownloadControls { get; set; }
+
+    public string DownloadControlsButtonText => LocalizationResourceManager.Instance[
+        ShowDownloadControls ? "HideDownloadControls" : "ShowDownloadControls"];
+
+    /// <summary>
     /// Controls visibility of selected torrent details.
     /// </summary>
     [ObservableProperty]
@@ -138,6 +148,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// Indicates if selected torrent details should be shown.
     /// </summary>
     public bool CanShowSelectedTorrentDetails => ShowSelectedTorrentDetails && SelectedTorrent != null;
+
+    public bool NeedsTorrentSelection => SelectedTorrent == null;
+
+    public string TorrentLimitsButtonText => LocalizationResourceManager.Instance[
+        CanShowSelectedTorrentDetails ? "HideTorrentLimits" : "ShowTorrentLimits"];
 
     /// <summary>
     /// Indicates if there are no torrents in the list.
@@ -243,13 +258,28 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     partial void OnShowSelectedTorrentDetailsChanged(bool value)
     {
+        // Notification taps can explicitly reveal limits while the controls are collapsed.
+        if (value)
+            ShowDownloadControls = true;
+
         OnPropertyChanged(nameof(CanShowSelectedTorrentDetails));
+        OnPropertyChanged(nameof(TorrentLimitsButtonText));
+    }
+
+    partial void OnShowDownloadControlsChanged(bool value)
+    {
+        if (!value)
+            ShowSelectedTorrentDetails = false;
+
+        OnPropertyChanged(nameof(DownloadControlsButtonText));
     }
 
     partial void OnSelectedTorrentChanged(TorrentItem? value)
     {
         ShowSelectedTorrentDetails = false;
+        OnPropertyChanged(nameof(NeedsTorrentSelection));
         OnPropertyChanged(nameof(CanShowSelectedTorrentDetails));
+        OnPropertyChanged(nameof(TorrentLimitsButtonText));
     }
 
     private void ApplyGlobalSettings()
@@ -298,8 +328,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
+    private void ToggleDownloadControls()
+    {
+        ShowDownloadControls = !ShowDownloadControls;
+    }
+
+    private bool CanToggleSelectedTorrentDetails() => SelectedTorrent != null;
+
+    [RelayCommand(CanExecute = nameof(CanToggleSelectedTorrentDetails))]
     private void ToggleSelectedTorrentDetails()
     {
+        if (SelectedTorrent is null)
+            return;
+
         ShowSelectedTorrentDetails = !ShowSelectedTorrentDetails;
     }
 
@@ -600,6 +641,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void OnLocalizationChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
+        OnPropertyChanged(nameof(DownloadControlsButtonText));
+        OnPropertyChanged(nameof(TorrentLimitsButtonText));
+
         foreach (var torrent in DisplayTorrents)
         {
             torrent.RefreshLocalizableProperties();
