@@ -197,7 +197,7 @@ public partial class AppPromptService(
     [RelayCommand]
     private Task OpenUpdateAsync() => RunActionAsync(async () =>
     {
-        if (!await store.OpenListingAsync())
+        if (!await store.OpenUpdateAsync())
             await dispatcher.InvokeAsync(() => HasActionError = true);
     });
 

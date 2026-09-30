@@ -13,7 +13,7 @@ public partial class App
     private AppWindow? _desktopAppWindow;
     private Window? _trackedDesktopWindow;
     private bool? _lastDesktopWasMaximized;
-    private bool _desktopShutdownStarted;
+    private Task? _desktopShutdownTask;
     private bool _desktopShutdownComplete;
 
     partial void ConfigurePlatformWindow(Window window)
@@ -91,11 +91,24 @@ public partial class App
         var window = _trackedDesktopWindow?.Handler?.PlatformView as Microsoft.UI.Xaml.Window;
         if (window is null) return;
         args.Cancel = true;
-        if (_desktopShutdownStarted) return;
-        _desktopShutdownStarted = true;
+        await CloseDesktopAsync(window, GetDesktopWindowMaximized(sender));
+    }
+
+    internal Task CloseForUpdateAsync()
+    {
+        var window = _trackedDesktopWindow?.Handler?.PlatformView as Microsoft.UI.Xaml.Window
+            ?? throw new InvalidOperationException("No active desktop window to close for the update.");
+        return CloseDesktopAsync(window, GetDesktopWindowMaximized(_desktopAppWindow));
+    }
+
+    private Task CloseDesktopAsync(Microsoft.UI.Xaml.Window window, bool? desktopWasMaximized) =>
+        _desktopShutdownTask ??= FlushAndCloseDesktopAsync(window, desktopWasMaximized);
+
+    private async Task FlushAndCloseDesktopAsync(Microsoft.UI.Xaml.Window window, bool? desktopWasMaximized)
+    {
         try
         {
-            await FlushAndShutdownDesktopAsync(GetDesktopWindowMaximized(sender))
+            await FlushAndShutdownDesktopAsync(desktopWasMaximized)
                 .WaitAsync(TimeSpan.FromSeconds(10));
         }
         catch (Exception ex)

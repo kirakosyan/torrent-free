@@ -9,7 +9,8 @@ public interface IAppStore
     bool IsSupported { get; }
     string InstalledVersion { get; }
     Task<AppUpdateAvailability> CheckForUpdateAsync(CancellationToken cancellationToken);
-    Task<bool> OpenListingAsync();
+    /// <summary>Opens the update destination and closes the Windows app after a successful handoff.</summary>
+    Task<bool> OpenUpdateAsync();
     Task<AppReviewResult> RequestReviewAsync();
 }
 

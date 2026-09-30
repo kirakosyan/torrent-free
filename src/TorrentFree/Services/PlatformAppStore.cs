@@ -58,7 +58,22 @@ public sealed class PlatformAppStore : IAppStore
 #endif
         });
 
-    public Task<bool> OpenListingAsync() => OpenListingAsync("9NNX2ZTPXC26", "com.torrentfree.app");
+    public Task<bool> OpenUpdateAsync() => MainThread.InvokeOnMainThreadAsync(async () =>
+    {
+#if WINDOWS
+        var app = Application.Current as App
+            ?? throw new InvalidOperationException("No active app to close for the update.");
+        if (!await OpenListingAsync()) return false;
+        // Flush settings and transfer state before closing; programmatic window closure
+        // must not depend on the Closing event used by the title-bar close button.
+        await app.CloseForUpdateAsync();
+        return true;
+#else
+        return await OpenListingAsync();
+#endif
+    });
+
+    private Task<bool> OpenListingAsync() => OpenListingAsync("9NNX2ZTPXC26", "com.torrentfree.app");
 
     public static Task<bool> OpenListingAsync(string windowsProductId, string androidPackageId) => MainThread.InvokeOnMainThreadAsync(async () =>
     {

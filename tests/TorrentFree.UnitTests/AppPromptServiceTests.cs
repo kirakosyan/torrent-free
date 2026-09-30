@@ -258,7 +258,7 @@ public sealed class AppPromptServiceTests
     }
 
     [Fact]
-    public async Task UpdateBannerTakesPriority_DismissalOffersDueReview_AndNeverInstallsAnything()
+    public async Task UpdateBannerTakesPriority_DismissalOffersDueReview_AndUpdateUsesDedicatedHandoff()
     {
         var fixture = new Fixture();
         fixture.Store.Availability = AppUpdateAvailability.Available;
@@ -268,7 +268,8 @@ public sealed class AppPromptServiceTests
         Assert.False(fixture.Service.IsReviewBannerVisible);
         Assert.Null(fixture.Persistence.State.LastReviewPromptUtc);
         await fixture.Service.OpenUpdateCommand.ExecuteAsync(null);
-        Assert.Equal(1, fixture.Store.ListingRequests);
+        Assert.Equal(1, fixture.Store.UpdateHandoffs);
+        Assert.Equal(0, fixture.Store.ReviewRequests);
         await fixture.Service.DismissUpdateCommand.ExecuteAsync(null);
         Assert.False(fixture.Service.IsUpdateBannerVisible);
         Assert.True(fixture.Service.IsReviewBannerVisible);
@@ -294,6 +295,48 @@ public sealed class AppPromptServiceTests
         await fixture.Service.SetForegroundAsync(true);
         Assert.False(fixture.Service.IsUpdateBannerVisible);
         Assert.Equal(3, fixture.Store.UpdateRequests);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task FailedUpdateHandoff_KeepsBannerAndAllowsRetry(bool throws)
+    {
+        var fixture = new Fixture();
+        fixture.Store.Availability = AppUpdateAvailability.Available;
+        fixture.Store.UpdateHandoffSucceeds = false;
+        fixture.Store.ThrowOnUpdateHandoff = throws;
+        await fixture.Service.SetForegroundAsync(true);
+
+        await fixture.Service.OpenUpdateCommand.ExecuteAsync(null);
+
+        Assert.True(fixture.Service.HasActionError);
+        Assert.True(fixture.Service.IsUpdateBannerVisible);
+        Assert.True(fixture.Service.CanAct);
+        Assert.Equal(1, fixture.Store.UpdateHandoffs);
+
+        fixture.Store.UpdateHandoffSucceeds = true;
+        fixture.Store.ThrowOnUpdateHandoff = false;
+        await fixture.Service.OpenUpdateCommand.ExecuteAsync(null);
+
+        Assert.False(fixture.Service.HasActionError);
+        Assert.True(fixture.Service.CanAct);
+        Assert.Equal(2, fixture.Store.UpdateHandoffs);
+        Assert.Equal(0, fixture.Store.ReviewRequests);
+    }
+
+    [Fact]
+    public async Task ReviewAction_DoesNotUseUpdateHandoff()
+    {
+        var fixture = new Fixture();
+        fixture.Store.ReviewResult = AppReviewResult.StoreOpened;
+        await fixture.CompleteAsync(0, First);
+        await fixture.Service.SetForegroundAsync(true);
+
+        await fixture.Service.RateAppCommand.ExecuteAsync(null);
+
+        Assert.Equal(1, fixture.Store.ReviewRequests);
+        Assert.Equal(0, fixture.Store.UpdateHandoffs);
     }
 
     [Fact]
@@ -524,7 +567,9 @@ public sealed class AppPromptServiceTests
         public bool ThrowOnCheck { get; set; }
         public Task<AppUpdateAvailability>? PendingUpdate { get; set; }
         public int UpdateRequests { get; private set; }
-        public int ListingRequests { get; private set; }
+        public bool UpdateHandoffSucceeds { get; set; } = true;
+        public bool ThrowOnUpdateHandoff { get; set; }
+        public int UpdateHandoffs { get; private set; }
         public int ReviewRequests { get; private set; }
         public Task<AppUpdateAvailability> CheckForUpdateAsync(CancellationToken cancellationToken)
         {
@@ -532,7 +577,12 @@ public sealed class AppPromptServiceTests
             if (ThrowOnCheck) throw new IOException();
             return PendingUpdate ?? Task.FromResult(Availability);
         }
-        public Task<bool> OpenListingAsync() { ListingRequests++; return Task.FromResult(true); }
+        public Task<bool> OpenUpdateAsync()
+        {
+            UpdateHandoffs++;
+            if (ThrowOnUpdateHandoff) throw new IOException();
+            return Task.FromResult(UpdateHandoffSucceeds);
+        }
         public Task<AppReviewResult> RequestReviewAsync() { ReviewRequests++; return Task.FromResult(ReviewResult); }
     }
 }
