@@ -4,11 +4,15 @@ Package `com.torrentfree.app`, listed as **Torrent Client**.
 
 ## Current release
 
-Version **1.17** (code **22**) was submitted to production on September 29, 2026.
-Publishing overview shows **Changes in review**, with automatic checks completed.
-Managed publishing is off: the full rollout to the existing 178
-countries starts after approval. The release includes 26 localized release notes,
-ReTrace mapping and native debug symbols for both supported ABIs.
+Version **1.18** (code **23**) is being prepared for production and has **not yet
+been submitted or published**. It includes 26 localized release notes and will
+include ReTrace mapping and matching native debug symbols for both supported ABIs.
+Managed publishing is off; preserve the existing availability and rollout settings.
+See the [1.18 release record](../microsoft-store/release-notes-1.18.md).
+
+The currently live version is **1.17** (code **22**), published on September 30,
+2026 and verified at 100% rollout in Play Console on October 1, 2026. It was
+submitted to production on September 29, 2026.
 
 ## Listing text
 
@@ -19,9 +23,9 @@ also checks the length limits. The Play default language is en-GB (filled from t
 English text). Spanish is written once for `es-419` and `es-ES`; Ukrainian exists only
 on Play.
 
-`release-notes-1.17.txt` is in Play Console's multi-language format: paste it into the
+`release-notes-1.18.txt` is in Play Console's multi-language format: paste it into the
 release notes box of the production release as is. The generator retains the 1.16
-base listing; the 1.17 notes are maintained separately.
+base listing; the 1.18 notes are maintained separately.
 
 Translations inherit the default graphics, so only the text needs updating per language.
 Version 1.16 (code 21) and this listing were sent for review on September 27, 2026,
@@ -44,4 +48,4 @@ encourage copyright infringement.
 ## Release
 
 Build the signed AAB as described in `.codex/AGENTS.md`, upload it to the production track
-with `release-notes-1.17.txt`, and upload the matching native debug symbols ZIP.
+with `release-notes-1.18.txt`, and upload the matching native debug symbols ZIP.

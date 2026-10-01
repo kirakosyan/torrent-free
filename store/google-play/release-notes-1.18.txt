@@ -1,0 +1,130 @@
+<en-GB>
+• Both file-deletion options are selected by default again. Clear either option to keep those files.
+• Safer deletion protects files shared by other torrents and reports files left in place.
+• Improved seeding-limit validation and Android download-saving errors.
+</en-GB>
+<ar>
+• تم تحديد خياري حذف الملفات افتراضيًا مجددًا. ألغِ تحديد أي خيار للاحتفاظ بتلك الملفات.
+• حذف أكثر أمانًا يحمي الملفات المشتركة بين التورنتات ويوضح الملفات التي لم تُحذف.
+• تحسين التحقق من حدود المشاركة ورسائل أخطاء حفظ التنزيلات على Android.
+</ar>
+<cs-CZ>
+• Obě možnosti smazání souborů jsou opět ve výchozím stavu zaškrtnuté. Zrušením zaškrtnutí soubory zachováte.
+• Bezpečnější mazání chrání soubory sdílené dalšími torrenty a hlásí ponechané soubory.
+• Lepší ověřování limitů sdílení a chyby ukládání stažených souborů v Androidu.
+</cs-CZ>
+<da-DK>
+• Begge muligheder for filsletning er igen valgt som standard. Fjern markeringen for at beholde filerne.
+• Sikrere sletning beskytter filer, der deles af andre torrents, og oplyser om filer, der bevares.
+• Bedre validering af seedinggrænser og fejlbeskeder ved lagring af downloads på Android.
+</da-DK>
+<de-DE>
+• Beide Optionen zum Löschen von Dateien sind wieder standardmäßig ausgewählt. Deaktivieren Sie sie, um die Dateien zu behalten.
+• Sichereres Löschen schützt gemeinsam genutzte Torrent-Dateien und meldet beibehaltene Dateien.
+• Verbesserte Prüfung der Seeding-Limits und Fehlermeldungen beim Speichern von Downloads unter Android.
+</de-DE>
+<es-419>
+• Ambas opciones de eliminación de archivos vuelven a estar marcadas de forma predeterminada. Desmárcalas para conservar los archivos.
+• La eliminación protege los archivos compartidos por otros torrents e informa de los archivos conservados.
+• Mejor validación de límites de subida y mensajes de error al guardar descargas en Android.
+</es-419>
+<es-ES>
+• Ambas opciones de eliminación de archivos vuelven a estar marcadas de forma predeterminada. Desmárcalas para conservar los archivos.
+• La eliminación protege los archivos compartidos por otros torrents e informa de los archivos conservados.
+• Mejor validación de límites de subida y mensajes de error al guardar descargas en Android.
+</es-ES>
+<fi-FI>
+• Molemmat tiedostojen poistovalinnat ovat taas oletuksena valittuina. Poista valinta säilyttääksesi tiedostot.
+• Turvallisempi poisto suojaa muiden torrentien käyttämiä tiedostoja ja ilmoittaa säilytetyistä tiedostoista.
+• Parannettu jakamisrajojen tarkistus ja Androidin latausten tallennusvirheet.
+</fi-FI>
+<fr-FR>
+• Les deux options de suppression des fichiers sont de nouveau cochées par défaut. Décochez-les pour conserver les fichiers.
+• La suppression protège les fichiers partagés par d’autres torrents et signale les fichiers conservés.
+• Validation des limites de partage et erreurs d’enregistrement des téléchargements Android améliorées.
+</fr-FR>
+<hi-IN>
+• फ़ाइल हटाने के दोनों विकल्प फिर से डिफ़ॉल्ट रूप से चुने जाते हैं। फ़ाइलें रखने के लिए चयन हटाएँ।
+• सुरक्षित हटाना दूसरे टोरेंट द्वारा उपयोग की जाने वाली फ़ाइलों को बचाता है और बची हुई फ़ाइलों की जानकारी देता है।
+• सीडिंग सीमाओं की जाँच और Android पर डाउनलोड सहेजने की त्रुटियाँ बेहतर हुई हैं।
+</hi-IN>
+<hu-HU>
+• Mindkét fájltörlési lehetőség ismét alapértelmezés szerint be van jelölve. A fájlok megtartásához törölje a jelölést.
+• A biztonságosabb törlés védi a más torrentekkel közös fájlokat, és jelzi a megtartott fájlokat.
+• Javított seedelési korlátellenőrzés és Android-letöltésmentési hibaüzenetek.
+</hu-HU>
+<id>
+• Kedua opsi penghapusan berkas kembali dipilih secara default. Hapus centang untuk menyimpan berkas tersebut.
+• Penghapusan lebih aman melindungi berkas yang dipakai torrent lain dan melaporkan berkas yang dipertahankan.
+• Validasi batas seeding dan pesan kesalahan penyimpanan unduhan Android ditingkatkan.
+</id>
+<it-IT>
+• Entrambe le opzioni di eliminazione dei file sono di nuovo selezionate per impostazione predefinita. Deselezionale per conservare i file.
+• L’eliminazione protegge i file condivisi con altri torrent e segnala i file conservati.
+• Migliorati la convalida dei limiti di seeding e gli errori di salvataggio dei download Android.
+</it-IT>
+<ja-JP>
+• ファイル削除の両方の選択肢を既定で再びオンにしました。ファイルを残すにはチェックを外してください。
+• 他のトレントと共有するファイルを保護し、削除せず残したファイルを通知します。
+• シード制限の検証とAndroidでのダウンロード保存エラーを改善しました。
+</ja-JP>
+<ko-KR>
+• 두 파일 삭제 옵션이 다시 기본으로 선택됩니다. 파일을 유지하려면 선택을 해제하세요.
+• 다른 토렌트와 공유하는 파일을 보호하고 삭제되지 않은 파일을 알려줍니다.
+• 시딩 제한 검증과 Android 다운로드 저장 오류를 개선했습니다.
+</ko-KR>
+<no-NO>
+• Begge valgene for filsletting er igjen valgt som standard. Fjern avmerkingen for å beholde filene.
+• Tryggere sletting beskytter filer som deles med andre torrenter, og melder fra om filer som beholdes.
+• Bedre validering av seedinggrenser og feilmeldinger ved lagring av nedlastinger på Android.
+</no-NO>
+<nl-NL>
+• Beide opties voor het verwijderen van bestanden zijn weer standaard aangevinkt. Vink ze uit om de bestanden te behouden.
+• Veiliger verwijderen beschermt bestanden die andere torrents gebruiken en meldt behouden bestanden.
+• Verbeterde validatie van seedinglimieten en foutmeldingen bij het opslaan van Android-downloads.
+</nl-NL>
+<pl-PL>
+• Obie opcje usuwania plików są ponownie domyślnie zaznaczone. Odznacz je, aby zachować pliki.
+• Bezpieczniejsze usuwanie chroni pliki współdzielone z innymi torrentami i informuje o pozostawionych plikach.
+• Lepsza walidacja limitów udostępniania i komunikaty błędów zapisu pobrań na Androidzie.
+</pl-PL>
+<pt-BR>
+• As duas opções de exclusão de arquivos voltam a ficar marcadas por padrão. Desmarque-as para manter os arquivos.
+• A exclusão protege arquivos compartilhados por outros torrents e informa quais arquivos foram mantidos.
+• Melhor validação dos limites de seeding e mensagens de erro ao salvar downloads no Android.
+</pt-BR>
+<ro>
+• Ambele opțiuni de ștergere a fișierelor sunt din nou bifate implicit. Debifează-le pentru a păstra fișierele.
+• Ștergerea mai sigură protejează fișierele partajate cu alte torrente și semnalează fișierele păstrate.
+• Validare mai bună a limitelor de seeding și erori mai clare la salvarea descărcărilor pe Android.
+</ro>
+<ru-RU>
+• Оба параметра удаления файлов снова выбраны по умолчанию. Снимите флажки, чтобы сохранить файлы.
+• Безопасное удаление защищает общие файлы других торрентов и сообщает об оставленных файлах.
+• Улучшены проверка лимитов раздачи и сообщения об ошибках сохранения загрузок на Android.
+</ru-RU>
+<th>
+• เลือกตัวเลือกการลบไฟล์ทั้งสองไว้ตามค่าเริ่มต้นอีกครั้ง ยกเลิกการเลือกเพื่อเก็บไฟล์ไว้
+• การลบที่ปลอดภัยขึ้นปกป้องไฟล์ที่ทอร์เรนต์อื่นใช้ร่วมกันและแจ้งไฟล์ที่ยังเก็บไว้
+• ปรับปรุงการตรวจสอบขีดจำกัดการปล่อยไฟล์และข้อความผิดพลาดในการบันทึกการดาวน์โหลดบน Android
+</th>
+<tr-TR>
+• Her iki dosya silme seçeneği yeniden varsayılan olarak işaretli. Dosyaları korumak için işareti kaldırın.
+• Daha güvenli silme, diğer torrentlerle paylaşılan dosyaları korur ve korunan dosyaları bildirir.
+• Seed sınırı doğrulaması ve Android indirmelerini kaydetme hata mesajları iyileştirildi.
+</tr-TR>
+<vi>
+• Cả hai tùy chọn xóa tệp được chọn lại theo mặc định. Bỏ chọn để giữ các tệp đó.
+• Xóa an toàn hơn bảo vệ tệp dùng chung với torrent khác và thông báo các tệp được giữ lại.
+• Cải thiện kiểm tra giới hạn seeding và lỗi lưu bản tải xuống trên Android.
+</vi>
+<zh-CN>
+• 两个文件删除选项再次默认勾选。取消勾选即可保留相应文件。
+• 更安全的删除会保护其他种子共享的文件，并提示哪些文件被保留。
+• 改进了做种限制验证及Android下载保存错误提示。
+</zh-CN>
+<uk>
+• Обидва параметри видалення файлів знову вибрані за замовчуванням. Зніміть позначки, щоб зберегти файли.
+• Безпечніше видалення захищає спільні файли інших торрентів і повідомляє про залишені файли.
+• Поліпшено перевірку лімітів роздачі та повідомлення про помилки збереження завантажень на Android.
+</uk>

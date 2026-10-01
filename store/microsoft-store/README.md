@@ -2,11 +2,14 @@
 
 ## Current release
 
-Version **1.17** (build **22**, MSIX **1.17.0.0**) includes x64 and ARM64 packages.
-Submission 17 (`1152921505702004251`) was submitted on September 29, 2026.
-Partner Center shows **In certification**, with automatic publication after approval.
-The update includes release notes in all 31 existing listing languages.
-See [release notes, validation and submission record](release-notes-1.17.md).
+Version **1.18** (build **23**, MSIX **1.18.0.0**) is being prepared with x64 and
+ARM64 packages. It has **not yet been submitted or published**. The update has
+localized release notes for all 31 existing listing languages, mapped from the
+24 app languages. See [release notes, validation and release record](release-notes-1.18.md).
+
+The currently live release is **1.17.0.0**, verified in Partner Center on October 1,
+2026. Submission 17 (`1152921505702004251`) was submitted on September 29, 2026;
+its exact publication date has not been verified. See the [1.17 release record](release-notes-1.17.md).
 
 ## Listing text and screenshots
 
@@ -19,7 +22,7 @@ Store and Play length limits and regenerates:
 - `STORE_DESCRIPTION.md` and the Google Play files under `store/google-play`
 
 The generator retains the 1.16 base listing. The current update uses
-`release-notes-1.17.json`; its import replaced only the release-notes row in a fresh
+`release-notes-1.18.json`; import only the release-notes row in a fresh
 Partner Center export, preserving the descriptions, screenshots and other assets.
 
 Screenshots are 2880×1620 captures of an unpackaged Debug build (no debugger attached,

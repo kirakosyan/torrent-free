@@ -30,21 +30,25 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 
 ## 📝 Release Overview
 
-The latest release is **v1.17**, submitted to both stores on **September 29, 2026**.
+Version **1.18** (build **23**, Windows package **1.18.0.0**) is being prepared for
+both stores. It includes all changes from PRs [#20](https://github.com/kirakosyan/torrent-free/pull/20)
+and [#21](https://github.com/kirakosyan/torrent-free/pull/21), and has **not yet been
+submitted or published**. The currently live store release is **1.17**, verified
+in both store consoles on **October 1, 2026**.
 
-| Store | Version | Verified release status |
-|-------|---------|-------------------------|
-| Google Play | 1.17 (build 22) | In review; automatic checks completed |
-| Microsoft Store | 1.17.0.0 (x64 and ARM64) | In certification |
+| Store | Currently live | Version 1.18 status |
+|-------|----------------|---------------------|
+| Google Play | 1.17 (code 22), published September 30, 2026 | Preparing code 23; not submitted |
+| Microsoft Store | 1.17.0.0 (x64 and ARM64), verified live October 1, 2026 | Preparing 1.18.0.0; not submitted |
 
-Both stores will publish the update automatically after approval. Version 1.17 is
-not yet confirmed live. See the [release notes and submission record](store/microsoft-store/release-notes-1.17.md),
+The release will use an annotated **v1.18** tag on the exact source commit used to
+build the submitted packages. See the [1.18 release notes and release record](store/microsoft-store/release-notes-1.18.md),
 [Microsoft Store release details](store/microsoft-store/README.md), and
 [Google Play release details](store/google-play/README.md).
 
 See the [review findings and validation](docs/review-findings.md) for the current reliability, privacy, accessibility and build improvements, including remaining platform checks.
 
-### Unreleased
+### v1.18 (in preparation)
 
 - Restore both file-deletion options as checked by default in the delete dialog. Version 1.17 reversed the earlier fix during a usability review. Regression tests now exercise the dialog defaults as well as all file-deletion combinations.
 - Keep torrents visible and retryable if stopping or removing the transfer fails. Stop completion monitoring before removal and restore it when an active stop fails. Preserve shared downloads and source `.torrent` files that have changed since import, with warnings when requested files remain. Empty magnets no longer block deletion, and unrelated imports can continue while a transfer stops.
