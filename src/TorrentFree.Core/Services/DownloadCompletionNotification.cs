@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace TorrentFree.Services;
@@ -11,8 +12,23 @@ public static class DownloadCompletionNotification
         => new XElement("toast",
             new XAttribute("launch", $"torrentId={Uri.EscapeDataString(torrentId)}"),
             new XElement("visual", new XElement("binding", new XAttribute("template", "ToastGeneric"),
-                new XElement("text", title), new XElement("text", body))))
+                new XElement("text", SanitizeXmlText(title)), new XElement("text", SanitizeXmlText(body)))))
             .ToString(SaveOptions.DisableFormatting);
+
+    private static string SanitizeXmlText(string text)
+    {
+        var valid = new StringBuilder(text.Length);
+        for (var i = 0; i < text.Length; i++)
+        {
+            if (XmlConvert.IsXmlChar(text[i])) valid.Append(text[i]);
+            else if (char.IsHighSurrogate(text[i]) && i + 1 < text.Length && char.IsLowSurrogate(text[i + 1]))
+            {
+                // Valid supplementary Unicode (including emoji) uses a surrogate pair.
+                valid.Append(text[i]).Append(text[++i]);
+            }
+        }
+        return valid.ToString();
+    }
 
     // Tags must be stable across app restarts and fit Windows' 16-character limit.
     public static string GetTag(string torrentId)

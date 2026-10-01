@@ -47,8 +47,8 @@ See the [review findings and validation](docs/review-findings.md) for the curren
 ### Unreleased
 
 - Restore both file-deletion options as checked by default in the delete dialog. Version 1.17 reversed the earlier fix during a usability review. Regression tests now exercise the dialog defaults as well as all file-deletion combinations.
-- Keep torrents visible and retryable if stopping or removing the transfer fails. Preserve shared downloads and source `.torrent` files that have changed since import, with warnings when requested files remain.
-- Normalize invalid seeding ratios before persistence and report failed Android exports without opening an unrelated Downloads folder.
+- Keep torrents visible and retryable if stopping or removing the transfer fails. Stop completion monitoring before removal and restore it when an active stop fails. Preserve shared downloads and source `.torrent` files that have changed since import, with warnings when requested files remain. Empty magnets no longer block deletion, and unrelated imports can continue while a transfer stops.
+- Normalize invalid seeding ratios before persistence and refresh rejected edits in the limit editor. Distinguish unavailable Android downloads from failed copies without opening an unrelated Downloads folder.
 - Show Windows notifications when downloads complete. Clicking a notification opens the app and selects the completed torrent, including after an app restart.
 
 ### v1.17

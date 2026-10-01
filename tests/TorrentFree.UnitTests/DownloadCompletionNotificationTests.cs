@@ -7,6 +7,15 @@ namespace TorrentFree.UnitTests;
 public sealed class DownloadCompletionNotificationTests
 {
     [Fact]
+    public void Toast_RemovesInvalidXmlCharactersAndPreservesUnicodePairs()
+    {
+        var title = "Done\u0001\u0000\uFFFE\uFFFF\uD800!";
+        var body = "日本語\uDC00 / \uD83D\uDE80 & <ready>\t\n";
+        var payload = XElement.Parse(DownloadCompletionNotification.CreatePayload("id", title, body));
+        Assert.Equal(new[] { "Done!", "日本語 / 🚀 & <ready>\t\n" }, payload.Descendants("text").Select(t => t.Value));
+    }
+
+    [Fact]
     public void Toast_PreservesLocalizedTextAndSafelyRoundTripsTorrentIdentity()
     {
         var id = "torrent & /?= #日本語";

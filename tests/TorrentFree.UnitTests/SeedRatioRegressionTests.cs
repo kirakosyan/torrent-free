@@ -7,6 +7,33 @@ namespace TorrentFree.UnitTests;
 public sealed class SeedRatioRegressionTests
 {
     [Theory]
+    [InlineData(100, 500)]
+    [InlineData(0, -3)]
+    [InlineData(0, double.NaN)]
+    [InlineData(0, double.PositiveInfinity)]
+    public void RejectedInput_RefreshesBindingWhenStoredRatioDoesNotChange(double stored, double input)
+    {
+        var torrent = new TorrentItem { MaxSeedRatio = stored };
+        var notifications = 0;
+        torrent.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(TorrentItem.MaxSeedRatio)) notifications++; };
+        torrent.MaxSeedRatio = input;
+        Assert.Equal(stored, torrent.MaxSeedRatio);
+        Assert.Equal(1, notifications);
+    }
+
+    [Theory]
+    [InlineData(1.5, 1.5, 0)]
+    [InlineData(0, 500, 1)]
+    public void RatioChange_RaisesOnlyRequiredBindingNotification(double stored, double input, int expectedEvents)
+    {
+        var torrent = new TorrentItem { MaxSeedRatio = stored };
+        var notifications = 0;
+        torrent.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(TorrentItem.MaxSeedRatio)) notifications++; };
+        torrent.MaxSeedRatio = input;
+        Assert.Equal(expectedEvents, notifications);
+    }
+
+    [Theory]
     [InlineData(double.NaN, 0)]
     [InlineData(double.PositiveInfinity, 0)]
     [InlineData(double.NegativeInfinity, 0)]

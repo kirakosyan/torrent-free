@@ -152,7 +152,12 @@ public partial class TorrentItem : ObservableObject
     public double MaxSeedRatio
     {
         get => _maxSeedRatio;
-        set => SetProperty(ref _maxSeedRatio, SeedRatioLimits.Normalize(value));
+        set
+        {
+            var normalized = SeedRatioLimits.Normalize(value);
+            if (!SetProperty(ref _maxSeedRatio, normalized) && value != normalized)
+                OnPropertyChanged(nameof(MaxSeedRatio));
+        }
     }
 
     /// <summary>

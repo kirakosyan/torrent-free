@@ -54,14 +54,15 @@ The probe announced a synthetic info hash to a local HTTP tracker through an ADB
 
 ## 2026-10-01 follow-up
 
-- Failed manager stops or engine removals preserve the row, manager and monitor. File deletion starts only after successful cleanup, so the user can retry failures.
-- Payload deletion protects other tracked torrents' files and source metadata. Missing metadata conservatively protects the other torrent's save directory. A publication/deletion gate prevents a new import from appearing midway through that ownership check.
+- Failed manager stops or engine removals preserve the row and manager. Monitoring stops before teardown and resumes if stopping fails while the manager is active. If stopping succeeds but engine removal fails, the retained row shows Stopped with working retry controls. File deletion starts only after successful cleanup.
+- Payload deletion protects other tracked torrents' files and source metadata. Missing metadata protects the other torrent's save directory only when progress, downloaded bytes or completion indicate data may exist. An empty magnet no longer prevents deletion. A publication/deletion gate covers ownership checks, deletion and removing the row; slow engine stops and persistence run outside it.
+- Ownership checks skip disjoint save paths and avoid parsing other metadata for source-only deletion. Malformed persisted paths do not block unrelated removal, and file URIs use the same normalization for deletion and protection.
 - Source `.torrent` deletion verifies the current file's info hash. Changed or inaccessible files are retained with a localized warning.
-- Shared ratio limits keep per-torrent and global ratios finite and within 0–100 before persistence. The settings validation also handles NaN correctly.
-- Failed Android exports show a localized copy error. Opening public Downloads is attempted only after a successful export.
-- Windows completion toasts select the completed download. The COM executable is explicit because MAUI does not replace its executable placeholder inside `com:ExeServer`.
+- Shared ratio limits keep per-torrent and global ratios finite and within 0–100 before persistence. The settings validation also handles NaN correctly. Rejected edits refresh the ratio binding even when normalization leaves the stored value unchanged.
+- Failed Android exports show a localized copy error. Missing downloads and denied permissions use the folder-opening error instead. Opening public Downloads is attempted only after a successful export.
+- Windows completion toasts select the completed download. Invalid XML characters in torrent names are removed while valid Unicode and emoji survive. The COM executable is explicit because MAUI does not replace its executable placeholder inside `com:ExeServer`.
 
-Follow-up validation: **330 core tests passed**, including delete defaults and combinations, failed-stop retry, active/paused shared files, replaced metadata, ratio persistence, export failure, and notification payload/manifest checks. Windows ARM64 and Android Debug builds passed with zero warnings or errors. Windows ARM64 unsigned MSIX packaging was also exercised; optional symbol generation requires an unavailable local tool and was disabled for that check. Packaging reports PRI263 resource warnings. Notification display and cold/warm clicks still need a native UI check before release.
+Follow-up validation: **357 core tests passed**, including delete defaults and combinations, stop/removal failure recovery, monitor cancellation, import/deletion and persistence races, active/paused shared files, metadata-less ownership, malformed paths and file URIs, replaced metadata, ratio binding/persistence, export outcomes, and notification payload/manifest checks. Windows ARM64 and Android Debug builds passed with zero warnings or errors. Windows ARM64 unsigned MSIX packaging was also exercised before the review follow-up; optional symbol generation requires an unavailable local tool and was disabled for that check. Packaging reports PRI263 resource warnings. Notification display and cold/warm clicks still need a native UI check before release.
 
 ## Validation
 

@@ -452,10 +452,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 IsBusy = true;
                 try
                 {
-                    if (!await TryOpenAndroidFolderAsync(torrent.Id, downloadPath, folderPath, isDirectory))
-                    {
-                        ErrorMessage = LocalizationResourceManager.Instance["ErrorExportDownload"];
-                    }
+                    var result = await TryOpenAndroidFolderAsync(torrent.Id, downloadPath, folderPath, isDirectory);
+                    if (DownloadFolderExportCoordinator.GetErrorResourceKey(result) is { } errorKey)
+                        ErrorMessage = LocalizationResourceManager.Instance[errorKey];
                 }
                 finally
                 {
@@ -481,32 +480,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
 #if ANDROID
-    private static async Task<bool> TryOpenAndroidFolderAsync(string ownerId, string downloadPath, string folderPath, bool isDirectory)
+    private static Task<DownloadFolderExportResult> TryOpenAndroidFolderAsync(string ownerId, string downloadPath, string folderPath, bool isDirectory)
     {
         var targetFolder = isDirectory ? downloadPath : folderPath;
-        if (string.IsNullOrWhiteSpace(targetFolder) || !Directory.Exists(targetFolder))
-        {
-            return false;
-        }
-
-        try
-        {
+        return DownloadFolderExportCoordinator.TryExportAndOpenAsync(
+            () => !string.IsNullOrWhiteSpace(targetFolder) && Directory.Exists(targetFolder)
+                && (isDirectory || File.Exists(downloadPath)),
             // Android 6-9 need the runtime storage permission to write to public Downloads.
-            if (OperatingSystem.IsAndroidVersionAtLeast(29)
-                || await Permissions.RequestAsync<Permissions.StorageWrite>() == PermissionStatus.Granted)
-            {
-                return await DownloadFolderExportCoordinator.ExportAndOpenAsync(
-                    () => AndroidDownloadExportService.ExportToPublicDownloadsAsync(ownerId, downloadPath, isDirectory),
-                    AndroidDownloadExportService.TryOpenFolder,
-                    () => AndroidDownloadExportService.TryOpenPublicDownloadsFolder());
-            }
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Android public Downloads export error: {ex}");
-        }
-
-        return false;
+            async () => OperatingSystem.IsAndroidVersionAtLeast(29)
+                || await Permissions.RequestAsync<Permissions.StorageWrite>() == PermissionStatus.Granted,
+            () => AndroidDownloadExportService.ExportToPublicDownloadsAsync(ownerId, downloadPath, isDirectory),
+            AndroidDownloadExportService.TryOpenFolder,
+            () => AndroidDownloadExportService.TryOpenPublicDownloadsFolder());
     }
 #endif
 

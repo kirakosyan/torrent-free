@@ -1136,54 +1136,68 @@ public partial class TorrentService : ITorrentService
         {
             if (!IsTracked(torrent)) return TorrentRemovalResult.NotRemoved;
 
-            await _payloadOwnershipLock.WaitAsync(_disposalToken);
-            try
+            // Capture the selected manager's file list before engine removal clears its caches.
+            _managers.TryGetValue(torrent.Id, out var manager);
+            var ownedDownloadFiles = deleteFiles
+                ? await ResolveOwnedDownloadFilesAsync(torrent, manager)
+                : OwnedDownloadFiles.Empty;
+
+            // Stop monitoring before teardown can turn a last piece into a completion event.
+            if (_downloadTokens.TryRemove(torrent.Id, out var cts))
             {
-                // Resolve ownership before removing the manager or deleting the source .torrent.
-                // A manager's file list is authoritative. Without one, identity-checked .torrent
-                // metadata (the app's copy, the source file, or the engine's magnet metadata cache)
-                // is the only safe fallback. A display name is never ownership proof.
-                _managers.TryGetValue(torrent.Id, out var managerWithMetadata);
-                var ownedDownloadFiles = deleteFiles
-                    ? await ResolveOwnedDownloadFilesAsync(torrent, managerWithMetadata)
-                    : OwnedDownloadFiles.Empty;
-                var protectedFiles = deleteFiles || deleteTorrentFile
-                    ? await ResolveOtherTorrentFilesAsync(torrent)
-                    : new ProtectedDownloadFiles();
+                await cts.CancelAsync();
+                cts.Dispose();
+            }
 
-                var removedFromEngine = false;
-                if (_managers.TryGetValue(torrent.Id, out var manager))
+            var removedFromEngine = false;
+            if (manager is not null)
+            {
+                try
                 {
-                    // Keep the row, manager, monitor and settings handlers until cleanup succeeds.
-                    // A stop/removal failure must remain visible and retryable, with its files intact.
+                    // This can wait on tracker/network work. Unrelated imports remain available.
                     await StopManagerAsync(manager);
-
-                    if (manager.Engine is { } managerEngine)
+                    if (manager.Engine is not null)
                     {
-                        await managerEngine.RemoveAsync(manager);
+                        await RemoveManagerAsync(manager);
                         removedFromEngine = true;
                     }
                     _managers.TryRemove(torrent.Id, out _);
                 }
-
-                if (_downloadTokens.TryRemove(torrent.Id, out var cts))
+                catch
                 {
-                    await cts.CancelAsync();
-                    cts.Dispose();
-                }
-
-                await _dispatcher.InvokeAsync(() => UpdateSeedingTime(torrent, active: false));
-                DetachTorrentSettingsHandlers(torrent);
-                await _dispatcher.InvokeAsync(() =>
-                {
-                    lock (_torrentsLock)
+                    // Retain files, settings handlers and the registered manager for a retry.
+                    if (manager.State is TorrentState.Stopped or TorrentState.Error)
                     {
-                        Torrents.Remove(torrent);
+                        await _dispatcher.InvokeAsync(() =>
+                        {
+                            UpdateSeedingTime(torrent, active: false);
+                            torrent.DownloadSpeed = 0;
+                            torrent.UploadSpeed = 0;
+                            torrent.Status = manager.State == TorrentState.Error
+                                ? DownloadStatus.Failed : DownloadStatus.Stopped;
+                        });
                     }
-                });
-                await SaveAsync();
-                UpdateBackgroundTransferState();
+                    else
+                    {
+                        var resumedCts = new CancellationTokenSource();
+                        _downloadTokens[torrent.Id] = resumedCts;
+                        SafeFireAndForget(MonitorTorrentAsync(torrent, manager, resumedCts.Token));
+                    }
+                    UpdateBackgroundTransferState();
+                    await SaveAsync();
+                    throw;
+                }
+            }
 
+            await _dispatcher.InvokeAsync(() => UpdateSeedingTime(torrent, active: false));
+            await _payloadOwnershipLock.WaitAsync(_disposalToken);
+            try
+            {
+                // Publication and deletion share this gate: no import can become an owner
+                // between the snapshot of other torrents and deleting the selected files.
+                var protectedFiles = deleteFiles || deleteTorrentFile
+                    ? await ResolveOtherTorrentFilesAsync(torrent, ownedDownloadFiles, deleteFiles, deleteTorrentFile)
+                    : new ProtectedDownloadFiles();
                 var torrentFileLeftInPlace = deleteTorrentFile
                     && !await TryDeleteTorrentFileAsync(torrent, protectedFiles);
 
@@ -1205,9 +1219,16 @@ public partial class TorrentService : ITorrentService
 
                 result = new TorrentRemovalResult(Removed: true, DownloadedFilesLeftInPlace: filesLeftInPlace,
                     TorrentFileLeftInPlace: torrentFileLeftInPlace);
+                DetachTorrentSettingsHandlers(torrent);
+                await _dispatcher.InvokeAsync(() =>
+                {
+                    lock (_torrentsLock) Torrents.Remove(torrent);
+                });
             }
             finally { _payloadOwnershipLock.Release(); }
 
+            await SaveAsync();
+            UpdateBackgroundTransferState();
             // Imports acquire cache locks before publication; do not invert that order.
             await TryDeleteCachedTorrentFileAsync(torrent);
         }
@@ -1215,6 +1236,9 @@ public partial class TorrentService : ITorrentService
         await TryStartQueuedTorrentsAsync();
         return result;
     }
+
+    protected virtual Task RemoveManagerAsync(TorrentManager manager)
+        => manager.Engine is { } engine ? engine.RemoveAsync(manager) : Task.CompletedTask;
 
     // A torrent which never received metadata or data has nothing on disk to delete.
     private static bool MayHaveDownloadedData(TorrentItem torrent)
@@ -1337,7 +1361,37 @@ public partial class TorrentService : ITorrentService
         }
     }
 
-    private async Task<OwnedDownloadFiles> ResolveOwnedDownloadFilesAsync(TorrentItem torrent, TorrentManager? manager)
+    protected virtual async Task<OwnedDownloadFiles> ResolveOwnedDownloadFilesAsync(TorrentItem torrent, TorrentManager? manager)
+    {
+        var snapshot = SnapshotManagerOwnedFiles(torrent, manager);
+        if (snapshot.Paths.Count > 0) return snapshot;
+
+        var metadataPath = GetMetadataPath(torrent) ?? FindEngineMetadataCachePath(torrent);
+        if (string.IsNullOrWhiteSpace(torrent.SavePath) || metadataPath is null)
+            return OwnedDownloadFiles.Empty;
+
+        try
+        {
+            var metadata = await LoadTorrentFileBoundedAsync(metadataPath, torrent);
+            var basePath = Path.GetFullPath(torrent.SavePath);
+            var containingDirectory = metadata.Files.Count == 1
+                ? basePath
+                : Path.Combine(basePath, EscapeTorrentPath(metadata.Name));
+
+            var paths = new HashSet<string>(GetPathComparer());
+            foreach (var file in metadata.Files)
+                paths.Add(Path.Combine(containingDirectory, EscapeTorrentFilePath(file.Path)));
+
+            return new OwnedDownloadFiles(basePath, paths.ToArray());
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Could not load download ownership metadata for '{torrent.Name}': {ex.Message}");
+            return OwnedDownloadFiles.Empty;
+        }
+    }
+
+    private static OwnedDownloadFiles SnapshotManagerOwnedFiles(TorrentItem torrent, TorrentManager? manager)
     {
         if (manager is { HasMetadata: true }
             && manager.Files.Count > 0
@@ -1364,57 +1418,72 @@ public partial class TorrentService : ITorrentService
             }
         }
 
-        var metadataPath = GetMetadataPath(torrent) ?? FindEngineMetadataCachePath(torrent);
-        if (string.IsNullOrWhiteSpace(torrent.SavePath) || metadataPath is null)
-        {
-            return OwnedDownloadFiles.Empty;
-        }
-
-        try
-        {
-            var metadata = await LoadTorrentFileBoundedAsync(metadataPath, torrent);
-            var basePath = Path.GetFullPath(torrent.SavePath);
-            var containingDirectory = metadata.Files.Count == 1
-                ? basePath
-                : Path.Combine(basePath, EscapeTorrentPath(metadata.Name));
-
-            var paths = new HashSet<string>(GetPathComparer());
-            foreach (var file in metadata.Files)
-            {
-                var completePath = Path.Combine(containingDirectory, EscapeTorrentFilePath(file.Path));
-                paths.Add(completePath);
-            }
-
-            return new OwnedDownloadFiles(basePath, paths.ToArray());
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Could not load download ownership metadata for '{torrent.Name}': {ex.Message}");
-            return OwnedDownloadFiles.Empty;
-        }
+        return OwnedDownloadFiles.Empty;
     }
 
-    private async Task<ProtectedDownloadFiles> ResolveOtherTorrentFilesAsync(TorrentItem removedTorrent)
+    private async Task<ProtectedDownloadFiles> ResolveOtherTorrentFilesAsync(TorrentItem removedTorrent,
+        OwnedDownloadFiles removedFiles, bool deleteFiles, bool deleteTorrentFile)
     {
         TorrentItem[] others;
         lock (_torrentsLock) others = Torrents.Where(t => t.Id != removedTorrent.Id).ToArray();
         var protectedFiles = new ProtectedDownloadFiles();
+        var candidates = removedFiles.Paths.ToList();
+        if (deleteTorrentFile && TryGetLocalTorrentPath(removedTorrent.TorrentFilePath) is { } source)
+            candidates.Add(source);
         foreach (var other in others)
         {
-            _managers.TryGetValue(other.Id, out var manager);
-            var owned = await ResolveOwnedDownloadFilesAsync(other, manager);
-            foreach (var path in owned.Paths) protectedFiles.Paths.Add(Path.GetFullPath(path));
             foreach (var path in new[] { other.TorrentFilePath, other.CachedTorrentFilePath })
             {
-                if (string.IsNullOrWhiteSpace(path)) continue;
-                if (Uri.TryCreate(path, UriKind.Absolute, out var uri) && !uri.IsFile) continue;
-                protectedFiles.Paths.Add(Path.GetFullPath(uri?.IsFile == true ? uri.LocalPath : path));
+                if (TryGetLocalTorrentPath(path) is { } localPath) protectedFiles.Paths.Add(localPath);
             }
-            // Missing metadata cannot prove a different torrent does not use these files.
-            if (owned.Paths.Count == 0 && !string.IsNullOrWhiteSpace(other.SavePath))
-                protectedFiles.Directories.Add(Path.GetFullPath(other.SavePath));
+            _managers.TryGetValue(other.Id, out var manager);
+            var basePath = TryGetLocalTorrentPath(manager?.SavePath ?? other.SavePath);
+            if (basePath is null || !candidates.Any(path => PathGuard.IsPathWithinDirectory(path, basePath)))
+                continue;
+
+            // Source-only removal uses manager file lists without reading metadata. When
+            // only persisted metadata or progress is available, protect the save directory.
+            if (!deleteFiles)
+            {
+                var snapshot = SnapshotManagerOwnedFiles(other, manager);
+                foreach (var path in snapshot.Paths)
+                {
+                    if (TryGetLocalTorrentPath(path) is { } localPath) protectedFiles.Paths.Add(localPath);
+                }
+                if (snapshot.Paths.Count == 0 && (MayHaveDownloadedData(other) || GetMetadataPath(other) is not null))
+                    protectedFiles.Directories.Add(basePath);
+                continue;
+            }
+            var owned = await ResolveOwnedDownloadFilesAsync(other, manager);
+            foreach (var path in owned.Paths)
+            {
+                if (TryGetLocalTorrentPath(path) is { } localPath) protectedFiles.Paths.Add(localPath);
+            }
+            // An empty magnet has no files to protect; one with progress may have lost metadata.
+            if (owned.Paths.Count == 0 && MayHaveDownloadedData(other))
+                protectedFiles.Directories.Add(basePath);
         }
         return protectedFiles;
+    }
+
+    private static string? TryGetLocalTorrentPath(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path)) return null;
+        try
+        {
+            path = path.Trim();
+            if (Uri.TryCreate(path, UriKind.Absolute, out var uri))
+            {
+                if (!uri.IsFile) return null;
+                path = uri.LocalPath;
+            }
+            return Path.GetFullPath(path);
+        }
+        catch (Exception ex) when (ex is ArgumentException or NotSupportedException or IOException)
+        {
+            System.Diagnostics.Debug.WriteLine($"Ignoring invalid torrent path: {ex.Message}");
+            return null;
+        }
     }
 
     private sealed class ProtectedDownloadFiles
@@ -1438,9 +1507,7 @@ public partial class TorrentService : ITorrentService
         try
         {
             var basePath = Path.GetFullPath(ownedFiles.BaseDirectory);
-            var protectedTorrentPath = string.IsNullOrWhiteSpace(torrentFilePath)
-                ? null
-                : Path.GetFullPath(torrentFilePath);
+            var protectedTorrentPath = TryGetLocalTorrentPath(torrentFilePath);
 
             foreach (var candidate in ownedFiles.Paths)
             {
@@ -1666,11 +1733,11 @@ public partial class TorrentService : ITorrentService
         => OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
 
     private static bool PathsEqual(string? left, string? right)
-        => left is not null
-            && right is not null
-            && GetPathComparer().Equals(Path.GetFullPath(left), Path.GetFullPath(right));
+        => TryGetLocalTorrentPath(left) is { } leftPath
+            && TryGetLocalTorrentPath(right) is { } rightPath
+            && GetPathComparer().Equals(leftPath, rightPath);
 
-    private sealed record OwnedDownloadFiles(string BaseDirectory, IReadOnlyCollection<string> Paths)
+    protected sealed record OwnedDownloadFiles(string BaseDirectory, IReadOnlyCollection<string> Paths)
     {
         public static OwnedDownloadFiles Empty { get; } = new(string.Empty, Array.Empty<string>());
     }
@@ -1686,13 +1753,8 @@ public partial class TorrentService : ITorrentService
                 return true;
             }
 
-            var path = torrent.TorrentFilePath.Trim();
-            if (Uri.TryCreate(path, UriKind.Absolute, out var uri) && uri.IsFile)
-            {
-                path = uri.LocalPath;
-            }
-
-            var fullPath = Path.GetFullPath(path);
+            var fullPath = TryGetLocalTorrentPath(torrent.TorrentFilePath);
+            if (fullPath is null) return false;
             if (!fullPath.EndsWith(".torrent", StringComparison.OrdinalIgnoreCase)
                 || !File.Exists(fullPath))
             {
@@ -2559,6 +2621,7 @@ public partial class TorrentService : ITorrentService
 
     private async Task MonitorTorrentAsync(TorrentItem torrent, TorrentManager manager, CancellationToken cancellationToken)
     {
+        _downloadTokens.TryGetValue(torrent.Id, out var monitorCts);
         try
         {
             long previousDataBytesSent = manager.Monitor.DataBytesSent;
@@ -2813,12 +2876,11 @@ public partial class TorrentService : ITorrentService
         finally
         {
             // Only remove our CTS – a newer Start may have already replaced it.
-            if (_downloadTokens.TryGetValue(torrent.Id, out var activeCts)
-                && activeCts.Token == cancellationToken)
+            if (monitorCts is not null)
             {
                 if (((ICollection<KeyValuePair<string, CancellationTokenSource>>)_downloadTokens)
-                    .Remove(new(torrent.Id, activeCts)))
-                    activeCts.Dispose();
+                    .Remove(new(torrent.Id, monitorCts)))
+                    monitorCts.Dispose();
             }
 
             _pendingSave = true;
