@@ -76,14 +76,13 @@ changes from PRs [#20](https://github.com/kirakosyan/torrent-free/pull/20) and
 
 ## Store status
 
-As verified on **October 2, 2026 at 01:14 Europe/Oslo** (October 1 at 23:14 UTC),
-Google Play **1.18 is in review** and Microsoft Store **1.18.0.0 has passed
-certification and is ready to publish**.
-**Neither release is live.**
+As verified on **October 2, 2026 at 01:33 Europe/Oslo** (October 1 at 23:33 UTC),
+Microsoft Store **1.18.0.0 is live for x64 and ARM64**. Google Play **1.18, code 23,
+remains in review and is not published yet**.
 
 | Store | Target package | Status | Submission/publication record |
 |-------|----------------|--------|-------------------------------|
-| Microsoft Store | 1.18.0.0 x64 + ARM64 | Certification passed; ready to publish | Submission **18**, `1152921505702024112`, submitted October 2, 2026 at 00:43 Europe/Oslo (October 1 at 22:43 UTC) |
+| Microsoft Store | 1.18.0.0 x64 + ARM64 | Live | Submission **18**, `1152921505702024112`, submitted October 2, 2026 at 00:43 Europe/Oslo (October 1 at 22:43 UTC); published October 2 Europe/Oslo (October 1 UTC), verified at 01:33 Europe/Oslo (23:33 UTC) |
 | Google Play | 1.18, code 23 | In review; automated checks completed | Submission **20**, October 1, 2026 at 23:23 Europe/Oslo (21:23 UTC); production release `10`, track `4698459015960602547` |
 
 Google Play accepted the signed AAB with embedded ReTrace mapping and the matching
@@ -94,8 +93,11 @@ will follow approval automatically.
 
 Microsoft's certification pass was verified on October 2 at 01:14 Europe/Oslo
 (October 1 at 23:14 UTC). Partner Center scheduled publication to start October 1
-at 23:14 UTC. Submission 17 remains the current Store presence until publication
-completes; certification approval is not confirmation that 1.18 is live.
+at 23:14 UTC. Publication is complete: submission 18 is now the current Store
+presence, and the live package details list **1.18.0.0 x64 and ARM64** as the
+highest-ranked compatible packages. The exact publication timestamp is not shown;
+the live status and package versions were verified on October 2 at 01:33
+Europe/Oslo (October 1 at 23:33 UTC). Evidence is retained with the release artifacts.
 
 Microsoft accepted both architecture packages. Its toast-extension warning applies
 to Xbox; Xbox remains unchecked, with Desktop and Team availability preserved.
@@ -108,13 +110,13 @@ The final export failed, so the saved order was verified directly in the editor;
 the local verification record is retained with the release artifacts. Future
 notes-only imports must contain only the CSV header and `ReleaseNotes` row.
 Tester instructions were updated from 1.17 to describe the checked deletion
-defaults, completion notifications and sleep setting. Publication is set to start
-automatically after certification passes.
+defaults, completion notifications and sleep setting. Publication followed
+certification automatically.
 
-Version 1.17 remains live in both stores. Play Console reports its publication on
+Version 1.17 remains live on Google Play. Play Console reports its publication on
 September 30, 2026 and 100% rollout. Microsoft submission 17
-(`1152921505702004251`) is live; its exact publication date has not been verified.
-Both statuses were checked in the store consoles on October 1, 2026.
+(`1152921505702004251`) was the previous live release, verified on October 1;
+its exact publication date has not been verified. It is superseded by submission 18.
 
 ## Certification notes
 

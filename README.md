@@ -35,17 +35,16 @@ from PRs [#20](https://github.com/kirakosyan/torrent-free/pull/20) and
 [#21](https://github.com/kirakosyan/torrent-free/pull/21). Google Play was sent for
 review on **October 1, 2026**; Microsoft Store was submitted for certification on
 **October 2, 2026 (Europe/Oslo; October 1 UTC)**.
-**Version 1.18 is not live in either store yet.** The currently live store release
-is **1.17**, verified in both store consoles on **October 1, 2026**.
+**Version 1.18 is live on Microsoft Store.** Google Play **1.18 remains in review**;
+its currently available version is **1.17** (code **22**).
 
 | Store | Currently live | Version 1.18 status |
 |-------|----------------|---------------------|
 | Google Play | 1.17 (code 22), published September 30, 2026 | Code 23 submitted October 1; in review (submission 20) |
-| Microsoft Store | 1.17.0.0 (x64 and ARM64), verified live October 1, 2026 | 1.18.0.0 passed certification; ready to publish (submission 18) |
+| Microsoft Store | 1.18.0.0 (x64 and ARM64), published October 2 Europe/Oslo (October 1 UTC) | Live (submission 18) |
 
-Both pending statuses were verified on **October 2 at 01:14 Europe/Oslo**
-(October 1 at 23:14 UTC). Microsoft scheduled publication to start at 23:14 UTC;
-Google Play will publish automatically after approval.
+Both statuses were verified on **October 2 at 01:33 Europe/Oslo**
+(October 1 at 23:33 UTC). Google Play will publish automatically after approval.
 
 The annotated [**v1.18** tag](https://github.com/kirakosyan/torrent-free/releases/tag/v1.18)
 is pushed on the exact source commit `ea3fb6a` used to build all packages. See the
@@ -55,7 +54,7 @@ is pushed on the exact source commit `ea3fb6a` used to build all packages. See t
 
 See the [review findings and validation](docs/review-findings.md) for the current reliability, privacy, accessibility and build improvements, including remaining platform checks.
 
-### v1.18 (pending store review)
+### v1.18 (Windows live; Android in review)
 
 - Restore both file-deletion options as checked by default in the delete dialog. Version 1.17 reversed the earlier fix during a usability review. Regression tests now exercise the dialog defaults as well as all file-deletion combinations.
 - Keep torrents visible and retryable if stopping or removing the transfer fails. Stop completion monitoring before removal and restore it when an active stop fails. Preserve shared downloads and source `.torrent` files that have changed since import, with warnings when requested files remain. Empty magnets no longer block deletion, and unrelated imports can continue while a transfer stops.

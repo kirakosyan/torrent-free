@@ -5,13 +5,15 @@
 Version **1.18** (build **23**, MSIX **1.18.0.0**) was submitted with x64 and ARM64
 packages as submission **18** (`1152921505702024112`) on **October 2, 2026 at
 00:43 Europe/Oslo** (October 1 at 22:43 UTC). Certification has passed, verified on
-**October 2 at 01:14 Europe/Oslo** (October 1 at 23:14 UTC). Partner Center shows
-**Ready to publish**, with publication scheduled to start October 1 at 23:14 UTC.
-It is **not verified live yet**. The update has
+**October 2 at 01:14 Europe/Oslo** (October 1 at 23:14 UTC). Version **1.18.0.0 is
+now live**, published October 2 Europe/Oslo (October 1 UTC), and verified on
+**October 2 at 01:33 Europe/Oslo** (October 1 at 23:33 UTC). Partner Center confirms
+submission 18 is the current Store presence; its live package details list x64 and
+ARM64 **1.18.0.0**. The exact publication timestamp is not shown. The update has
 localized release notes for all 31 existing listing languages, mapped from the
 24 app languages. See [release notes, validation and release record](release-notes-1.18.md).
 
-The currently live release is **1.17.0.0**, verified in Partner Center on October 1,
+The previous release, **1.17.0.0**, was verified live in Partner Center on October 1,
 2026. Submission 17 (`1152921505702004251`) was submitted on September 29, 2026;
 its exact publication date has not been verified. See the [1.17 release record](release-notes-1.17.md).
 
