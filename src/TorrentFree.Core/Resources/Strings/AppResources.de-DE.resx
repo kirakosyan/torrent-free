@@ -582,4 +582,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>Ändern Sie die Geschwindigkeits- und Seeding-Limits für den ausgewählten Download.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>Der Torrent wurde entfernt, aber die ursprüngliche .torrent-Datei konnte nicht gelöscht werden oder stimmt nicht mehr mit dem importierten Torrent überein. Sie wurde beibehalten.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>Der Download konnte nicht in den öffentlichen Downloads-Ordner kopiert werden. Prüfen Sie Speicherberechtigungen und freien Platz und versuchen Sie es erneut.</value>
+  </data>
 </root>

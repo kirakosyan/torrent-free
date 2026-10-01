@@ -582,4 +582,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>Change speed and seeding limits for the selected download.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>The torrent was removed, but its source .torrent file could not be deleted or no longer matches the imported torrent. The source file was left in place.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>The download could not be copied to public Downloads. Check storage permissions and available space, then try again.</value>
+  </data>
 </root>

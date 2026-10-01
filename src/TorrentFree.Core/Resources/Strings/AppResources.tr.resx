@@ -582,4 +582,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>Seçili indirmenin hız ve paylaşım sınırlarını değiştirin.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>Torrent kaldırıldı, ancak kaynak .torrent dosyası silinemedi veya artık içe aktarılan torrentle eşleşmiyor. Kaynak dosya korundu.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>İndirme, ortak İndirilenler klasörüne kopyalanamadı. Depolama izinlerini ve boş alanı kontrol edip yeniden deneyin.</value>
+  </data>
 </root>

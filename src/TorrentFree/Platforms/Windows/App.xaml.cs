@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
+using Microsoft.Windows.AppNotifications;
 using TorrentFree.Services;
 using TorrentFree.ViewModels;
 using Windows.ApplicationModel.Activation;
@@ -37,10 +38,19 @@ public partial class App : MauiWinUIApplication
 		this.InitializeComponent();
 
 		_dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+		_mainInstance = AppInstance.FindOrRegisterForKey(InstanceKey);
+		if (_mainInstance.IsCurrent)
+		{
+			try
+			{
+				AppNotificationManager.Default.NotificationInvoked += OnNotificationInvoked;
+				AppNotificationManager.Default.Register();
+			}
+			catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Notification registration failed: {ex}"); }
+		}
 		var currentInstance = AppInstance.GetCurrent();
 		var initialActivation = currentInstance.GetActivatedEventArgs();
 		_initialActivation = initialActivation;
-		_mainInstance = AppInstance.FindOrRegisterForKey(InstanceKey);
 		if (_mainInstance.IsCurrent)
 		{
 			_mainInstance.Activated += OnActivated;
@@ -104,6 +114,11 @@ public partial class App : MauiWinUIApplication
 
 	private void OnActivated(object? sender, AppActivationArguments args)
 	{
+		if (args.Data is AppNotificationActivatedEventArgs notification)
+		{
+			HandleDownloadNotification(notification);
+			return;
+		}
 		var (paths, magnetLinks) = ExtractActivationItems(args);
 		if (paths.Count == 0 && magnetLinks.Count == 0)
 		{
@@ -111,6 +126,18 @@ public partial class App : MauiWinUIApplication
 		}
 
 		DispatchActivation(paths, magnetLinks);
+	}
+
+	private void OnNotificationInvoked(AppNotificationManager sender, AppNotificationActivatedEventArgs args)
+		=> HandleDownloadNotification(args);
+
+	private void HandleDownloadNotification(AppNotificationActivatedEventArgs args)
+	{
+		if (DownloadCompletionNotification.GetTorrentId(args.Argument) is not { } torrentId) return;
+		// Retain cold-start taps until MainPage appears. AppInstance also routes any
+		// redirected notification activation here, without creating a second MAUI window.
+		NotificationService.QueueTorrentSelection(torrentId);
+		_dispatcherQueue?.TryEnqueue(ActivateMainWindow);
 	}
 
 	private void DispatchActivation(IReadOnlyList<string> paths, IReadOnlyList<string> magnetLinks)

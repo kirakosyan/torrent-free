@@ -33,7 +33,12 @@ public class AppSettings
     /// <summary>
     /// Global max seed ratio (0 = unlimited).
     /// </summary>
-    public double GlobalMaxSeedRatio { get; set; }
+    private double _globalMaxSeedRatio;
+    public double GlobalMaxSeedRatio
+    {
+        get => _globalMaxSeedRatio;
+        set => _globalMaxSeedRatio = SeedRatioLimits.Normalize(value);
+    }
 
     /// <summary>
     /// Global max seed time in minutes (0 = unlimited).

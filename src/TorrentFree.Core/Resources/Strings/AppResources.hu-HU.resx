@@ -582,4 +582,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>Módosítsa a kiválasztott letöltés sebesség- és megosztási korlátait.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>A torrent eltávolítva, de az eredeti .torrent fájl nem törölhető, vagy már nem egyezik az importált torrenttel. Az eredeti fájl megmaradt.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>A letöltés nem másolható a nyilvános Letöltések mappába. Ellenőrizze a tárhelyengedélyeket és a szabad helyet, majd próbálja újra.</value>
+  </data>
 </root>

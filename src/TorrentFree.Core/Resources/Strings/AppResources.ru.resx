@@ -596,4 +596,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>Измените лимиты скорости и раздачи для выбранной загрузки.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>Торрент удалён из списка, но исходный файл .torrent не удалось удалить или он больше не соответствует импортированному торренту. Исходный файл сохранён.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>Не удалось скопировать загрузку в общую папку «Загрузки». Проверьте разрешения на доступ к хранилищу и свободное место, затем повторите попытку.</value>
+  </data>
 </root>

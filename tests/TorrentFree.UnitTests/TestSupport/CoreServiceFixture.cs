@@ -15,10 +15,12 @@ internal sealed class CoreServiceFixture : IAsyncDisposable
     public ManualTimeProvider Clock { get; } = new();
     public TestNotifications Notifications { get; } = new();
 
-    public CoreServiceFixture(IDownloadCompletionObserver? completionObserver = null, ITransferNetworkMonitor? networkMonitor = null)
+    public CoreServiceFixture(IDownloadCompletionObserver? completionObserver = null, ITransferNetworkMonitor? networkMonitor = null,
+        Func<IStorageService, INotificationService, IBackgroundDownloadService, TimeProvider, TorrentService>? serviceFactory = null)
     {
         Storage = new StorageService(Directory.StoragePaths);
-        Service = new TorrentService(Storage, Notifications, new Background(), ImmediateDispatcher.Instance, Clock, completionObserver, networkMonitor);
+        Service = serviceFactory?.Invoke(Storage, Notifications, new Background(), Clock)
+            ?? new TorrentService(Storage, Notifications, new Background(), ImmediateDispatcher.Instance, Clock, completionObserver, networkMonitor);
         Engine = new ClientEngine(new EngineSettingsBuilder
         {
             CacheDirectory = Path.Combine(Directory.Path, "engine"),

@@ -582,4 +582,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>Muuta valitun latauksen nopeus- ja jakorajoituksia.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>Torrent poistettiin, mutta alkuperäistä .torrent-tiedostoa ei voitu poistaa tai se ei enää vastaa tuotua torrentia. Alkuperäinen tiedosto säilytettiin.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>Latausta ei voitu kopioida julkiseen Lataukset-kansioon. Tarkista tallennustilan käyttöoikeudet ja vapaa tila ja yritä uudelleen.</value>
+  </data>
 </root>

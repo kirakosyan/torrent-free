@@ -23,7 +23,7 @@ The review identified useful correctness and usability fixes. The changes below 
 
 | Finding | Result |
 | --- | --- |
-| Delete dialog preselects file deletion | Both deletion options are now unchecked. Removing the entry preserves user files by default. |
+| Delete dialog preselects file deletion | The review changed both options to unchecked in v1.17. Reversed on 2026-10-01 at the user's request: both options start checked again; clearing both still removes only the list entry. Regression tests now cover the dialog defaults. |
 | External magnets start without review | Incoming magnets are previewed in the main input with a visible Download button. They are not added or started until submitted. |
 | Windows treats metered WLAN as Wi-Fi | Metered, roaming and over-limit connections are excluded, including WLAN. Unknown cost retains the existing permissive behavior; an unmarked hotspot can still qualify. |
 | Secondary Windows process blocks its STA | Redirection is awaited asynchronously in `OnLaunched`, before MAUI service/window initialization. The timeout still exits the secondary process to protect shared state. |
@@ -50,7 +50,18 @@ TRACKER_STATE=Ok
 
 The probe announced a synthetic info hash to a local HTTP tracker through an ADB reverse tunnel; no public torrent traffic was used. The probe app and tunnel were removed afterward. This verifies the HTTP tracker path on that device, not every tracker or Android release. MonoTorrent explicitly uses a [socket-based HTTP handler](https://github.com/alanmcgovern/monotorrent/blob/e78faebd0aec117146cffccaaea987ab0629eec0/src/MonoTorrent.Factories/MonoTorrent/HttpRequestFactory.cs), consistent with Android's documented [cleartext policy limits for sockets](https://developer.android.com/guide/topics/manifest/application-element#usesCleartextTraffic).
 
-**Windows completion notifications:** useful, but deferred. The installed notification library has Windows support, while the app disables it. Enabling it safely needs packaged toast activation and second-instance routing together, plus packaged and unpackaged tests; changing only the platform guard would leave an incomplete implementation.
+**Windows completion notifications:** implemented in the 2026-10-01 follow-up using Windows App SDK notifications, packaged COM activation, and the existing single-instance routing and pending torrent selection. Native cold/warm click testing remains a release check.
+
+## 2026-10-01 follow-up
+
+- Failed manager stops or engine removals preserve the row, manager and monitor. File deletion starts only after successful cleanup, so the user can retry failures.
+- Payload deletion protects other tracked torrents' files and source metadata. Missing metadata conservatively protects the other torrent's save directory. A publication/deletion gate prevents a new import from appearing midway through that ownership check.
+- Source `.torrent` deletion verifies the current file's info hash. Changed or inaccessible files are retained with a localized warning.
+- Shared ratio limits keep per-torrent and global ratios finite and within 0–100 before persistence. The settings validation also handles NaN correctly.
+- Failed Android exports show a localized copy error. Opening public Downloads is attempted only after a successful export.
+- Windows completion toasts select the completed download. The COM executable is explicit because MAUI does not replace its executable placeholder inside `com:ExeServer`.
+
+Follow-up validation: **330 core tests passed**, including delete defaults and combinations, failed-stop retry, active/paused shared files, replaced metadata, ratio persistence, export failure, and notification payload/manifest checks. Windows ARM64 and Android Debug builds passed with zero warnings or errors. Windows ARM64 unsigned MSIX packaging was also exercised; optional symbol generation requires an unavailable local tool and was disabled for that check. Packaging reports PRI263 resource warnings. Notification display and cold/warm clicks still need a native UI check before release.
 
 ## Validation
 

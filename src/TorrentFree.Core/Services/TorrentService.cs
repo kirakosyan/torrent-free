@@ -152,6 +152,9 @@ public partial class TorrentService : ITorrentService
     // each reader sees the latest write (e.g. after RebuildEngineAsync nulls it).
     private volatile ClientEngine? _engine;
     private readonly SemaphoreSlim _engineLock = new(1, 1);
+    // Serializes publication and payload deletion, including torrents with different hashes
+    // which map to the same files. Never hold this gate while acquiring a metadata cache lock.
+    private readonly SemaphoreSlim _payloadOwnershipLock = new(1, 1);
     private Task? _initTask;
     private readonly object _initGate = new();
     private volatile bool _pendingSave;
@@ -376,21 +379,24 @@ public partial class TorrentService : ITorrentService
                 : fallbackDownloadPath
         };
 
-        await _dispatcher.InvokeAsync(() =>
+        await _payloadOwnershipLock.WaitAsync(_disposalToken);
+        try
         {
-            lock (_torrentsLock)
+            await _dispatcher.InvokeAsync(() =>
             {
                 // The early duplicate check is only a fast path. Another import can pass it
                 // while this call is loading settings, so check and add under one lock.
-                if (IsDuplicate(infoHash, magnetLink))
+                lock (_torrentsLock)
                 {
-                    throw new DuplicateTorrentException("This torrent is already added.");
-                }
+                    if (IsDuplicate(infoHash, magnetLink))
+                        throw new DuplicateTorrentException("This torrent is already added.");
 
-                AttachTorrentSettingsHandlers(torrent);
-                Torrents.Add(torrent);
-            }
-        });
+                    AttachTorrentSettingsHandlers(torrent);
+                    Torrents.Add(torrent);
+                }
+            });
+        }
+        finally { _payloadOwnershipLock.Release(); }
         await SaveAsync();
 
         return torrent;
@@ -1130,76 +1136,80 @@ public partial class TorrentService : ITorrentService
         {
             if (!IsTracked(torrent)) return TorrentRemovalResult.NotRemoved;
 
-            // Resolve ownership before removing the manager or deleting the source .torrent.
-            // A manager's file list is authoritative. Without one, identity-checked .torrent
-            // metadata (the app's copy, the source file, or the engine's magnet metadata cache)
-            // is the only safe fallback. A display name is never ownership proof.
-            _managers.TryGetValue(torrent.Id, out var managerWithMetadata);
-            var ownedDownloadFiles = deleteFiles
-                ? await ResolveOwnedDownloadFilesAsync(torrent, managerWithMetadata)
-                : OwnedDownloadFiles.Empty;
-
-            // Cancel any active download.
-            if (_downloadTokens.TryRemove(torrent.Id, out var cts))
+            await _payloadOwnershipLock.WaitAsync(_disposalToken);
+            try
             {
-                await cts.CancelAsync();
-                cts.Dispose();
-            }
+                // Resolve ownership before removing the manager or deleting the source .torrent.
+                // A manager's file list is authoritative. Without one, identity-checked .torrent
+                // metadata (the app's copy, the source file, or the engine's magnet metadata cache)
+                // is the only safe fallback. A display name is never ownership proof.
+                _managers.TryGetValue(torrent.Id, out var managerWithMetadata);
+                var ownedDownloadFiles = deleteFiles
+                    ? await ResolveOwnedDownloadFilesAsync(torrent, managerWithMetadata)
+                    : OwnedDownloadFiles.Empty;
+                var protectedFiles = deleteFiles || deleteTorrentFile
+                    ? await ResolveOtherTorrentFilesAsync(torrent)
+                    : new ProtectedDownloadFiles();
 
-            var removedFromEngine = false;
-            if (_managers.TryRemove(torrent.Id, out var manager))
-            {
-                try
+                var removedFromEngine = false;
+                if (_managers.TryGetValue(torrent.Id, out var manager))
                 {
+                    // Keep the row, manager, monitor and settings handlers until cleanup succeeds.
+                    // A stop/removal failure must remain visible and retryable, with its files intact.
                     await StopManagerAsync(manager);
 
-                    if (_engine is not null)
+                    if (manager.Engine is { } managerEngine)
                     {
-                        // The default RemoveMode also deletes this torrent's engine cache files.
-                        await _engine.RemoveAsync(manager);
+                        await managerEngine.RemoveAsync(manager);
                         removedFromEngine = true;
                     }
+                    _managers.TryRemove(torrent.Id, out _);
                 }
-                catch (Exception ex)
+
+                if (_downloadTokens.TryRemove(torrent.Id, out var cts))
                 {
-                    System.Diagnostics.Debug.WriteLine($"Remove manager cleanup error for '{torrent.Name}' ({torrent.Id}): {ex}");
+                    await cts.CancelAsync();
+                    cts.Dispose();
                 }
-            }
 
-            await _dispatcher.InvokeAsync(() => UpdateSeedingTime(torrent, active: false));
-            DetachTorrentSettingsHandlers(torrent);
-            await _dispatcher.InvokeAsync(() =>
-            {
-                lock (_torrentsLock)
+                await _dispatcher.InvokeAsync(() => UpdateSeedingTime(torrent, active: false));
+                DetachTorrentSettingsHandlers(torrent);
+                await _dispatcher.InvokeAsync(() =>
                 {
-                    Torrents.Remove(torrent);
+                    lock (_torrentsLock)
+                    {
+                        Torrents.Remove(torrent);
+                    }
+                });
+                await SaveAsync();
+                UpdateBackgroundTransferState();
+
+                var torrentFileLeftInPlace = deleteTorrentFile
+                    && !await TryDeleteTorrentFileAsync(torrent, protectedFiles);
+
+                var filesLeftInPlace = false;
+                if (deleteFiles)
+                {
+                    filesLeftInPlace = ownedDownloadFiles.Paths.Count == 0
+                        ? MayHaveDownloadedData(torrent)
+                        : !DeleteOwnedDownloadFiles(ownedDownloadFiles, torrent.TorrentFilePath,
+                            deleteTorrentFile && !torrentFileLeftInPlace, protectedFiles);
                 }
-            });
-            await SaveAsync();
-            UpdateBackgroundTransferState();
 
-            if (deleteTorrentFile)
-            {
-                TryDeleteTorrentFile(torrent);
+                if (!removedFromEngine)
+                {
+                    // Torrents restored after a restart have no manager, so the engine never
+                    // removed their fast-resume and magnet metadata cache entries.
+                    TryDeleteEngineCacheFiles(torrent);
+                }
+
+                result = new TorrentRemovalResult(Removed: true, DownloadedFilesLeftInPlace: filesLeftInPlace,
+                    TorrentFileLeftInPlace: torrentFileLeftInPlace);
             }
+            finally { _payloadOwnershipLock.Release(); }
 
-            var filesLeftInPlace = false;
-            if (deleteFiles)
-            {
-                filesLeftInPlace = ownedDownloadFiles.Paths.Count == 0
-                    ? MayHaveDownloadedData(torrent)
-                    : !DeleteOwnedDownloadFiles(ownedDownloadFiles, torrent.TorrentFilePath, deleteTorrentFile);
-            }
-
-            if (!removedFromEngine)
-            {
-                // Torrents restored after a restart have no manager, so the engine never
-                // removed their fast-resume and magnet metadata cache entries.
-                TryDeleteEngineCacheFiles(torrent);
-            }
-
+            // Imports acquire cache locks before publication; do not invert that order.
             await TryDeleteCachedTorrentFileAsync(torrent);
-            result = new TorrentRemovalResult(Removed: true, DownloadedFilesLeftInPlace: filesLeftInPlace);
         }
 
         await TryStartQueuedTorrentsAsync();
@@ -1384,8 +1394,40 @@ public partial class TorrentService : ITorrentService
         }
     }
 
+    private async Task<ProtectedDownloadFiles> ResolveOtherTorrentFilesAsync(TorrentItem removedTorrent)
+    {
+        TorrentItem[] others;
+        lock (_torrentsLock) others = Torrents.Where(t => t.Id != removedTorrent.Id).ToArray();
+        var protectedFiles = new ProtectedDownloadFiles();
+        foreach (var other in others)
+        {
+            _managers.TryGetValue(other.Id, out var manager);
+            var owned = await ResolveOwnedDownloadFilesAsync(other, manager);
+            foreach (var path in owned.Paths) protectedFiles.Paths.Add(Path.GetFullPath(path));
+            foreach (var path in new[] { other.TorrentFilePath, other.CachedTorrentFilePath })
+            {
+                if (string.IsNullOrWhiteSpace(path)) continue;
+                if (Uri.TryCreate(path, UriKind.Absolute, out var uri) && !uri.IsFile) continue;
+                protectedFiles.Paths.Add(Path.GetFullPath(uri?.IsFile == true ? uri.LocalPath : path));
+            }
+            // Missing metadata cannot prove a different torrent does not use these files.
+            if (owned.Paths.Count == 0 && !string.IsNullOrWhiteSpace(other.SavePath))
+                protectedFiles.Directories.Add(Path.GetFullPath(other.SavePath));
+        }
+        return protectedFiles;
+    }
+
+    private sealed class ProtectedDownloadFiles
+    {
+        public HashSet<string> Paths { get; } = new(GetPathComparer());
+        public List<string> Directories { get; } = [];
+        public bool Contains(string path) => Paths.Contains(Path.GetFullPath(path))
+            || Directories.Any(directory => PathGuard.IsPathWithinDirectory(path, directory));
+    }
+
     /// <returns><see langword="false"/> when an owned file remains on disk.</returns>
-    private static bool DeleteOwnedDownloadFiles(OwnedDownloadFiles ownedFiles, string? torrentFilePath, bool deleteTorrentFile)
+    private static bool DeleteOwnedDownloadFiles(OwnedDownloadFiles ownedFiles, string? torrentFilePath,
+        bool deleteTorrentFile, ProtectedDownloadFiles protectedFiles)
     {
         if (string.IsNullOrWhiteSpace(ownedFiles.BaseDirectory) || ownedFiles.Paths.Count == 0)
         {
@@ -1416,6 +1458,12 @@ public partial class TorrentService : ITorrentService
 
                 if (!File.Exists(fullPath))
                 {
+                    continue;
+                }
+
+                if (protectedFiles.Contains(fullPath))
+                {
+                    allDeleted = false;
                     continue;
                 }
 
@@ -1627,7 +1675,7 @@ public partial class TorrentService : ITorrentService
         public static OwnedDownloadFiles Empty { get; } = new(string.Empty, Array.Empty<string>());
     }
 
-    private static void TryDeleteTorrentFile(TorrentItem torrent)
+    private static async Task<bool> TryDeleteTorrentFileAsync(TorrentItem torrent, ProtectedDownloadFiles protectedFiles)
     {
         try
         {
@@ -1635,7 +1683,7 @@ public partial class TorrentService : ITorrentService
             // TorrentFileName + SavePath is merely a guess and can name unrelated data.
             if (string.IsNullOrWhiteSpace(torrent.TorrentFilePath))
             {
-                return;
+                return true;
             }
 
             var path = torrent.TorrentFilePath.Trim();
@@ -1648,14 +1696,18 @@ public partial class TorrentService : ITorrentService
             if (!fullPath.EndsWith(".torrent", StringComparison.OrdinalIgnoreCase)
                 || !File.Exists(fullPath))
             {
-                return;
+                return !File.Exists(fullPath);
             }
 
             var attributes = File.GetAttributes(fullPath);
             if (attributes.HasFlag(FileAttributes.ReparsePoint))
             {
-                return;
+                return false;
             }
+
+            if (protectedFiles.Contains(fullPath)) return false;
+            // The source path may have been reused since import. Only delete matching metadata.
+            await LoadTorrentFileBoundedAsync(fullPath, torrent);
 
             if (attributes.HasFlag(FileAttributes.ReadOnly))
             {
@@ -1663,10 +1715,12 @@ public partial class TorrentService : ITorrentService
             }
 
             File.Delete(fullPath);
+            return true;
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error deleting .torrent file: {ex.Message}");
+            return false;
         }
     }
 
@@ -1730,7 +1784,7 @@ public partial class TorrentService : ITorrentService
     /// <inheritdoc />
     public void UpdateSeedingLimits(double maxSeedRatio, int maxSeedMinutes)
     {
-        _globalMaxSeedRatio = Math.Max(0, maxSeedRatio);
+        _globalMaxSeedRatio = SeedRatioLimits.Normalize(maxSeedRatio);
         _globalMaxSeedMinutes = Math.Max(0, maxSeedMinutes);
 
         foreach (var kvp in _managers)

@@ -454,7 +454,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 {
                     if (!await TryOpenAndroidFolderAsync(torrent.Id, downloadPath, folderPath, isDirectory))
                     {
-                        ErrorMessage = LocalizationResourceManager.Instance["ErrorOpenFolder"];
+                        ErrorMessage = LocalizationResourceManager.Instance["ErrorExportDownload"];
                     }
                 }
                 finally
@@ -489,16 +489,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return false;
         }
 
-        var exported = false;
-        string? publicFolder = null;
         try
         {
             // Android 6-9 need the runtime storage permission to write to public Downloads.
             if (OperatingSystem.IsAndroidVersionAtLeast(29)
                 || await Permissions.RequestAsync<Permissions.StorageWrite>() == PermissionStatus.Granted)
             {
-                publicFolder = await AndroidDownloadExportService.ExportToPublicDownloadsAsync(ownerId, downloadPath, isDirectory);
-                exported = !string.IsNullOrWhiteSpace(publicFolder);
+                return await DownloadFolderExportCoordinator.ExportAndOpenAsync(
+                    () => AndroidDownloadExportService.ExportToPublicDownloadsAsync(ownerId, downloadPath, isDirectory),
+                    AndroidDownloadExportService.TryOpenFolder,
+                    () => AndroidDownloadExportService.TryOpenPublicDownloadsFolder());
             }
         }
         catch (Exception ex)
@@ -506,39 +506,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             System.Diagnostics.Debug.WriteLine($"Android public Downloads export error: {ex}");
         }
 
-        if (exported && AndroidDownloadExportService.TryOpenFolder(publicFolder!))
-        {
-            return true;
-        }
-
-        if (AndroidDownloadExportService.TryOpenPublicDownloadsFolder())
-        {
-            return true;
-        }
-
-        if (exported)
-        {
-            return true;
-        }
-
-        if (!isDirectory && File.Exists(downloadPath))
-        {
-            try
-            {
-                await Launcher.Default.OpenAsync(new OpenFileRequest
-                {
-                    File = new ReadOnlyFile(downloadPath)
-                });
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Android file open fallback error: {ex}");
-            }
-        }
-
-        return AndroidDownloadExportService.TryOpenPublicDownloadsFolder();
+        return false;
     }
 #endif
 
@@ -1441,6 +1409,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private async Task RemoveTorrentCoreAsync(TorrentItem torrent, bool setBusy)
     {
         if (setBusy) IsBusy = true;
+        ErrorMessage = null;
         try
         {
             var result = await ShowDeleteDialogAsync(torrent);
@@ -1458,6 +1427,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
             if (removal.DownloadedFilesLeftInPlace)
             {
                 ErrorMessage = LocalizationResourceManager.Instance["ErrorRemoveFilesLeftInPlace"];
+            }
+            if (removal.TorrentFileLeftInPlace)
+            {
+                var sourceWarning = LocalizationResourceManager.Instance["ErrorRemoveTorrentFileLeftInPlace"];
+                ErrorMessage = string.IsNullOrWhiteSpace(ErrorMessage)
+                    ? sourceWarning : ErrorMessage + Environment.NewLine + sourceWarning;
             }
         }
         catch (Exception ex)

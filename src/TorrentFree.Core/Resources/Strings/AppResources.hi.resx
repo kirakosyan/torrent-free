@@ -582,4 +582,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>चुने गए डाउनलोड की गति और सीडिंग सीमाएँ बदलें।</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>टोरेंट हटा दिया गया, लेकिन उसकी मूल .torrent फ़ाइल मिटाई नहीं जा सकी या अब आयातित टोरेंट से मेल नहीं खाती। मूल फ़ाइल सुरक्षित रखी गई है।</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>डाउनलोड को सार्वजनिक Downloads फ़ोल्डर में कॉपी नहीं किया जा सका। स्टोरेज अनुमतियाँ और उपलब्ध जगह जाँचें, फिर दोबारा कोशिश करें।</value>
+  </data>
 </root>

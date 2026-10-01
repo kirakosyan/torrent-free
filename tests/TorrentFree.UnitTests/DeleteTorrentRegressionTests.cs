@@ -5,6 +5,32 @@ namespace TorrentFree.UnitTests;
 
 public sealed class DeleteTorrentRegressionTests
 {
+    [Fact]
+    public void DeleteDialog_SelectsBothFileDeletionOptionsByDefault()
+    {
+        var dialog = new DeleteTorrentDialogViewModel("payload.bin");
+
+        Assert.Equal("payload.bin", dialog.TorrentName);
+        Assert.True(dialog.DeleteTorrentFile);
+        Assert.True(dialog.DeleteDownloadedFiles);
+    }
+
+    [Fact]
+    public void DeleteDialog_NewDialogResetsOptionsAfterUserUncheckedThem()
+    {
+        var previousDialog = new DeleteTorrentDialogViewModel("first.bin")
+        {
+            DeleteTorrentFile = false,
+            DeleteDownloadedFiles = false
+        };
+        Assert.True(previousDialog.CanDelete);
+
+        var nextDialog = new DeleteTorrentDialogViewModel("next.bin");
+
+        Assert.True(nextDialog.DeleteTorrentFile);
+        Assert.True(nextDialog.DeleteDownloadedFiles);
+    }
+
     [Theory]
     [InlineData(false, false, false)]
     [InlineData(false, true, false)]
@@ -35,8 +61,16 @@ public sealed class DeleteTorrentRegressionTests
             Assert.Single(fixture.Engine.Torrents);
         }
 
-        var result = new DeleteTorrentDialogResult(deleteTorrentFile, deleteDownloadedFiles);
-        await fixture.Service.RemoveTorrentAsync(torrent, result.DeleteTorrentFile, result.DeleteDownloadedFiles);
+        var dialog = new DeleteTorrentDialogViewModel(torrent.Name)
+        {
+            DeleteTorrentFile = deleteTorrentFile,
+            DeleteDownloadedFiles = deleteDownloadedFiles
+        };
+        var result = new DeleteTorrentDialogResult(dialog.DeleteTorrentFile, dialog.DeleteDownloadedFiles);
+        var removal = await fixture.Service.RemoveTorrentAsync(torrent, result.DeleteTorrentFile, result.DeleteDownloadedFiles);
+        Assert.True(removal.Removed);
+        Assert.False(removal.DownloadedFilesLeftInPlace);
+        Assert.False(removal.TorrentFileLeftInPlace);
 
         Assert.Empty(fixture.Service.Torrents);
         Assert.Empty(fixture.Engine.Torrents);

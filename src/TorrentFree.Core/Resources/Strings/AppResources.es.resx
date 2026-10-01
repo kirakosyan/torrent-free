@@ -596,4 +596,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>Cambia los límites de velocidad y siembra de la descarga seleccionada.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>Se eliminó el torrent, pero no se pudo borrar su archivo .torrent original o ya no coincide con el torrent importado. Se conservó el archivo original.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>No se pudo copiar la descarga a la carpeta pública Descargas. Comprueba los permisos de almacenamiento y el espacio disponible e inténtalo de nuevo.</value>
+  </data>
 </root>

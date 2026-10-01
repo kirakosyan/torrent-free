@@ -582,4 +582,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>Wijzig de snelheids- en seedinglimieten voor de geselecteerde download.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>De torrent is verwijderd, maar het oorspronkelijke .torrent-bestand kan niet worden verwijderd of komt niet meer overeen met de geïmporteerde torrent. Het bronbestand is behouden.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>De download kan niet naar de openbare map Downloads worden gekopieerd. Controleer de opslagmachtigingen en vrije ruimte en probeer opnieuw.</value>
+  </data>
 </root>
