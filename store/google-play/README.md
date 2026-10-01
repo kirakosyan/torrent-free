@@ -4,10 +4,12 @@ Package `com.torrentfree.app`, listed as **Torrent Client**.
 
 ## Current release
 
-Version **1.18** (code **23**) is being prepared for production and has **not yet
-been submitted or published**. It includes 26 localized release notes and will
-include ReTrace mapping and matching native debug symbols for both supported ABIs.
-Managed publishing is off; preserve the existing availability and rollout settings.
+Version **1.18** (code **23**) was submitted for production review on **October 1,
+2026**, at **23:23 Europe/Oslo** (21:23 UTC), as submission **20**, production release
+**10**. Play Console shows **In review**, with automated checks running initially.
+It is **not published yet**. All 26 localized release notes, ReTrace mapping and
+matching native debug symbols for both supported ABIs were accepted. The rollout
+is 100% across the existing 178 countries/regions. Managed publishing remains off.
 See the [1.18 release record](../microsoft-store/release-notes-1.18.md).
 
 The currently live version is **1.17** (code **22**), published on September 30,

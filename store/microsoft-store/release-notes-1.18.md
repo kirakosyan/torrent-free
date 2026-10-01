@@ -38,7 +38,19 @@ changes from PRs [#20](https://github.com/kirakosyan/torrent-free/pull/20) and
   sleep-prevention cases. Windows ARM64 and Android Debug builds passed with
   zero warnings or errors. Native Windows power request acquire/release was exercised.
 - Version 1.18/build 23 metadata validation and the complete 382-test suite passed.
-  Final release package validation is pending.
+- All four checks for the final source commit passed in
+  [GitHub Actions run 36926679194](https://github.com/kirakosyan/torrent-free/actions/runs/36926679194):
+  Windows/Linux Core tests and Windows/Android app builds.
+- Signed Android Release publish passed. Bundletool validation passed; the manifest
+  has package `com.torrentfree.app`, code **23**, version **1.18**, target SDK **36**.
+  JAR signature verification passed and the signing certificate matches the
+  registered upload certificate. The embedded R8 mapping was retained, together
+  with native symbols matching `libxamarin-app.so` for arm64-v8a and x86_64.
+- Windows Release x64 and ARM64 publishes passed. Each MSIX was checked for ZIP
+  integrity, Store identity/publisher, version **1.18.0.0**, architecture, all
+  24 languages, Core payload, and matching toast/COM registration with its executable.
+  The packaging tool reported the optional Windows symbol tool `mspdbcmf.exe`
+  unavailable; no Windows symbol package was requested or generated.
 - Device sleep/lid behavior and packaged notification activation have not been
   exercised end to end in this release preparation.
 - Localized notes: 24 Windows app languages, mapped to 31 existing Store listings;
@@ -46,20 +58,37 @@ changes from PRs [#20](https://github.com/kirakosyan/torrent-free/pull/20) and
 
 ## Package provenance
 
-- Planned annotated tag: **v1.18**, on the exact clean source commit used to build
-  the final store packages. Source commit and package hashes will be recorded after building.
+- Annotated tag: [**v1.18**](https://github.com/kirakosyan/torrent-free/releases/tag/v1.18),
+  pushed October 1, 2026. Exact clean source commit used for all final packages:
+  [`ea3fb6a6820fe943666fd4ffdc88e64fbfd22acc`](https://github.com/kirakosyan/torrent-free/commit/ea3fb6a6820fe943666fd4ffdc88e64fbfd22acc).
 - Retain final packages, mapping and matching native debug symbols under the
   ignored `artifacts/store-1.18/` directory, with upload copies under `C:\temp`.
 - Signing material remains outside Git under `C:\temp\torrent-android`.
 
+| Retained artifact | SHA-256 |
+|-------------------|---------|
+| Signed Android AAB, 1.18 code 23 | `34dc812e3a90f1870d95377e1dba7b0dc0653e571b530f1d0b3dc79477065ee6` |
+| Android R8 mapping | `05466314c1e149affb7f896c3c7b8de9b79fbdbea43586cef9abed95cdbb5803` |
+| Android native debug symbols ZIP | `dcae67fd2c45ce166fddf879c0753b2eb36af7d3c16213cae7c27666fec427dd` |
+| Windows x64 MSIX | `99d7ff602fcddb9e2a37c9c107a17e6561ebae43e839b6e98c26c19bc05672be` |
+| Windows ARM64 MSIX | `37d70254b3399ebed229ac09f71eafb8aca680613eb310789a229882381f1357` |
+
 ## Store status
 
-As of October 1, 2026, version **1.18 has not been submitted or published**.
+As of October 1, 2026, Google Play **1.18 is submitted for review**. Microsoft
+Store packages are validated and saved; listing updates are finishing.
+**Neither release is live.**
 
 | Store | Target package | Status | Submission/publication record |
 |-------|----------------|--------|-------------------------------|
-| Microsoft Store | 1.18.0.0 x64 + ARM64 | Preparing packages | No submission yet |
-| Google Play | 1.18, code 23 | Preparing signed AAB and symbols | No submission yet |
+| Microsoft Store | 1.18.0.0 x64 + ARM64 | Draft; packages validated and saved | Submission 18, `1152921505702024112`; not submitted for certification yet |
+| Google Play | 1.18, code 23 | In review; automated checks running initially | Submission **20**, October 1, 2026 at 23:23 Europe/Oslo (21:23 UTC); production release `10`, track `4698459015960602547` |
+
+Google Play accepted the signed AAB with embedded ReTrace mapping and the matching
+native debug symbols attachment. Release notes are supplied for all 26 languages.
+The full rollout targets all existing 178 countries/regions, and the console shows
+no changes to supported devices. Managed publishing remains off, so publication
+will follow approval automatically.
 
 Version 1.17 remains live in both stores. Play Console reports its publication on
 September 30, 2026 and 100% rollout. Microsoft submission 17

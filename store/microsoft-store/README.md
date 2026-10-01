@@ -2,8 +2,10 @@
 
 ## Current release
 
-Version **1.18** (build **23**, MSIX **1.18.0.0**) is being prepared with x64 and
-ARM64 packages. It has **not yet been submitted or published**. The update has
+Version **1.18** (build **23**, MSIX **1.18.0.0**) has x64 and ARM64 packages uploaded
+to draft submission **18** (`1152921505702024112`). Packages are validated and
+saved; localized listing updates are finishing. It has **not yet been submitted
+or published**. The update has
 localized release notes for all 31 existing listing languages, mapped from the
 24 app languages. See [release notes, validation and release record](release-notes-1.18.md).
 
