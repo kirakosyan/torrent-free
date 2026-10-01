@@ -589,9 +589,9 @@
     <value>Der Download konnte nicht in den öffentlichen Downloads-Ordner kopiert werden. Prüfen Sie Speicherberechtigungen und freien Platz und versuchen Sie es erneut.</value>
   </data>
   <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
-    <value>Ruhezustand beim Herunterladen verhindern</value>
+    <value>Energiesparmodus beim Herunterladen verhindern</value>
   </data>
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
-    <value>Verhindert automatisches Einschlafen bei aktiven Downloads. Schlaf wird erlaubt, wenn alle aktiven Downloads abgeschlossen, pausiert oder gestoppt sind. Seeding hält das Gerät nicht wach. Der Bildschirm kann sich weiterhin ausschalten.</value>
+    <value>Verhindert den automatischen Energiesparmodus bei aktiven Downloads. Der Energiesparmodus wird wieder zugelassen, wenn alle aktiven Downloads abgeschlossen, pausiert oder gestoppt sind. Seeding hält das Gerät nicht wach. Der Bildschirm kann sich weiterhin ausschalten.</value>
   </data>
 </root>

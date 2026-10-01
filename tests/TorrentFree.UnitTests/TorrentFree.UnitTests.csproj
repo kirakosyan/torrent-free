@@ -16,9 +16,4 @@
 
   <ItemGroup><ProjectReference Include="..\..\src\TorrentFree.Core\TorrentFree.Core.csproj" /></ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\..\src\TorrentFree\Platforms\Windows\WindowsSleepPreventionService.cs"
-             Link="Platforms\Windows\WindowsSleepPreventionService.cs" />
-  </ItemGroup>
-
 </Project>

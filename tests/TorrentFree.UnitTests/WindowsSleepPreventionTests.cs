@@ -1,6 +1,4 @@
-using System.Reflection;
 using System.Runtime.InteropServices;
-using Microsoft.Win32.SafeHandles;
 using TorrentFree.Services;
 using Xunit;
 
@@ -13,9 +11,8 @@ public sealed class WindowsSleepPreventionTests
     [Fact]
     public void ReasonContext_MatchesNativeLayout()
     {
-        var context = typeof(WindowsSleepPreventionService).GetNestedType("ReasonContext", BindingFlags.NonPublic)!;
-        Assert.Equal(nint.Size == 8 ? 32 : 24, Marshal.SizeOf(context));
-        Assert.Equal((nint)8, Marshal.OffsetOf(context, "SimpleReasonString"));
+        Assert.Equal(nint.Size == 8 ? 32 : 24, Marshal.SizeOf<WindowsSleepPreventionService.ReasonContext>());
+        Assert.Equal((nint)8, Marshal.OffsetOf<WindowsSleepPreventionService.ReasonContext>(nameof(WindowsSleepPreventionService.ReasonContext.SimpleReasonString)));
     }
 
     [Fact(Skip = "Requires Windows power request APIs", SkipUnless = nameof(IsWindows))]
@@ -23,27 +20,74 @@ public sealed class WindowsSleepPreventionTests
     {
         if (!OperatingSystem.IsWindows()) return;
         using var service = new WindowsSleepPreventionService();
-        var requestField = typeof(WindowsSleepPreventionService).GetField("_request", BindingFlags.Instance | BindingFlags.NonPublic)!;
         service.SetPreventSleep(false);
-        Assert.Null(requestField.GetValue(service));
+        Assert.False(service.IsHeld);
         service.SetPreventSleep(true);
-        var first = Assert.IsType<SafeFileHandle>(requestField.GetValue(service));
-        Assert.False(first.IsInvalid);
-        Assert.False(first.IsClosed);
+        Assert.True(service.IsHeld);
         service.SetPreventSleep(true);
-        Assert.Same(first, requestField.GetValue(service));
+        Assert.True(service.IsHeld);
 
         service.SetPreventSleep(false);
-        Assert.True(first.IsClosed);
-        Assert.Null(requestField.GetValue(service));
+        Assert.False(service.IsHeld);
         service.SetPreventSleep(true);
-        var second = Assert.IsType<SafeFileHandle>(requestField.GetValue(service));
-        Assert.NotSame(first, second);
-        Assert.False(second.IsClosed);
+        Assert.True(service.IsHeld);
         service.Dispose();
-        Assert.True(second.IsClosed);
-        Assert.Null(requestField.GetValue(service));
+        Assert.False(service.IsHeld);
         service.SetPreventSleep(true);
-        Assert.Null(requestField.GetValue(service));
+        Assert.False(service.IsHeld);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void FailedAcquire_RetriesOnlyAfterRelease(bool throws)
+    {
+        var attempts = 0;
+        using var service = new WindowsSleepPreventionService(() =>
+        {
+            attempts++;
+            if (throws) throw new InvalidOperationException("Power requests unavailable");
+            return null;
+        });
+        for (var i = 0; i < 100; i++) service.SetPreventSleep(true);
+        Assert.Equal(1, attempts);
+        Assert.False(service.IsHeld);
+
+        service.SetPreventSleep(false);
+        service.SetPreventSleep(true);
+        Assert.Equal(2, attempts);
+    }
+
+    [Fact]
+    public void Request_IsAcquiredOnceAndDisposedOncePerDownloadSession()
+    {
+        var requests = new List<RecordingRequest>();
+        using var service = new WindowsSleepPreventionService(() =>
+        {
+            var request = new RecordingRequest();
+            requests.Add(request);
+            return request;
+        });
+        service.SetPreventSleep(true);
+        service.SetPreventSleep(true);
+        Assert.Single(requests);
+        Assert.Equal(0, requests[0].Disposals);
+        service.SetPreventSleep(false);
+        service.SetPreventSleep(false);
+        Assert.Equal(1, requests[0].Disposals);
+
+        service.SetPreventSleep(true);
+        Assert.Equal(2, requests.Count);
+        service.Dispose();
+        service.Dispose();
+        service.SetPreventSleep(true);
+        Assert.Equal(2, requests.Count);
+        Assert.Equal(1, requests[1].Disposals);
+    }
+
+    private sealed class RecordingRequest : IDisposable
+    {
+        public int Disposals { get; private set; }
+        public void Dispose() => Disposals++;
     }
 }

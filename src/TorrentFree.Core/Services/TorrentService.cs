@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Net.Http;
 using System.Net.Sockets;
@@ -110,7 +111,8 @@ public interface ITorrentService : IDisposable, IAsyncDisposable
     void UpdateProxySettings(bool enabled, string host, int port, string username, string password);
 
     /// <summary>
-    /// Keeps the device CPU awake while transfers run in the background, where the platform supports it.
+    /// Windows: prevents automatic sleep during incomplete downloads, excluding seeding.
+    /// Android: keeps the CPU awake during active downloads and seeding in the background.
     /// </summary>
     void UpdateKeepDeviceAwake(bool enabled);
 }
@@ -142,7 +144,10 @@ public partial class TorrentService : ITorrentService
     private readonly IDownloadCompletionObserver? _completionObserver;
     private readonly IBackgroundDownloadService _backgroundDownloadService;
     private readonly ISleepPreventionService? _sleepPreventionService;
+    private readonly HashSet<TorrentItem> _observedTorrents = [];
+    private readonly HashSet<TorrentItem> _sleepBlockingTorrents = [];
     private bool _keepDeviceAwake;
+    private bool _sleepPreventionRequested;
     private readonly AsyncKeyedLocker _torrentOperationLock = new();
     private readonly ConcurrentDictionary<string, CancellationTokenSource> _downloadTokens = new();
     private readonly ConcurrentDictionary<string, TorrentManager> _managers = new();
@@ -219,6 +224,7 @@ public partial class TorrentService : ITorrentService
         _completionObserver = completionObserver;
         _backgroundDownloadService = backgroundDownloadService;
         _sleepPreventionService = sleepPreventionService;
+        Torrents.CollectionChanged += OnTorrentsCollectionChanged;
         _disposalToken = _disposalCts.Token;
         _networkMonitor = networkMonitor;
         if (_networkMonitor is not null)
@@ -294,7 +300,6 @@ public partial class TorrentService : ITorrentService
                     hadStateChanges = true;
                 }
 
-                AttachTorrentSettingsHandlers(torrent);
                 await _dispatcher.InvokeAsync(() =>
                 {
                     lock (_torrentsLock)
@@ -394,7 +399,6 @@ public partial class TorrentService : ITorrentService
                     if (IsDuplicate(infoHash, magnetLink))
                         throw new DuplicateTorrentException("This torrent is already added.");
 
-                    AttachTorrentSettingsHandlers(torrent);
                     Torrents.Add(torrent);
                 }
             });
@@ -1222,7 +1226,6 @@ public partial class TorrentService : ITorrentService
 
                 result = new TorrentRemovalResult(Removed: true, DownloadedFilesLeftInPlace: filesLeftInPlace,
                     TorrentFileLeftInPlace: torrentFileLeftInPlace);
-                DetachTorrentSettingsHandlers(torrent);
                 await _dispatcher.InvokeAsync(() =>
                 {
                     lock (_torrentsLock) Torrents.Remove(torrent);
@@ -1868,17 +1871,28 @@ public partial class TorrentService : ITorrentService
         lock (_torrentsLock)
         {
             _keepDeviceAwake = enabled;
-            UpdateSleepPreventionState();
+            ApplySleepPreventionStateLocked();
         }
     }
 
-    private void UpdateSleepPreventionState()
+    private void ApplySleepPreventionStateLocked()
+    {
+        var preventSleep = !_disposed && _keepDeviceAwake && _sleepBlockingTorrents.Count > 0;
+        if (preventSleep == _sleepPreventionRequested) return;
+        _sleepPreventionService?.SetPreventSleep(preventSleep);
+        _sleepPreventionRequested = preventSleep;
+    }
+
+    private void UpdateTorrentSleepState(TorrentItem torrent)
     {
         lock (_torrentsLock)
         {
-            if (_disposed) return;
-            _sleepPreventionService?.SetPreventSleep(_keepDeviceAwake
-                && Torrents.Any(t => t.Status == DownloadStatus.Downloading && t.Progress < 100));
+            if (_disposed || !_observedTorrents.Contains(torrent)) return;
+            if (torrent.Status == DownloadStatus.Downloading && torrent.Progress < 100)
+                _sleepBlockingTorrents.Add(torrent);
+            else
+                _sleepBlockingTorrents.Remove(torrent);
+            ApplySleepPreventionStateLocked();
         }
     }
 
@@ -2300,7 +2314,6 @@ public partial class TorrentService : ITorrentService
     private void UpdateBackgroundTransferState(bool reassert = false)
     {
         if (_disposed) return;
-        UpdateSleepPreventionState();
         bool hasActiveTransfers;
         lock (_torrentsLock)
         {
@@ -2349,10 +2362,44 @@ public partial class TorrentService : ITorrentService
         }
     }
 
+    private void OnTorrentsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        lock (_torrentsLock)
+        {
+            if (_disposed) return;
+            if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                foreach (var torrent in _observedTorrents)
+                    DetachTorrentSettingsHandlers(torrent);
+                _observedTorrents.Clear();
+                _sleepBlockingTorrents.Clear();
+                foreach (var torrent in Torrents)
+                    AttachTorrentSettingsHandlers(torrent);
+            }
+            else
+            {
+                if (e.OldItems is not null)
+                    foreach (TorrentItem torrent in e.OldItems)
+                    {
+                        DetachTorrentSettingsHandlers(torrent);
+                        _observedTorrents.Remove(torrent);
+                        _sleepBlockingTorrents.Remove(torrent);
+                    }
+                if (e.NewItems is not null)
+                    foreach (TorrentItem torrent in e.NewItems)
+                        AttachTorrentSettingsHandlers(torrent);
+            }
+            ApplySleepPreventionStateLocked();
+        }
+    }
+
     private void AttachTorrentSettingsHandlers(TorrentItem torrent)
     {
+        _observedTorrents.Add(torrent);
         torrent.PropertyChanged -= OnTorrentPropertyChanged;
         torrent.PropertyChanged += OnTorrentPropertyChanged;
+        if (torrent.Status == DownloadStatus.Downloading && torrent.Progress < 100)
+            _sleepBlockingTorrents.Add(torrent);
     }
 
     private void DetachTorrentSettingsHandlers(TorrentItem torrent)
@@ -2368,7 +2415,7 @@ public partial class TorrentService : ITorrentService
         }
 
         if (e.PropertyName is nameof(TorrentItem.Status) or nameof(TorrentItem.Progress))
-            UpdateSleepPreventionState();
+            UpdateTorrentSleepState(torrent);
 
         if (e.PropertyName == nameof(TorrentItem.Status) && torrent.Status != DownloadStatus.Seeding)
             UpdateSeedingTime(torrent, active: false);
@@ -3373,7 +3420,15 @@ public partial class TorrentService : ITorrentService
     {
         // Release before waiting on persistence or tracker shutdown. Serialize against the
         // state snapshots so an update already in flight cannot reacquire after this release.
-        lock (_torrentsLock) _sleepPreventionService?.SetPreventSleep(false);
+        lock (_torrentsLock)
+        {
+            Torrents.CollectionChanged -= OnTorrentsCollectionChanged;
+            foreach (var torrent in _observedTorrents)
+                DetachTorrentSettingsHandlers(torrent);
+            _observedTorrents.Clear();
+            _sleepBlockingTorrents.Clear();
+            ApplySleepPreventionStateLocked();
+        }
         if (_networkMonitor is not null)
             _networkMonitor.Changed -= OnNetworkChanged;
         // Cancelled first, before anything is torn down: unblocks any pending

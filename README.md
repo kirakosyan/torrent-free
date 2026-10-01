@@ -270,7 +270,8 @@ Open the **Settings** page from the app shell. Changes are saved automatically a
 
 - Off by default. Prevents automatic idle sleep while at least one active download is below 100%, including while the app is minimized.
 - Allows normal sleep when all active downloads finish, pause or stop. Seeding, queued downloads and downloads waiting for Wi-Fi do not keep the device awake. The screen may still turn off.
-- Turning the setting off or closing the app releases the request. Manual sleep, closing the lid and Windows battery power policies can still put the device to sleep, as described in [Microsoft's power request documentation](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-powersetrequest).
+- Active downloads keep the request even when stalled, waiting for metadata or without peers. This applies on AC power and battery power and can drain a laptop battery; pause or stop those downloads, or turn the setting off, to allow idle sleep.
+- Turning the setting off or closing the app releases the request. Manual sleep and lid-close sleep still take precedence. On Modern Standby devices running on battery, Windows terminates the request five minutes after the configured sleep timeout expires, as described in [Microsoft's power request documentation](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-powersetrequest).
 
 **SOCKS5 Proxy**
 

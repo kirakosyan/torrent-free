@@ -112,6 +112,93 @@ public sealed class SleepPreventionTests
     }
 
     [Fact]
+    public async Task ProgressReaching100_ReleasesRequestBeforeStatusChangesAndReacquiresIfProgressDrops()
+    {
+        var sleep = new RecordingSleepPrevention();
+        await using var fixture = new CoreServiceFixture(sleepPreventionService: sleep);
+        var torrent = await AddMagnetAsync(fixture.Service, 1);
+        torrent.Progress = 50;
+        torrent.Status = DownloadStatus.Downloading;
+        fixture.Service.UpdateKeepDeviceAwake(true);
+        Assert.True(sleep.PreventSleep);
+
+        torrent.Progress = 100;
+
+        Assert.Equal(DownloadStatus.Downloading, torrent.Status);
+        Assert.False(sleep.PreventSleep);
+        torrent.Progress = 99;
+        Assert.True(sleep.PreventSleep);
+    }
+
+    [Fact]
+    public async Task IncompleteProgressUpdates_DoNotReissueSleepRequests()
+    {
+        var sleep = new RecordingSleepPrevention();
+        await using var fixture = new CoreServiceFixture(sleepPreventionService: sleep);
+        var torrent = await AddMagnetAsync(fixture.Service, 1);
+        torrent.Status = DownloadStatus.Downloading;
+        fixture.Service.UpdateKeepDeviceAwake(true);
+        var requestsBeforeProgress = sleep.Requests.Count;
+
+        for (var progress = 1; progress < 100; progress++) torrent.Progress = progress;
+
+        Assert.True(sleep.PreventSleep);
+        Assert.Equal(requestsBeforeProgress, sleep.Requests.Count);
+        torrent.Progress = 100;
+        Assert.False(sleep.PreventSleep);
+        Assert.Equal(requestsBeforeProgress + 1, sleep.Requests.Count);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task CollectionRemovalOrReset_ReleasesRequestAndDetachesRemovedItems(bool reset)
+    {
+        var sleep = new RecordingSleepPrevention();
+        await using var fixture = new CoreServiceFixture(sleepPreventionService: sleep);
+        var torrent = await AddMagnetAsync(fixture.Service, 1);
+        torrent.Status = DownloadStatus.Downloading;
+        fixture.Service.UpdateKeepDeviceAwake(true);
+        Assert.True(sleep.PreventSleep);
+
+        if (reset) fixture.Service.Torrents.Clear();
+        else fixture.Service.Torrents.Remove(torrent);
+
+        Assert.False(sleep.PreventSleep);
+        var requestsAfterRemoval = sleep.Requests.Count;
+        torrent.Status = DownloadStatus.Paused;
+        torrent.Status = DownloadStatus.Downloading;
+        Assert.Equal(requestsAfterRemoval, sleep.Requests.Count);
+
+        fixture.Service.Torrents.Add(torrent);
+        Assert.True(sleep.PreventSleep);
+        torrent.Progress = 100;
+        Assert.False(sleep.PreventSleep);
+    }
+
+    [Fact]
+    public async Task CollectionReplacementAndMove_KeepPolicySynchronized()
+    {
+        var sleep = new RecordingSleepPrevention();
+        await using var fixture = new CoreServiceFixture(sleepPreventionService: sleep);
+        var downloading = await AddMagnetAsync(fixture.Service, 1);
+        var paused = await AddMagnetAsync(fixture.Service, 2);
+        downloading.Status = DownloadStatus.Downloading;
+        paused.Status = DownloadStatus.Paused;
+        fixture.Service.UpdateKeepDeviceAwake(true);
+        var requestsBeforeMove = sleep.Requests.Count;
+
+        fixture.Service.Torrents.Move(0, 1);
+
+        Assert.True(sleep.PreventSleep);
+        Assert.Equal(requestsBeforeMove, sleep.Requests.Count);
+        fixture.Service.Torrents[1] = new TorrentItem { Status = DownloadStatus.Seeding, Progress = 100 };
+        Assert.False(sleep.PreventSleep);
+        downloading.Progress = 10;
+        Assert.False(sleep.PreventSleep);
+    }
+
+    [Fact]
     public async Task Shutdown_ReleasesSleepRequestAndCannotReacquireIt()
     {
         var sleep = new RecordingSleepPrevention();
