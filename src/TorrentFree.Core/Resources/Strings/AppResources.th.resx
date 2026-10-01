@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>คัดลอกไฟล์ที่ดาวน์โหลดไปยังโฟลเดอร์ดาวน์โหลดสาธารณะไม่ได้ โปรดตรวจสอบสิทธิ์การเข้าถึงพื้นที่จัดเก็บและพื้นที่ว่าง แล้วลองอีกครั้ง</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>ป้องกันโหมดสลีปขณะดาวน์โหลด</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>ป้องกันการเข้าสู่โหมดสลีปอัตโนมัติขณะที่ดาวน์โหลดอยู่ อนุญาตให้สลีปเมื่อการดาวน์โหลดที่ทำงานอยู่ทั้งหมดเสร็จสิ้น ถูกพัก หรือหยุด การปล่อยไฟล์ที่ดาวน์โหลดเสร็จแล้วไม่ป้องกันโหมดสลีป หน้าจอยังปิดได้</value>
+  </data>
 </root>

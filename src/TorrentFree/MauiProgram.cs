@@ -38,6 +38,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<ITransferNetworkMonitor, AndroidTransferNetworkMonitor>();
 #elif WINDOWS
         builder.Services.AddSingleton<ITransferNetworkMonitor, WindowsTransferNetworkMonitor>();
+        builder.Services.AddSingleton<ISleepPreventionService, WindowsSleepPreventionService>();
 #else
         builder.Services.AddSingleton<ITransferNetworkMonitor, MauiTransferNetworkMonitor>();
 #endif

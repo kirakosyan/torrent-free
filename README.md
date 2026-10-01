@@ -50,6 +50,7 @@ See the [review findings and validation](docs/review-findings.md) for the curren
 - Keep torrents visible and retryable if stopping or removing the transfer fails. Stop completion monitoring before removal and restore it when an active stop fails. Preserve shared downloads and source `.torrent` files that have changed since import, with warnings when requested files remain. Empty magnets no longer block deletion, and unrelated imports can continue while a transfer stops.
 - Normalize invalid seeding ratios before persistence and refresh rejected edits in the limit editor. Distinguish unavailable Android downloads from failed copies without opening an unrelated Downloads folder.
 - Show Windows notifications when downloads complete. Clicking a notification opens the app and selects the completed torrent, including after an app restart.
+- Add an optional Windows setting to prevent automatic sleep during active downloads. It is off by default and releases the request when downloads finish, pause or stop; seeding alone allows sleep.
 
 ### v1.17
 
@@ -264,6 +265,12 @@ Open the **Settings** page from the app shell. Changes are saved automatically a
 **Keep device awake during transfers** (Android only)
 
 - Holds a partial wake lock while downloads or seeding are active so transfers continue with the screen off. Off by default because it uses more battery.
+
+**Prevent sleep while downloading** (Windows only)
+
+- Off by default. Prevents automatic idle sleep while at least one active download is below 100%, including while the app is minimized.
+- Allows normal sleep when all active downloads finish, pause or stop. Seeding, queued downloads and downloads waiting for Wi-Fi do not keep the device awake. The screen may still turn off.
+- Turning the setting off or closing the app releases the request. Manual sleep, closing the lid and Windows battery power policies can still put the device to sleep, as described in [Microsoft's power request documentation](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-powersetrequest).
 
 **SOCKS5 Proxy**
 

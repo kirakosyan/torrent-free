@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>A letöltés nem másolható a nyilvános Letöltések mappába. Ellenőrizze a tárhelyengedélyeket és a szabad helyet, majd próbálja újra.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>Alvó mód megakadályozása letöltés közben</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>Megakadályozza az automatikus alvó módot aktív letöltés közben. Az alvó mód engedélyezett, ha minden aktív letöltés befejeződik, szünetel vagy leáll. A kész fájlok megosztása nem tartja ébren az eszközt. A képernyő továbbra is kikapcsolhat.</value>
+  </data>
 </root>

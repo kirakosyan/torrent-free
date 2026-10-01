@@ -39,10 +39,12 @@ public partial class SettingsViewModel : ObservableObject
     public partial bool WifiOnly { get; set; }
 
     /// <summary>
-    /// Android: hold a partial wake lock while transfers run so they continue with the screen off.
+    /// Keep Windows awake during incomplete downloads, or Android awake during active transfers.
     /// </summary>
     [ObservableProperty]
     public partial bool KeepDeviceAwake { get; set; }
+
+    public bool IsWindows => DeviceInfo.Platform == DevicePlatform.WinUI;
 
     /// <summary>
     /// Global download limit in KB/s (0 = unlimited).

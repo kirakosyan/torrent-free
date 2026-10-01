@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>Latausta ei voitu kopioida julkiseen Lataukset-kansioon. Tarkista tallennustilan käyttöoikeudet ja vapaa tila ja yritä uudelleen.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>Estä lepotila lataamisen aikana</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>Estää automaattisen lepotilan aktiivisten latausten aikana. Lepotila sallitaan, kun kaikki aktiiviset lataukset valmistuvat, keskeytetään tai pysäytetään. Valmiiden tiedostojen jakaminen ei pidä laitetta hereillä. Näyttö voi silti sammua.</value>
+  </data>
 </root>

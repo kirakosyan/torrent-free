@@ -602,4 +602,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>No se pudo copiar la descarga a la carpeta pública Descargas. Comprueba los permisos de almacenamiento y el espacio disponible e inténtalo de nuevo.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>Evitar la suspensión durante las descargas</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>Evita la suspensión automática mientras haya descargas activas. Permite la suspensión cuando todas las descargas activas terminen, se pausen o se detengan. Compartir archivos completos no mantiene el dispositivo activo. La pantalla puede apagarse.</value>
+  </data>
 </root>

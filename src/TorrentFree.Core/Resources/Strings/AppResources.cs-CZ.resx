@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>Stažená data nelze zkopírovat do veřejné složky Stažené soubory. Zkontrolujte oprávnění a volné místo a zkuste to znovu.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>Zabránit uspání během stahování</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>Zabrání automatickému uspání během aktivního stahování. Uspání bude možné po dokončení, pozastavení nebo zastavení všech aktivních stahování. Sdílení dokončených souborů nebrání uspání. Obrazovka se může vypnout.</value>
+  </data>
 </root>

@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>Nedlastingen kunne ikke kopieres til den offentlige Nedlastinger-mappen. Kontroller lagringstillatelser og ledig plass, og prøv igjen.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>Hindre hvilemodus under nedlasting</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>Hindrer automatisk hvilemodus mens nedlastinger er aktive. Hvilemodus tillates når alle aktive nedlastinger er ferdige, satt på pause eller stoppet. Seeding holder ikke enheten våken. Skjermen kan fortsatt slå seg av.</value>
+  </data>
 </root>

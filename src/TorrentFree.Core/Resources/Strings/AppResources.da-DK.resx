@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>Downloaden kunne ikke kopieres til den offentlige mappe Downloads. Kontrollér lagertilladelser og ledig plads, og prøv igen.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>Undgå dvale under download</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>Forhindrer automatisk dvale, mens downloads er aktive. Dvale tillades, når alle aktive downloads er færdige, sat på pause eller stoppet. Seeding holder ikke enheden vågen. Skærmen kan stadig slukke.</value>
+  </data>
 </root>

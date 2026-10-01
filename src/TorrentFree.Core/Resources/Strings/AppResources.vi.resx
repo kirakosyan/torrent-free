@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>Không thể sao chép dữ liệu đã tải xuống vào thư mục Tải xuống công khai. Kiểm tra quyền lưu trữ và dung lượng trống rồi thử lại.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>Ngăn chế độ ngủ khi tải xuống</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>Ngăn tự động chuyển sang chế độ ngủ khi có tải xuống đang hoạt động. Cho phép ngủ khi tất cả tải xuống đang hoạt động hoàn tất, tạm dừng hoặc dừng. Chia sẻ các tệp đã tải xong không giữ thiết bị thức. Màn hình vẫn có thể tắt.</value>
+  </data>
 </root>

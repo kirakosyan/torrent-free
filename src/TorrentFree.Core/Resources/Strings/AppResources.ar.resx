@@ -574,4 +574,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>تعذر نسخ التنزيل إلى مجلد التنزيلات العام. تحقق من أذونات التخزين والمساحة المتاحة ثم حاول مجددًا.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>منع السكون أثناء التنزيل</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>امنع السكون التلقائي أثناء التنزيلات النشطة. اسمح بالسكون عند اكتمال جميع التنزيلات النشطة أو إيقافها مؤقتًا أو إيقافها. لا تمنع مشاركة الملفات سكون الجهاز. قد تنطفئ الشاشة.</value>
+  </data>
 </root>

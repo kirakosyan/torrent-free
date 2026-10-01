@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>Não foi possível copiar o download para a pasta pública Downloads. Verifique as permissões de armazenamento e o espaço disponível e tente novamente.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>Impedir suspensão durante os downloads</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>Impede a suspensão automática durante downloads ativos. A suspensão é permitida quando todos os downloads ativos terminam, são pausados ou interrompidos. Compartilhar arquivos concluídos não mantém o dispositivo ativo. A tela pode apagar.</value>
+  </data>
 </root>

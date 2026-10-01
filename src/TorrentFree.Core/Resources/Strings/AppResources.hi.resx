@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>डाउनलोड को सार्वजनिक Downloads फ़ोल्डर में कॉपी नहीं किया जा सका। स्टोरेज अनुमतियाँ और उपलब्ध जगह जाँचें, फिर दोबारा कोशिश करें।</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>डाउनलोड करते समय स्लीप रोकें</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>सक्रिय डाउनलोड के दौरान स्वचालित स्लीप रोकें। सभी सक्रिय डाउनलोड पूरे होने, विराम देने या रोकने पर स्लीप की अनुमति दें। पूरी हुई फ़ाइलें साझा करने से डिवाइस जागा नहीं रहता। स्क्रीन फिर भी बंद हो सकती है।</value>
+  </data>
 </root>

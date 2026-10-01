@@ -141,6 +141,8 @@ public partial class TorrentService : ITorrentService
     private readonly INotificationService _notificationService;
     private readonly IDownloadCompletionObserver? _completionObserver;
     private readonly IBackgroundDownloadService _backgroundDownloadService;
+    private readonly ISleepPreventionService? _sleepPreventionService;
+    private bool _keepDeviceAwake;
     private readonly AsyncKeyedLocker _torrentOperationLock = new();
     private readonly ConcurrentDictionary<string, CancellationTokenSource> _downloadTokens = new();
     private readonly ConcurrentDictionary<string, TorrentManager> _managers = new();
@@ -208,7 +210,7 @@ public partial class TorrentService : ITorrentService
 
     public ObservableCollection<TorrentItem> Torrents { get; } = [];
 
-    public TorrentService(IStorageService storageService, INotificationService notificationService, IBackgroundDownloadService backgroundDownloadService, IUiDispatcher dispatcher, TimeProvider? timeProvider = null, IDownloadCompletionObserver? completionObserver = null, ITransferNetworkMonitor? networkMonitor = null)
+    public TorrentService(IStorageService storageService, INotificationService notificationService, IBackgroundDownloadService backgroundDownloadService, IUiDispatcher dispatcher, TimeProvider? timeProvider = null, IDownloadCompletionObserver? completionObserver = null, ITransferNetworkMonitor? networkMonitor = null, ISleepPreventionService? sleepPreventionService = null)
     {
         _storageService = storageService;
         _dispatcher = dispatcher;
@@ -216,6 +218,7 @@ public partial class TorrentService : ITorrentService
         _notificationService = notificationService;
         _completionObserver = completionObserver;
         _backgroundDownloadService = backgroundDownloadService;
+        _sleepPreventionService = sleepPreventionService;
         _disposalToken = _disposalCts.Token;
         _networkMonitor = networkMonitor;
         if (_networkMonitor is not null)
@@ -1859,7 +1862,25 @@ public partial class TorrentService : ITorrentService
     }
 
     /// <inheritdoc />
-    public void UpdateKeepDeviceAwake(bool enabled) => _backgroundDownloadService.SetKeepDeviceAwake(enabled);
+    public void UpdateKeepDeviceAwake(bool enabled)
+    {
+        _backgroundDownloadService.SetKeepDeviceAwake(enabled);
+        lock (_torrentsLock)
+        {
+            _keepDeviceAwake = enabled;
+            UpdateSleepPreventionState();
+        }
+    }
+
+    private void UpdateSleepPreventionState()
+    {
+        lock (_torrentsLock)
+        {
+            if (_disposed) return;
+            _sleepPreventionService?.SetPreventSleep(_keepDeviceAwake
+                && Torrents.Any(t => t.Status == DownloadStatus.Downloading && t.Progress < 100));
+        }
+    }
 
     /// <inheritdoc />
     public void UpdateProxySettings(bool enabled, string host, int port, string username, string password)
@@ -2279,6 +2300,7 @@ public partial class TorrentService : ITorrentService
     private void UpdateBackgroundTransferState(bool reassert = false)
     {
         if (_disposed) return;
+        UpdateSleepPreventionState();
         bool hasActiveTransfers;
         lock (_torrentsLock)
         {
@@ -2344,6 +2366,9 @@ public partial class TorrentService : ITorrentService
         {
             return;
         }
+
+        if (e.PropertyName is nameof(TorrentItem.Status) or nameof(TorrentItem.Progress))
+            UpdateSleepPreventionState();
 
         if (e.PropertyName == nameof(TorrentItem.Status) && torrent.Status != DownloadStatus.Seeding)
             UpdateSeedingTime(torrent, active: false);
@@ -3346,6 +3371,9 @@ public partial class TorrentService : ITorrentService
 
     private async Task DisposeAsyncCore()
     {
+        // Release before waiting on persistence or tracker shutdown. Serialize against the
+        // state snapshots so an update already in flight cannot reacquire after this release.
+        lock (_torrentsLock) _sleepPreventionService?.SetPreventSleep(false);
         if (_networkMonitor is not null)
             _networkMonitor.Changed -= OnNetworkChanged;
         // Cancelled first, before anything is torn down: unblocks any pending
