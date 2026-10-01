@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>İndirme, ortak İndirilenler klasörüne kopyalanamadı. Depolama izinlerini ve boş alanı kontrol edip yeniden deneyin.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>İndirme sırasında uyku modunu engelle</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>Etkin indirmeler sırasında otomatik uyku modunu engeller. Tüm etkin indirmeler tamamlandığında, duraklatıldığında veya durdurulduğunda uykuya izin verir. Tamamlanan dosyaları paylaşmak cihazı uyanık tutmaz. Ekran yine de kapanabilir.</value>
+  </data>
 </root>

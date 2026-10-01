@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>Descărcarea nu poate fi copiată în folderul public Descărcări. Verificați permisiunile de stocare și spațiul disponibil, apoi încercați din nou.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>Împiedică repausul în timpul descărcării</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>Împiedică repausul automat în timpul descărcărilor active. Repausul este permis când toate descărcările active se termină, sunt puse pe pauză sau oprite. Distribuirea fișierelor finalizate nu menține dispozitivul activ. Ecranul se poate stinge.</value>
+  </data>
 </root>

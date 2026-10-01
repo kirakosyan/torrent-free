@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>ダウンロードを公開のダウンロードフォルダーにコピーできませんでした。ストレージの権限と空き容量を確認し、再試行してください。</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>ダウンロード中のスリープを防ぐ</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>ダウンロード中の自動スリープを防ぎます。すべての実行中のダウンロードが完了、一時停止、または停止すると、スリープを許可します。シードのみではスリープを防ぎません。画面はオフになることがあります。</value>
+  </data>
 </root>

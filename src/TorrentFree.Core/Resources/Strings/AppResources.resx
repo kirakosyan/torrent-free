@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>The download could not be copied to public Downloads. Check storage permissions and available space, then try again.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>Prevent sleep while downloading</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>Prevent automatic sleep while downloads are active. Allow sleep when all active downloads finish, pause or stop. Seeding does not keep the device awake. The screen may still turn off.</value>
+  </data>
 </root>

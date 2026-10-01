@@ -602,4 +602,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>Impossible de copier le téléchargement dans le dossier public Téléchargements. Vérifiez les autorisations de stockage et l’espace disponible, puis réessayez.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>Empêcher la veille pendant les téléchargements</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>Empêche la mise en veille automatique pendant les téléchargements actifs. La veille est autorisée quand tous les téléchargements actifs sont terminés, en pause ou arrêtés. Le partage des fichiers terminés ne maintient pas l’appareil éveillé. L’écran peut s’éteindre.</value>
+  </data>
 </root>

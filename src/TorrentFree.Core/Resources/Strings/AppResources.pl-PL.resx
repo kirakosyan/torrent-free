@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>Nie można skopiować pobranych danych do publicznego folderu Pobrane. Sprawdź uprawnienia do pamięci i wolne miejsce, a następnie spróbuj ponownie.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>Zapobiegaj uśpieniu podczas pobierania</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>Zapobiega automatycznemu uśpieniu podczas aktywnych pobrań. Uśpienie jest dozwolone, gdy wszystkie aktywne pobrania zostaną ukończone, wstrzymane lub zatrzymane. Udostępnianie ukończonych plików nie utrzymuje urządzenia w stanie aktywnym. Ekran może się wyłączyć.</value>
+  </data>
 </root>

@@ -112,8 +112,9 @@ public class AppSettings
     public bool? DesktopWasMaximized { get; set; }
 
     /// <summary>
-    /// Android only: holds a partial wake lock while transfers are active so downloads keep
-    /// running with the screen off. Off by default because it increases battery use.
+    /// Windows: prevents automatic sleep while incomplete downloads are active, excluding seeding.
+    /// Android: holds a partial wake lock while transfers are active, including seeding.
+    /// Off by default because it increases battery use.
     /// </summary>
     public bool KeepDeviceAwake { get; set; }
 

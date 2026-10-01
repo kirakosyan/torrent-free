@@ -602,4 +602,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>Не удалось скопировать загрузку в общую папку «Загрузки». Проверьте разрешения на доступ к хранилищу и свободное место, затем повторите попытку.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>Запретить сон во время загрузки</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>Запрещает автоматический переход в сон во время активных загрузок. Сон разрешается, когда все активные загрузки завершены, приостановлены или остановлены. Раздача завершённых файлов не мешает переходу в сон. Экран может выключаться.</value>
+  </data>
 </root>

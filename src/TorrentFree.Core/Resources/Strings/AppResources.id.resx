@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>Unduhan tidak dapat disalin ke folder Unduhan publik. Periksa izin penyimpanan dan ruang kosong, lalu coba lagi.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>Cegah tidur selama pengunduhan</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>Mencegah tidur otomatis saat unduhan aktif. Tidur diizinkan setelah semua unduhan aktif selesai, dijeda, atau dihentikan. Berbagi berkas yang sudah selesai tidak membuat perangkat tetap aktif. Layar tetap dapat mati.</value>
+  </data>
 </root>

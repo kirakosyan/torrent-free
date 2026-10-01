@@ -39,10 +39,17 @@ public partial class SettingsViewModel : ObservableObject
     public partial bool WifiOnly { get; set; }
 
     /// <summary>
-    /// Android: hold a partial wake lock while transfers run so they continue with the screen off.
+    /// Keep Windows awake during incomplete downloads, or Android awake during active transfers.
     /// </summary>
     [ObservableProperty]
     public partial bool KeepDeviceAwake { get; set; }
+
+    public bool IsWindows => DeviceInfo.Platform == DevicePlatform.WinUI;
+    public bool IsKeepDeviceAwakeSupported => IsWindows || IsAndroid;
+    public string KeepDeviceAwakeLabel => LocalizationResourceManager.Instance[IsWindows
+        ? "PreventSleepWhileDownloadingLabel" : "KeepDeviceAwakeLabel"];
+    public string KeepDeviceAwakeHelp => LocalizationResourceManager.Instance[IsWindows
+        ? "PreventSleepWhileDownloadingHelp" : "KeepDeviceAwakeHelp"];
 
     /// <summary>
     /// Global download limit in KB/s (0 = unlimited).
@@ -240,6 +247,8 @@ public partial class SettingsViewModel : ObservableObject
 
     private void OnLocalizationChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
+        OnPropertyChanged(nameof(KeepDeviceAwakeLabel));
+        OnPropertyChanged(nameof(KeepDeviceAwakeHelp));
         RebuildThemeOptions(SelectedTheme?.Code ?? ThemeSettings.System);
         _isSyncingLanguageOptions = true;
         try

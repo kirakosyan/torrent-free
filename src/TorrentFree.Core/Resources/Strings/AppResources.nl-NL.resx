@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>De download kan niet naar de openbare map Downloads worden gekopieerd. Controleer de opslagmachtigingen en vrije ruimte en probeer opnieuw.</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>Slaapstand voorkomen tijdens downloaden</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>Voorkomt automatische slaapstand tijdens actieve downloads. Slaapstand wordt toegestaan wanneer alle actieve downloads klaar, gepauzeerd of gestopt zijn. Seeden houdt het apparaat niet wakker. Het scherm kan nog steeds uitgaan.</value>
+  </data>
 </root>

@@ -588,4 +588,10 @@
   <data name="ErrorExportDownload" xml:space="preserve">
     <value>无法将下载内容复制到公共下载文件夹。请检查存储权限和可用空间，然后重试。</value>
   </data>
+  <data name="PreventSleepWhileDownloadingLabel" xml:space="preserve">
+    <value>下载时阻止睡眠</value>
+  </data>
+  <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
+    <value>有活动下载时阻止自动睡眠。当所有活动下载完成、暂停或停止时允许睡眠。仅做种不会让设备保持唤醒。屏幕仍可关闭。</value>
+  </data>
 </root>
