@@ -568,4 +568,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>غيّر حدود السرعة والبذر للتنزيل المحدد.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>تمت إزالة التورنت، لكن تعذر حذف ملف ‎.torrent الأصلي أو لم يعد مطابقًا للتورنت المستورد. تم الاحتفاظ بالملف الأصلي.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>تعذر نسخ التنزيل إلى مجلد التنزيلات العام. تحقق من أذونات التخزين والمساحة المتاحة ثم حاول مجددًا.</value>
+  </data>
 </root>

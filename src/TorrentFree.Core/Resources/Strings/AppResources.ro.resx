@@ -582,4 +582,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>Modifică limitele de viteză și seeding pentru descărcarea selectată.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>Torrentul a fost eliminat, dar fișierul .torrent sursă nu poate fi șters sau nu mai corespunde torrentului importat. Fișierul sursă a fost păstrat.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>Descărcarea nu poate fi copiată în folderul public Descărcări. Verificați permisiunile de stocare și spațiul disponibil, apoi încercați din nou.</value>
+  </data>
 </root>

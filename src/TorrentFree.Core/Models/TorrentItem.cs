@@ -148,8 +148,17 @@ public partial class TorrentItem : ObservableObject
     /// <summary>
     /// Per-torrent max seed ratio (0 = unlimited).
     /// </summary>
-    [ObservableProperty]
-    public partial double MaxSeedRatio { get; set; }
+    private double _maxSeedRatio;
+    public double MaxSeedRatio
+    {
+        get => _maxSeedRatio;
+        set
+        {
+            var normalized = SeedRatioLimits.Normalize(value);
+            if (!SetProperty(ref _maxSeedRatio, normalized) && value != normalized)
+                OnPropertyChanged(nameof(MaxSeedRatio));
+        }
+    }
 
     /// <summary>
     /// Per-torrent max seed time in minutes (0 = unlimited).

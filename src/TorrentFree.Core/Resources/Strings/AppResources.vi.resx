@@ -582,4 +582,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>Thay đổi giới hạn tốc độ và chia sẻ cho bản tải xuống đã chọn.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>Torrent đã bị xóa khỏi danh sách, nhưng không thể xóa tệp .torrent nguồn hoặc tệp không còn khớp với torrent đã nhập. Tệp nguồn được giữ lại.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>Không thể sao chép dữ liệu đã tải xuống vào thư mục Tải xuống công khai. Kiểm tra quyền lưu trữ và dung lượng trống rồi thử lại.</value>
+  </data>
 </root>

@@ -582,4 +582,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>선택한 다운로드의 속도 및 시드 제한을 변경합니다.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>토렌트가 목록에서 제거되었지만 원본 .torrent 파일을 삭제할 수 없거나 가져온 토렌트와 더 이상 일치하지 않습니다. 원본 파일은 보존되었습니다.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>다운로드를 공용 다운로드 폴더로 복사할 수 없습니다. 저장소 권한과 여유 공간을 확인한 후 다시 시도하세요.</value>
+  </data>
 </root>

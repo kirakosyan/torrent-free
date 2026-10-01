@@ -452,10 +452,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 IsBusy = true;
                 try
                 {
-                    if (!await TryOpenAndroidFolderAsync(torrent.Id, downloadPath, folderPath, isDirectory))
-                    {
-                        ErrorMessage = LocalizationResourceManager.Instance["ErrorOpenFolder"];
-                    }
+                    var result = await TryOpenAndroidFolderAsync(torrent.Id, downloadPath, folderPath, isDirectory);
+                    if (DownloadFolderExportCoordinator.GetErrorResourceKey(result) is { } errorKey)
+                        ErrorMessage = LocalizationResourceManager.Instance[errorKey];
                 }
                 finally
                 {
@@ -481,64 +480,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
 #if ANDROID
-    private static async Task<bool> TryOpenAndroidFolderAsync(string ownerId, string downloadPath, string folderPath, bool isDirectory)
+    private static Task<DownloadFolderExportResult> TryOpenAndroidFolderAsync(string ownerId, string downloadPath, string folderPath, bool isDirectory)
     {
         var targetFolder = isDirectory ? downloadPath : folderPath;
-        if (string.IsNullOrWhiteSpace(targetFolder) || !Directory.Exists(targetFolder))
-        {
-            return false;
-        }
-
-        var exported = false;
-        string? publicFolder = null;
-        try
-        {
+        return DownloadFolderExportCoordinator.TryExportAndOpenAsync(
+            () => !string.IsNullOrWhiteSpace(targetFolder) && Directory.Exists(targetFolder)
+                && (isDirectory || File.Exists(downloadPath)),
             // Android 6-9 need the runtime storage permission to write to public Downloads.
-            if (OperatingSystem.IsAndroidVersionAtLeast(29)
-                || await Permissions.RequestAsync<Permissions.StorageWrite>() == PermissionStatus.Granted)
-            {
-                publicFolder = await AndroidDownloadExportService.ExportToPublicDownloadsAsync(ownerId, downloadPath, isDirectory);
-                exported = !string.IsNullOrWhiteSpace(publicFolder);
-            }
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Android public Downloads export error: {ex}");
-        }
-
-        if (exported && AndroidDownloadExportService.TryOpenFolder(publicFolder!))
-        {
-            return true;
-        }
-
-        if (AndroidDownloadExportService.TryOpenPublicDownloadsFolder())
-        {
-            return true;
-        }
-
-        if (exported)
-        {
-            return true;
-        }
-
-        if (!isDirectory && File.Exists(downloadPath))
-        {
-            try
-            {
-                await Launcher.Default.OpenAsync(new OpenFileRequest
-                {
-                    File = new ReadOnlyFile(downloadPath)
-                });
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Android file open fallback error: {ex}");
-            }
-        }
-
-        return AndroidDownloadExportService.TryOpenPublicDownloadsFolder();
+            async () => OperatingSystem.IsAndroidVersionAtLeast(29)
+                || await Permissions.RequestAsync<Permissions.StorageWrite>() == PermissionStatus.Granted,
+            () => AndroidDownloadExportService.ExportToPublicDownloadsAsync(ownerId, downloadPath, isDirectory),
+            AndroidDownloadExportService.TryOpenFolder,
+            () => AndroidDownloadExportService.TryOpenPublicDownloadsFolder());
     }
 #endif
 
@@ -1441,6 +1394,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private async Task RemoveTorrentCoreAsync(TorrentItem torrent, bool setBusy)
     {
         if (setBusy) IsBusy = true;
+        ErrorMessage = null;
         try
         {
             var result = await ShowDeleteDialogAsync(torrent);
@@ -1458,6 +1412,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
             if (removal.DownloadedFilesLeftInPlace)
             {
                 ErrorMessage = LocalizationResourceManager.Instance["ErrorRemoveFilesLeftInPlace"];
+            }
+            if (removal.TorrentFileLeftInPlace)
+            {
+                var sourceWarning = LocalizationResourceManager.Instance["ErrorRemoveTorrentFileLeftInPlace"];
+                ErrorMessage = string.IsNullOrWhiteSpace(ErrorMessage)
+                    ? sourceWarning : ErrorMessage + Environment.NewLine + sourceWarning;
             }
         }
         catch (Exception ex)

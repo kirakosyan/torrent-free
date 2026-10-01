@@ -582,4 +582,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>เปลี่ยนขีดจำกัดความเร็วและการแบ่งปันสำหรับการดาวน์โหลดที่เลือก</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>นำทอร์เรนต์ออกแล้ว แต่ลบไฟล์ .torrent ต้นฉบับไม่ได้ หรือไฟล์ไม่ตรงกับทอร์เรนต์ที่นำเข้าอีกต่อไป จึงเก็บไฟล์ต้นฉบับไว้</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>คัดลอกไฟล์ที่ดาวน์โหลดไปยังโฟลเดอร์ดาวน์โหลดสาธารณะไม่ได้ โปรดตรวจสอบสิทธิ์การเข้าถึงพื้นที่จัดเก็บและพื้นที่ว่าง แล้วลองอีกครั้ง</value>
+  </data>
 </root>

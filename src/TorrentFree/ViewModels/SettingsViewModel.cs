@@ -32,7 +32,7 @@ public partial class SettingsViewModel : ObservableObject
 
     private const int MaxKbpsLimit = 1_000_000;
     private const int MaxActiveLimit = 200;
-    private const double MaxSeedRatioLimit = 100;
+    private const double MaxSeedRatioLimit = SeedRatioLimits.Maximum;
     private const int MaxSeedMinutesLimit = 525_600;
 
     [ObservableProperty]
@@ -695,7 +695,7 @@ public partial class SettingsViewModel : ObservableObject
         MaxActiveSeeds = maxSeeds;
 
         var seedRatio = NormalizeSeedRatio(GlobalMaxSeedRatio);
-        adjusted |= Math.Abs(seedRatio - GlobalMaxSeedRatio) > double.Epsilon;
+        adjusted |= seedRatio != GlobalMaxSeedRatio;
         GlobalMaxSeedRatio = seedRatio;
 
         var seedMinutes = NormalizeInt(GlobalMaxSeedMinutes, 0, MaxSeedMinutesLimit);
@@ -743,7 +743,7 @@ public partial class SettingsViewModel : ObservableObject
             return false;
         }
 
-        if (Math.Abs(normalized - value) > double.Epsilon)
+        if (normalized != value)
         {
             _isNormalizing = true;
             ValidationMessage = double.IsNaN(value) || double.IsInfinity(value) || value < 0
@@ -799,19 +799,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     private static double NormalizeSeedRatio(double value)
-    {
-        if (double.IsNaN(value) || double.IsInfinity(value) || value < 0)
-        {
-            return 0;
-        }
-
-        if (value > MaxSeedRatioLimit)
-        {
-            return MaxSeedRatioLimit;
-        }
-
-        return value;
-    }
+        => SeedRatioLimits.Normalize(value);
 
     /// <summary>
     /// Runs the task without awaiting, logging any exceptions instead of crashing.

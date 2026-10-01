@@ -596,4 +596,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>Modifiez les limites de vitesse et de partage du téléchargement sélectionné.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>Le torrent a été retiré, mais son fichier .torrent source ne peut pas être supprimé ou ne correspond plus au torrent importé. Le fichier source a été conservé.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>Impossible de copier le téléchargement dans le dossier public Téléchargements. Vérifiez les autorisations de stockage et l’espace disponible, puis réessayez.</value>
+  </data>
 </root>

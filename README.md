@@ -23,7 +23,7 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 - **Automatic resume**: transfers that were active when the app closed, or when Android ended background execution, resume automatically. Manual pauses are kept.
 - **Global limits**: upload/download speed caps, max active downloads/seeds, seeding ratio/time
 - **Per-torrent limits**: upload/download caps and seeding ratio/time overrides
-- **Safe delete dialog** that preserves files by default, with options to remove data and/or the `.torrent` file
+- **Delete confirmation** with both file-deletion options selected by default; clear either option to keep those files
 - **Duplicate protection** by info-hash and magnet link
 - **Save path** prefers the picked `.torrent` folder on Windows (if writable), otherwise the default path
 - **Persistent storage** of torrent list and settings
@@ -43,6 +43,13 @@ not yet confirmed live. See the [release notes and submission record](store/micr
 [Google Play release details](store/google-play/README.md).
 
 See the [review findings and validation](docs/review-findings.md) for the current reliability, privacy, accessibility and build improvements, including remaining platform checks.
+
+### Unreleased
+
+- Restore both file-deletion options as checked by default in the delete dialog. Version 1.17 reversed the earlier fix during a usability review. Regression tests now exercise the dialog defaults as well as all file-deletion combinations.
+- Keep torrents visible and retryable if stopping or removing the transfer fails. Stop completion monitoring before removal and restore it when an active stop fails. Preserve shared downloads and source `.torrent` files that have changed since import, with warnings when requested files remain. Empty magnets no longer block deletion, and unrelated imports can continue while a transfer stops.
+- Normalize invalid seeding ratios before persistence and refresh rejected edits in the limit editor. Distinguish unavailable Android downloads from failed copies without opening an unrelated Downloads folder.
+- Show Windows notifications when downloads complete. Clicking a notification opens the app and selects the completed torrent, including after an app restart.
 
 ### v1.17
 
@@ -218,6 +225,10 @@ Each download in the list has action buttons:
 | ⏹️ | Stop and reset a download |
 | Sliders icon | Open this torrent's speed and seeding limits |
 | 🗑️ | Remove the download from the list |
+
+The delete confirmation starts with **Delete torrent file** and **Delete downloaded
+files** checked. Clear either option to keep those files. Clearing both removes
+only the list entry.
 
 ### Download Status
 

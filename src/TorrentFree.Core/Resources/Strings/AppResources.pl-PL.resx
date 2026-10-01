@@ -582,4 +582,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>Zmień limity prędkości i seedowania wybranego pobierania.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>Torrent usunięto, ale źródłowego pliku .torrent nie można usunąć lub nie odpowiada on już zaimportowanemu torrentowi. Plik źródłowy zachowano.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>Nie można skopiować pobranych danych do publicznego folderu Pobrane. Sprawdź uprawnienia do pamięci i wolne miejsce, a następnie spróbuj ponownie.</value>
+  </data>
 </root>

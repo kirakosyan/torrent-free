@@ -582,4 +582,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>Změňte limity rychlosti a sdílení pro vybrané stahování.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>Torrent byl odebrán, ale původní soubor .torrent nelze smazat nebo již neodpovídá importovanému torrentu. Původní soubor byl zachován.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>Stažená data nelze zkopírovat do veřejné složky Stažené soubory. Zkontrolujte oprávnění a volné místo a zkuste to znovu.</value>
+  </data>
 </root>

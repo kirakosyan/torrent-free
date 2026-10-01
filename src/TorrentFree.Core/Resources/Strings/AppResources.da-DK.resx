@@ -582,4 +582,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>Skift hastigheds- og seeding-grænser for den valgte download.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>Torrenten blev fjernet, men kildefilen .torrent kunne ikke slettes eller svarer ikke længere til den importerede torrent. Kildefilen er bevaret.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>Downloaden kunne ikke kopieres til den offentlige mappe Downloads. Kontrollér lagertilladelser og ledig plads, og prøv igen.</value>
+  </data>
 </root>

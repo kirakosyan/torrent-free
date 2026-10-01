@@ -582,4 +582,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>Endre hastighets- og delingsgrenser for den valgte nedlastingen.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>Torrenten ble fjernet, men kildefilen .torrent kunne ikke slettes eller samsvarer ikke lenger med den importerte torrenten. Kildefilen er beholdt.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>Nedlastingen kunne ikke kopieres til den offentlige Nedlastinger-mappen. Kontroller lagringstillatelser og ledig plass, og prøv igjen.</value>
+  </data>
 </root>

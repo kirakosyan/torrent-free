@@ -1,4 +1,3 @@
-using CommunityToolkit.Mvvm.ComponentModel;
 using TorrentFree.Models;
 
 namespace TorrentFree;
@@ -66,30 +65,4 @@ public partial class DeleteTorrentDialogPage : ContentPage
             System.Diagnostics.Debug.WriteLine($"Delete dialog dismiss error: {ex}");
         }
     }
-}
-
-public partial class DeleteTorrentDialogViewModel : ObservableObject
-{
-    [ObservableProperty]
-    public partial string TorrentName { get; set; }
-
-    [ObservableProperty]
-    public partial bool DeleteTorrentFile { get; set; }
-
-    [ObservableProperty]
-    public partial bool DeleteDownloadedFiles { get; set; }
-
-    public DeleteTorrentDialogViewModel(string torrentName)
-    {
-        TorrentName = torrentName;
-        // Removing a queue entry preserves user files unless deletion is explicitly chosen.
-        DeleteTorrentFile = false;
-        DeleteDownloadedFiles = false;
-    }
-
-    /// <summary>
-    /// Always allow the delete/remove action. When both checkboxes are unchecked
-    /// the torrent is removed from the list without deleting any files.
-    /// </summary>
-    public bool CanDelete => true;
 }

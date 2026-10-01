@@ -582,4 +582,10 @@
   <data name="TorrentLimitsHint" xml:space="preserve">
     <value>Ubah batas kecepatan dan seeding untuk unduhan yang dipilih.</value>
   </data>
+  <data name="ErrorRemoveTorrentFileLeftInPlace" xml:space="preserve">
+    <value>Torrent dihapus, tetapi berkas .torrent sumber tidak dapat dihapus atau tidak lagi cocok dengan torrent yang diimpor. Berkas sumber tetap disimpan.</value>
+  </data>
+  <data name="ErrorExportDownload" xml:space="preserve">
+    <value>Unduhan tidak dapat disalin ke folder Unduhan publik. Periksa izin penyimpanan dan ruang kosong, lalu coba lagi.</value>
+  </data>
 </root>
