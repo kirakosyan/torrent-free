@@ -45,7 +45,8 @@ changes from PRs [#20](https://github.com/kirakosyan/torrent-free/pull/20) and
   has package `com.torrentfree.app`, code **23**, version **1.18**, target SDK **36**.
   JAR signature verification passed and the signing certificate matches the
   registered upload certificate. The embedded R8 mapping was retained, together
-  with native symbols matching `libxamarin-app.so` for arm64-v8a and x86_64.
+  with native symbols matching `libxamarin-app.so` for arm64-v8a and x86_64. The symbol
+  files' GNU ELF build IDs match their packaged libraries for both ABIs.
 - Windows Release x64 and ARM64 publishes passed. Each MSIX was checked for ZIP
   integrity, Store identity/publisher, version **1.18.0.0**, architecture, all
   24 languages, Core payload, and matching toast/COM registration with its executable.
@@ -75,20 +76,35 @@ changes from PRs [#20](https://github.com/kirakosyan/torrent-free/pull/20) and
 
 ## Store status
 
-As of October 1, 2026, Google Play **1.18 is submitted for review**. Microsoft
-Store packages are validated and saved; listing updates are finishing.
+As verified on **October 2, 2026 at 00:43 Europe/Oslo** (October 1 at 22:43 UTC),
+Google Play **1.18 is in review** and Microsoft Store **1.18.0.0 is in certification**,
+with pre-processing in progress.
 **Neither release is live.**
 
 | Store | Target package | Status | Submission/publication record |
 |-------|----------------|--------|-------------------------------|
-| Microsoft Store | 1.18.0.0 x64 + ARM64 | Draft; packages validated and saved | Submission 18, `1152921505702024112`; not submitted for certification yet |
-| Google Play | 1.18, code 23 | In review; automated checks running initially | Submission **20**, October 1, 2026 at 23:23 Europe/Oslo (21:23 UTC); production release `10`, track `4698459015960602547` |
+| Microsoft Store | 1.18.0.0 x64 + ARM64 | In certification; pre-processing in progress | Submission **18**, `1152921505702024112`, submitted October 2, 2026 at 00:43 Europe/Oslo (October 1 at 22:43 UTC) |
+| Google Play | 1.18, code 23 | In review; automated checks completed | Submission **20**, October 1, 2026 at 23:23 Europe/Oslo (21:23 UTC); production release `10`, track `4698459015960602547` |
 
 Google Play accepted the signed AAB with embedded ReTrace mapping and the matching
 native debug symbols attachment. Release notes are supplied for all 26 languages.
 The full rollout targets all existing 178 countries/regions, and the console shows
 no changes to supported devices. Managed publishing remains off, so publication
 will follow approval automatically.
+
+Microsoft accepted both architecture packages. Its toast-extension warning applies
+to Xbox; Xbox remains unchecked, with Desktop and Team availability preserved.
+Release notes were saved and verified in an export for all 31 existing listing
+languages; the unused default column remains empty. Descriptions and other fields
+were retained. Importing the full CSV reordered screenshots in nine languages;
+the original order and associated captions were restored, saved and verified by
+reopening all nine listings. All original image/caption pairs were retained.
+The final export failed, so the saved order was verified directly in the editor;
+the local verification record is retained with the release artifacts. Future
+notes-only imports must contain only the CSV header and `ReleaseNotes` row.
+Tester instructions were updated from 1.17 to describe the checked deletion
+defaults, completion notifications and sleep setting. Publication is set to start
+automatically after certification passes.
 
 Version 1.17 remains live in both stores. Play Console reports its publication on
 September 30, 2026 and 100% rollout. Microsoft submission 17

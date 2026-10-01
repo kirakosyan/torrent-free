@@ -2,10 +2,11 @@
 
 ## Current release
 
-Version **1.18** (build **23**, MSIX **1.18.0.0**) has x64 and ARM64 packages uploaded
-to draft submission **18** (`1152921505702024112`). Packages are validated and
-saved; localized listing updates are finishing. It has **not yet been submitted
-or published**. The update has
+Version **1.18** (build **23**, MSIX **1.18.0.0**) was submitted with x64 and ARM64
+packages as submission **18** (`1152921505702024112`) on **October 2, 2026 at
+00:43 Europe/Oslo** (October 1 at 22:43 UTC). Partner Center shows **In certification**,
+with pre-processing in progress. It is **not published yet**. Publishing is set to
+start as soon as certification passes. The update has
 localized release notes for all 31 existing listing languages, mapped from the
 24 app languages. See [release notes, validation and release record](release-notes-1.18.md).
 
@@ -26,6 +27,11 @@ Store and Play length limits and regenerates:
 The generator retains the 1.16 base listing. The current update uses
 `release-notes-1.18.json`; import only the release-notes row in a fresh
 Partner Center export, preserving the descriptions, screenshots and other assets.
+Keep the CSV header and `ReleaseNotes` row only for a notes-only update. Do not
+include unchanged screenshot or logo rows: Partner Center can reorder screenshots
+when importing those rows. Verify the saved notes with a fresh export before
+certification. If screenshot cards are dragged in the editor, restore any captions
+it clears and verify the saved order.
 
 Screenshots are 2880×1620 captures of an unpackaged Debug build (no debugger attached,
 so no XAML toolbar) on a 200% display,

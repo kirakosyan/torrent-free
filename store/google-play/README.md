@@ -6,7 +6,8 @@ Package `com.torrentfree.app`, listed as **Torrent Client**.
 
 Version **1.18** (code **23**) was submitted for production review on **October 1,
 2026**, at **23:23 Europe/Oslo** (21:23 UTC), as submission **20**, production release
-**10**. Play Console shows **In review**, with automated checks running initially.
+**10**. Play Console shows **In review**; its automated checks have completed.
+This status was verified on October 2 at 00:43 Europe/Oslo (October 1 at 22:43 UTC).
 It is **not published yet**. All 26 localized release notes, ReTrace mapping and
 matching native debug symbols for both supported ABIs were accepted. The rollout
 is 100% across the existing 178 countries/regions. Managed publishing remains off.

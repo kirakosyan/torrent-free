@@ -33,14 +33,18 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 Version **1.18** (build **23**, Windows package **1.18.0.0**) includes all changes
 from PRs [#20](https://github.com/kirakosyan/torrent-free/pull/20) and
 [#21](https://github.com/kirakosyan/torrent-free/pull/21). Google Play was sent for
-review on **October 1, 2026**; Microsoft Store submission preparation is finishing.
+review on **October 1, 2026**; Microsoft Store was submitted for certification on
+**October 2, 2026 (Europe/Oslo; October 1 UTC)**.
 **Version 1.18 is not live in either store yet.** The currently live store release
 is **1.17**, verified in both store consoles on **October 1, 2026**.
 
 | Store | Currently live | Version 1.18 status |
 |-------|----------------|---------------------|
 | Google Play | 1.17 (code 22), published September 30, 2026 | Code 23 submitted October 1; in review (submission 20) |
-| Microsoft Store | 1.17.0.0 (x64 and ARM64), verified live October 1, 2026 | 1.18.0.0 uploaded to draft submission 18; not submitted yet |
+| Microsoft Store | 1.17.0.0 (x64 and ARM64), verified live October 1, 2026 | 1.18.0.0 submitted October 2 Europe/Oslo (October 1 UTC); in certification, pre-processing (submission 18) |
+
+Both pending statuses were verified on **October 2 at 00:43 Europe/Oslo**
+(October 1 at 22:43 UTC). Publication will follow approval automatically.
 
 The annotated [**v1.18** tag](https://github.com/kirakosyan/torrent-free/releases/tag/v1.18)
 is pushed on the exact source commit `ea3fb6a` used to build all packages. See the
