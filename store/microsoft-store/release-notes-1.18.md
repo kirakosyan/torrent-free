@@ -76,14 +76,14 @@ changes from PRs [#20](https://github.com/kirakosyan/torrent-free/pull/20) and
 
 ## Store status
 
-As verified on **October 2, 2026 at 00:43 Europe/Oslo** (October 1 at 22:43 UTC),
-Google Play **1.18 is in review** and Microsoft Store **1.18.0.0 is in certification**,
-with pre-processing in progress.
+As verified on **October 2, 2026 at 01:14 Europe/Oslo** (October 1 at 23:14 UTC),
+Google Play **1.18 is in review** and Microsoft Store **1.18.0.0 has passed
+certification and is ready to publish**.
 **Neither release is live.**
 
 | Store | Target package | Status | Submission/publication record |
 |-------|----------------|--------|-------------------------------|
-| Microsoft Store | 1.18.0.0 x64 + ARM64 | In certification; pre-processing in progress | Submission **18**, `1152921505702024112`, submitted October 2, 2026 at 00:43 Europe/Oslo (October 1 at 22:43 UTC) |
+| Microsoft Store | 1.18.0.0 x64 + ARM64 | Certification passed; ready to publish | Submission **18**, `1152921505702024112`, submitted October 2, 2026 at 00:43 Europe/Oslo (October 1 at 22:43 UTC) |
 | Google Play | 1.18, code 23 | In review; automated checks completed | Submission **20**, October 1, 2026 at 23:23 Europe/Oslo (21:23 UTC); production release `10`, track `4698459015960602547` |
 
 Google Play accepted the signed AAB with embedded ReTrace mapping and the matching
@@ -91,6 +91,11 @@ native debug symbols attachment. Release notes are supplied for all 26 languages
 The full rollout targets all existing 178 countries/regions, and the console shows
 no changes to supported devices. Managed publishing remains off, so publication
 will follow approval automatically.
+
+Microsoft's certification pass was verified on October 2 at 01:14 Europe/Oslo
+(October 1 at 23:14 UTC). Partner Center scheduled publication to start October 1
+at 23:14 UTC. Submission 17 remains the current Store presence until publication
+completes; certification approval is not confirmation that 1.18 is live.
 
 Microsoft accepted both architecture packages. Its toast-extension warning applies
 to Xbox; Xbox remains unchecked, with Desktop and Team availability preserved.

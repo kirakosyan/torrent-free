@@ -41,10 +41,11 @@ is **1.17**, verified in both store consoles on **October 1, 2026**.
 | Store | Currently live | Version 1.18 status |
 |-------|----------------|---------------------|
 | Google Play | 1.17 (code 22), published September 30, 2026 | Code 23 submitted October 1; in review (submission 20) |
-| Microsoft Store | 1.17.0.0 (x64 and ARM64), verified live October 1, 2026 | 1.18.0.0 submitted October 2 Europe/Oslo (October 1 UTC); in certification, pre-processing (submission 18) |
+| Microsoft Store | 1.17.0.0 (x64 and ARM64), verified live October 1, 2026 | 1.18.0.0 passed certification; ready to publish (submission 18) |
 
-Both pending statuses were verified on **October 2 at 00:43 Europe/Oslo**
-(October 1 at 22:43 UTC). Publication will follow approval automatically.
+Both pending statuses were verified on **October 2 at 01:14 Europe/Oslo**
+(October 1 at 23:14 UTC). Microsoft scheduled publication to start at 23:14 UTC;
+Google Play will publish automatically after approval.
 
 The annotated [**v1.18** tag](https://github.com/kirakosyan/torrent-free/releases/tag/v1.18)
 is pushed on the exact source commit `ea3fb6a` used to build all packages. See the
