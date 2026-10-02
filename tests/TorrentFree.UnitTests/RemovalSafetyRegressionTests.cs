@@ -113,7 +113,7 @@ public sealed class RemovalSafetyRegressionTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public async Task TorrentWithoutMetadata_ProtectsSharedDirectoryOnlyWhenItMayHaveData(bool hasProgress)
+    public async Task TorrentWithoutMetadata_DoesNotBlockDeletingAnotherTorrentsKnownFiles(bool hasProgress)
     {
         await using var fixture = new CoreServiceFixture();
         var metadata = await fixture.PrepareTorrentAsync();
@@ -127,11 +127,57 @@ public sealed class RemovalSafetyRegressionTests
 
         var result = await fixture.Service.RemoveTorrentAsync(selected, true, true);
 
-        Assert.Equal(hasProgress, result.DownloadedFilesLeftInPlace);
-        Assert.Equal(hasProgress, result.TorrentFileLeftInPlace);
-        Assert.Equal(hasProgress, File.Exists(Path.Combine(selected.SavePath, "payload.bin")));
-        Assert.Equal(hasProgress, File.Exists(sourcePath));
+        Assert.False(result.DownloadedFilesLeftInPlace);
+        Assert.False(result.TorrentFileLeftInPlace);
+        Assert.False(File.Exists(Path.Combine(selected.SavePath, "payload.bin")));
+        Assert.False(File.Exists(sourcePath));
         Assert.Same(other, Assert.Single(fixture.Service.Torrents));
+    }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public async Task CompletedLegacyTorrentInSharedFolder_DoesNotBlockSelectedDownload(bool startSelected, bool corruptMetadata)
+    {
+        await using var fixture = new CoreServiceFixture();
+        var otherMetadata = await fixture.PrepareTorrentAsync("legacy.bin");
+        var other = (await fixture.Service.AddTorrentFileAsync(otherMetadata))!;
+        other.Status = DownloadStatus.Stopped;
+        other.Progress = 100;
+        other.DownloadedSize = new FileInfo(Path.Combine(other.SavePath, "legacy.bin")).Length;
+        other.DateCompleted = DateTime.Now;
+        if (corruptMetadata)
+            await File.WriteAllTextAsync(other.CachedTorrentFilePath!, "Unreadable legacy metadata", TestContext.Current.CancellationToken);
+        else
+            File.Delete(other.CachedTorrentFilePath!);
+        await fixture.Storage.SaveTorrentsAsync(fixture.Service.Torrents);
+        var restored = Assert.Single(await fixture.Storage.LoadTorrentsAsync());
+        fixture.Service.Torrents.Clear();
+        fixture.Service.Torrents.Add(restored);
+
+        var metadata = await fixture.PrepareTorrentAsync();
+        var sourcePath = Path.Combine(fixture.Directory.Path, "payload.bin.torrent");
+        var selected = (await fixture.Service.AddTorrentFileAsync(metadata with { SourceFilePath = sourcePath }))!;
+        Assert.Equal(restored.SavePath, selected.SavePath);
+        if (startSelected)
+        {
+            await fixture.Service.StartTorrentAsync(selected);
+            await CoreServiceFixture.WaitUntilAsync(() => selected.Status == DownloadStatus.Seeding);
+        }
+        else selected.Status = DownloadStatus.Stopped;
+
+        var result = await fixture.Service.RemoveTorrentAsync(selected, true, true);
+
+        Assert.True(result.Removed);
+        Assert.False(result.DownloadedFilesLeftInPlace);
+        Assert.False(result.TorrentFileLeftInPlace);
+        Assert.False(File.Exists(Path.Combine(selected.SavePath, "payload.bin")));
+        Assert.False(File.Exists(sourcePath));
+        Assert.True(File.Exists(Path.Combine(restored.SavePath, "legacy.bin")));
+        Assert.Same(restored, Assert.Single(fixture.Service.Torrents));
+        Assert.Equal(restored.Id, Assert.Single(await fixture.Storage.LoadTorrentsAsync()).Id);
     }
 
     [Fact]
@@ -297,7 +343,7 @@ public sealed class RemovalSafetyRegressionTests
     }
 
     [Fact]
-    public async Task SourceInsideAnotherDownloadedDirectory_IsPreservedWithoutMetadataParsing()
+    public async Task SourceInsideAnotherDownloadedDirectory_IsDeletedWhenOwnershipIsUnknown()
     {
         await using var fixture = CreateFixture();
         var service = (RemovalTestService)fixture.Service;
@@ -310,9 +356,9 @@ public sealed class RemovalSafetyRegressionTests
 
         var result = await service.RemoveTorrentAsync(selected, deleteTorrentFile: true);
 
-        Assert.True(result.TorrentFileLeftInPlace);
-        Assert.True(File.Exists(source));
-        Assert.Empty(service.OwnershipReads);
+        Assert.False(result.TorrentFileLeftInPlace);
+        Assert.False(File.Exists(source));
+        Assert.Contains(other.Id, service.OwnershipReads);
     }
 
     [Fact]
@@ -336,7 +382,7 @@ public sealed class RemovalSafetyRegressionTests
 
         Assert.True(result.TorrentFileLeftInPlace);
         Assert.True(File.Exists(source));
-        Assert.Empty(service.OwnershipReads);
+        Assert.Contains(other.Id, service.OwnershipReads);
     }
 
     [Fact]

@@ -1203,7 +1203,7 @@ public partial class TorrentService : ITorrentService
                 // Publication and deletion share this gate: no import can become an owner
                 // between the snapshot of other torrents and deleting the selected files.
                 var protectedFiles = deleteFiles || deleteTorrentFile
-                    ? await ResolveOtherTorrentFilesAsync(torrent, ownedDownloadFiles, deleteFiles, deleteTorrentFile)
+                    ? await ResolveOtherTorrentFilesAsync(torrent, ownedDownloadFiles, deleteTorrentFile)
                     : new ProtectedDownloadFiles();
                 var torrentFileLeftInPlace = deleteTorrentFile
                     && !await TryDeleteTorrentFileAsync(torrent, protectedFiles);
@@ -1428,7 +1428,7 @@ public partial class TorrentService : ITorrentService
     }
 
     private async Task<ProtectedDownloadFiles> ResolveOtherTorrentFilesAsync(TorrentItem removedTorrent,
-        OwnedDownloadFiles removedFiles, bool deleteFiles, bool deleteTorrentFile)
+        OwnedDownloadFiles removedFiles, bool deleteTorrentFile)
     {
         TorrentItem[] others;
         lock (_torrentsLock) others = Torrents.Where(t => t.Id != removedTorrent.Id).ToArray();
@@ -1447,27 +1447,14 @@ public partial class TorrentService : ITorrentService
             if (basePath is null || !candidates.Any(path => PathGuard.IsPathWithinDirectory(path, basePath)))
                 continue;
 
-            // Source-only removal uses manager file lists without reading metadata. When
-            // only persisted metadata or progress is available, protect the save directory.
-            if (!deleteFiles)
-            {
-                var snapshot = SnapshotManagerOwnedFiles(other, manager);
-                foreach (var path in snapshot.Paths)
-                {
-                    if (TryGetLocalTorrentPath(path) is { } localPath) protectedFiles.Paths.Add(localPath);
-                }
-                if (snapshot.Paths.Count == 0 && (MayHaveDownloadedData(other) || GetMetadataPath(other) is not null))
-                    protectedFiles.Directories.Add(basePath);
-                continue;
-            }
+            // Sharing a save directory is not evidence of sharing a file. Legacy entries
+            // can lack metadata; protect only positively identified files, otherwise one
+            // stale entry prevents deleting every unrelated download in that directory.
             var owned = await ResolveOwnedDownloadFilesAsync(other, manager);
             foreach (var path in owned.Paths)
             {
                 if (TryGetLocalTorrentPath(path) is { } localPath) protectedFiles.Paths.Add(localPath);
             }
-            // An empty magnet has no files to protect; one with progress may have lost metadata.
-            if (owned.Paths.Count == 0 && MayHaveDownloadedData(other))
-                protectedFiles.Directories.Add(basePath);
         }
         return protectedFiles;
     }
@@ -1495,9 +1482,7 @@ public partial class TorrentService : ITorrentService
     private sealed class ProtectedDownloadFiles
     {
         public HashSet<string> Paths { get; } = new(GetPathComparer());
-        public List<string> Directories { get; } = [];
-        public bool Contains(string path) => Paths.Contains(Path.GetFullPath(path))
-            || Directories.Any(directory => PathGuard.IsPathWithinDirectory(path, directory));
+        public bool Contains(string path) => Paths.Contains(Path.GetFullPath(path));
     }
 
     /// <returns><see langword="false"/> when an owned file remains on disk.</returns>
