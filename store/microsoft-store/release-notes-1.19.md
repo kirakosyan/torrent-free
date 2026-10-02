@@ -27,7 +27,8 @@ Display version **1.19**, Android version code **24**, Windows package version
 - Both Windows MSIX packages passed ZIP integrity, Store identity, version,
   architecture, all 24 languages, Core payload and toast/COM registration checks.
   The optional Windows symbol tool was unavailable; no symbol package was requested.
-- GitHub Actions Windows and Linux Core tests passed; platform jobs are pending.
+- All four checks in [GitHub Actions run 37058823577](https://github.com/kirakosyan/torrent-free/actions/runs/37058823577)
+  passed: Windows/Linux Core tests and Windows/Android app builds.
 - No physical Android device or Windows Store installation upgrade was exercised.
 
 ## Release traceability
