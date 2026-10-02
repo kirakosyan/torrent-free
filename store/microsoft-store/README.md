@@ -2,14 +2,20 @@
 
 ## Current release
 
-**1.19 / build 24 / MSIX 1.19.0.0** is prepared for x64 and ARM64, but **not
-submitted or published**. On October 2, 2026, submission **19**
-(`1152921505702031669`) was created as a draft. A notes-only CSV import for all
-31 listing languages started; the last observed progress was saving language 11
-of 31. Verify completion and export the saved listings before continuing. The
-package chooser failed before either new MSIX was uploaded. Browser automation
-then stopped because it could not verify the current URL. Resume from the retained
-packages under `artifacts/store-1.19/` / `C:\temp\torrentfree-1.19-msix`.
+**1.19 / build 24 / MSIX 1.19.0.0** was submitted for x64 and ARM64 on
+**October 2, 2026**, as submission **19** (`1152921505702031669`). Partner Center
+shows **In certification**, with pre-processing underway, verified at **22:36
+Europe/Oslo (20:36 UTC)**. Both packages validated; the Xbox toast-extension warning
+does not affect this release because Xbox availability is unchecked. Desktop and
+Windows Team availability, mandatory-update settings and automatic publication
+after certification are preserved. Version 1.19 is **not live yet**.
+
+All 31 localized release notes were verified against a fresh export. The initial
+notes-only import cleared optional feature/search fields and the logo override;
+these were restored before submission. The final export differs from the original
+only in `ReleaseNotes`, including unchanged screenshots, captions and asset order.
+Certification testing notes describe the 1.19 deletion fix. Submitted packages
+remain under `artifacts/store-1.19/` / `C:\temp\torrentfree-1.19-msix`.
 The deletion fix, package hashes and validation are in the
 [1.19 release record](release-notes-1.19.md). **1.18 remains live.**
 
@@ -39,13 +45,15 @@ Store and Play length limits and regenerates:
 - `STORE_DESCRIPTION.md` and the Google Play files under `store/google-play`
 
 The generator retains the 1.16 base listing. The current update uses
-`release-notes-1.18.json`; import only the release-notes row in a fresh
-Partner Center export, preserving the descriptions, screenshots and other assets.
-Keep the CSV header and `ReleaseNotes` row only for a notes-only update. Do not
-include unchanged screenshot or logo rows: Partner Center can reorder screenshots
-when importing those rows. Verify the saved notes with a fresh export before
-certification. If screenshot cards are dragged in the editor, restore any captions
-it clears and verify the saved order.
+`release-notes-1.19.json`. Start with a fresh Partner Center export and replace
+only the `ReleaseNotes` values. Preserve the original non-asset text rows,
+including `Feature*`, `SearchTerm*`, hardware requirements and the
+`OverrideLogosForWin10` flag in the import: omitting these can clear optional
+fields or reset the logo flag. Omit unchanged screenshot, caption, trailer and
+logo asset rows to avoid reordering assets. A CSV containing only `ReleaseNotes`
+is not safe. Export again and compare every field against the original; only
+the release notes should differ. If screenshot cards are dragged in the editor,
+restore any captions it clears and verify the saved order.
 
 Screenshots are 2880×1620 captures of an unpackaged Debug build (no debugger attached,
 so no XAML toolbar) on a 200% display,

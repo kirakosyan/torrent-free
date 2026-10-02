@@ -1,34 +1,34 @@
 # Google Play listing
 
-Package `com.torrentfree.app`, listed as **Torrent Client**.
+Package `com.torrentfree.app`, listed as **Torrent Client - Downloader**.
 
 ## Current release
 
 **1.19 / code 24** fixes the shared-folder deletion regression affecting Android
 and Windows. Its signed AAB, R8 mapping and matching native symbols are validated
 and retained under `artifacts/store-1.19/`, with upload copies in `C:\temp`.
-**It has not been submitted or published.** On October 2, 2026 a production draft
-was opened, all 26 localized release notes were entered, and the AAB upload started.
-Upload completion and draft persistence were not verified after browser automation
-stopped because it could not verify the current URL. Inspect the draft/library
-before resuming; attach the matching native symbols and submit for review.
+**Submitted and in review**, submission **21**, production release **11**, on
+**October 2, 2026 at 22:30 Europe/Oslo (20:30 UTC)**. The code-24 AAB, all 26
+localized release notes, embedded ReTrace mapping and matching native debug symbols
+were accepted. Full rollout (100%) was requested across the existing targeted
+countries. Managed publishing is off, so publication follows approval automatically.
+The initial automated checks were still running when submission was confirmed.
+Version 1.19 is **not live yet**.
 See the [1.19 release record](../microsoft-store/release-notes-1.19.md).
 
 **1.18 / code 23 is now live**, verified in Play Console during preparation of
 1.19 on October 2. Production shows 100% rollout to 178 countries/regions and
-Publishing overview reports the last publication on October 2. The status below
-records the earlier 01:33 check, before publication.
+Publishing overview reports the last publication on October 2.
 
 Version **1.18** (code **23**) was submitted for production review on **October 1,
 2026**, at **23:23 Europe/Oslo** (21:23 UTC), as submission **20**, production release
-**10**. Play Console shows **In review**; its automated checks have completed.
-This status was verified on October 2 at 01:33 Europe/Oslo (October 1 at 23:33 UTC).
-It is **not published yet**. All 26 localized release notes, ReTrace mapping and
+**10**. Submission activity now shows **Published**, verified October 2.
+All 26 localized release notes, ReTrace mapping and
 matching native debug symbols for both supported ABIs were accepted. The rollout
 is 100% across the existing 178 countries/regions. Managed publishing remains off.
 See the [1.18 release record](../microsoft-store/release-notes-1.18.md).
 
-The currently live version is **1.17** (code **22**), published on September 30,
+The earlier version **1.17** (code **22**) was published on September 30,
 2026 and verified at 100% rollout in Play Console on October 1, 2026. It was
 submitted to production on September 29, 2026.
 
@@ -41,9 +41,9 @@ also checks the length limits. The Play default language is en-GB (filled from t
 English text). Spanish is written once for `es-419` and `es-ES`; Ukrainian exists only
 on Play.
 
-`release-notes-1.18.txt` is in Play Console's multi-language format: paste it into the
+`release-notes-1.19.txt` is in Play Console's multi-language format: paste it into the
 release notes box of the production release as is. The generator retains the 1.16
-base listing; the 1.18 notes are maintained separately.
+base listing; the 1.19 notes are maintained separately.
 
 Translations inherit the default graphics, so only the text needs updating per language.
 Version 1.16 (code 21) and this listing were sent for review on September 27, 2026,
@@ -66,4 +66,4 @@ encourage copyright infringement.
 ## Release
 
 Build the signed AAB as described in `.codex/AGENTS.md`, upload it to the production track
-with `release-notes-1.18.txt`, and upload the matching native debug symbols ZIP.
+with `release-notes-1.19.txt`, and upload the matching native debug symbols ZIP.

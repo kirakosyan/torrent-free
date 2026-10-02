@@ -50,24 +50,32 @@ directory, with upload copies under `C:\temp`.
 
 ## Store status
 
-Version 1.19 has **not been submitted or published** to either store as of this
-October 2, 2026 (Europe/Oslo) release attempt.
+Version 1.19 was **submitted to both stores on October 2, 2026**. It is **not
+live yet**. The following statuses were verified at **22:36 Europe/Oslo
+(20:36 UTC)** after recovering the browser connection:
 
-- Microsoft submission **19**, `1152921505702031669`, exists as a draft. A
-  notes-only CSV import started for all 31 languages; the last observed progress
-  was saving 11 of 31. Final completion was not verified. The package chooser
-  failed before either new MSIX was uploaded. Verify saved notes through a fresh
-  export, upload the retained x64 and ARM64 packages, update tester notes, and
-  submit for certification. Existing descriptions and screenshots were not edited.
-- Google Play: production draft opened for **1.19 / code 24**, with release notes
-  entered for all 26 languages. AAB upload started; the last observed transfer
-  was 2.97 MB of 35.8 MB. Completion and draft persistence were not verified after
-  browser automation stopped. No symbols were uploaded and review was not requested.
-  Inspect the draft and artifact library before retrying the upload. Use the
-  retained AAB and matching native-symbol ZIP; do not rebuild under this tag.
-- Both stores were verified to have **1.18 live**. Google Play production showed
-  100% rollout across the existing 178 countries/regions, managed publishing off,
-  and last publication October 2, 2026.
-- Submission was blocked when Computer Use ended because it could not determine
-  the current browser URL confidently enough to enforce policy. No further UI
-  actions were performed after that stop.
+| Store | Status | Submission |
+|-------|--------|------------|
+| Microsoft Store | In certification; pre-processing underway | **19**, `1152921505702031669`, Windows **1.19.0.0 x64 + ARM64** |
+| Google Play | In review; initial automated checks running | **21**, submitted **22:30 Europe/Oslo (20:30 UTC)**; production release **11**, track `4698459015960602547`, **1.19 / code 24** |
+
+- Both stores publish automatically after approval. Google Play requests a 100%
+  rollout across the existing targeted countries (178 countries/regions in the
+  current production release). Managed publishing remains off.
+- Google accepted all 26 localized release notes, the embedded ReTrace mapping
+  and the matching native debug symbols for both ABIs. Submission activity
+  confirms submission 21 contains only the 1.19 production rollout.
+- Both MSIX files validated in Partner Center. The toast-extension warning
+  applies to Xbox; Xbox is unchecked. Desktop and Windows Team availability,
+  existing mandatory-update settings and publication upon certification are
+  preserved. Certification testing notes were updated to 1.19 and verified saved.
+- All 31 Microsoft release notes match the committed translations. A fresh
+  export revealed that the initial notes-only import cleared optional features,
+  search terms and the logo override. These were restored before submission.
+  The final export differs from the original only in `ReleaseNotes`; all other
+  fields, screenshot captions and asset order are unchanged. Original,
+  intermediate and final exports plus the comparison script are retained.
+- Confirmation screenshots are retained as `microsoft-submission19.png` and
+  `google-play-submission21.png` under `artifacts/store-1.19/`.
+- Both stores were verified to have **1.18 live** during this release. Google
+  submission 20 now shows Published; its last publication was October 2, 2026.

@@ -38,33 +38,30 @@ protected. The fix is in the shared Core service and applies to Windows and Andr
 On **October 2, 2026 (Europe/Oslo)**, all **386 Release tests** passed and all three
 store packages were built and validated from clean commit `112eed6`, tagged
 [v1.19](https://github.com/kirakosyan/torrent-free/releases/tag/v1.19).
-**1.19 has not been submitted or published.** Microsoft submission **19**
-(`1152921505702031669`) is a draft; its localized-note import started, but final
-completion was not verified. The Windows package upload did not start. A Google
-Play production draft was created and the code-24 upload started, but upload
-completion and draft persistence were not verified after browser automation stopped.
-The browser controls could no longer verify the current URL, blocking submission.
-Retained packages are ready to resume submission; do not rebuild under the existing tag.
+All four GitHub Actions checks also passed. **Version 1.19 has been submitted to
+both stores and is not live yet.** Status verified on October 2 at **22:36
+Europe/Oslo (20:36 UTC)**:
+
+| Store | Version 1.19 status | Submission |
+|-------|--------------------|------------|
+| Microsoft Store | In certification; pre-processing underway | **19**, `1152921505702031669`, x64 and ARM64 1.19.0.0 |
+| Google Play | In review; initial automated checks running | **21**, production release **11**, code **24**, submitted at 22:30 Europe/Oslo |
+
+Both stores are set to publish automatically after approval. Google Play requests
+a 100% rollout across the existing targeted countries. All 31 Microsoft and 26
+Google release notes were saved; Windows listing fields and assets were verified
+unchanged apart from release notes. Submitted packages and diagnostics are retained.
 See the [1.19 release record](store/microsoft-store/release-notes-1.19.md).
 
-Both stores were verified to have **1.18 live** on October 2 during this release
-preparation. The Google Play status below is the historical 01:33 check.
+Both stores were verified to have **1.18 live** on October 2 during this release.
 
 Version **1.18** (build **23**, Windows package **1.18.0.0**) includes all changes
 from PRs [#20](https://github.com/kirakosyan/torrent-free/pull/20) and
 [#21](https://github.com/kirakosyan/torrent-free/pull/21). Google Play was sent for
 review on **October 1, 2026**; Microsoft Store was submitted for certification on
 **October 2, 2026 (Europe/Oslo; October 1 UTC)**.
-**Version 1.18 is live on Microsoft Store.** Google Play **1.18 remains in review**;
-its currently available version is **1.17** (code **22**).
-
-| Store | Currently live | Version 1.18 status |
-|-------|----------------|---------------------|
-| Google Play | 1.17 (code 22), published September 30, 2026 | Code 23 submitted October 1; in review (submission 20) |
-| Microsoft Store | 1.18.0.0 (x64 and ARM64), published October 2 Europe/Oslo (October 1 UTC) | Live (submission 18) |
-
-Both statuses were verified on **October 2 at 01:33 Europe/Oslo**
-(October 1 at 23:33 UTC). Google Play will publish automatically after approval.
+Microsoft submission **18** and Google submission **20** are published. The live
+versions are Windows **1.18.0.0** and Android **1.18 / code 23**.
 
 The annotated [**v1.18** tag](https://github.com/kirakosyan/torrent-free/releases/tag/v1.18)
 is pushed on the exact source commit `ea3fb6a` used to build all packages. See the
@@ -74,7 +71,7 @@ is pushed on the exact source commit `ea3fb6a` used to build all packages. See t
 
 See the [review findings and validation](docs/review-findings.md) for the current reliability, privacy, accessibility and build improvements, including remaining platform checks.
 
-### v1.18 (Windows live; Android in review)
+### v1.18 (live on Windows and Android)
 
 - Restore both file-deletion options as checked by default in the delete dialog. Version 1.17 reversed the earlier fix during a usability review. Regression tests now exercise the dialog defaults as well as all file-deletion combinations.
 - Keep torrents visible and retryable if stopping or removing the transfer fails. Stop completion monitoring before removal and restore it when an active stop fails. Preserve shared downloads and source `.torrent` files that have changed since import, with warnings when requested files remain. Empty magnets no longer block deletion, and unrelated imports can continue while a transfer stops.
