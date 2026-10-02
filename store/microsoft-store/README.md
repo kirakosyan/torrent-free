@@ -2,6 +2,17 @@
 
 ## Current release
 
+**1.19 / build 24 / MSIX 1.19.0.0** is prepared for x64 and ARM64, but **not
+submitted or published**. On October 2, 2026, submission **19**
+(`1152921505702031669`) was created as a draft. A notes-only CSV import for all
+31 listing languages started; the last observed progress was saving language 11
+of 31. Verify completion and export the saved listings before continuing. The
+package chooser failed before either new MSIX was uploaded. Browser automation
+then stopped because it could not verify the current URL. Resume from the retained
+packages under `artifacts/store-1.19/` / `C:\temp\torrentfree-1.19-msix`.
+The deletion fix, package hashes and validation are in the
+[1.19 release record](release-notes-1.19.md). **1.18 remains live.**
+
 Version **1.18** (build **23**, MSIX **1.18.0.0**) was submitted with x64 and ARM64
 packages as submission **18** (`1152921505702024112`) on **October 2, 2026 at
 00:43 Europe/Oslo** (October 1 at 22:43 UTC). Certification has passed, verified on

@@ -30,6 +30,26 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 
 ## 📝 Release Overview
 
+Version **1.19** (Android code **24**, Windows **1.19.0.0**, x64 and ARM64) fixes
+the shared-folder deletion regression: older torrents with missing file metadata
+no longer block deletion of unrelated selected downloads. Known shared files remain
+protected. The fix is in the shared Core service and applies to Windows and Android.
+
+On **October 2, 2026 (Europe/Oslo)**, all **386 Release tests** passed and all three
+store packages were built and validated from clean commit `112eed6`, tagged
+[v1.19](https://github.com/kirakosyan/torrent-free/releases/tag/v1.19).
+**1.19 has not been submitted or published.** Microsoft submission **19**
+(`1152921505702031669`) is a draft; its localized-note import started, but final
+completion was not verified. The Windows package upload did not start. A Google
+Play production draft was created and the code-24 upload started, but upload
+completion and draft persistence were not verified after browser automation stopped.
+The browser controls could no longer verify the current URL, blocking submission.
+Retained packages are ready to resume submission; do not rebuild under the existing tag.
+See the [1.19 release record](store/microsoft-store/release-notes-1.19.md).
+
+Both stores were verified to have **1.18 live** on October 2 during this release
+preparation. The Google Play status below is the historical 01:33 check.
+
 Version **1.18** (build **23**, Windows package **1.18.0.0**) includes all changes
 from PRs [#20](https://github.com/kirakosyan/torrent-free/pull/20) and
 [#21](https://github.com/kirakosyan/torrent-free/pull/21). Google Play was sent for

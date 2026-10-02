@@ -4,6 +4,21 @@ Package `com.torrentfree.app`, listed as **Torrent Client**.
 
 ## Current release
 
+**1.19 / code 24** fixes the shared-folder deletion regression affecting Android
+and Windows. Its signed AAB, R8 mapping and matching native symbols are validated
+and retained under `artifacts/store-1.19/`, with upload copies in `C:\temp`.
+**It has not been submitted or published.** On October 2, 2026 a production draft
+was opened, all 26 localized release notes were entered, and the AAB upload started.
+Upload completion and draft persistence were not verified after browser automation
+stopped because it could not verify the current URL. Inspect the draft/library
+before resuming; attach the matching native symbols and submit for review.
+See the [1.19 release record](../microsoft-store/release-notes-1.19.md).
+
+**1.18 / code 23 is now live**, verified in Play Console during preparation of
+1.19 on October 2. Production shows 100% rollout to 178 countries/regions and
+Publishing overview reports the last publication on October 2. The status below
+records the earlier 01:33 check, before publication.
+
 Version **1.18** (code **23**) was submitted for production review on **October 1,
 2026**, at **23:23 Europe/Oslo** (21:23 UTC), as submission **20**, production release
 **10**. Play Console shows **In review**; its automated checks have completed.
