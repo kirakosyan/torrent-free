@@ -1,9 +1,10 @@
 # Privacy Policy
 
 **App name:** Torrent Client App (Torrent Free)
-**App ID:** com.torrentfree.app  
+**App IDs:** com.torrentfree.app; com.torrentfree.app.galaxy (Galaxy Store build)
+
 **Platforms:** Android, iOS, macOS, Windows  
-**Last updated:** 2026-09-28
+**Last updated:** 2026-10-04
 
 ---
 
@@ -36,6 +37,7 @@ The app stores its queue and settings on your device. It does not upload them to
 |---|---|---|
 | Torrent list (magnet links, file metadata, download progress) | Local app data directory (JSON file) | Restore your downloads between sessions |
 | App settings (speed limits, concurrent download limits, sort preferences) | Local app data directory (JSON file) | Persist your preferences |
+| Store prompt preferences, hashed completed-torrent identities, review cooldowns and cached update availability | Local app data directory | Avoid repeated rating requests and unnecessary update checks; not uploaded to the developers or stores |
 | Imported `.torrent` metadata and engine resume caches | Local app data directory | Restore transfers independently of the original file provider |
 | Local crash diagnostics (`crash.log` and its rotated backup) | Local app data directory | Diagnose errors; exception messages and stack traces may include local paths and torrent or network details. These logs are not uploaded to the developers |
 | Optional SOCKS5 proxy password | Platform secure storage (Android Keystore, Apple Keychain, Windows data protection); if secure storage is unavailable on a device, the app settings file | Authenticate with the proxy you configure |
@@ -79,6 +81,8 @@ No permission is used for any purpose other than what is described above.
 ## 6. Third-Party Libraries
 
 Torrent Free uses [MonoTorrent](https://github.com/alanmcgovern/monotorrent), an open-source BitTorrent library, to handle the network exchanges described above. No advertising SDKs or analytics frameworks are included in the app.
+
+Store-installed versions can check update availability through Google Play or Microsoft Store. Galaxy Store handles updates for its own installations. Choosing a rating or update action opens the relevant store, which processes the interaction under its own privacy policy. The app does not send torrent filenames, magnet links or download history to these stores.
 
 ---
 

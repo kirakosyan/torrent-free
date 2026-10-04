@@ -6,8 +6,8 @@ These features are implemented for Windows and Android. No store release or vers
 
 - The Downloads page checks on opening and resume after being stopped. Focus changes alone do not hide or re-offer banners. The check is asynchronous and bounded to ten seconds.
 - Windows asks `StoreContext.GetAppAndOptionalStorePackageUpdatesAsync`, ignoring optional packages. Store-signed packaged installations are supported; loose Debug and development packages are excluded.
-- Android uses Microsoft's binding for Google Play App Update. It asks Play about availability for this installation, rather than comparing a scraped public version string. Eligibility, installed version, signing and rollout rules remain controlled by the store.
-- Successful results are cached for 24 hours; unavailable/failed checks are retried after one hour. Installing a different app version invalidates the cache. Errors do not interrupt downloads.
+- Android resolves the installer of record using PackageManager (InstallSourceInfo on Android 11+). Play installs use Microsoft's binding for Google Play App Update. Galaxy Store installs return unknown availability: updates are managed by Galaxy Store, and no Play API call or in-app update banner is made for them. No supported public Galaxy update-availability API has been integrated. Unknown/sideloaded installations do not show store prompts.
+- Successful results are cached for 24 hours; unavailable/failed checks are retried after one hour. Installing a different app version or changing the Android installer store invalidates the cache. Errors do not interrupt downloads.
 - The top banner opens the platform's store listing, with an HTTPS fallback. It does not download/install app updates itself. Dismissal lasts for the current app session.
 - An available update takes priority over a review request.
 
@@ -19,7 +19,7 @@ These features are implemented for Windows and Android. No store release or vers
 - Don't ask again permanently opts out in local app data.
 - If the device clock moves backwards behind the last offer, the saved offer time is corrected and a fresh 30-day cooldown begins. Download thresholds and opt-outs are preserved.
 - Windows uses `RequestRateAndReviewAppAsync` with the native window owner. A successful submission disables future requests; cancellation only postpones them. Errors leave the banner available for retry.
-- Android's Rate app action opens Google Play directly. Successful handoff disables future requests, without recording a confirmed submission. Play does not disclose whether the user submitted a review or even saw its native review dialog, and recommends a store link for an explicit Rate button.
+- Android's Rate app action opens Google Play for Play installs, or Samsung's AppRating link for Galaxy Store installs, using the running app's package name. Each native intent targets the corresponding store package and falls back to that store's HTTPS page. Successful handoff disables future requests without recording a confirmed submission. The separate LibroNest companion listing link remains explicitly targeted at Play, where that app is distributed.
 - There is no claim to detect reviews submitted elsewhere or on another device. Local suppression is preserved across ordinary restarts/updates, but cannot be guaranteed after data clearing or reinstalling.
 
 `store-prompts.json` is stored in the existing app data directory, separately from torrent/settings snapshots. It contains hashed completion identities, scheduling information, update cache state and review preferences. No filenames, magnet links or listening/download details are sent to the stores. Unreadable/corrupt prompt state is not silently reset, protecting an existing opt-out.
@@ -32,11 +32,11 @@ All banner text is localized across the app's 24 locales. Debug builds disable s
 
 The native store interactions require real eligible installations and cannot be proven by a local Debug run:
 
-1. Install an older Store-signed Windows package and a Play-delivered Android build; make a higher version eligible for the test account/device. Confirm the update banner and correct listing on both platforms.
+1. Install an older Store-signed Windows package and a Play-delivered Android build; make a higher version eligible for the test account/device. Confirm the update banner and correct listing on both platforms. For Galaxy Store, install through a Samsung beta/production listing, verify that its updates work within Galaxy Store, and confirm the app does not advertise Play updates.
 2. Verify current-version, offline, unavailable-store and staged-rollout cases; app startup/downloads must remain responsive.
 3. Complete three distinct downloads; verify first offer, background/foreground handling, narrow-screen button wrapping, dark theme and RTL.
 4. Test Later and opt-out, then restart/update the app. Verify the counter survives removal of completed torrent rows and is unaffected by settings changes.
-5. On Windows, submit and cancel the native review dialog separately. On Android, verify Play handoff and opt-out without claiming submission.
+5. On Windows, submit and cancel the native review dialog separately. On Android, verify Play and Galaxy review handoffs, HTTPS fallbacks and opt-out without claiming submission. Test sideloads and an unavailable installer; neither should show a rating prompt. A Samsung device alone does not imply a Galaxy Store install.
 6. On Android, exercise navigation and fragment-hosted MAUI controls on a device with Fragment/KTX 1.9.0. The clean build does not replace runtime validation of the dependency alignment required by Play App Update.
 
 References:
@@ -46,3 +46,5 @@ References:
 - https://developer.android.com/guide/playcore/in-app-updates/kotlin-java
 - https://developer.android.com/guide/playcore/in-app-review#quotas
 - https://developer.android.com/guide/playcore/in-app-review/kotlin-java
+- https://developer.samsung.com/galaxy-store/customer-review/galaxy-store-review-link.html
+- https://developer.android.com/reference/android/content/pm/InstallSourceInfo

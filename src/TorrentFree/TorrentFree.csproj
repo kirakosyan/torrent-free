@@ -73,6 +73,13 @@
 		<AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(GalaxyStoreBuild)' == 'true' and '$(TargetFramework)' == 'net10.0-android'">
+		<!-- A separate identity avoids signature conflicts with Google Play App Signing. -->
+		<ApplicationId>com.torrentfree.app.galaxy</ApplicationId>
+		<AndroidPackageFormat>apk</AndroidPackageFormat>
+		<AndroidPackageFormats>apk</AndroidPackageFormats>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<AssemblyMetadata Include="DisplayVersion" Value="$(AppDisplayVersion)" />
 		<AssemblyMetadata Include="BuildNumber" Value="$(AppBuildNumber)" />
