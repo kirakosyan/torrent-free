@@ -49,8 +49,8 @@ public sealed class PlatformAppStore : IAppStore
             return updates.Any(update => !update.Package.IsOptional)
                 ? AppUpdateAvailability.Available : AppUpdateAvailability.Current;
 #elif ANDROID
-            // Play availability only applies to Play installations. Galaxy Store manages its
-            // own updates; never advertise a Play update for a Samsung-installed app.
+            // Play availability only applies to Play installations. Other stores manage
+            // their own updates; never advertise a Play update for their installations.
             if (!AndroidStoreRouting.SupportsUpdateCheck(GetAndroidStore())) return AppUpdateAvailability.Unknown;
             using var manager = AppUpdateManagerFactory.Create(Android.App.Application.Context);
             using var info = await manager.GetAppUpdateInfo().AsAsync<AppUpdateInfo>().WaitAsync(cancellationToken);

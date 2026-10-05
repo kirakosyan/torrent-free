@@ -8,6 +8,8 @@ public sealed class AndroidStoreRoutingTests
     [Theory]
     [InlineData("com.android.vending", "GooglePlay")]
     [InlineData("com.sec.android.app.samsungapps", "GalaxyStore")]
+    [InlineData("com.huawei.appmarket", "HuaweiAppGallery")]
+    [InlineData("com.huawei.appmarket.fake", "Unknown")]
     [InlineData(null, "Unknown")]
     [InlineData("", "Unknown")]
     [InlineData("com.android.packageinstaller", "Unknown")]
@@ -29,6 +31,18 @@ public sealed class AndroidStoreRoutingTests
         Assert.Equal("samsungapps://ProductDetail/com.torrentfree.app", update.AppUri);
         Assert.Equal("https://galaxystore.samsung.com/detail/com.torrentfree.app", update.WebUri);
         Assert.False(AndroidStoreRouting.SupportsUpdateCheck(AndroidStore.GalaxyStore));
+    }
+
+    [Fact]
+    public void HuaweiActionsStayInAppGalleryWithoutPlayUpdateChecks()
+    {
+        const string package = "com.torrentfree.app.huawei";
+        var listing = AndroidStoreRouting.GetLink(AndroidStore.HuaweiAppGallery, package)!;
+        Assert.Equal("com.huawei.appmarket", listing.StorePackage);
+        Assert.Equal("appmarket://details?id=" + package, listing.AppUri);
+        Assert.Equal("https://appgallery.cloud.huawei.com/appDetail?pkgName=" + package, listing.WebUri);
+        Assert.Equal(listing, AndroidStoreRouting.GetLink(AndroidStore.HuaweiAppGallery, package, review: true));
+        Assert.False(AndroidStoreRouting.SupportsUpdateCheck(AndroidStore.HuaweiAppGallery));
     }
 
     [Fact]
@@ -57,5 +71,9 @@ public sealed class AndroidStoreRoutingTests
         var galaxy = AndroidStoreRouting.CacheIdentity("1.19", "24", AndroidStore.GalaxyStore);
         Assert.NotEqual(play, galaxy);
         Assert.NotEqual("1.19:24", galaxy);
+        var huawei = AndroidStoreRouting.CacheIdentity("1.19", "24", AndroidStore.HuaweiAppGallery);
+        Assert.NotEqual(play, huawei);
+        Assert.NotEqual(galaxy, huawei);
+        Assert.NotEqual("1.19:24", huawei);
     }
 }
