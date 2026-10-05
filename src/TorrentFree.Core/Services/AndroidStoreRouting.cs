@@ -1,18 +1,20 @@
 namespace TorrentFree.Services;
 
-internal enum AndroidStore { Unknown, GooglePlay, GalaxyStore }
+internal enum AndroidStore { Unknown, GooglePlay, GalaxyStore, HuaweiAppGallery }
 
-internal sealed record AndroidStoreLink(string StorePackage, string AppUri, string WebUri);
+internal sealed record AndroidStoreLink(string StorePackage, string AppUri, string? WebUri);
 
 internal static class AndroidStoreRouting
 {
     internal const string GooglePlayPackage = "com.android.vending";
     internal const string GalaxyStorePackage = "com.sec.android.app.samsungapps";
+    internal const string HuaweiAppGalleryPackage = "com.huawei.appmarket";
 
     internal static AndroidStore FromInstaller(string? installerPackage) => installerPackage switch
     {
         GooglePlayPackage => AndroidStore.GooglePlay,
         GalaxyStorePackage => AndroidStore.GalaxyStore,
+        HuaweiAppGalleryPackage => AndroidStore.HuaweiAppGallery,
         _ => AndroidStore.Unknown
     };
 
@@ -32,6 +34,8 @@ internal static class AndroidStoreRouting
                 "samsungapps://AppRating/" + id, "https://apps.samsung.com/appquery/AppRating.as?appId=" + id),
             AndroidStore.GalaxyStore => new(GalaxyStorePackage,
                 "samsungapps://ProductDetail/" + id, "https://galaxystore.samsung.com/detail/" + id),
+            AndroidStore.HuaweiAppGallery => new(HuaweiAppGalleryPackage,
+                "appmarket://details?id=" + id, null),
             _ => null
         };
     }

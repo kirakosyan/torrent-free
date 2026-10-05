@@ -27,6 +27,11 @@ jobs:
           dotnet-version: 10.0.x
       - name: Run core regression tests
         run: dotnet test --project tests/TorrentFree.UnitTests/TorrentFree.UnitTests.csproj --configuration Release
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+      - name: Test store listing preparation
+        run: python -m unittest discover -s store/tests -p test_submission.py -v
 
   app-build:
     runs-on: windows-latest
@@ -37,13 +42,16 @@ jobs:
         include:
           - framework: net10.0-windows10.0.19041.0
             workload: maui-windows
-            galaxyStoreBuild: false
+            androidStore: Play
           - framework: net10.0-android
             workload: maui-android
-            galaxyStoreBuild: false
+            androidStore: Play
           - framework: net10.0-android
             workload: maui-android
-            galaxyStoreBuild: true
+            androidStore: Galaxy
+          - framework: net10.0-android
+            workload: maui-android
+            androidStore: Huawei
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5
@@ -56,5 +64,12 @@ jobs:
           java-version: '21'
       - name: Install MAUI workload
         run: dotnet workload install ${{ matrix.workload }}
+      - uses: actions/setup-python@v6
+        if: matrix.androidStore == 'Huawei'
+        with:
+          python-version: '3.x'
+      - name: Verify Android store build configuration
+        if: matrix.androidStore == 'Huawei'
+        run: python -m unittest discover -s store/tests -p test_android_store_build.py -v
       - name: Compile app
-        run: dotnet build src/TorrentFree/TorrentFree.csproj --configuration Debug -f ${{ matrix.framework }} -p:AppTargetFramework=${{ matrix.framework }} -p:GalaxyStoreBuild=${{ matrix.galaxyStoreBuild }}
+        run: dotnet build src/TorrentFree/TorrentFree.csproj --configuration Debug -f ${{ matrix.framework }} -p:AppTargetFramework=${{ matrix.framework }} -p:AndroidStore=${{ matrix.androidStore }}

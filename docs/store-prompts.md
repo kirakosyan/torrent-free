@@ -1,12 +1,12 @@
 # Store update and review prompts
 
-These features are implemented for Windows and Android. No store release or version bump is included.
+These features are implemented for Windows and Android. Huawei routing began in version 1.20. The behavior below describes current source; see the [release record](../store/huawei-store/release-notes-1.20.md) for the submitted APK and changes after submission.
 
 ## Update banner
 
 - The Downloads page checks on opening and resume after being stopped. Focus changes alone do not hide or re-offer banners. The check is asynchronous and bounded to ten seconds.
 - Windows asks `StoreContext.GetAppAndOptionalStorePackageUpdatesAsync`, ignoring optional packages. Store-signed packaged installations are supported; loose Debug and development packages are excluded.
-- Android resolves the installer of record using PackageManager (InstallSourceInfo on Android 11+). Play installs use Microsoft's binding for Google Play App Update. Galaxy Store installs return unknown availability: updates are managed by Galaxy Store, and no Play API call or in-app update banner is made for them. No supported public Galaxy update-availability API has been integrated. Unknown/sideloaded installations do not show store prompts.
+- Android resolves the installer of record using PackageManager (InstallSourceInfo on Android 11+). Play installs use Microsoft's binding for Google Play App Update. Galaxy Store and Huawei AppGallery installs return unknown availability: their stores manage updates, and no Play API call or in-app update banner is made for them. Their native update-availability SDKs have not been integrated. Unknown/sideloaded installations do not show store prompts.
 - Successful results are cached for 24 hours; unavailable/failed checks are retried after one hour. Installing a different app version or changing the Android installer store invalidates the cache. Errors do not interrupt downloads.
 - The top banner opens the platform's store listing, with an HTTPS fallback. It does not download/install app updates itself. Dismissal lasts for the current app session.
 - An available update takes priority over a review request.
@@ -19,7 +19,8 @@ These features are implemented for Windows and Android. No store release or vers
 - Don't ask again permanently opts out in local app data.
 - If the device clock moves backwards behind the last offer, the saved offer time is corrected and a fresh 30-day cooldown begins. Download thresholds and opt-outs are preserved.
 - Windows uses `RequestRateAndReviewAppAsync` with the native window owner. A successful submission disables future requests; cancellation only postpones them. Errors leave the banner available for retry.
-- Android's Rate app action opens Google Play for Play installs, or Samsung's AppRating link for Galaxy Store installs, using the running app's package name. Each native intent targets the corresponding store package and falls back to that store's HTTPS page. Successful handoff disables future requests without recording a confirmed submission. The separate LibroNest companion listing link remains explicitly targeted at Play, where that app is distributed.
+- Android's Rate app action opens Google Play for Play installs, Samsung's AppRating link for Galaxy Store installs, or AppGallery's details page for Huawei installs, using the running app's package name. Each native intent targets the corresponding store package. Play and Galaxy have HTTPS fallbacks; Huawei uses only its documented native link until an Android web fallback is verified. A failed native Huawei launch leaves the banner available for retry. An unconfirmed handoff dismisses the banner and retains the normal ten-download/30-day cooldown, rather than permanently disabling requests. It cannot confirm that a destination page loaded or a review was submitted. The separate LibroNest companion listing link remains explicitly targeted at Play, where that app is distributed.
+- Existing permanent suppression is preserved: older persisted state cannot distinguish an earlier handoff from an explicit opt-out, so it is never reset automatically.
 - There is no claim to detect reviews submitted elsewhere or on another device. Local suppression is preserved across ordinary restarts/updates, but cannot be guaranteed after data clearing or reinstalling.
 
 `store-prompts.json` is stored in the existing app data directory, separately from torrent/settings snapshots. It contains hashed completion identities, scheduling information, update cache state and review preferences. No filenames, magnet links or listening/download details are sent to the stores. Unreadable/corrupt prompt state is not silently reset, protecting an existing opt-out.
@@ -32,11 +33,11 @@ All banner text is localized across the app's 24 locales. Debug builds disable s
 
 The native store interactions require real eligible installations and cannot be proven by a local Debug run:
 
-1. Install an older Store-signed Windows package and a Play-delivered Android build; make a higher version eligible for the test account/device. Confirm the update banner and correct listing on both platforms. For Galaxy Store, install through a Samsung beta/production listing, verify that its updates work within Galaxy Store, and confirm the app does not advertise Play updates.
+1. Install an older Store-signed Windows package and a Play-delivered Android build; make a higher version eligible for the test account/device. Confirm the update banner and correct listing on both platforms. For Galaxy Store and Huawei AppGallery, install through the respective store's test/production listing, verify that updates work within that store, and confirm the app does not advertise Play updates.
 2. Verify current-version, offline, unavailable-store and staged-rollout cases; app startup/downloads must remain responsive.
 3. Complete three distinct downloads; verify first offer, background/foreground handling, narrow-screen button wrapping, dark theme and RTL.
 4. Test Later and opt-out, then restart/update the app. Verify the counter survives removal of completed torrent rows and is unaffected by settings changes.
-5. On Windows, submit and cancel the native review dialog separately. On Android, verify Play and Galaxy review handoffs, HTTPS fallbacks and opt-out without claiming submission. Test sideloads and an unavailable installer; neither should show a rating prompt. A Samsung device alone does not imply a Galaxy Store install.
+5. On Windows, submit and cancel the native review dialog separately. On Android, verify Play, Galaxy and AppGallery review handoffs, Play/Galaxy HTTPS fallbacks and opt-out without claiming submission. For Huawei, confirm the native link resolves the actual listing and an unavailable store reports a retryable failure without opening a browser. No connected Huawei device was available during PR review; this remains an explicit release check. Test sideloads and an unavailable installer; neither should show a rating prompt. Device manufacturer alone does not identify the installer store.
 6. On Android, exercise navigation and fragment-hosted MAUI controls on a device with Fragment/KTX 1.9.0. The clean build does not replace runtime validation of the dependency alignment required by Play App Update.
 
 References:
@@ -48,3 +49,4 @@ References:
 - https://developer.android.com/guide/playcore/in-app-review/kotlin-java
 - https://developer.samsung.com/galaxy-store/customer-review/galaxy-store-review-link.html
 - https://developer.android.com/reference/android/content/pm/InstallSourceInfo
+- https://developer.huawei.com/consumer/fr/doc/quickApp-Guides/quickapp-faq-0000001129279483 (Huawei's native AppGallery details URI; device execution still requires verification)

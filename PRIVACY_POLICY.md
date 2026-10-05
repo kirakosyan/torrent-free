@@ -1,10 +1,10 @@
 # Privacy Policy
 
 **App name:** Torrent Client App (Torrent Free)
-**App IDs:** com.torrentfree.app; com.torrentfree.app.galaxy (Galaxy Store build)
+**App IDs:** com.torrentfree.app; com.torrentfree.app.galaxy (Galaxy Store build); com.torrentfree.app.huawei (Huawei AppGallery build)
 
 **Platforms:** Android, iOS, macOS, Windows  
-**Last updated:** 2026-10-04
+**Last updated:** 2026-10-05
 
 ---
 
@@ -82,7 +82,7 @@ No permission is used for any purpose other than what is described above.
 
 Torrent Free uses [MonoTorrent](https://github.com/alanmcgovern/monotorrent), an open-source BitTorrent library, to handle the network exchanges described above. No advertising SDKs or analytics frameworks are included in the app.
 
-Store-installed versions can check update availability through Google Play or Microsoft Store. Galaxy Store handles updates for its own installations. Choosing a rating or update action opens the relevant store, which processes the interaction under its own privacy policy. The app does not send torrent filenames, magnet links or download history to these stores.
+Store-installed versions can check update availability through Google Play or Microsoft Store. Galaxy Store and Huawei AppGallery handle updates for their own installations. Choosing a rating or update action opens the relevant store, which processes the interaction under its own privacy policy. The app does not send torrent filenames, magnet links or download history to these stores.
 
 ---
 

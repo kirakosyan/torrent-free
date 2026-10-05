@@ -25,10 +25,12 @@ Samsung-store installation, review handoff and a subsequent update before releas
 
 ## Package and signing
 
-Build with `-p:GalaxyStoreBuild=true -p:AppTargetFramework=net10.0-android` to use
+Build with `-p:AndroidStore=Galaxy -p:AppTargetFramework=net10.0-android` to use
 `com.torrentfree.app.galaxy` and APK output. Ordinary builds retain
 `com.torrentfree.app` and their existing format. Review/update links use the running
 package name. The identities install independently and do not share app data.
+`AndroidStore=Play` is the default; unknown values and the retired boolean flags
+are rejected before restore/build. The private signing helpers use this selector.
 
 A Play **upload** key is not necessarily the key used to sign Play-delivered apps.
 The Galaxy identity allows reuse of an existing private signing key without
