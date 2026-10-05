@@ -73,7 +73,7 @@ def prepare(output):
         "packageName": "com.torrentfree.app.huawei", "defaultLanguage": "English (UK)",
         "listings": listings, "assets": assets,
         "notes": ["All 26 Play locales map directly to Huawei choices verified in the console.",
-                  "Translations inherit the default English screenshots and icon.",
+                  "Upload the same English screenshots and icon per language if portal validation requires them.",
                   "The app has 24 UI languages; Ukrainian is a listing translation only."]}
     (output / "listing-bundle.json").write_text(json.dumps(bundle, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Prepared {len(listings)} listings and {len(assets)} assets in {output}")

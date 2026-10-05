@@ -1,8 +1,8 @@
 # Huawei AppGallery
 
 Huawei builds use `-p:HuaweiStoreBuild=true -p:AppTargetFramework=net10.0-android`.
-This produces an APK with identity `com.torrentfree.app.huawei` and the listing's
-English title. It installs separately from the Play and Galaxy variants.
+This produces an APK with identity `com.torrentfree.app.huawei`.
+It installs separately from the Play and Galaxy variants.
 Selecting both Huawei and Galaxy build flags fails explicitly.
 
 ## Signing and updates
@@ -31,7 +31,9 @@ rtk proxy python store/huawei-store/prepare_submission.py --output <private-fold
 
 The bundle reuses all 26 Play listing translations and five 1440x2560 phone
 screenshots, plus the 512x512 icon. All languages map directly to choices verified
-in AppGallery on October 5, 2026. Non-default listings inherit the English images.
+in AppGallery on October 5, 2026. The portal describes image inheritance, but its
+Next-step validation required explicit graphics for each configured translation.
+The same English icon and five screenshots were therefore uploaded per language.
 The utility checks text/image limits shown in the portal and records image hashes.
 It refuses output inside the repository and does not upload anything.
 
@@ -43,8 +45,16 @@ The app itself retains its 24 UI languages. Ukrainian remains listing-only.
 ## Release
 
 See [1.20 release record](release-notes-1.20.md) for verified publication state.
-Complete Huawei's own content rating, privacy, support, distribution and reviewer
-fields. Test a store-delivered installation, rating handoff and later update on a
+Version 1.20 / code 25 was submitted on October 5, 2026 and is **Reviewing**,
+with automatic publication after approval. All 199 available regions outside
+mainland China and new regions are enabled. The completed questionnaire yielded
+3+ (Brazil: All ages); the app is not intended only for children. Privacy URLs,
+free pricing, no login/purchases/generative AI and reviewer instructions are saved.
+
+Set release regions before uploading an APK. Removing mainland China changes
+Huawei's distribution entity and requires uploading the APK again. The final
+submission uses the same verified APK under the final region selection.
+Test a store-delivered installation, rating handoff and later update on a
 real device. Android APK support does not imply native HarmonyOS NEXT support.
 
 References:
