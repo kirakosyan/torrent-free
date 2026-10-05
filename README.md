@@ -4,6 +4,7 @@
 
 - **Android (Google Play):** https://play.google.com/store/apps/details?id=com.torrentfree.app
 - **Microsoft Store:** https://apps.microsoft.com/detail/9nnx2ztpxc26
+- **Samsung Galaxy Store:** preparation only; not submitted or published. See [Galaxy Store preparation](store/galaxy-store/README.md) for seller requirements, reusable Play assets, signing and store routing.
 
 Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real engine, not simulated). Supports importing `.torrent` files and magnet links, shows live stats, and on Windows stores downloads next to the picked `.torrent` when possible.
 

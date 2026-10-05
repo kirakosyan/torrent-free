@@ -297,6 +297,25 @@ public sealed class AppPromptServiceTests
         Assert.Equal(3, fixture.Store.UpdateRequests);
     }
 
+    [Fact]
+    public async Task ChangingToGalaxyStoreAtSameVersion_DiscardsPlayUpdateBanner()
+    {
+        var fixture = new Fixture();
+        fixture.Store.InstalledVersion = AndroidStoreRouting.CacheIdentity("1.19", "24", AndroidStore.GooglePlay);
+        fixture.Store.Availability = AppUpdateAvailability.Available;
+        await fixture.Service.SetForegroundAsync(true);
+        Assert.True(fixture.Service.IsUpdateBannerVisible);
+
+        fixture.Store.InstalledVersion = AndroidStoreRouting.CacheIdentity("1.19", "24", AndroidStore.GalaxyStore);
+        fixture.Store.Availability = AppUpdateAvailability.Unknown;
+        var restarted = fixture.Restart();
+        await restarted.SetForegroundAsync(true);
+
+        Assert.False(restarted.IsUpdateBannerVisible);
+        Assert.Equal(2, fixture.Store.UpdateRequests);
+        Assert.Equal(AppUpdateAvailability.Unknown, fixture.Persistence.State.UpdateAvailability);
+    }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

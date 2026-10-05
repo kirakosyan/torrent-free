@@ -24,14 +24,19 @@ public sealed class PlatformAppStore : IAppStore
             try { return Windows.ApplicationModel.Package.Current.SignatureKind == Windows.ApplicationModel.PackageSignatureKind.Store; }
             catch { return false; } // Unpackaged/sideloaded installations.
 #elif ANDROID
-            return true;
+            return GetAndroidStore() != AndroidStore.Unknown;
 #else
             return false;
 #endif
         }
     }
 
-    public string InstalledVersion => $"{AppInfo.Current.VersionString}:{AppInfo.Current.BuildString}";
+    public string InstalledVersion =>
+#if ANDROID
+        AndroidStoreRouting.CacheIdentity(AppInfo.Current.VersionString, AppInfo.Current.BuildString, GetAndroidStore());
+#else
+        $"{AppInfo.Current.VersionString}:{AppInfo.Current.BuildString}";
+#endif
 
     public Task<AppUpdateAvailability> CheckForUpdateAsync(CancellationToken cancellationToken) =>
         MainThread.InvokeOnMainThreadAsync(async () =>
@@ -44,6 +49,9 @@ public sealed class PlatformAppStore : IAppStore
             return updates.Any(update => !update.Package.IsOptional)
                 ? AppUpdateAvailability.Available : AppUpdateAvailability.Current;
 #elif ANDROID
+            // Play availability only applies to Play installations. Galaxy Store manages its
+            // own updates; never advertise a Play update for a Samsung-installed app.
+            if (!AndroidStoreRouting.SupportsUpdateCheck(GetAndroidStore())) return AppUpdateAvailability.Unknown;
             using var manager = AppUpdateManagerFactory.Create(Android.App.Application.Context);
             using var info = await manager.GetAppUpdateInfo().AsAsync<AppUpdateInfo>().WaitAsync(cancellationToken);
             return info.UpdateAvailability() switch
@@ -73,7 +81,12 @@ public sealed class PlatformAppStore : IAppStore
 #endif
     });
 
-    private Task<bool> OpenListingAsync() => OpenListingAsync("9NNX2ZTPXC26", "com.torrentfree.app");
+    private Task<bool> OpenListingAsync() =>
+#if ANDROID
+        OpenAndroidLinkAsync(AndroidStoreRouting.GetLink(GetAndroidStore(), AppInfo.Current.PackageName));
+#else
+        OpenListingAsync("9NNX2ZTPXC26", "com.torrentfree.app");
+#endif
 
     public static Task<bool> OpenListingAsync(string windowsProductId, string androidPackageId) => MainThread.InvokeOnMainThreadAsync(async () =>
     {
@@ -81,18 +94,8 @@ public sealed class PlatformAppStore : IAppStore
         if (await TryLaunchAsync("ms-windows-store://pdp/?ProductId=" + windowsProductId)) return true;
         return await TryLaunchAsync("https://apps.microsoft.com/detail/" + windowsProductId);
 #elif ANDROID
-        try
-        {
-            // Explicitly target Play; a third-party handler must not intercept the review link.
-            using var intent = new Intent(Intent.ActionView, Android.Net.Uri.Parse("market://details?id=" + androidPackageId));
-            intent.SetPackage("com.android.vending");
-            intent.AddFlags(ActivityFlags.NewTask);
-            Android.App.Application.Context.StartActivity(intent);
-            return true;
-        }
-        catch (ActivityNotFoundException) { }
-        catch (Java.Lang.SecurityException) { }
-        return await TryLaunchAsync("https://play.google.com/store/apps/details?id=" + androidPackageId);
+        // External companion apps have their own distribution; keep this explicit Play link.
+        return await OpenAndroidLinkAsync(AndroidStoreRouting.GetLink(AndroidStore.GooglePlay, androidPackageId));
 #else
         await Task.CompletedTask;
         return false;
@@ -119,14 +122,54 @@ public sealed class PlatformAppStore : IAppStore
             return AppReviewResult.Failed;
         }
 #elif ANDROID
-        // Play review flow does not confirm submission (or even display). A visible Rate button
-        // opens the listing instead; the caller records this as an opt-out, never a confirmed rating.
-        return await OpenListingAsync() ? AppReviewResult.StoreOpened : AppReviewResult.Failed;
+        if (!IsSupported) return AppReviewResult.Failed;
+        // A store handoff is not proof that the customer submitted a review.
+        return await OpenAndroidLinkAsync(AndroidStoreRouting.GetLink(GetAndroidStore(), AppInfo.Current.PackageName, review: true))
+            ? AppReviewResult.StoreOpened : AppReviewResult.Failed;
 #else
         await Task.CompletedTask;
         return AppReviewResult.Failed;
 #endif
     });
+
+#if ANDROID
+    private static AndroidStore GetAndroidStore()
+    {
+        var context = Android.App.Application.Context;
+        var manager = context.PackageManager;
+        if (manager is null) return AndroidStore.Unknown;
+        try
+        {
+            if (OperatingSystem.IsAndroidVersionAtLeast(30))
+            {
+                using var source = manager.GetInstallSourceInfo(context.PackageName!);
+                return AndroidStoreRouting.FromInstaller(source?.InstallingPackageName);
+            }
+#pragma warning disable CA1422 // Required on Android 6–10; replacement starts at API 30.
+            return AndroidStoreRouting.FromInstaller(manager.GetInstallerPackageName(context.PackageName!));
+#pragma warning restore CA1422
+        }
+        catch (Android.Content.PM.PackageManager.NameNotFoundException) { return AndroidStore.Unknown; }
+        catch (Java.Lang.SecurityException) { return AndroidStore.Unknown; }
+    }
+
+    private static async Task<bool> OpenAndroidLinkAsync(AndroidStoreLink? link)
+    {
+        if (link is null) return false;
+        try
+        {
+            // Explicitly target the installer store so another app cannot intercept its URI.
+            using var intent = new Intent(Intent.ActionView, Android.Net.Uri.Parse(link.AppUri));
+            intent.SetPackage(link.StorePackage);
+            intent.AddFlags(ActivityFlags.NewTask);
+            Android.App.Application.Context.StartActivity(intent);
+            return true;
+        }
+        catch (ActivityNotFoundException) { }
+        catch (Java.Lang.SecurityException) { }
+        return await TryLaunchAsync(link.WebUri);
+    }
+#endif
 
 #if WINDOWS
     private static StoreContext CreateStoreContext()

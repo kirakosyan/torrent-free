@@ -253,6 +253,10 @@ ClientBin/
 *.dbproj.schemaview
 *.jfm
 *.pfx
+*.keystore
+*.jks
+*.apk
+*.aab
 *.publishsettings
 orleans.codegen.cs
 
