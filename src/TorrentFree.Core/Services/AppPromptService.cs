@@ -210,12 +210,13 @@ public partial class AppPromptService(
             await dispatcher.InvokeAsync(() => HasActionError = true);
             return;
         }
-        if (result is AppReviewResult.Submitted or AppReviewResult.StoreOpened)
+        // A launched activity/browser cannot confirm that the listing or review loaded.
+        if (result == AppReviewResult.Submitted)
         {
             await ChangeStateAsync(state => state with
             {
                 ReviewPromptsDisabled = true,
-                ReviewSubmitted = result == AppReviewResult.Submitted
+                ReviewSubmitted = true
             });
         }
         await RefreshVisibilityAsync(allowNewReview: false, dismissReview: true);

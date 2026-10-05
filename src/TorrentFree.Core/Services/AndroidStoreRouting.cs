@@ -2,7 +2,7 @@ namespace TorrentFree.Services;
 
 internal enum AndroidStore { Unknown, GooglePlay, GalaxyStore, HuaweiAppGallery }
 
-internal sealed record AndroidStoreLink(string StorePackage, string AppUri, string WebUri);
+internal sealed record AndroidStoreLink(string StorePackage, string AppUri, string? WebUri);
 
 internal static class AndroidStoreRouting
 {
@@ -35,7 +35,7 @@ internal static class AndroidStoreRouting
             AndroidStore.GalaxyStore => new(GalaxyStorePackage,
                 "samsungapps://ProductDetail/" + id, "https://galaxystore.samsung.com/detail/" + id),
             AndroidStore.HuaweiAppGallery => new(HuaweiAppGalleryPackage,
-                "appmarket://details?id=" + id, "https://appgallery.cloud.huawei.com/appDetail?pkgName=" + id),
+                "appmarket://details?id=" + id, null),
             _ => null
         };
     }

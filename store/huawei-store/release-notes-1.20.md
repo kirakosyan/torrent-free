@@ -7,7 +7,7 @@ Shared Windows metadata is aligned to **1.20.0.0**; no Windows or Google Play
 
 ## Changes
 
-- Recognize Huawei AppGallery installations and route ratings and updates to it.
+- Recognize Huawei AppGallery installations and route ratings/listing handoffs to it.
 - Leave update availability to AppGallery; never call Play's update API for a
   Huawei installation. Include the installer store in the cached version identity.
 - Add an APK build identity that can reuse the existing private signing key
@@ -25,6 +25,8 @@ signing certificate were verified; the manifest confirms version 1.20, code 25,
 minimum API 23, target API 36 and both ABIs. Native symbol build IDs match both
 packaged libraries. ZIP integrity passed. Standard Release evaluation retains
 the Play package/AAB, and selecting two store build flags fails explicitly.
+The APK's launcher label is **Torrent Client** (`@string/app_name`); the longer
+English store listing title does not replace that Android label.
 Both source CI runs passed their Windows/Linux tests and Android/Galaxy/Windows
 builds. One Windows test run hit an existing torrent resume-file lock and passed
 on retry; the other Windows run passed initially.
@@ -63,3 +65,29 @@ package was built. Submission evidence, private build helper, signing references
 assets and diagnostics are retained in the private Apps folder.
 
 No production key or package is stored in the public repository.
+
+## Changes after submission
+
+PR review fixes made after the `v1.20` source tag are for the **next release**.
+They do not change the submitted APK, hash, tag or historical validation above.
+A replacement store package must have a new version/code and release tag.
+
+- Replace the store booleans with `AndroidStore=Play|Galaxy|Huawei`; reject legacy
+  flags and unknown choices before restore/build. CI includes a Huawei compile
+  and real MSBuild checks of identities, formats, ARM64 selection and validation.
+- Set future Huawei APKs to ARM64 only. The original v1.20 APK contains ARM64 and
+  x86_64; neither ABI policy supports 32-bit-only devices. Remove the ineffective
+  Huawei title override while retaining the launcher label verified above.
+- Keep Huawei's officially documented native details link, remove the unverified
+  web fallback, and use a cooldown for unconfirmed Android store handoffs. Preserve
+  existing opt-outs. Real-device AppGallery handoff validation remains outstanding.
+- Share listing validation, asset copying/hashing and bundle writing between
+  Galaxy and Huawei; both tools enforce output outside the repository.
+- Keep verified review/publication status in this record; READMEs link here.
+
+Follow-up validation: **401 Release core tests**, including **46 targeted
+routing/prompt cases**, **five listing-preparation tests**, and **four MSBuild
+integration tests** passed. The Huawei Debug build succeeded with zero warnings
+and errors. Its APK manifest confirms `com.torrentfree.app.huawei`, launcher label
+`Torrent Client` and **arm64-v8a only**. This is a local development build, not a
+replacement submission.

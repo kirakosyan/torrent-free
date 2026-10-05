@@ -40,7 +40,7 @@ public sealed class AndroidStoreRoutingTests
         var listing = AndroidStoreRouting.GetLink(AndroidStore.HuaweiAppGallery, package)!;
         Assert.Equal("com.huawei.appmarket", listing.StorePackage);
         Assert.Equal("appmarket://details?id=" + package, listing.AppUri);
-        Assert.Equal("https://appgallery.cloud.huawei.com/appDetail?pkgName=" + package, listing.WebUri);
+        Assert.Null(listing.WebUri);
         Assert.Equal(listing, AndroidStoreRouting.GetLink(AndroidStore.HuaweiAppGallery, package, review: true));
         Assert.False(AndroidStoreRouting.SupportsUpdateCheck(AndroidStore.HuaweiAppGallery));
     }

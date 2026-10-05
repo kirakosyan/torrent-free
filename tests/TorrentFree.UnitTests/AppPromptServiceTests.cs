@@ -204,24 +204,44 @@ public sealed class AppPromptServiceTests
         Assert.True(fixture.Service.IsReviewBannerVisible);
     }
 
-    [Theory]
-    [InlineData(AppReviewResult.Submitted, true)]
-    [InlineData(AppReviewResult.StoreOpened, false)]
-    public async Task SuccessfulRatingOrListingHandoff_SuppressesPermanently_WithoutInventingSubmission(AppReviewResult result, bool submitted)
+    [Fact]
+    public async Task ConfirmedReviewSubmission_SuppressesPermanently()
     {
         var fixture = new Fixture();
         await fixture.Service.SetForegroundAsync(true);
         await fixture.CompleteAsync(0, First);
-        fixture.Store.ReviewResult = result;
+        fixture.Store.ReviewResult = AppReviewResult.Submitted;
         await fixture.Service.RateAppCommand.ExecuteAsync(null);
         Assert.True(fixture.Persistence.State.ReviewPromptsDisabled);
-        Assert.Equal(submitted, fixture.Persistence.State.ReviewSubmitted);
+        Assert.True(fixture.Persistence.State.ReviewSubmitted);
         Assert.False(fixture.Service.IsReviewBannerVisible);
         fixture.Clock.Now += TimeSpan.FromDays(90);
         var restarted = fixture.Restart();
         for (var i = First; i < 30; i++) await restarted.OnDownloadCompletedAsync(Completed(i));
         await restarted.SetForegroundAsync(true);
         Assert.False(restarted.IsReviewBannerVisible);
+    }
+
+    [Fact]
+    public async Task ListingHandoff_CoolsDownAcrossRestart_WithoutDisablingReviews()
+    {
+        var fixture = new Fixture();
+        await fixture.Service.SetForegroundAsync(true);
+        await fixture.CompleteAsync(0, First);
+        fixture.Store.ReviewResult = AppReviewResult.StoreOpened;
+        await fixture.Service.RateAppCommand.ExecuteAsync(null);
+        Assert.False(fixture.Persistence.State.ReviewPromptsDisabled);
+        Assert.False(fixture.Persistence.State.ReviewSubmitted);
+        Assert.False(fixture.Service.IsReviewBannerVisible);
+
+        var restarted = fixture.Restart();
+        await restarted.SetForegroundAsync(true);
+        Assert.False(restarted.IsReviewBannerVisible);
+        fixture.Clock.Now += TimeSpan.FromDays(30);
+        for (var i = First; i < First + 9; i++) await restarted.OnDownloadCompletedAsync(Completed(i));
+        Assert.False(restarted.IsReviewBannerVisible);
+        await restarted.OnDownloadCompletedAsync(Completed(First + 9));
+        Assert.True(restarted.IsReviewBannerVisible);
     }
 
     [Fact]

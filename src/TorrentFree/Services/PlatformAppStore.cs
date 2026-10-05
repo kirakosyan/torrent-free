@@ -167,7 +167,7 @@ public sealed class PlatformAppStore : IAppStore
         }
         catch (ActivityNotFoundException) { }
         catch (Java.Lang.SecurityException) { }
-        return await TryLaunchAsync(link.WebUri);
+        return link.WebUri is not null && await TryLaunchAsync(link.WebUri);
     }
 #endif
 

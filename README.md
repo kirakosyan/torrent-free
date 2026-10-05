@@ -5,7 +5,7 @@
 - **Android (Google Play):** https://play.google.com/store/apps/details?id=com.torrentfree.app
 - **Microsoft Store:** https://apps.microsoft.com/detail/9nnx2ztpxc26
 - **Samsung Galaxy Store:** preparation only; not submitted or published. See [Galaxy Store preparation](store/galaxy-store/README.md) for seller requirements, reusable Play assets, signing and store routing.
-- **Huawei AppGallery:** version **1.20 / code 25** submitted on **October 5, 2026**; **Reviewing**, not live yet. Automatic publication after approval in 199 regions, excluding mainland China. See the [Huawei release record](store/huawei-store/release-notes-1.20.md).
+- **Huawei AppGallery:** version **1.20 / code 25**, submitted on **October 5, 2026**. See the [Huawei release record](store/huawei-store/release-notes-1.20.md#traceability-and-status) for the latest verified review/publication status.
 
 Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real engine, not simulated). Supports importing `.torrent` files and magnet links, shows live stats, and on Windows stores downloads next to the picked `.torrent` when possible.
 
@@ -32,14 +32,13 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 
 ## 📝 Release Overview
 
-Huawei AppGallery **1.20 / code 25** was submitted on **October 5, 2026** and
-verified **Reviewing** at **17:27 Europe/Oslo (15:27 UTC)**. It reuses all 26
+Huawei AppGallery **1.20 / code 25** was submitted on **October 5, 2026**. It reuses all 26
 Google Play listing languages, the icon and five screenshots, with AppGallery
 rating links and store-managed updates. The signed APK uses the separate
 `com.torrentfree.app.huawei` identity and the existing private Android key.
-All 401 Release tests and the signed Huawei build passed; source CI checks are
-green. No Google Play or Windows 1.20 release was submitted. See the
-[source tag, hashes and submission identifiers](store/huawei-store/release-notes-1.20.md).
+All 401 Release tests and the signed Huawei build passed for the submitted source.
+No Google Play or Windows 1.20 release was submitted. See the
+[verified status, source tag, hashes and submission identifiers](store/huawei-store/release-notes-1.20.md).
 
 Version **1.19** (Android code **24**, Windows **1.19.0.0**, x64 and ARM64) fixes
 the shared-folder deletion regression: older torrents with missing file metadata

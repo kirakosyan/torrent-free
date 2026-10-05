@@ -73,24 +73,23 @@
 		<AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(GalaxyStoreBuild)' == 'true' and '$(TargetFramework)' == 'net10.0-android'">
-		<!-- A separate identity avoids signature conflicts with Google Play App Signing. -->
-		<ApplicationId>com.torrentfree.app.galaxy</ApplicationId>
-		<AndroidPackageFormat>apk</AndroidPackageFormat>
-		<AndroidPackageFormats>apk</AndroidPackageFormats>
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
+		<AndroidStore Condition="'$(AndroidStore)' == ''">Play</AndroidStore>
+		<!-- Separate identities avoid conflicts with Google Play App Signing. -->
+		<ApplicationId Condition="'$(AndroidStore)' == 'Galaxy'">com.torrentfree.app.galaxy</ApplicationId>
+		<ApplicationId Condition="'$(AndroidStore)' == 'Huawei'">com.torrentfree.app.huawei</ApplicationId>
+		<AndroidPackageFormat Condition="'$(AndroidStore)' == 'Galaxy' or '$(AndroidStore)' == 'Huawei'">apk</AndroidPackageFormat>
+		<AndroidPackageFormats Condition="'$(AndroidStore)' == 'Galaxy' or '$(AndroidStore)' == 'Huawei'">apk</AndroidPackageFormats>
+		<!-- AppGallery phone releases target ARM64; no emulator or 32-bit payload. -->
+		<RuntimeIdentifiers Condition="'$(AndroidStore)' == 'Huawei'">android-arm64</RuntimeIdentifiers>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(HuaweiStoreBuild)' == 'true' and '$(TargetFramework)' == 'net10.0-android'">
-		<!-- Retain our private signing key without conflicting with Play-signed installs. -->
-		<ApplicationId>com.torrentfree.app.huawei</ApplicationId>
-		<ApplicationTitle>Torrent Client - Downloader</ApplicationTitle>
-		<AndroidPackageFormat>apk</AndroidPackageFormat>
-		<AndroidPackageFormats>apk</AndroidPackageFormats>
-	</PropertyGroup>
-
-	<Target Name="ValidateAndroidStoreSelection" BeforeTargets="PrepareForBuild"
-		Condition="'$(GalaxyStoreBuild)' == 'true' and '$(HuaweiStoreBuild)' == 'true'">
-		<Error Text="Select only one Android store build: GalaxyStoreBuild or HuaweiStoreBuild." />
+	<Target Name="ValidateAndroidStore" BeforeTargets="CollectPackageReferences;PrepareForBuild"
+		Condition="'$(TargetFramework)' == 'net10.0-android'">
+		<Error Code="TFSTORE001" Condition="'$(AndroidStore)' != 'Play' and '$(AndroidStore)' != 'Galaxy' and '$(AndroidStore)' != 'Huawei'"
+			Text="AndroidStore must be Play, Galaxy or Huawei." />
+		<Error Code="TFSTORE002" Condition="'$(GalaxyStoreBuild)' != '' or '$(HuaweiStoreBuild)' != ''"
+			Text="Use AndroidStore=Play|Galaxy|Huawei instead of GalaxyStoreBuild/HuaweiStoreBuild." />
 	</Target>
 
 	<ItemGroup>
