@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>Zapobiega automatycznemu uśpieniu podczas aktywnych pobrań. Uśpienie jest dozwolone, gdy wszystkie aktywne pobrania zostaną ukończone, wstrzymane lub zatrzymane. Udostępnianie ukończonych plików nie utrzymuje urządzenia w stanie aktywnym. Ekran może się wyłączyć.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Wybierz pliki</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>Wybierz pliki do pobrania.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Szukaj plików lub folderów</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>Zaznacz widoczne</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>Odznacz widoczne</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>Brak pasujących plików.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>Wczytywanie listy plików. Linki magnet mogą wymagać minuty; zawartość nie będzie jeszcze pobierana.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>Spróbuj ponownie</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>Zastosuj wybór</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>Wybrano {0} z {1} plików · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>Istniejące pliki zostaną zachowane. Niewielkie części pominiętych plików mogą być potrzebne do wspólnych fragmentów torrenta.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>Nie można wczytać plików. Sprawdź połączenie i ustawienia Wi-Fi, a następnie spróbuj ponownie.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>Nie można zastosować wyboru. Transfer może być wstrzymany. Spróbuj ponownie.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>Pobierz wybrane</value>
+  </data>
 </root>

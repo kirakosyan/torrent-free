@@ -608,4 +608,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>Запрещает автоматический переход в сон во время активных загрузок. Сон разрешается, когда все активные загрузки завершены, приостановлены или остановлены. Раздача завершённых файлов не мешает переходу в сон. Экран может выключаться.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Выбрать файлы</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>Выберите файлы для загрузки.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Поиск файлов или папок</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>Выбрать видимые</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>Снять выбор видимых</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>Нет подходящих файлов.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>Загрузка списка файлов. Для magnet-ссылок это может занять минуту; содержимое пока не загружается.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>Повторить</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>Применить выбор</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>Выбрано {0} из {1} файлов · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>Существующие файлы сохраняются. Для общих частей торрента могут понадобиться небольшие фрагменты пропущенных файлов.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>Не удалось загрузить файлы. Проверьте соединение и настройки Wi-Fi, затем повторите попытку.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>Не удалось применить выбор. Передача может быть приостановлена. Повторите попытку.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>Скачать выбранное</value>
+  </data>
 </root>

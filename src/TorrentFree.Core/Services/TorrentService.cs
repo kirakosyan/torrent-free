@@ -38,12 +38,18 @@ public interface ITorrentService : IDisposable, IAsyncDisposable
     /// <summary>
     /// Adds a new torrent from a magnet link.
     /// </summary>
-    Task<TorrentItem?> AddTorrentAsync(string magnetLink);
+    Task<TorrentItem?> AddTorrentAsync(string magnetLink, bool startPaused = false);
 
     /// <summary>
     /// Adds a new torrent from a parsed torrent file.
     /// </summary>
-    Task<TorrentItem?> AddTorrentFileAsync(TorrentMetadata metadata);
+    Task<TorrentItem?> AddTorrentFileAsync(TorrentMetadata metadata, bool startPaused = false);
+
+    /// <summary>Loads the file list. Magnets fetch metadata only, with cancellable network access.</summary>
+    Task<IReadOnlyList<TorrentFileChoice>> GetTorrentFilesAsync(TorrentItem torrent, CancellationToken cancellationToken = default);
+
+    /// <summary>Persists and applies a nonempty selection. Active transfers resume with the new selection.</summary>
+    Task SetTorrentFileSelectionAsync(TorrentItem torrent, IReadOnlyCollection<string> selectedPaths);
 
     /// <summary>
     /// Starts or resumes downloading a torrent.
@@ -337,9 +343,9 @@ public partial class TorrentService : ITorrentService
     }
 
     /// <inheritdoc />
-    public Task<TorrentItem?> AddTorrentAsync(string magnetLink) => AddTorrentCoreAsync(magnetLink);
+    public Task<TorrentItem?> AddTorrentAsync(string magnetLink, bool startPaused = false) => AddTorrentCoreAsync(magnetLink, startPaused: startPaused);
 
-    private async Task<TorrentItem?> AddTorrentCoreAsync(string magnetLink, TorrentMetadata? metadata = null)
+    private async Task<TorrentItem?> AddTorrentCoreAsync(string magnetLink, TorrentMetadata? metadata = null, bool startPaused = false)
     {
         if (!IsValidMagnetLink(magnetLink))
         {
@@ -377,7 +383,7 @@ public partial class TorrentService : ITorrentService
             MagnetLink = magnetLink,
             InfoHash = infoHash,
             Name = name,
-            Status = DownloadStatus.Queued,
+            Status = startPaused ? DownloadStatus.Paused : DownloadStatus.Queued,
             TotalSize = 0,
             TorrentFilePath = metadata?.SourceFilePath,
             TorrentFileName = metadata?.SourceFileName,
@@ -410,7 +416,7 @@ public partial class TorrentService : ITorrentService
     }
 
     /// <inheritdoc />
-    public async Task<TorrentItem?> AddTorrentFileAsync(TorrentMetadata metadata)
+    public async Task<TorrentItem?> AddTorrentFileAsync(TorrentMetadata metadata, bool startPaused = false)
     {
         ArgumentNullException.ThrowIfNull(metadata);
 
@@ -438,7 +444,7 @@ public partial class TorrentService : ITorrentService
                 await TorrentImportService.WriteCacheAsync(cachePath, metadata.CachedContent, _disposalToken);
                 cacheCreated = true;
             }
-            addedTorrent = await AddTorrentCoreAsync(magnet, metadata);
+            addedTorrent = await AddTorrentCoreAsync(magnet, metadata, startPaused);
             return addedTorrent;
         }
         finally
@@ -619,7 +625,8 @@ public partial class TorrentService : ITorrentService
 
     private async Task StartTorrentCoreAsync(
         TorrentItem torrent,
-        CancellationToken proxyRebuildToken = default)
+        CancellationToken proxyRebuildToken = default,
+        bool rebuildRestart = false)
     {
         proxyRebuildToken.ThrowIfCancellationRequested();
 
@@ -662,6 +669,8 @@ public partial class TorrentService : ITorrentService
             await SaveAsync();
             UpdateBackgroundTransferState();
             ThrowIfNetworkBlocked();
+            if (torrent.SelectedFilePaths is not null)
+                await LoadFileSelectionMetadataAsync(torrent, proxyRebuildToken, rebuildRestart);
             manager = await GetOrCreateManagerAsync(torrent);
             proxyRebuildToken.ThrowIfCancellationRequested();
             await ApplySpeedLimitsToManagerAsync(manager, torrent);
@@ -692,6 +701,10 @@ public partial class TorrentService : ITorrentService
             _disposalToken.ThrowIfCancellationRequested();
             var proxyRebuildWasSuperseded = ex is OperationCanceledException
                 && proxyRebuildToken.IsCancellationRequested;
+            var metadataInterrupted = ex is MetadataPreviewInterruptedException;
+            var waitingForWifi = ex is WifiUnavailableException || (metadataInterrupted && NetworkBlocked);
+            if (metadataInterrupted && !waitingForWifi && !_backgroundExecutionSuspended)
+                _proxyRebuildPendingResumeIds[torrent.Id] = 0;
 
             if (_downloadTokens.TryRemove(torrent.Id, out var failedCts))
             {
@@ -726,20 +739,20 @@ public partial class TorrentService : ITorrentService
                 // waiting for the UI dispatcher.
                 _disposalToken.ThrowIfCancellationRequested();
                 UpdateSeedingTime(torrent, active: false);
-                torrent.Status = ex is WifiUnavailableException
+                torrent.Status = waitingForWifi
                     ? DownloadStatus.WaitingForWifi
-                    : proxyRebuildWasSuperseded
+                    : proxyRebuildWasSuperseded || metadataInterrupted
                     ? DownloadStatus.Queued
                     : DownloadStatus.Failed;
                 torrent.DownloadSpeed = 0;
                 torrent.UploadSpeed = 0;
-                torrent.ErrorMessage = proxyRebuildWasSuperseded || ex is WifiUnavailableException ? null : ex.Message;
+                torrent.ErrorMessage = proxyRebuildWasSuperseded || metadataInterrupted || waitingForWifi ? null : ex.Message;
             });
 
             await SaveAsync();
             UpdateBackgroundTransferState();
 
-            if (ex is WifiUnavailableException) return;
+            if (waitingForWifi || metadataInterrupted) return;
 
             // The download slot this torrent was occupying is now free — let queued
             // torrents take it instead of waiting for the next user action.
@@ -799,6 +812,10 @@ public partial class TorrentService : ITorrentService
     {
         lock (_engineRebuildStateGate)
         {
+            // Metadata previews participate in the start barrier, but must not delay a
+            // Wi-Fi/proxy change or an operating-system background timeout.
+            foreach (var preview in _metadataPreviews.Values)
+                preview.Interrupt();
             if (_activeEngineRebuild is not null)
             {
                 _startBarrierHolders++;
@@ -2204,7 +2221,7 @@ public partial class TorrentService : ITorrentService
                 // next launch) restarts it once the app is allowed to run transfers again.
                 if (!_backgroundExecutionSuspended && torrent.Status == DownloadStatus.Queued)
                 {
-                    await StartTorrentCoreAsync(torrent, proxyRebuildToken);
+                    await StartTorrentCoreAsync(torrent, proxyRebuildToken, rebuildRestart: true);
                     proxyRebuildToken.ThrowIfCancellationRequested();
                 }
             }
@@ -2702,8 +2719,8 @@ public partial class TorrentService : ITorrentService
                 }
 
                 // ---- Collect all data on the background thread ----
-                var metadataSize = manager.Torrent?.Size;
-                var progress = manager.Progress;
+                var metadataSize = manager.HasMetadata ? GetSelectedSize(manager) : (long?)null;
+                var progress = manager.PartialProgress;
                 var previousStatus = torrent.Status;
                 var alreadyCompleted = torrent.DateCompleted is not null;
                 var currentDataBytesSent = manager.Monitor.DataBytesSent;
@@ -2734,7 +2751,6 @@ public partial class TorrentService : ITorrentService
                 var healthScore = ComputeHealthScore(seeds, leeches, availabilityInfo.Percent);
 
                 // Metadata from torrent file (if available)
-                var torrentSize = (manager.HasMetadata && manager.Torrent != null) ? manager.Torrent.Size : (long?)null;
                 var torrentName = (manager.HasMetadata && manager.Torrent != null) ? manager.Torrent.Name : null;
                 var resolvedDownloadPath = GetResolvedDownloadPath(manager);
 
@@ -2763,14 +2779,9 @@ public partial class TorrentService : ITorrentService
                         return;
                     }
 
-                    if (metadataSize.HasValue && metadataSize.Value > 0)
+                    if (metadataSize.HasValue)
                     {
                         torrent.TotalSize = metadataSize.Value;
-                    }
-
-                    if (torrentSize.HasValue && torrentSize.Value > 0)
-                    {
-                        torrent.TotalSize = torrentSize.Value;
                     }
 
                     if (torrentName is not null)
@@ -3271,7 +3282,17 @@ public partial class TorrentService : ITorrentService
     {
         if (_managers.TryGetValue(torrent.Id, out var existing))
         {
-            return existing;
+            if (torrent.SelectedFilePaths is null || existing.HasMetadata)
+            {
+                await ApplyFileSelectionAsync(existing, torrent.SelectedFilePaths);
+                return existing;
+            }
+            // An interrupted legacy magnet may have a manager without metadata. Resolve
+            // the saved selection before any payload mode can be started.
+            await StopManagerAsync(existing);
+            await (await EnsureEngineAsync()).RemoveAsync(existing, RemoveMode.KeepAllData);
+            _managers.TryRemove(torrent.Id, out _);
+            await LoadFileSelectionMetadataAsync(torrent, _disposalToken);
         }
 
         var engine = await EnsureEngineAsync();
@@ -3298,7 +3319,7 @@ public partial class TorrentService : ITorrentService
         }.ToSettings();
 
         TorrentManager manager;
-        var metadataPath = GetMetadataPath(torrent);
+        var metadataPath = GetMetadataPath(torrent) ?? FindEngineMetadataCachePath(torrent);
         if (metadataPath is not null)
         {
             try
@@ -3330,6 +3351,15 @@ public partial class TorrentService : ITorrentService
         }
 
         _managers[torrent.Id] = manager;
+        // Never allow a restored selection to start with MonoTorrent's default (all files).
+        if (torrent.SelectedFilePaths is not null && !manager.HasMetadata)
+        {
+            await engine.RemoveAsync(manager, RemoveMode.KeepAllData);
+            _managers.TryRemove(torrent.Id, out _);
+            await LoadFileSelectionMetadataAsync(torrent, _disposalToken);
+            return await GetOrCreateManagerAsync(torrent);
+        }
+        await ApplyFileSelectionAsync(manager, torrent.SelectedFilePaths);
         var resolvedDownloadPath = GetResolvedDownloadPath(manager);
         if (resolvedDownloadPath is not null)
             await _dispatcher.InvokeAsync(() => torrent.ResolvedDownloadPath = resolvedDownloadPath);

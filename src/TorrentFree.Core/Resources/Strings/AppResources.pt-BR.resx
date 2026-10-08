@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>Impede a suspensão automática durante downloads ativos. A suspensão é permitida quando todos os downloads ativos terminam, são pausados ou interrompidos. Compartilhar arquivos concluídos não mantém o dispositivo ativo. A tela pode apagar.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Escolher arquivos</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>Selecione os arquivos que deseja baixar.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Buscar arquivos ou pastas</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>Selecionar visíveis</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>Desmarcar visíveis</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>Nenhum arquivo correspondente.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>Carregando lista de arquivos. Links magnet podem levar um minuto; o conteúdo ainda não será baixado.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>Tentar novamente</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>Aplicar seleção</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>{0} de {1} arquivos selecionados · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>Os arquivos existentes são mantidos. Pequenas partes de arquivos ignorados podem ser necessárias para os blocos compartilhados do torrent.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>Não foi possível carregar os arquivos. Verifique a conexão e as configurações de Wi-Fi e tente novamente.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>Não foi possível aplicar a seleção. A transferência pode estar pausada. Tente novamente.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>Baixar selecionados</value>
+  </data>
 </root>

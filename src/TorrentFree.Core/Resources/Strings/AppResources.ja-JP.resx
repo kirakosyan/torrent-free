@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>ダウンロード中の自動スリープを防ぎます。すべての実行中のダウンロードが完了、一時停止、または停止すると、スリープを許可します。シードのみではスリープを防ぎません。画面はオフになることがあります。</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>ファイルを選択</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>ダウンロードするファイルを選択してください。</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>ファイルやフォルダーを検索</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>表示中を選択</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>表示中の選択を解除</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>一致するファイルはありません。</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>ファイル一覧を読み込み中です。マグネットリンクでは1分ほどかかる場合があります。コンテンツのダウンロードはまだ開始しません。</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>再試行</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>選択を適用</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>{1}ファイル中{0}個を選択 · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>既存のファイルは保持されます。共有ピースのために、スキップしたファイルの一部が必要になる場合があります。</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>ファイルを読み込めませんでした。接続とWi-Fi設定を確認して再試行してください。</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>選択を適用できませんでした。転送が一時停止している可能性があります。再試行してください。</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>選択した項目をダウンロード</value>
+  </data>
 </root>

@@ -580,4 +580,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>امنع السكون التلقائي أثناء التنزيلات النشطة. اسمح بالسكون عند اكتمال جميع التنزيلات النشطة أو إيقافها مؤقتًا أو إيقافها. لا تمنع مشاركة الملفات سكون الجهاز. قد تنطفئ الشاشة.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>اختيار الملفات</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>حدد الملفات التي تريد تنزيلها.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>البحث عن ملفات أو مجلدات</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>تحديد المعروض</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>إلغاء تحديد المعروض</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>لا توجد ملفات مطابقة.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>جارٍ تحميل قائمة الملفات. قد تستغرق روابط المغناطيس دقيقة؛ لن يبدأ تنزيل المحتوى بعد.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>إعادة المحاولة</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>تطبيق التحديد</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>تم تحديد {0} من {1} ملفات · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>يتم الاحتفاظ بالملفات الموجودة. قد تلزم أجزاء صغيرة من الملفات المتخطاة لقطع التورنت المشتركة.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>تعذر تحميل الملفات. تحقق من الاتصال وإعدادات Wi-Fi ثم أعد المحاولة.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>تعذر تطبيق التحديد. قد يكون النقل متوقفًا مؤقتًا. أعد المحاولة.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>تنزيل المحدد</value>
+  </data>
 </root>

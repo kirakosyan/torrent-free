@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:TorrentFree.Models;assembly=TorrentFree.Core"
+             xmlns:helpers="clr-namespace:TorrentFree.Helpers"
+             x:Class="TorrentFree.TorrentFilesPage"
+             x:Name="FilesPage"
+             x:DataType="models:TorrentFileSelectionViewModel"
+             Title="{helpers:Translate ChooseFiles}"
+             BackgroundColor="{AppThemeBinding Light=#F5F7FB, Dark=#101522}"
+             SafeAreaEdges="Container">
+    <Grid Padding="20" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" MaximumWidthRequest="760" HorizontalOptions="Fill">
+        <VerticalStackLayout Spacing="6">
+            <Label Text="{helpers:Translate ChooseFiles}" FontSize="24" FontAttributes="Bold" SemanticProperties.HeadingLevel="Level1"/>
+            <Label x:Name="TorrentName" FontSize="14" MaxLines="2" LineBreakMode="TailTruncation"
+                   TextColor="{AppThemeBinding Light=#526078, Dark=#B8C4DA}"/>
+            <Label Text="{helpers:Translate FileSelectionHelp}" FontSize="13"
+                   TextColor="{AppThemeBinding Light=#526078, Dark=#B8C4DA}"/>
+        </VerticalStackLayout>
+        <VerticalStackLayout x:Name="SelectionTools" Grid.Row="1" Spacing="6" IsVisible="False">
+            <SearchBar Text="{Binding SearchText}" Placeholder="{helpers:Translate SearchFiles}"
+                       SemanticProperties.Description="{helpers:Translate SearchFiles}"/>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Button Text="{helpers:Translate SelectShown}" Command="{Binding SelectAllCommand}"
+                        BackgroundColor="{AppThemeBinding Light=#E5EBF6, Dark=#26334A}"
+                        TextColor="{AppThemeBinding Light=#234B8A, Dark=#DBE8FF}" MinimumHeightRequest="44"/>
+                <Button Grid.Column="1" Text="{helpers:Translate ClearShown}" Command="{Binding SelectNoneCommand}"
+                        BackgroundColor="{AppThemeBinding Light=#E5EBF6, Dark=#26334A}"
+                        TextColor="{AppThemeBinding Light=#234B8A, Dark=#DBE8FF}" MinimumHeightRequest="44"/>
+            </Grid>
+        </VerticalStackLayout>
+        <Grid Grid.Row="2">
+            <CollectionView x:Name="FileList" ItemsSource="{Binding VisibleFiles}" SelectionMode="None" IsVisible="False">
+                <CollectionView.EmptyView>
+                    <Label Text="{helpers:Translate NoMatchingFiles}" Padding="16" HorizontalTextAlignment="Center"/>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:TorrentFileChoice">
+                        <Border Margin="0,0,0,6" Padding="8" StrokeThickness="1" StrokeShape="RoundRectangle 10"
+                                Stroke="{AppThemeBinding Light=#DCE3EF, Dark=#334158}"
+                                BackgroundColor="{AppThemeBinding Light=White, Dark=#1A2333}">
+                            <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="8" MinimumHeightRequest="52">
+                                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Color="#4285F4"
+                                          SemanticProperties.Description="{Binding Path}" VerticalOptions="Center"/>
+                                <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                    <VerticalStackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference FilesPage}, Path=BindingContext.ToggleFileCommand, x:DataType=ContentPage}" CommandParameter="{Binding .}"/>
+                                    </VerticalStackLayout.GestureRecognizers>
+                                    <Label Text="{Binding Name}" FontSize="14" FontAttributes="Bold" LineBreakMode="TailTruncation" MaxLines="2"/>
+                                    <Label Text="{Binding Folder}" IsVisible="{Binding HasFolder}" FontSize="12" LineBreakMode="MiddleTruncation" MaxLines="1"
+                                           TextColor="{AppThemeBinding Light=#526078, Dark=#B8C4DA}"/>
+                                </VerticalStackLayout>
+                                <Label Grid.Column="2" Text="{Binding SizeLabel}" FontSize="12" VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light=#526078, Dark=#B8C4DA}"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <VerticalStackLayout x:Name="LoadingPanel" VerticalOptions="Center" Spacing="14">
+                <ActivityIndicator x:Name="LoadingIndicator" IsRunning="True" Color="#4285F4"/>
+                <Label x:Name="LoadingMessage" Text="{helpers:Translate LoadingTorrentFiles}" HorizontalTextAlignment="Center"/>
+                <Button x:Name="RetryButton" Text="{helpers:Translate RetryFiles}" Clicked="OnRetryClicked" IsVisible="False" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+        </Grid>
+        <VerticalStackLayout Grid.Row="3" Spacing="10">
+            <Label x:Name="SummaryLabel" Text="{Binding Summary}" FontSize="15" FontAttributes="Bold" IsVisible="False"/>
+            <Label x:Name="SelectionError" FontSize="13" TextColor="{AppThemeBinding Light=#B3261E, Dark=#FFB4AB}" IsVisible="False"/>
+            <Label Text="{helpers:Translate FileSelectionNote}" FontSize="11"
+                   TextColor="{AppThemeBinding Light=#526078, Dark=#B8C4DA}"/>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Button x:Name="CancelButton" Text="{helpers:Translate Cancel}" Clicked="OnCancelClicked"
+                        BackgroundColor="{AppThemeBinding Light=#E5EBF6, Dark=#26334A}" TextColor="{AppThemeBinding Light=#234B8A, Dark=#DBE8FF}" MinimumHeightRequest="48"/>
+                <Button x:Name="ConfirmButton" Grid.Column="1" Text="{helpers:Translate ApplyFileSelection}" Clicked="OnConfirmClicked"
+                        IsEnabled="{Binding CanConfirm}" BackgroundColor="#2563EB" TextColor="White" MinimumHeightRequest="48"/>
+            </Grid>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>Forhindrer automatisk slumretilstand, mens downloads er aktive. Slumretilstand tillades, når alle aktive downloads er færdige, sat på pause eller stoppet. Seeding holder ikke enheden vågen. Skærmen kan stadig slukke.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Vælg filer</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>Vælg de filer, du vil downloade.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Søg efter filer eller mapper</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>Vælg viste</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>Fravælg viste</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>Ingen matchende filer.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>Indlæser filliste. Magnetlinks kan tage et minut; indhold downloades ikke endnu.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>Prøv igen</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>Anvend valg</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>{0} af {1} filer valgt · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>Eksisterende filer bevares. Små dele af fravalgte filer kan være nødvendige for fælles torrentstykker.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>Filerne kunne ikke indlæses. Kontrollér forbindelsen og Wi-Fi-indstillingerne, og prøv igen.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>Valget kunne ikke anvendes. Overførslen kan være sat på pause. Prøv igen.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>Download valgte</value>
+  </data>
 </root>

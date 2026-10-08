@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>Zabrání automatickému uspání během aktivního stahování. Uspání bude možné po dokončení, pozastavení nebo zastavení všech aktivních stahování. Sdílení dokončených souborů nebrání uspání. Obrazovka se může vypnout.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Vybrat soubory</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>Vyberte soubory, které chcete stáhnout.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Hledat soubory nebo složky</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>Vybrat zobrazené</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>Zrušit výběr zobrazených</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>Žádné odpovídající soubory.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>Načítání seznamu souborů. Magnetické odkazy mohou trvat minutu; obsah se zatím nestahuje.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>Zkusit znovu</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>Použít výběr</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>Vybráno {0} z {1} souborů · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>Existující soubory zůstanou zachovány. Pro sdílené části torrentu mohou být potřeba malé části vynechaných souborů.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>Soubory nelze načíst. Zkontrolujte připojení a nastavení Wi-Fi a zkuste to znovu.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>Výběr nelze použít. Přenos může být pozastaven. Zkuste to znovu.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>Stáhnout vybrané</value>
+  </data>
 </root>

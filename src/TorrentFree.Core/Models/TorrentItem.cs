@@ -43,6 +43,10 @@ public partial class TorrentItem : ObservableObject
     [ObservableProperty]
     public partial long TotalSize { get; set; }
 
+    /// <summary>Selected metadata paths, with '/' separators. Null means all files (including legacy downloads).</summary>
+    [ObservableProperty]
+    public partial string[]? SelectedFilePaths { get; set; }
+
     /// <summary>
     /// Downloaded size in bytes.
     /// </summary>
@@ -262,6 +266,9 @@ public partial class TorrentItem : ObservableObject
     [JsonIgnore]
     public ICommand? ShowSpecificTorrentLimitsCommand { get; set; }
 
+    [JsonIgnore]
+    public ICommand? ChooseFilesCommand { get; set; }
+
     /// <summary>
     /// Gets the full path to the downloaded file or folder.
     /// </summary>
@@ -416,7 +423,7 @@ public partial class TorrentItem : ObservableObject
     [JsonIgnore]
     public bool CanStop => Status is DownloadStatus.Downloading or DownloadStatus.Paused or DownloadStatus.Queued or DownloadStatus.Seeding or DownloadStatus.WaitingForWifi;
 
-    private static string FormatBytes(long bytes)
+    public static string FormatBytes(long bytes)
     {
         string[] sizes = ["B", "KB", "MB", "GB", "TB"];
         double len = bytes;

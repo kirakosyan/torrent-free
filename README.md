@@ -18,6 +18,7 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 - **Import `.torrent` files** via native file picker, or paste a magnet link
 - **Open magnet links and `.torrent` files from other apps** (Android share/open intents; `magnet:` links and `.torrent` file association on Windows)
 - **Real torrent engine (MonoTorrent)** for downloads
+- **Choose files before downloading**: searchable file list, file sizes, select/clear visible files, and a selected-size summary. Magnet links fetch metadata before downloading content. Use each torrent's file-selection button to change the choice later; selections survive restarts.
 - **Start / Pause / Stop / Remove / Start All / Stop All** controls
 - **Live stats**: progress, download/upload speed, seeds, peers, ETA
 - **Seeding state** with pause support
@@ -268,6 +269,24 @@ The delete confirmation starts with **Delete torrent file** and **Delete downloa
 files** checked. Clear either option to keep those files. Clearing both removes
 only the list entry.
 
+### Choose files to download
+
+After adding a `.torrent` file or a magnet link, choose the files to download and
+press **Download selected**. Use search to find a file or folder; **Select shown**
+and **Clear shown** affect only the filtered results. The summary always includes
+every selected file, including files hidden by the search.
+
+Magnet links load their file list from peers before any content is downloaded.
+Loading can be canceled or retried and follows the Wi-Fi and proxy settings.
+Canceling leaves the new torrent paused in the list. Use its **Choose files**
+button to return to the picker.
+
+You can change the selection later with the same button. Active transfers resume
+with the new choice; paused transfers stay paused. Progress, size, ETA and completion
+notifications refer to the selected files. Choices are saved across restarts.
+Existing downloaded files are kept when deselected. The torrent engine may need
+small parts of skipped files when a torrent piece spans multiple files.
+
 ### Download Status
 
 | Status | Color | Description |
@@ -328,7 +347,6 @@ The following features are planned for future releases:
 
 - **RSS Feed Automation** — Subscribe to RSS feeds from torrent sites to automatically download new episodes, releases, or content matching custom filters.
 - **Sequential Downloading** — Download pieces in order so that media files can be previewed or played before the full download completes.
-- **Selective File Downloading** — Choose which files inside a multi-file torrent to download, skipping unwanted content to save disk space and bandwidth.
 
 ## 🏗️ Architecture
 

@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>Împiedică repausul automat în timpul descărcărilor active. Repausul este permis când toate descărcările active se termină, sunt puse pe pauză sau oprite. Distribuirea fișierelor finalizate nu menține dispozitivul activ. Ecranul se poate stinge.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Alege fișierele</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>Selectează fișierele pe care vrei să le descarci.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Caută fișiere sau foldere</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>Selectează cele afișate</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>Deselectează cele afișate</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>Niciun fișier corespunzător.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>Se încarcă lista de fișiere. Linkurile magnet pot dura un minut; conținutul nu se descarcă încă.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>Încearcă din nou</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>Aplică selecția</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>{0} din {1} fișiere selectate · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>Fișierele existente sunt păstrate. Părți mici din fișierele omise pot fi necesare pentru bucățile comune ale torrentului.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>Fișierele nu au putut fi încărcate. Verifică conexiunea și setările Wi-Fi, apoi încearcă din nou.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>Selecția nu a putut fi aplicată. Transferul poate fi întrerupt. Încearcă din nou.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>Descarcă selecția</value>
+  </data>
 </root>

@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>Megakadályozza az automatikus alvó módot aktív letöltés közben. Az alvó mód engedélyezett, ha minden aktív letöltés befejeződik, szünetel vagy leáll. A kész fájlok megosztása nem tartja ébren az eszközt. A képernyő továbbra is kikapcsolhat.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Fájlok kiválasztása</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>Válassza ki a letölteni kívánt fájlokat.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Fájlok vagy mappák keresése</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>Láthatók kijelölése</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>Láthatók kijelölésének törlése</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>Nincs egyező fájl.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>Fájllista betöltése. A magnet hivatkozások akár egy percet is igénybe vehetnek; a tartalom még nem töltődik le.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>Újra</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>Kijelölés alkalmazása</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>{0}/{1} fájl kijelölve · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>A meglévő fájlok megmaradnak. A torrent közös darabjaihoz szükség lehet a kihagyott fájlok kis részeire.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>A fájlok nem tölthetők be. Ellenőrizze a kapcsolatot és a Wi-Fi-beállításokat, majd próbálja újra.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>A kijelölés nem alkalmazható. Az átvitel szünetelhet. Próbálja újra.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>Kijelöltek letöltése</value>
+  </data>
 </root>
