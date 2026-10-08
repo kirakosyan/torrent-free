@@ -15,7 +15,7 @@ class AndroidStoreBuildTests(unittest.TestCase):
             "dotnet", "msbuild", str(PROJECT), "-nologo", f"-target:{target}",
             "-property:TargetFramework=net10.0-android",
             "-property:AppTargetFramework=net10.0-android", f"-property:Configuration={configuration}",
-            "-getProperty:AndroidStore,ApplicationId,AndroidPackageFormat,AndroidPackageFormats,RuntimeIdentifiers,ApplicationTitle",
+            "-getProperty:AndroidStore,ApplicationId,AndroidPackageFormat,AndroidPackageFormats,RuntimeIdentifiers,ApplicationTitle,SupportedOSPlatformVersion",
             *[f"-property:{key}={value}" for key, value in properties.items()],
         ], cwd=ROOT, capture_output=True, text=True, timeout=90)
 
@@ -37,6 +37,15 @@ class AndroidStoreBuildTests(unittest.TestCase):
                     self.assertEqual(values["AndroidPackageFormats"], "apk")
                 else:
                     self.assertIn("aab", values["AndroidPackageFormats"].split(";"))
+
+    def test_play_protection_minimum_keeps_other_stores_compatible(self):
+        for configuration in ("Debug", "Release"):
+            for store in (None, "Play", "Galaxy", "Huawei"):
+                with self.subTest(configuration=configuration, store=store):
+                    result = self.msbuild(configuration=configuration, **({"AndroidStore": store} if store else {}))
+                    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                    minimum = json.loads(result.stdout)["Properties"]["SupportedOSPlatformVersion"]
+                    self.assertEqual(minimum, "24.0" if store in (None, "Play") else "23.0")
 
     def test_huawei_has_only_arm64_in_debug_and_release(self):
         for configuration in ("Debug", "Release"):

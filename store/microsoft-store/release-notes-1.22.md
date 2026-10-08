@@ -1,7 +1,7 @@
-# Version 1.21 release record
+# Version 1.22 release record
 
-Display version **1.21**, Android version code **26**, Windows package version
-**1.21.0.0** for **x64** and **ARM64**.
+Display version **1.22**, Android version code **27**, Windows package version
+**1.22.0.0** for **x64** and **ARM64**.
 
 ## Changes
 
@@ -19,8 +19,21 @@ Display version **1.21**, Android version code **26**, Windows package version
   saves, corrupted cached metadata, and interrupted metadata retrieval. Windows
   activation brings the app forward before displaying file choices.
 
+## Compatibility
+
+Google Play now requires API 24 for automatic protection; its build requires
+Android 7.0 or newer. Huawei retains API 23 (Android 6.0) and uses its existing
+`com.torrentfree.app.huawei` identity, now ARM64 only. This release aligns
+Microsoft Store, Google Play and Huawei AppGallery at 1.22.
+
+The 1.21 Google Play upload failed minimum-SDK validation and was never submitted
+for review. Its tag and artifacts remain unchanged.
+
 ## Validation
 
+- The 1.22 metadata passed all **428 Release tests** and all **five MSBuild
+  integration tests**, including Play's API 24 minimum and unchanged API 23 for
+  Huawei/Galaxy in Debug and Release.
 - The feature passed all **428 Release tests**, including 27 file-selection tests.
 - Windows and Android Debug builds passed with zero warnings or errors.
 - Windows UI checks covered import, search, bulk actions, selection, empty-selection
@@ -34,24 +47,18 @@ Display version **1.21**, Android version code **26**, Windows package version
   the packages are built from the clean tagged source.
 - iOS and Mac Catalyst are not part of this release.
 
-## Release traceability and outcome
+## Release traceability
 
-Built from clean commit `0fa3aef003d6d517bc47268031cf0a4a4dd2c7e5`, annotated
-tag **v1.21**. All 428 Release tests passed. Android manifest, upload certificate,
-JAR signature, native symbol build IDs and Windows package identities passed.
-Artifacts remain in ignored `artifacts/store-1.21/`.
+Final packages will be built from the clean commit identified by the annotated
+**v1.22** tag. Signed Android packages, R8 mapping, native debug symbols, Windows
+packages, hashes, and verification evidence are retained under the ignored
+`artifacts/store-1.22/` directory, with upload copies in `C:\temp`.
 
-| Artifact | SHA-256 |
-|---|---|
-| com.torrentfree.app-v1.21-code26-google-play-upload-key.aab | `88549d3761838d409111ac99ea497ae3194acecd692a900b918e0b3eb4dadf82` |
-| mapping.txt | `05466314c1e149affb7f896c3c7b8de9b79fbdbea43586cef9abed95cdbb5803` |
-| com.torrentfree.app-v1.21-code26-native-debug-symbols.zip | `a2bff37171fef8cc02b6f703b63e0d464b077c375beb06f520c9824002fe1a7d` |
-| TorrentFree_1.21.0.0_x64.msix | `4ce6b4cb3334d65a5bdb21770fc3bcc176bd4482c195eaafb04f137b45fd20cb` |
-| TorrentFree_1.21.0.0_arm64.msix | `dfd3f64802c1ac6f02c6c8ce743a2ad7286b295d1f9220eae2ef5dcf365906c0` |
+## Store status
 
-On October 8, 2026, Google Play rejected the code-26 upload because automatic
-protection requires minimum API 24; this package declared API 23. It was never
-submitted for review. Windows packages were not uploaded or submitted. The
-Microsoft draft's localized notes were prepared, but will be replaced by 1.22.
-Version **1.21 is not published** and is superseded by the [1.22 release](release-notes-1.22.md).
-The original source tag and retained packages are immutable.
+**Prepared for submission on October 8, 2026; not submitted or live yet.**
+Microsoft submission **20** (`1152921505702078202`) and a Google Play production
+draft have been created. Huawei AppGallery is also included in this release. The previous **1.19** release was verified live in both
+store consoles on October 8. Google Play shows full rollout across 178 countries
+and publication on October 4, 2026. Microsoft identifies submission 19 as its
+current Store presence; its exact publication date was not shown.

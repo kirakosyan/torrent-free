@@ -4,10 +4,14 @@ Package `com.torrentfree.app`, listed as **Torrent Client - Downloader**.
 
 ## Current release
 
-**1.21 / code 26** is being prepared for production on **October 8, 2026**. The
+**1.22 / code 27** is being prepared for production on **October 8, 2026**. The
 release is a draft, **not submitted or live yet**. It adds torrent file selection
 with search, saved choices, accurate selected-file progress, and a responsive
-mobile picker. See the [1.21 release record](../microsoft-store/release-notes-1.21.md).
+mobile picker. See the [1.22 release record](../microsoft-store/release-notes-1.22.md).
+
+Google Play builds now require Android 7.0 (API 24) for automatic protection.
+The code-26 upload was rejected before review because it declared API 23; its
+tag and artifacts remain unchanged. Huawei and Galaxy retain minimum API 23.
 
 Version **1.19 / code 24 is live**, published October 4, 2026 and verified on
 October 8. Production reports a 100% rollout across 178 countries/regions.
@@ -51,9 +55,9 @@ also checks the length limits. The Play default language is en-GB (filled from t
 English text). Spanish is written once for `es-419` and `es-ES`; Ukrainian exists only
 on Play.
 
-`release-notes-1.21.txt` is in Play Console's multi-language format: paste it into the
+`release-notes-1.22.txt` is in Play Console's multi-language format: paste it into the
 release notes box of the production release as is. The generator retains the 1.16
-base listing; the 1.21 notes are maintained separately.
+base listing; the 1.22 notes are maintained separately.
 
 Translations inherit the default graphics, so only the text needs updating per language.
 Version 1.16 (code 21) and this listing were sent for review on September 27, 2026,
@@ -76,4 +80,4 @@ encourage copyright infringement.
 ## Release
 
 Build the signed AAB as described in `.codex/AGENTS.md`, upload it to the production track
-with `release-notes-1.21.txt`, and upload the matching native debug symbols ZIP.
+with `release-notes-1.22.txt`, and upload the matching native debug symbols ZIP.
