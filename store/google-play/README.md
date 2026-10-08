@@ -4,6 +4,16 @@ Package `com.torrentfree.app`, listed as **Torrent Client - Downloader**.
 
 ## Current release
 
+**1.21 / code 26** is being prepared for production on **October 8, 2026**. The
+release is a draft, **not submitted or live yet**. It adds torrent file selection
+with search, saved choices, accurate selected-file progress, and a responsive
+mobile picker. See the [1.21 release record](../microsoft-store/release-notes-1.21.md).
+
+Version **1.19 / code 24 is live**, published October 4, 2026 and verified on
+October 8. Production reports a 100% rollout across 178 countries/regions.
+
+## Previous release history
+
 **1.19 / code 24** fixes the shared-folder deletion regression affecting Android
 and Windows. Its signed AAB, R8 mapping and matching native symbols are validated
 and retained under `artifacts/store-1.19/`, with upload copies in `C:\temp`.
@@ -41,9 +51,9 @@ also checks the length limits. The Play default language is en-GB (filled from t
 English text). Spanish is written once for `es-419` and `es-ES`; Ukrainian exists only
 on Play.
 
-`release-notes-1.19.txt` is in Play Console's multi-language format: paste it into the
+`release-notes-1.21.txt` is in Play Console's multi-language format: paste it into the
 release notes box of the production release as is. The generator retains the 1.16
-base listing; the 1.19 notes are maintained separately.
+base listing; the 1.21 notes are maintained separately.
 
 Translations inherit the default graphics, so only the text needs updating per language.
 Version 1.16 (code 21) and this listing were sent for review on September 27, 2026,
@@ -66,4 +76,4 @@ encourage copyright infringement.
 ## Release
 
 Build the signed AAB as described in `.codex/AGENTS.md`, upload it to the production track
-with `release-notes-1.19.txt`, and upload the matching native debug symbols ZIP.
+with `release-notes-1.21.txt`, and upload the matching native debug symbols ZIP.

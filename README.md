@@ -33,6 +33,21 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 
 ## 📝 Release Overview
 
+Version **1.21** (Android code **26**, Windows **1.21.0.0**, x64 and ARM64) adds
+torrent file selection: search files and folders, choose what to download, review
+the selected size, and change saved choices later. Progress reflects the chosen
+files. The picker adapts to mobile portrait, landscape, and keyboard layouts.
+PR [#24](https://github.com/kirakosyan/torrent-free/pull/24) is merged into `main`.
+
+Release preparation started on **October 8, 2026**. Microsoft submission **20**
+and a Google Play production draft are being prepared; **1.21 is not submitted
+or live yet**. Both stores currently have **1.19 live**, verified on October 8.
+Google Play reports publication on October 4 and full rollout to 178 countries.
+See the [1.21 release record](store/microsoft-store/release-notes-1.21.md) for the
+source tag, validation, package hashes, and current submission status.
+
+### Previous release history
+
 Huawei AppGallery **1.20 / code 25** was submitted on **October 5, 2026**. It reuses all 26
 Google Play listing languages, the icon and five screenshots, with AppGallery
 rating links and store-managed updates. The signed APK uses the separate

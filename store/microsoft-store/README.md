@@ -2,6 +2,17 @@
 
 ## Current release
 
+**1.21 / build 26 / MSIX 1.21.0.0** is being prepared for x64 and ARM64 on
+**October 8, 2026**. Submission **20** (`1152921505702078202`) is a draft; this
+version is **not submitted or live yet**. It adds torrent file selection with
+search, saved choices, accurate selected-file progress, and a responsive picker.
+See the [1.21 release record](release-notes-1.21.md).
+
+Version **1.19 is live**, verified in Partner Center on October 8, 2026. Submission
+19 is the current Store presence; its exact publication date was not shown.
+
+## Previous release history
+
 **1.19 / build 24 / MSIX 1.19.0.0** was submitted for x64 and ARM64 on
 **October 2, 2026**, as submission **19** (`1152921505702031669`). Partner Center
 shows **In certification**, with pre-processing underway, verified at **22:36
@@ -45,7 +56,7 @@ Store and Play length limits and regenerates:
 - `STORE_DESCRIPTION.md` and the Google Play files under `store/google-play`
 
 The generator retains the 1.16 base listing. The current update uses
-`release-notes-1.19.json`. Start with a fresh Partner Center export and replace
+`release-notes-1.21.json`. Start with a fresh Partner Center export and replace
 only the `ReleaseNotes` values. Preserve the original non-asset text rows,
 including `Feature*`, `SearchTerm*`, hardware requirements and the
 `OverrideLogosForWin10` flag in the import: omitting these can clear optional
