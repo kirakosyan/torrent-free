@@ -21,7 +21,8 @@ public partial class TorrentService
     public async Task<IReadOnlyList<TorrentFileChoice>> GetTorrentFilesAsync(
         TorrentItem torrent, CancellationToken cancellationToken = default)
     {
-        using var lifetime = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposalToken);
+        using var timeout = new CancellationTokenSource(TimeSpan.FromMinutes(1), _timeProvider);
+        using var lifetime = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposalToken, timeout.Token);
         while (true)
         {
             await WaitForEngineRebuildAsync().WaitAsync(lifetime.Token);
@@ -51,10 +52,15 @@ public partial class TorrentService
             return existing;
         var path = GetMetadataPath(torrent) ?? FindEngineMetadataCachePath(torrent);
         if (path is not null)
-            return await LoadTorrentFileBoundedAsync(path, torrent);
+        {
+            try { return await LoadTorrentFileBoundedAsync(path, torrent); }
+            catch (Exception ex) when (ex is IOException or InvalidDataException or FormatException or UnauthorizedAccessException or TorrentException)
+            {
+                System.Diagnostics.Debug.WriteLine($"Invalid cached metadata for '{torrent.Name}': {ex.Message}. Fetching it again.");
+            }
+        }
 
         using var preview = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposalToken);
-        preview.CancelAfter(TimeSpan.FromMinutes(1));
         var session = new MetadataPreview(preview);
         lock (_engineRebuildStateGate)
         {
@@ -64,7 +70,7 @@ public partial class TorrentService
         try
         {
             ThrowIfNetworkBlocked();
-            if (_backgroundExecutionSuspended) throw new OperationCanceledException();
+            if (_backgroundExecutionSuspended) throw new MetadataPreviewInterruptedException();
             // An older active magnet may already be fetching metadata. Do not register
             // another manager with the same hash in that case.
             if (current is not null)
@@ -142,33 +148,47 @@ public partial class TorrentService
                 var previousDownloaded = torrent.DownloadedSize;
                 var previousProgress = torrent.Progress;
                 var previousCompleted = torrent.DateCompleted;
+                var previousStatus = torrent.Status;
+                var previousError = torrent.ErrorMessage;
+                var remainsComplete = previousProgress >= 100 && requested.IsSubsetOf(previous is null ? known : previous.ToHashSet(StringComparer.Ordinal));
 
-                resume = torrent.Status is DownloadStatus.Downloading or DownloadStatus.Seeding or DownloadStatus.Queued or DownloadStatus.WaitingForWifi;
+                resume = previousStatus is DownloadStatus.Downloading or DownloadStatus.Seeding or DownloadStatus.Queued or DownloadStatus.WaitingForWifi;
                 _managers.TryGetValue(torrent.Id, out var manager);
-                // Stop first. A failed stop leaves the old selection and monitor intact.
-                if (manager is not null) await StopManagerAsync(manager);
-                if (_downloadTokens.TryRemove(torrent.Id, out var monitor))
+                // Cancel monitoring before teardown can publish completion or release a queue slot.
+                var wasMonitored = _downloadTokens.TryRemove(torrent.Id, out var monitor);
+                if (monitor is not null)
                 {
                     await monitor.CancelAsync();
                     monitor.Dispose();
                 }
-                var selection = requested.SetEquals(known) ? null : requested.Order(StringComparer.Ordinal).ToArray();
-                await _dispatcher.InvokeAsync(() =>
+                try
                 {
-                    torrent.Status = DownloadStatus.Paused;
-                    torrent.DownloadSpeed = 0;
-                    torrent.UploadSpeed = 0;
-                    torrent.EstimatedSecondsRemaining = 0;
-                    torrent.SelectedFilePaths = selection;
-                    torrent.TotalSize = metadata.Files.Where(file => requested.Contains(NormalizeFilePath(file.Path))).Sum(file => file.Length);
-                    // A changed target must be rechecked before exposing completion or seed admission.
-                    torrent.Progress = 0;
-                    torrent.DownloadedSize = 0;
-                    torrent.DateCompleted = null;
-                });
+                    if (manager is not null) await StopManagerAsync(manager);
+                }
+                catch
+                {
+                    if (wasMonitored && manager is not null) ResumeFileSelectionMonitor(torrent, manager);
+                    throw;
+                }
+                var selection = requested.SetEquals(known) ? null : requested.Order(StringComparer.Ordinal).ToArray();
                 try
                 {
                     if (manager is not null) await ApplyFileSelectionAsync(manager, selection);
+                    await _dispatcher.InvokeAsync(() =>
+                    {
+                        UpdateSeedingTime(torrent, active: false);
+                        torrent.Status = resume || (previousStatus == DownloadStatus.Completed && !remainsComplete)
+                            ? DownloadStatus.Paused : previousStatus;
+                        torrent.DownloadSpeed = 0;
+                        torrent.UploadSpeed = 0;
+                        torrent.EstimatedSecondsRemaining = 0;
+                        torrent.SelectedFilePaths = selection;
+                        torrent.TotalSize = metadata.Files.Where(file => requested.Contains(NormalizeFilePath(file.Path))).Sum(file => file.Length);
+                        // Narrowing a completed target must retain its completion event and seed admission.
+                        torrent.Progress = remainsComplete ? 100 : manager?.PartialProgress ?? 0;
+                        torrent.DownloadedSize = (long)(torrent.TotalSize * torrent.Progress / 100);
+                        torrent.DateCompleted = remainsComplete ? previousCompleted : null;
+                    });
                     await SaveAsync();
                 }
                 catch
@@ -180,15 +200,58 @@ public partial class TorrentService
                         torrent.DownloadedSize = previousDownloaded;
                         torrent.Progress = previousProgress;
                         torrent.DateCompleted = previousCompleted;
+                        torrent.Status = previousStatus;
+                        torrent.ErrorMessage = previousError;
                     });
-                    if (manager is not null) await ApplyFileSelectionAsync(manager, previous);
+                    if (manager is not null)
+                    {
+                        try
+                        {
+                            await ApplyFileSelectionAsync(manager, previous);
+                            if (previousStatus is DownloadStatus.Downloading or DownloadStatus.Seeding)
+                            {
+                                ThrowIfNetworkBlocked();
+                                _disposalToken.ThrowIfCancellationRequested();
+                                if (_backgroundExecutionSuspended) throw new MetadataPreviewInterruptedException();
+                                // The failed save may still be blocked. Restore the existing transfer
+                                // directly, without saving again or competing for its own queue slot.
+                                await StartManagerAsync(manager);
+                            }
+                            if (wasMonitored) ResumeFileSelectionMonitor(torrent, manager);
+                        }
+                        catch (Exception rollbackError)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"File selection transfer rollback failed: {rollbackError}");
+                            await _dispatcher.InvokeAsync(() =>
+                            {
+                                torrent.Status = NetworkBlocked ? DownloadStatus.WaitingForWifi
+                                    : _backgroundExecutionSuspended ? DownloadStatus.Queued : DownloadStatus.Failed;
+                                torrent.ErrorMessage = torrent.Status == DownloadStatus.Failed ? rollbackError.Message : null;
+                            });
+                        }
+                    }
                     throw;
                 }
                 break;
             }
             finally { ExitStart(); UpdateBackgroundTransferState(); }
         }
-        if (resume) await StartTorrentAsync(torrent);
+        if (resume)
+        {
+            try { await StartTorrentAsync(torrent); }
+            catch (Exception ex)
+            {
+                // The selection was saved. Start rollback already exposes the transfer failure.
+                System.Diagnostics.Debug.WriteLine($"Resuming saved file selection failed: {ex}");
+            }
+        }
+    }
+
+    private void ResumeFileSelectionMonitor(TorrentItem torrent, TorrentManager manager)
+    {
+        var resumed = new CancellationTokenSource();
+        _downloadTokens[torrent.Id] = resumed;
+        SafeFireAndForget(MonitorTorrentAsync(torrent, manager, resumed.Token));
     }
 
     private static string NormalizeFilePath(string path) => path.Replace('\\', '/');

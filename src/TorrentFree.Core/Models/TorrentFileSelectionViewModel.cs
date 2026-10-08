@@ -16,7 +16,7 @@ public partial class TorrentFileSelectionViewModel : ObservableObject
     public partial IReadOnlyList<TorrentFileChoice> VisibleFiles { get; set; } = Array.Empty<TorrentFileChoice>();
 
     [ObservableProperty]
-    public partial string SearchText { get; set; } = string.Empty;
+    public partial string? SearchText { get; set; } = string.Empty;
 
     public bool CanConfirm => _selectedCount > 0;
     public string Summary => string.Format(LocalizationResourceManager.Instance["FileSelectionSummary"],
@@ -32,10 +32,10 @@ public partial class TorrentFileSelectionViewModel : ObservableObject
         Filter();
     }
 
-    partial void OnSearchTextChanged(string value) => Filter();
+    partial void OnSearchTextChanged(string? value) => Filter();
 
     private void Filter() => VisibleFiles = _files.Where(file =>
-        file.Path.Contains(SearchText.Trim(), StringComparison.OrdinalIgnoreCase)).ToArray();
+        file.Path.Contains((SearchText ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase)).ToArray();
 
     [RelayCommand]
     private void SelectAll() => SetVisibleSelection(true);

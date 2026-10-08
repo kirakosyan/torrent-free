@@ -13,6 +13,7 @@ public partial class TorrentFilesPage : ContentPage
     private bool _saving;
     private bool _loaded;
     private bool _accepted;
+    private bool _closing;
     private (bool Compact, bool Wide, bool Minimal)? _layoutMode;
 
     public Task<bool> Result => _result.Task;
@@ -30,8 +31,14 @@ public partial class TorrentFilesPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        PrepareForPresentation();
         if (!_loaded) await LoadFilesAsync();
     }
+
+    internal void PrepareForPresentation() => ConfigurePlatformKeyboard();
+    internal void FinishPresentation() => RestorePlatformKeyboard();
+    partial void ConfigurePlatformKeyboard();
+    partial void RestorePlatformKeyboard();
 
     private void OnLayoutSizeChanged(object sender, EventArgs args)
     {
@@ -99,8 +106,11 @@ public partial class TorrentFilesPage : ContentPage
         }
         finally
         {
-            LoadingIndicator.IsRunning = false;
-            if (ReferenceEquals(_loading, loading)) _loading = null;
+            if (ReferenceEquals(_loading, loading))
+            {
+                LoadingIndicator.IsRunning = false;
+                _loading = null;
+            }
         }
     }
 
@@ -134,14 +144,21 @@ public partial class TorrentFilesPage : ContentPage
 
     private async Task CloseAsync(bool accepted)
     {
+        if (_closing) return;
+        _closing = true;
         _loading?.Cancel();
-        _accepted = accepted;
+        _accepted |= accepted;
         try
         {
             if (Navigation.ModalStack.Contains(this)) await Navigation.PopModalAsync();
-            _result.TrySetResult(accepted);
         }
         catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"File picker dismissal failed: {ex}"); }
+        finally
+        {
+            // A saved selection remains accepted even if navigation fails or Cancel is retried.
+            _result.TrySetResult(_accepted);
+            _closing = false;
+        }
     }
 
     protected override bool OnBackButtonPressed() => _saving || base.OnBackButtonPressed();
@@ -149,6 +166,7 @@ public partial class TorrentFilesPage : ContentPage
     protected override void OnDisappearing()
     {
         _loading?.Cancel();
+        FinishPresentation();
         base.OnDisappearing();
         // Window deactivation is not a cancellation of the user's file choices.
         Dispatcher.Dispatch(() =>

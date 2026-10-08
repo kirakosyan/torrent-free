@@ -669,9 +669,7 @@ public partial class TorrentService : ITorrentService
             await SaveAsync();
             UpdateBackgroundTransferState();
             ThrowIfNetworkBlocked();
-            if (torrent.SelectedFilePaths is not null)
-                await LoadFileSelectionMetadataAsync(torrent, proxyRebuildToken, rebuildRestart);
-            manager = await GetOrCreateManagerAsync(torrent);
+            manager = await GetOrCreateManagerAsync(torrent, proxyRebuildToken, rebuildRestart);
             proxyRebuildToken.ThrowIfCancellationRequested();
             await ApplySpeedLimitsToManagerAsync(manager, torrent);
             proxyRebuildToken.ThrowIfCancellationRequested();
@@ -3278,7 +3276,8 @@ public partial class TorrentService : ITorrentService
             ? torrent.CachedTorrentFilePath
             : (!string.IsNullOrWhiteSpace(torrent.TorrentFilePath) && File.Exists(torrent.TorrentFilePath) ? torrent.TorrentFilePath : null);
 
-    protected virtual async Task<TorrentManager> GetOrCreateManagerAsync(TorrentItem torrent)
+    protected virtual async Task<TorrentManager> GetOrCreateManagerAsync(
+        TorrentItem torrent, CancellationToken cancellationToken = default, bool rebuildRestart = false)
     {
         if (_managers.TryGetValue(torrent.Id, out var existing))
         {
@@ -3292,7 +3291,6 @@ public partial class TorrentService : ITorrentService
             await StopManagerAsync(existing);
             await (await EnsureEngineAsync()).RemoveAsync(existing, RemoveMode.KeepAllData);
             _managers.TryRemove(torrent.Id, out _);
-            await LoadFileSelectionMetadataAsync(torrent, _disposalToken);
         }
 
         var engine = await EnsureEngineAsync();
@@ -3320,7 +3318,14 @@ public partial class TorrentService : ITorrentService
 
         TorrentManager manager;
         var metadataPath = GetMetadataPath(torrent) ?? FindEngineMetadataCachePath(torrent);
-        if (metadataPath is not null)
+        if (torrent.SelectedFilePaths is not null)
+        {
+            // Resolve metadata once before adding a payload manager. Bad local metadata can
+            // be fetched again, but an engine admission failure must not recurse via magnets.
+            var metadata = await LoadFileSelectionMetadataAsync(torrent, cancellationToken, rebuildRestart);
+            manager = await engine.AddAsync(metadata, downloadPath, torrentSettings);
+        }
+        else if (metadataPath is not null)
         {
             try
             {
@@ -3351,14 +3356,6 @@ public partial class TorrentService : ITorrentService
         }
 
         _managers[torrent.Id] = manager;
-        // Never allow a restored selection to start with MonoTorrent's default (all files).
-        if (torrent.SelectedFilePaths is not null && !manager.HasMetadata)
-        {
-            await engine.RemoveAsync(manager, RemoveMode.KeepAllData);
-            _managers.TryRemove(torrent.Id, out _);
-            await LoadFileSelectionMetadataAsync(torrent, _disposalToken);
-            return await GetOrCreateManagerAsync(torrent);
-        }
         await ApplyFileSelectionAsync(manager, torrent.SelectedFilePaths);
         var resolvedDownloadPath = GetResolvedDownloadPath(manager);
         if (resolvedDownloadPath is not null)

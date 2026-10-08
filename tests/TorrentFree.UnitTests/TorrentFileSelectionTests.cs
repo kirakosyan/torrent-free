@@ -1,5 +1,7 @@
 using MonoTorrent;
 using MonoTorrent.Client;
+using System.Collections.Concurrent;
+using System.Reflection;
 using TorrentFree.Models;
 using TorrentFree.Services;
 using Xunit;
@@ -8,6 +10,296 @@ namespace TorrentFree.UnitTests;
 
 public sealed class TorrentFileSelectionTests
 {
+    [Fact]
+    public void NullSearch_RestoresAllFilesWithoutChangingSelection()
+    {
+        var picker = new TorrentFileSelectionViewModel();
+        picker.Load([new TorrentFileChoice("one.bin", 1), new TorrentFileChoice("two.bin", 2, false)]);
+        picker.SearchText = "one";
+        picker.SearchText = null;
+        Assert.Equal(2, picker.VisibleFiles.Count);
+        Assert.Equal(["one.bin"], picker.SelectedPaths);
+    }
+
+    [Fact]
+    public async Task NarrowingCompletedSelection_KeepsCompletionAndUsesSeedCapacity()
+    {
+        var observer = new CompletionObserver();
+        await using var fixture = new CoreServiceFixture(completionObserver: observer);
+        var torrent = await AddMultiFileTorrentAsync(fixture);
+        var source = Path.Combine(fixture.Directory.Path, "source", "File selection sample");
+        var destination = Path.Combine(torrent.SavePath, "File selection sample");
+        foreach (var name in new[] { "chapter-two.bin", "cover.bin" })
+            File.Copy(Path.Combine(source, name), Path.Combine(destination, name));
+        await fixture.Service.StartTorrentAsync(torrent);
+        await CoreServiceFixture.WaitUntilAsync(() => fixture.Notifications.Calls == 1 && observer.Calls == 1);
+        var completed = torrent.DateCompleted;
+        fixture.Service.UpdateQueueLimits(1, 2);
+        var busy = new TorrentItem { Name = "Occupies download capacity", Status = DownloadStatus.Downloading };
+        fixture.Service.Torrents.Add(busy);
+        var wanted = (await fixture.Service.GetTorrentFilesAsync(torrent, TestContext.Current.CancellationToken))[0];
+        fixture.Clock.Advance(TimeSpan.FromHours(1));
+
+        await fixture.Service.SetTorrentFileSelectionAsync(torrent, [wanted.Path]);
+
+        Assert.Equal(DownloadStatus.Seeding, torrent.Status);
+        Assert.Equal(100, torrent.Progress);
+        Assert.Equal(completed, torrent.DateCompleted);
+        Assert.Equal(wanted.Length, torrent.DownloadedSize);
+        var samples = torrent.DownloadSpeedHistory.Count;
+        await CoreServiceFixture.WaitUntilAsync(() => torrent.DownloadSpeedHistory.Count > samples);
+        Assert.Equal(1, fixture.Notifications.Calls);
+        Assert.Equal(1, observer.Calls);
+        Assert.Equal(completed, torrent.DateCompleted);
+        fixture.Service.Torrents.Remove(busy);
+    }
+
+    [Theory]
+    [InlineData(DownloadStatus.Paused)]
+    [InlineData(DownloadStatus.Stopped)]
+    [InlineData(DownloadStatus.Failed)]
+    [InlineData(DownloadStatus.Completed)]
+    public async Task InactiveSelection_PreservesStatusAndError(DownloadStatus status)
+    {
+        await using var fixture = new CoreServiceFixture();
+        var torrent = await AddMultiFileTorrentAsync(fixture);
+        var wanted = (await fixture.Service.GetTorrentFilesAsync(torrent, TestContext.Current.CancellationToken))[0];
+        torrent.Status = status;
+        torrent.ErrorMessage = status == DownloadStatus.Failed ? "Previous transfer error" : null;
+        var error = torrent.ErrorMessage;
+        if (status == DownloadStatus.Completed)
+        {
+            torrent.Progress = 100;
+            torrent.DateCompleted = fixture.Clock.GetLocalNow().DateTime;
+        }
+        var completed = torrent.DateCompleted;
+        await fixture.Service.SetTorrentFileSelectionAsync(torrent, [wanted.Path]);
+        Assert.Equal(status, torrent.Status);
+        Assert.Equal(error, torrent.ErrorMessage);
+        Assert.Equal(completed, torrent.DateCompleted);
+        if (status == DownloadStatus.Completed) Assert.Equal(100, torrent.Progress);
+        using var reopened = new StorageService(fixture.Directory.StoragePaths);
+        var saved = Assert.Single(await reopened.LoadTorrentsAsync());
+        Assert.Equal(status, saved.Status);
+        Assert.Equal(error, saved.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task ActiveSaveFailure_RestoresManagerMonitorAndPersistedSelection()
+    {
+        await using var fixture = new CoreServiceFixture();
+        var torrent = await AddMultiFileTorrentAsync(fixture);
+        await fixture.Service.StartTorrentAsync(torrent);
+        var manager = Assert.Single(fixture.Engine.Torrents);
+        await CoreServiceFixture.WaitUntilAsync(() => manager.State == TorrentState.Downloading && torrent.Progress > 0);
+        var total = torrent.TotalSize;
+        var progress = torrent.Progress;
+        var wanted = (await fixture.Service.GetTorrentFilesAsync(torrent, TestContext.Current.CancellationToken)).Single(file => file.Path.EndsWith("cover.bin"));
+        using (File.Open(Path.Combine(fixture.Directory.Path, "torrents.json.tmp"), FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+            await Assert.ThrowsAnyAsync<IOException>(() => fixture.Service.SetTorrentFileSelectionAsync(torrent, [wanted.Path]));
+        Assert.Equal(DownloadStatus.Downloading, torrent.Status);
+        Assert.Null(torrent.SelectedFilePaths);
+        Assert.Equal(total, torrent.TotalSize);
+        Assert.Equal(progress, torrent.Progress);
+        Assert.All(manager.Files, file => Assert.Equal(Priority.Normal, file.Priority));
+        var samples = torrent.DownloadSpeedHistory.Count;
+        await CoreServiceFixture.WaitUntilAsync(() => manager.State == TorrentState.Downloading && torrent.DownloadSpeedHistory.Count > samples);
+        using var reopened = new StorageService(fixture.Directory.StoragePaths);
+        var saved = Assert.Single(await reopened.LoadTorrentsAsync());
+        Assert.Null(saved.SelectedFilePaths);
+        Assert.Equal(DownloadStatus.Downloading, saved.Status);
+    }
+
+    [Fact]
+    public async Task StopFailure_RestoresMonitoringWithoutChangingSelection()
+    {
+        await using var fixture = CreateLifecycleFixture();
+        var service = (SelectionLifecycleService)fixture.Service;
+        var torrent = await AddMultiFileTorrentAsync(fixture);
+        await service.StartTorrentAsync(torrent);
+        await CoreServiceFixture.WaitUntilAsync(() => fixture.Engine.Torrents.Single().State == TorrentState.Downloading);
+        var wanted = (await service.GetTorrentFilesAsync(torrent, TestContext.Current.CancellationToken))[0];
+        service.FailStop = true;
+        try { await Assert.ThrowsAsync<IOException>(() => service.SetTorrentFileSelectionAsync(torrent, [wanted.Path])); }
+        finally { service.FailStop = false; }
+        Assert.Null(torrent.SelectedFilePaths);
+        Assert.Equal(DownloadStatus.Downloading, torrent.Status);
+        var samples = torrent.DownloadSpeedHistory.Count;
+        await CoreServiceFixture.WaitUntilAsync(() => torrent.DownloadSpeedHistory.Count > samples);
+    }
+
+    [Fact]
+    public async Task ChangingSelection_CancelsMonitorBeforeStopCanPublishCompletion()
+    {
+        await using var fixture = CreateLifecycleFixture();
+        var service = (SelectionLifecycleService)fixture.Service;
+        var torrent = await AddMultiFileTorrentAsync(fixture);
+        var choices = await service.GetTorrentFilesAsync(torrent, TestContext.Current.CancellationToken);
+        var complete = choices.Single(file => file.Path.EndsWith("chapter-one.bin"));
+        await service.SetTorrentFileSelectionAsync(torrent, [complete.Path]);
+        await service.StartTorrentAsync(torrent);
+        await CoreServiceFixture.WaitUntilAsync(() => fixture.Engine.Torrents.Single().State == TorrentState.Seeding);
+        torrent.DateCompleted = null;
+        torrent.Status = DownloadStatus.Downloading;
+        service.BlockStop = true;
+        var change = service.SetTorrentFileSelectionAsync(torrent, choices.Select(file => file.Path).ToArray());
+        try
+        {
+            await service.StopEntered.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+            var tokens = (ConcurrentDictionary<string, CancellationTokenSource>)typeof(TorrentService)
+                .GetField("_downloadTokens", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(service)!;
+            Assert.False(tokens.ContainsKey(torrent.Id));
+            var notifications = fixture.Notifications.Calls;
+            await Task.Delay(1200, TestContext.Current.CancellationToken);
+            Assert.Null(torrent.DateCompleted);
+            Assert.Equal(DownloadStatus.Downloading, torrent.Status);
+            Assert.Equal(notifications, fixture.Notifications.Calls);
+        }
+        finally { service.ReleaseStop.TrySetResult(); service.BlockStop = false; }
+        await change;
+    }
+
+    [Fact]
+    public async Task RestartFailure_DoesNotReportTheSavedSelectionAsFailed()
+    {
+        await using var fixture = CreateLifecycleFixture();
+        var service = (SelectionLifecycleService)fixture.Service;
+        var torrent = await AddMultiFileTorrentAsync(fixture);
+        await service.StartTorrentAsync(torrent);
+        await CoreServiceFixture.WaitUntilAsync(() => fixture.Engine.Torrents.Single().State == TorrentState.Downloading);
+        var wanted = (await service.GetTorrentFilesAsync(torrent, TestContext.Current.CancellationToken))[0];
+        service.FailStart = true;
+        await service.SetTorrentFileSelectionAsync(torrent, [wanted.Path]);
+        Assert.Equal(DownloadStatus.Failed, torrent.Status);
+        Assert.Equal("Injected restart failure", torrent.ErrorMessage);
+        using var reopened = new StorageService(fixture.Directory.StoragePaths);
+        Assert.Equal([wanted.Path], Assert.Single(await reopened.LoadTorrentsAsync()).SelectedFilePaths!);
+    }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public async Task BadCachedMetadata_IsRefetchedForPickerAndSelectedStart(bool mismatched, bool start)
+    {
+        PreviewService? service = null;
+        await using var fixture = new CoreServiceFixture(serviceFactory: (storage, notifications, background, clock) =>
+            service = new PreviewService(storage, notifications, background, clock));
+        var torrent = await AddMultiFileTorrentAsync(fixture);
+        var wanted = (await service!.GetTorrentFilesAsync(torrent, TestContext.Current.CancellationToken))[0];
+        await service.SetTorrentFileSelectionAsync(torrent, [wanted.Path]);
+        service.Metadata = await File.ReadAllBytesAsync(torrent.CachedTorrentFilePath!, TestContext.Current.CancellationToken);
+        var bad = "invalid torrent"u8.ToArray();
+        if (mismatched)
+        {
+            await fixture.PrepareTorrentAsync("different.bin");
+            bad = await File.ReadAllBytesAsync(Path.Combine(fixture.Directory.Path, "different.bin.torrent"), TestContext.Current.CancellationToken);
+        }
+        await File.WriteAllBytesAsync(torrent.CachedTorrentFilePath!, bad, TestContext.Current.CancellationToken);
+        if (start)
+        {
+            await service.StartTorrentAsync(torrent);
+            Assert.Single(Assert.Single(fixture.Engine.Torrents).Files, file => file.Priority == Priority.Normal);
+        }
+        else Assert.Single(await service.GetTorrentFilesAsync(torrent, TestContext.Current.CancellationToken), file => file.IsSelected);
+        Assert.Equal(1, service.PreviewCalls);
+        Assert.Equal(service.Metadata, await File.ReadAllBytesAsync(torrent.CachedTorrentFilePath!, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task BackgroundSuspensionBeforePreviewRegistration_RequeuesSelectedStart()
+    {
+        PreviewService? service = null;
+        await using var fixture = new CoreServiceFixture(serviceFactory: (storage, notifications, background, clock) =>
+            service = new PreviewService(storage, notifications, background, clock));
+        var torrent = await AddMultiFileTorrentAsync(fixture);
+        await service!.SetTorrentFileSelectionAsync(torrent, [(await service.GetTorrentFilesAsync(torrent, TestContext.Current.CancellationToken))[0].Path]);
+        File.Delete(torrent.CachedTorrentFilePath!);
+        service.SuspendBeforeMetadata = true;
+        await service.StartTorrentAsync(torrent);
+        Assert.Equal(DownloadStatus.Queued, torrent.Status);
+        Assert.Null(torrent.ErrorMessage);
+        Assert.Equal(0, service.PreviewCalls);
+    }
+
+    [Fact]
+    public async Task PreviewDeadline_DoesNotApplyToPayloadMetadataStarts()
+    {
+        var clock = new PreviewDeadlineClock();
+        PreviewService? service = null;
+        await using var fixture = new CoreServiceFixture(serviceFactory: (storage, notifications, background, _) =>
+            service = new PreviewService(storage, notifications, background, clock));
+        var torrent = await AddMultiFileTorrentAsync(fixture);
+        await service!.SetTorrentFileSelectionAsync(torrent, [(await service.GetTorrentFilesAsync(torrent, TestContext.Current.CancellationToken))[0].Path]);
+        File.Delete(torrent.CachedTorrentFilePath!);
+        var picker = service.GetTorrentFilesAsync(torrent, TestContext.Current.CancellationToken);
+        await CoreServiceFixture.WaitUntilAsync(() => service.PreviewCalls == 1);
+        clock.ExpirePreviewDeadline();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => picker);
+        var start = service.StartTorrentAsync(torrent);
+        await CoreServiceFixture.WaitUntilAsync(() => service.PreviewCalls == 2);
+        clock.ExpirePreviewDeadline();
+        Assert.False(service.PreviewToken.IsCancellationRequested);
+        Assert.False(start.IsCompleted);
+        await service.PauseAllForBackgroundTimeoutAsync();
+        await start;
+        Assert.Equal(DownloadStatus.Queued, torrent.Status);
+        Assert.Null(torrent.ErrorMessage);
+    }
+
+    private static CoreServiceFixture CreateLifecycleFixture() => new(serviceFactory: (storage, notifications, background, clock) =>
+        new SelectionLifecycleService(storage, notifications, background, clock));
+
+    private sealed class CompletionObserver : IDownloadCompletionObserver
+    {
+        public int Calls;
+        public Task OnDownloadCompletedAsync(TorrentItem torrent) { Interlocked.Increment(ref Calls); return Task.CompletedTask; }
+    }
+
+    private sealed class SelectionLifecycleService(IStorageService storage, INotificationService notifications, IBackgroundDownloadService background, TimeProvider clock)
+        : TorrentService(storage, notifications, background, ImmediateDispatcher.Instance, clock)
+    {
+        public bool FailStop;
+        public bool FailStart;
+        public bool BlockStop;
+        public TaskCompletionSource StopEntered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public TaskCompletionSource ReleaseStop { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        protected override async Task StopManagerAsync(TorrentManager manager)
+        {
+            if (FailStop) throw new IOException("Injected stop failure");
+            if (BlockStop) { StopEntered.TrySetResult(); await ReleaseStop.Task; }
+            await base.StopManagerAsync(manager);
+        }
+        protected override Task StartManagerAsync(TorrentManager manager)
+            => FailStart ? Task.FromException(new IOException("Injected restart failure")) : base.StartManagerAsync(manager);
+    }
+
+    private sealed class PreviewDeadlineClock : TimeProvider
+    {
+        private readonly List<DeadlineTimer> _timers = [];
+        public override ITimer CreateTimer(TimerCallback callback, object? state, TimeSpan dueTime, TimeSpan period)
+        {
+            var timer = new DeadlineTimer(callback, state);
+            lock (_timers) _timers.Add(timer);
+            return timer;
+        }
+        public void ExpirePreviewDeadline()
+        {
+            DeadlineTimer[] timers;
+            lock (_timers) timers = _timers.ToArray();
+            foreach (var timer in timers) timer.Fire();
+        }
+        private sealed class DeadlineTimer(TimerCallback callback, object? state) : ITimer
+        {
+            private bool _disposed;
+            public void Fire() { if (!_disposed) callback(state); }
+            public bool Change(TimeSpan dueTime, TimeSpan period) => !_disposed;
+            public void Dispose() => _disposed = true;
+            public ValueTask DisposeAsync() { Dispose(); return ValueTask.CompletedTask; }
+        }
+    }
+
     [Fact]
     public void SearchAndBulkSelection_PreserveHiddenChoicesAndRejectEmptySelection()
     {
@@ -231,8 +523,17 @@ public sealed class TorrentFileSelectionTests
     {
         public byte[]? Metadata;
         public int PreviewCalls;
+        public CancellationToken PreviewToken;
+        public bool SuspendBeforeMetadata;
+        protected override Task<TorrentManager> GetOrCreateManagerAsync(TorrentItem torrent, CancellationToken cancellationToken = default, bool rebuildRestart = false)
+        {
+            if (SuspendBeforeMetadata)
+                typeof(TorrentService).GetField("_backgroundExecutionSuspended", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(this, true);
+            return base.GetOrCreateManagerAsync(torrent, cancellationToken, rebuildRestart);
+        }
         protected override async Task<ReadOnlyMemory<byte>> DownloadFileSelectionMetadataAsync(ClientEngine engine, MagnetLink magnet, CancellationToken cancellationToken)
         {
+            PreviewToken = cancellationToken;
             Interlocked.Increment(ref PreviewCalls);
             if (Metadata is not null) return Metadata;
             await Task.Delay(Timeout.Infinite, cancellationToken);

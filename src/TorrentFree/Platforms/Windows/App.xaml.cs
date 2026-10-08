@@ -177,6 +177,9 @@ public partial class App : MauiWinUIApplication
 			throw new InvalidOperationException("The main view model is unavailable for file activation.");
 		}
 
+		await viewModel.EnsureInitializedAsync();
+		ActivateMainWindow();
+
 		await ActivationImportCoordinator.ImportAsync(
 			paths,
 			viewModel.EnsureInitializedAsync,

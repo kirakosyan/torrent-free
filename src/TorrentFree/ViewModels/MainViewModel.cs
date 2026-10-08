@@ -1025,10 +1025,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
         await _fileSelectionDialogLock.WaitAsync();
         try
         {
-            if (Shell.Current is not { } shell) return false;
+            if (Shell.Current is not { } shell)
+                throw new InvalidOperationException(LocalizationResourceManager.Instance["LoadTorrentFilesFailed"]);
             var page = new TorrentFilesPage(_torrentService, torrent, newDownload);
-            await shell.Navigation.PushModalAsync(page);
-            return await page.Result;
+            try
+            {
+                page.PrepareForPresentation();
+                await shell.Navigation.PushModalAsync(page);
+                return await page.Result;
+            }
+            finally { page.FinishPresentation(); }
         }
         finally { _fileSelectionDialogLock.Release(); }
     }

@@ -245,7 +245,7 @@ public sealed class TorrentServiceRebuildConcurrencyTests
     {
         public System.Collections.Concurrent.ConcurrentQueue<string> AttemptedStarts { get; } = new();
 
-        protected override Task<TorrentManager> GetOrCreateManagerAsync(TorrentItem torrent)
+        protected override Task<TorrentManager> GetOrCreateManagerAsync(TorrentItem torrent, CancellationToken cancellationToken = default, bool rebuildRestart = false)
         {
             AttemptedStarts.Enqueue(torrent.Id);
             throw new InvalidOperationException("Injected manager creation failure");
@@ -278,7 +278,7 @@ public sealed class TorrentServiceRebuildConcurrencyTests
         public TaskCompletionSource ReleaseManagerCreation { get; } =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        protected override async Task<TorrentManager> GetOrCreateManagerAsync(TorrentItem torrent)
+        protected override async Task<TorrentManager> GetOrCreateManagerAsync(TorrentItem torrent, CancellationToken cancellationToken = default, bool rebuildRestart = false)
         {
             ManagerCreationEntered.TrySetResult();
             await ReleaseManagerCreation.Task;
