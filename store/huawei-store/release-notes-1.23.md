@@ -10,7 +10,24 @@ validation, source tag and package hashes. This release aligns all three stores.
 
 ## Store status
 
-Prepared on October 8, 2026; **not submitted or live yet**. App ID **119226643**.
-The previous submission is documented in [1.20](release-notes-1.20.md).
-Submission identifiers, verified status and package evidence will be recorded
-after building from the clean **v1.23** source commit and uploading to AppGallery.
+Submitted **October 8, 2026**, with **Reviewing** verified at **22:48 Europe/Oslo
+(20:48 UTC)**. App **119226643**, version/submission **2057049026322245120**.
+Version **1.23 is not live yet**. Publication is **Immediately once approved**.
+Full release to the inherited **198** selected countries/regions, with mainland
+China excluded. The separate open-testing draft was not changed.
+
+The final APK is **1.23 (28)**, **20.35 MB** in the portal, uploaded **22:45:03**.
+All 26 localized release notes are saved; existing descriptions, icons and five
+screenshots per language are preserved. Reviewer instructions describe file
+selection, persistence and legal Debian test content. The privacy-policy URL uses
+the v1.23 tag. Existing free pricing, no-login and privacy declarations are retained.
+
+Built from clean commit `69a533b1e783d5d6eae4976b0e988c5006ef790a`, tag **v1.23**.
+Signature v2/v3 checks passed and the certificate matches the released 1.20 APK.
+Manifest: API 23 minimum, API 36 target, ARM64 only, non-debuggable, Torrent Client
+launcher label. ZIP and native-symbol build-ID checks passed. The shared record
+contains APK/mapping/symbol hashes and all validation. AppGallery-delivered
+rating/update handoffs still require real-device verification.
+
+Previous **1.20 is live**, verified October 8. Its console reports approved review
+on EMUI 12.0.0 (P30 Pro) and EMUI 10.1.0 (P40 Pro), multilingual environment.

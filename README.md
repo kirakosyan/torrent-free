@@ -5,7 +5,7 @@
 - **Android (Google Play):** https://play.google.com/store/apps/details?id=com.torrentfree.app
 - **Microsoft Store:** https://apps.microsoft.com/detail/9nnx2ztpxc26
 - **Samsung Galaxy Store:** preparation only; not submitted or published. See [Galaxy Store preparation](store/galaxy-store/README.md) for seller requirements, reusable Play assets, signing and store routing.
-- **Huawei AppGallery:** version **1.20 / code 25 is live**, verified October 8, 2026. Version 1.23 / code 28 is in preparation; see the [Huawei release record](store/huawei-store/release-notes-1.23.md).
+- **Huawei AppGallery:** version **1.20 / code 25 is live**, verified October 8, 2026. Version 1.23 / code 28 is submitted and Reviewing; see the [Huawei release record](store/huawei-store/release-notes-1.23.md).
 
 Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real engine, not simulated). Supports importing `.torrent` files and magnet links, shows live stats, and on Windows stores downloads next to the picked `.torrent` when possible.
 
@@ -39,12 +39,23 @@ the selected size, and change saved choices later. Progress reflects the chosen
 files. The picker adapts to mobile portrait, landscape, and keyboard layouts.
 PR [#24](https://github.com/kirakosyan/torrent-free/pull/24) is merged into `main`.
 
-Release preparation started on **October 8, 2026**. Microsoft submission **20**
-and Google Play and Huawei AppGallery production drafts are being prepared; **1.23 is not submitted
-or live yet**. Both stores currently have **1.19 live**, verified on October 8.
-Google Play reports publication on October 4 and full rollout to 178 countries.
-See the [1.23 release record](store/microsoft-store/release-notes-1.23.md) for the
-source tag, validation, package hashes, and current submission status.
+Submitted to all three stores on **October 8, 2026**:
+
+- **Google Play:** submission **22**, production release **12**, **1.23 / code 28**;
+  **In review**, verified **22:47 Europe/Oslo**.
+- **Microsoft Store:** submission **20**, **1.23.0.0 x64/ARM64**;
+  **In certification**, verified **22:54 Europe/Oslo**.
+- **Huawei AppGallery:** version record **2057049026322245120**, **1.23 / code 28**;
+  **Reviewing**, verified **22:48 Europe/Oslo**.
+
+Version **1.23 is not live yet**; each store will publish automatically after
+approval. Android 6.0 support is retained, and Google reports zero newly unsupported
+devices. All **428 local Release tests** and **five store-configuration tests** passed;
+the picker was also checked on a physical Android phone in portrait and landscape.
+CI builds and Linux tests passed; Windows CI still hits an existing resume-file
+locking failure (427/428 tests passed on both attempts).
+See the [1.23 release record](store/microsoft-store/release-notes-1.23.md) for
+source, package hashes, validation and submission evidence.
 
 ### Previous release history
 

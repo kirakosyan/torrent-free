@@ -68,6 +68,11 @@ No production key or package is stored in the public repository.
 
 ## Changes after submission
 
+**Publication verified October 8, 2026:** AppGallery shows **1.20 Released**.
+The approved review used EMUI 12.0.0 (P30 Pro) and EMUI 10.1.0 (P40 Pro) in a
+multilingual environment. This supersedes the pending status recorded above at
+submission; the exact publication time was not verified.
+
 PR review fixes made after the `v1.20` source tag are for the **next release**.
 They do not change the submitted APK, hash, tag or historical validation above.
 A replacement store package must have a new version/code and release tag.

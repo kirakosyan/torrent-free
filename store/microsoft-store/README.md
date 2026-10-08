@@ -2,14 +2,19 @@
 
 ## Current release
 
-**1.23 / build 28 / MSIX 1.23.0.0** is being prepared for x64 and ARM64 on
-**October 8, 2026**. Submission **20** (`1152921505702078202`) is a draft; this
-version is **not submitted or live yet**. It adds torrent file selection with
-search, saved choices, accurate selected-file progress, and a responsive picker.
+**1.23 / build 28 / MSIX 1.23.0.0 (x64 and ARM64)** was submitted on
+**October 8, 2026**, submission **20** (`1152921505702078202`). Status:
+**In certification**, verified **22:54 Europe/Oslo**. **1.23 is not live yet**;
+publication is automatic after certification.
+
+Adds torrent file selection, search, saved choices, selected-file progress and a
+responsive picker. Both packages validated. All 31 localized notes were verified
+against a fresh export, with every other field and image unchanged. Certification
+instructions describe the new file-selection workflow. Existing availability and
+mandatory-update settings are preserved; Xbox remains unchecked.
 See the [1.23 release record](release-notes-1.23.md).
 
-Version **1.19 is live**, verified in Partner Center on October 8, 2026. Submission
-19 is the current Store presence; its exact publication date was not shown.
+Version **1.19 is live**, verified October 8. Submission 19 is the Store presence.
 
 ## Previous release history
 

@@ -4,17 +4,21 @@ Package `com.torrentfree.app`, listed as **Torrent Client - Downloader**.
 
 ## Current release
 
-**1.23 / code 28** is being prepared for production on **October 8, 2026**. The
-release is a draft, **not submitted or live yet**. It adds torrent file selection
-with search, saved choices, accurate selected-file progress, and a responsive
-mobile picker. See the [1.23 release record](../microsoft-store/release-notes-1.23.md).
+**1.23 / code 28** was submitted on **October 8, 2026 at 22:47 Europe/Oslo
+(20:47 UTC)**, submission **22**, production release **12**. Status: **In review**;
+initial automated checks were still running. Full rollout is requested across the
+existing 178 countries/regions. Managed publishing is off, so approval triggers
+publication. **1.23 is not live yet.**
 
-Android 6.0 (API 23) support is retained. With owner approval, the optional
-automatic installer check was disabled on October 8; app signing remains enabled.
-Versions 1.21 and 1.22 were never submitted and retain their original tags/artifacts.
+Adds torrent file selection, search, saved choices, selected-file progress and a
+responsive mobile picker. All 26 release notes, embedded ReTrace mapping and
+matching native debug symbols were accepted. The preview confirms zero newly
+unsupported devices. **Android 6.0 / API 23 is retained**; the owner approved
+disabling the optional installer check, while Play app signing remains enabled.
+Superseded 1.21/1.22 tags and artifacts remain unchanged and were never submitted.
+See the [1.23 release record](../microsoft-store/release-notes-1.23.md).
 
-Version **1.19 / code 24 is live**, published October 4, 2026 and verified on
-October 8. Production reports a 100% rollout across 178 countries/regions.
+Version **1.19 / code 24 is live**, published October 4 and verified October 8.
 
 ## Previous release history
 
