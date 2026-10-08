@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>Etkin indirmeler sırasında otomatik uyku modunu engeller. Tüm etkin indirmeler tamamlandığında, duraklatıldığında veya durdurulduğunda uykuya izin verir. Tamamlanan dosyaları paylaşmak cihazı uyanık tutmaz. Ekran yine de kapanabilir.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Dosyaları seç</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>İndirmek istediğiniz dosyaları seçin.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Dosya veya klasör ara</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>Görünenleri seç</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>Görünenleri temizle</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>Eşleşen dosya yok.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>Dosya listesi yükleniyor. Magnet bağlantıları bir dakika sürebilir; içerik henüz indirilmeyecek.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>Tekrar dene</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>Seçimi uygula</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>{1} dosyadan {0} seçildi · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>Mevcut dosyalar korunur. Ortak torrent parçaları için atlanan dosyaların küçük bölümleri gerekebilir.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>Dosyalar yüklenemedi. Bağlantınızı ve Wi-Fi ayarlarınızı kontrol edip tekrar deneyin.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>Seçim uygulanamadı. Aktarım duraklatılmış olabilir. Tekrar deneyin.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>Seçilenleri indir</value>
+  </data>
 </root>

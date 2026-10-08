@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>Voorkomt automatische slaapstand tijdens actieve downloads. Slaapstand wordt toegestaan wanneer alle actieve downloads klaar, gepauzeerd of gestopt zijn. Seeden houdt het apparaat niet wakker. Het scherm kan nog steeds uitgaan.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Bestanden kiezen</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>Selecteer de bestanden die je wilt downloaden.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Bestanden of mappen zoeken</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>Zichtbare selecteren</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>Zichtbare deselecteren</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>Geen overeenkomende bestanden.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>Bestandslijst laden. Magnetlinks kunnen een minuut duren; inhoud wordt nog niet gedownload.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>Opnieuw proberen</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>Selectie toepassen</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>{0} van {1} bestanden geselecteerd · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>Bestaande bestanden blijven behouden. Kleine delen van overgeslagen bestanden kunnen nodig zijn voor gedeelde torrentstukken.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>Bestanden konden niet worden geladen. Controleer de verbinding en wifi-instellingen en probeer opnieuw.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>De selectie kon niet worden toegepast. De overdracht is mogelijk gepauzeerd. Probeer opnieuw.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>Selectie downloaden</value>
+  </data>
 </root>

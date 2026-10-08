@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>Verhindert den automatischen Energiesparmodus bei aktiven Downloads. Der Energiesparmodus wird wieder zugelassen, wenn alle aktiven Downloads abgeschlossen, pausiert oder gestoppt sind. Seeding hält das Gerät nicht wach. Der Bildschirm kann sich weiterhin ausschalten.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Dateien auswählen</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>Wählen Sie die Dateien aus, die Sie herunterladen möchten.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Dateien oder Ordner suchen</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>Angezeigte auswählen</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>Angezeigte abwählen</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>Keine passenden Dateien.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>Dateiliste wird geladen. Magnet-Links können eine Minute benötigen; Inhalte werden noch nicht heruntergeladen.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>Erneut versuchen</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>Auswahl anwenden</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>{0} von {1} Dateien ausgewählt · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>Vorhandene Dateien bleiben erhalten. Kleine Teile übersprungener Dateien können für gemeinsame Torrent-Blöcke benötigt werden.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>Dateien konnten nicht geladen werden. Prüfen Sie die Verbindung und WLAN-Einstellungen und versuchen Sie es erneut.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>Die Auswahl konnte nicht angewendet werden. Die Übertragung ist möglicherweise pausiert. Versuchen Sie es erneut.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>Auswahl herunterladen</value>
+  </data>
 </root>

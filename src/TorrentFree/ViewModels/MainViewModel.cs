@@ -619,6 +619,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         torrent.StopSpecificTorrentCommand = StopSpecificTorrentCommand;
         torrent.RemoveSpecificTorrentCommand = RemoveSpecificTorrentCommand;
         torrent.ShowSpecificTorrentLimitsCommand = ShowSpecificTorrentLimitsCommand;
+        torrent.ChooseFilesCommand = ChooseFilesCommand;
     }
 
     private void OnTorrentPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -992,7 +993,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         TorrentItem? torrent = null;
         try
         {
-            torrent = await _torrentService.AddTorrentFileAsync(metadata);
+            torrent = await _torrentService.AddTorrentFileAsync(metadata, startPaused: true);
         }
         catch (DuplicateTorrentException)
         {
@@ -1012,8 +1013,42 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return false;
         }
 
-        await _torrentService.StartTorrentAsync(torrent);
+        if (await ShowFileSelectionAsync(torrent, newDownload: true))
+            await _torrentService.StartTorrentAsync(torrent);
         return true;
+    }
+
+    private readonly SemaphoreSlim _fileSelectionDialogLock = new(1, 1);
+
+    private async Task<bool> ShowFileSelectionAsync(TorrentItem torrent, bool newDownload)
+    {
+        await _fileSelectionDialogLock.WaitAsync();
+        try
+        {
+            if (Shell.Current is not { } shell)
+                throw new InvalidOperationException(LocalizationResourceManager.Instance["LoadTorrentFilesFailed"]);
+            var page = new TorrentFilesPage(_torrentService, torrent, newDownload);
+            try
+            {
+                page.PrepareForPresentation();
+                await shell.Navigation.PushModalAsync(page);
+                return await page.Result;
+            }
+            finally { page.FinishPresentation(); }
+        }
+        finally { _fileSelectionDialogLock.Release(); }
+    }
+
+    [RelayCommand]
+    private async Task ChooseFilesAsync(TorrentItem? torrent)
+    {
+        if (torrent is null) return;
+        try { await ShowFileSelectionAsync(torrent, newDownload: false); }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Opening torrent file picker failed: {ex}");
+            ErrorMessage = LocalizationResourceManager.Instance["LoadTorrentFilesFailed"];
+        }
     }
 
     private async Task PromptFileAssociationAsync()
@@ -1061,14 +1096,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
         try
         {
             var submittedLink = MagnetLinkInput.Trim();
-            var result = await _torrentService.AddTorrentAsync(submittedLink);
+            var result = await _torrentService.AddTorrentAsync(submittedLink, startPaused: true);
             if (result != null)
             {
                 // A protocol activation may preview another link while this add is awaiting storage.
                 if (string.Equals(MagnetLinkInput.Trim(), submittedLink, StringComparison.Ordinal))
                     MagnetLinkInput = string.Empty;
-                // Auto-start the download
-                await _torrentService.StartTorrentAsync(result);
+                if (await ShowFileSelectionAsync(result, newDownload: true))
+                    await _torrentService.StartTorrentAsync(result);
             }
             else
             {

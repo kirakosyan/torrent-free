@@ -118,7 +118,7 @@ public sealed class TorrentServiceStartRollbackTests
             _exception = exception;
         }
 
-        protected override Task<TorrentManager> GetOrCreateManagerAsync(TorrentItem torrent)
+        protected override Task<TorrentManager> GetOrCreateManagerAsync(TorrentItem torrent, CancellationToken cancellationToken = default, bool rebuildRestart = false)
             => Task.FromException<TorrentManager>(_exception);
     }
 
@@ -128,11 +128,11 @@ public sealed class TorrentServiceStartRollbackTests
         public TaskCompletionSource StartBlocked { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public TaskCompletionSource ReleaseStart { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        protected override async Task<TorrentManager> GetOrCreateManagerAsync(TorrentItem torrent)
+        protected override async Task<TorrentManager> GetOrCreateManagerAsync(TorrentItem torrent, CancellationToken cancellationToken = default, bool rebuildRestart = false)
         {
             if (failDuringManagerCreation)
                 await WaitForShutdownAsync();
-            return await base.GetOrCreateManagerAsync(torrent);
+            return await base.GetOrCreateManagerAsync(torrent, cancellationToken, rebuildRestart);
         }
 
         protected override Task StartManagerAsync(TorrentManager manager) => WaitForShutdownAsync();

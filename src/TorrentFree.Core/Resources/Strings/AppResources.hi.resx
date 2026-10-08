@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>सक्रिय डाउनलोड के दौरान स्वचालित स्लीप रोकें। सभी सक्रिय डाउनलोड पूरे होने, विराम देने या रोकने पर स्लीप की अनुमति दें। पूरी हुई फ़ाइलें साझा करने से डिवाइस जागा नहीं रहता। स्क्रीन फिर भी बंद हो सकती है।</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>फ़ाइलें चुनें</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>वे फ़ाइलें चुनें जिन्हें आप डाउनलोड करना चाहते हैं।</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>फ़ाइलें या फ़ोल्डर खोजें</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>दिखाई गई चुनें</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>दिखाई गई हटाएँ</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>कोई मेल खाती फ़ाइल नहीं।</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>फ़ाइल सूची लोड हो रही है। मैग्नेट लिंक में एक मिनट लग सकता है; सामग्री अभी डाउनलोड नहीं होगी।</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>फिर कोशिश करें</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>चयन लागू करें</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>{1} में से {0} फ़ाइलें चुनी गईं · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>मौजूदा फ़ाइलें रखी जाएँगी। साझा टोरेंट खंडों के लिए छोड़ी गई फ़ाइलों के छोटे हिस्से आवश्यक हो सकते हैं।</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>फ़ाइलें लोड नहीं हो सकीं। कनेक्शन और Wi-Fi सेटिंग जाँचें और फिर कोशिश करें।</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>चयन लागू नहीं हो सका। ट्रांसफ़र रुका हो सकता है। फिर कोशिश करें।</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>चुनी हुई डाउनलोड करें</value>
+  </data>
 </root>

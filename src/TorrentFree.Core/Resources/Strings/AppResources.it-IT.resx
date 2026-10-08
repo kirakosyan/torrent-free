@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>Impedisce la sospensione automatica durante i download attivi. La sospensione è consentita quando tutti i download attivi terminano, vengono messi in pausa o arrestati. La condivisione dei file completati non mantiene attivo il dispositivo. Lo schermo può spegnersi.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Scegli i file</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>Seleziona i file da scaricare.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Cerca file o cartelle</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>Seleziona visibili</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>Deseleziona visibili</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>Nessun file corrispondente.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>Caricamento dell’elenco. I link magnet possono richiedere un minuto; il contenuto non verrà ancora scaricato.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>Riprova</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>Applica selezione</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>{0} di {1} file selezionati · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>I file esistenti vengono conservati. Piccole parti dei file saltati potrebbero servire per i blocchi condivisi del torrent.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>Impossibile caricare i file. Controlla la connessione e le impostazioni Wi-Fi, poi riprova.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>Impossibile applicare la selezione. Il trasferimento potrebbe essere in pausa. Riprova.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>Scarica selezionati</value>
+  </data>
 </root>

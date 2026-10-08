@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>Ngăn tự động chuyển sang chế độ ngủ khi có tải xuống đang hoạt động. Cho phép ngủ khi tất cả tải xuống đang hoạt động hoàn tất, tạm dừng hoặc dừng. Chia sẻ các tệp đã tải xong không giữ thiết bị thức. Màn hình vẫn có thể tắt.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Chọn tệp</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>Chọn các tệp bạn muốn tải xuống.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Tìm tệp hoặc thư mục</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>Chọn mục hiển thị</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>Bỏ chọn mục hiển thị</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>Không có tệp phù hợp.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>Đang tải danh sách tệp. Liên kết magnet có thể mất một phút; nội dung chưa được tải xuống.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>Thử lại</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>Áp dụng lựa chọn</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>Đã chọn {0}/{1} tệp · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>Các tệp hiện có được giữ lại. Có thể cần phần nhỏ của các tệp bị bỏ qua cho các mảnh torrent dùng chung.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>Không thể tải danh sách tệp. Kiểm tra kết nối và cài đặt Wi-Fi rồi thử lại.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>Không thể áp dụng lựa chọn. Quá trình truyền có thể đã tạm dừng. Vui lòng thử lại.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>Tải mục đã chọn</value>
+  </data>
 </root>

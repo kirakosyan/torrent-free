@@ -714,6 +714,13 @@
                                                                        Command="{Binding StopSpecificTorrentCommand}"
                                                                        CommandParameter="{Binding .}"
                                                                        IsVisible="{Binding CanStop}"/>
+                                                                <ImageButton Source="files_icon.png"
+                                                                             WidthRequest="44"
+                                                                             SemanticProperties.Description="{helpers:Translate ChooseFiles}"
+                                                                             ToolTipProperties.Text="{helpers:Translate ChooseFiles}"
+                                                                             Style="{StaticResource LimitsButton}"
+                                                                             Command="{Binding ChooseFilesCommand}"
+                                                                             CommandParameter="{Binding .}"/>
                                                                 <ImageButton Source="limits_icon.png"
                                                                              SemanticProperties.Description="{helpers:Translate ShowTorrentLimits}"
                                                                              SemanticProperties.Hint="{helpers:Translate TorrentLimitsHint}"

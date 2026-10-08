@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>Hindrer automatisk hvilemodus mens nedlastinger er aktive. Hvilemodus tillates når alle aktive nedlastinger er ferdige, satt på pause eller stoppet. Seeding holder ikke enheten våken. Skjermen kan fortsatt slå seg av.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Velg filer</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>Velg filene du vil laste ned.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Søk etter filer eller mapper</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>Velg viste</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>Fjern valg av viste</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>Ingen samsvarende filer.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>Laster filliste. Magnetlenker kan ta et minutt; innhold lastes ikke ned ennå.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>Prøv igjen</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>Bruk valget</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>{0} av {1} filer valgt · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>Eksisterende filer beholdes. Små deler av utelatte filer kan være nødvendige for delte torrentbiter.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>Kunne ikke laste filene. Kontroller tilkoblingen og Wi-Fi-innstillingene, og prøv igjen.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>Kunne ikke bruke valget. Overføringen kan være satt på pause. Prøv igjen.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>Last ned valgte</value>
+  </data>
 </root>

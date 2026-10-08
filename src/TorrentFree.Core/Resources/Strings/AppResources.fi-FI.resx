@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>Estää automaattisen lepotilan aktiivisten latausten aikana. Lepotila sallitaan, kun kaikki aktiiviset lataukset valmistuvat, keskeytetään tai pysäytetään. Valmiiden tiedostojen jakaminen ei pidä laitetta hereillä. Näyttö voi silti sammua.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Valitse tiedostot</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>Valitse ladattavat tiedostot.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Hae tiedostoja tai kansioita</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>Valitse näkyvät</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>Poista näkyvien valinta</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>Ei vastaavia tiedostoja.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>Ladataan tiedostoluetteloa. Magnet-linkit voivat kestää minuutin; sisältöä ei vielä ladata.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>Yritä uudelleen</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>Käytä valintaa</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>{0}/{1} tiedostoa valittu · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>Olemassa olevat tiedostot säilytetään. Ohitettujen tiedostojen pieniä osia voidaan tarvita torrentin yhteisiin lohkoihin.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>Tiedostoja ei voitu ladata. Tarkista yhteys ja Wi-Fi-asetukset ja yritä uudelleen.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>Valintaa ei voitu ottaa käyttöön. Siirto saattaa olla keskeytetty. Yritä uudelleen.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>Lataa valitut</value>
+  </data>
 </root>

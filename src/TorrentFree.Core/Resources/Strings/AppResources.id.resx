@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>Mencegah tidur otomatis saat unduhan aktif. Tidur diizinkan setelah semua unduhan aktif selesai, dijeda, atau dihentikan. Berbagi berkas yang sudah selesai tidak membuat perangkat tetap aktif. Layar tetap dapat mati.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Pilih file</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>Pilih file yang ingin diunduh.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Cari file atau folder</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>Pilih yang tampil</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>Batalkan yang tampil</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>Tidak ada file yang cocok.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>Memuat daftar file. Tautan magnet bisa memerlukan satu menit; konten belum akan diunduh.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>Coba lagi</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>Terapkan pilihan</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>{0} dari {1} file dipilih · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>File yang ada tetap disimpan. Bagian kecil file yang dilewati mungkin diperlukan untuk potongan torrent bersama.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>File tidak dapat dimuat. Periksa koneksi dan pengaturan Wi-Fi, lalu coba lagi.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>Pilihan tidak dapat diterapkan. Transfer mungkin dijeda. Coba lagi.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>Unduh pilihan</value>
+  </data>
 </root>

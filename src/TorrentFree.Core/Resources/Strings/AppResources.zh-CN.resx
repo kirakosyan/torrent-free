@@ -594,4 +594,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>有活动下载时阻止自动睡眠。当所有活动下载完成、暂停或停止时允许睡眠。仅做种不会让设备保持唤醒。屏幕仍可关闭。</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>选择文件</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>选择您要下载的文件。</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>搜索文件或文件夹</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>选择显示的文件</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>取消选择显示的文件</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>没有匹配的文件。</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>正在加载文件列表。磁力链接可能需要一分钟；此时不会下载内容。</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>重试</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>应用选择</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>已选择 {0}/{1} 个文件 · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>现有文件将保留。共享种子分块可能需要已跳过文件的一小部分数据。</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>无法加载文件。请检查网络连接和 Wi-Fi 设置，然后重试。</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>无法应用选择。传输可能已暂停。请重试。</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>下载所选文件</value>
+  </data>
 </root>

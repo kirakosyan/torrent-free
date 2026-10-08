@@ -608,4 +608,46 @@
   <data name="PreventSleepWhileDownloadingHelp" xml:space="preserve">
     <value>Empêche la mise en veille automatique pendant les téléchargements actifs. La veille est autorisée quand tous les téléchargements actifs sont terminés, en pause ou arrêtés. Le partage des fichiers terminés ne maintient pas l’appareil éveillé. L’écran peut s’éteindre.</value>
   </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Choisir les fichiers</value>
+  </data>
+  <data name="FileSelectionHelp" xml:space="preserve">
+    <value>Sélectionnez les fichiers à télécharger.</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Rechercher des fichiers ou dossiers</value>
+  </data>
+  <data name="SelectShown" xml:space="preserve">
+    <value>Tout sélectionner à l’écran</value>
+  </data>
+  <data name="ClearShown" xml:space="preserve">
+    <value>Tout désélectionner à l’écran</value>
+  </data>
+  <data name="NoMatchingFiles" xml:space="preserve">
+    <value>Aucun fichier correspondant.</value>
+  </data>
+  <data name="LoadingTorrentFiles" xml:space="preserve">
+    <value>Chargement de la liste. Les liens magnet peuvent prendre une minute ; le contenu ne sera pas encore téléchargé.</value>
+  </data>
+  <data name="RetryFiles" xml:space="preserve">
+    <value>Réessayer</value>
+  </data>
+  <data name="ApplyFileSelection" xml:space="preserve">
+    <value>Appliquer la sélection</value>
+  </data>
+  <data name="FileSelectionSummary" xml:space="preserve">
+    <value>{0} fichiers sur {1} sélectionnés · {2}</value>
+  </data>
+  <data name="FileSelectionNote" xml:space="preserve">
+    <value>Les fichiers existants sont conservés. De petites parties des fichiers ignorés peuvent être nécessaires pour les blocs partagés du torrent.</value>
+  </data>
+  <data name="LoadTorrentFilesFailed" xml:space="preserve">
+    <value>Impossible de charger les fichiers. Vérifiez la connexion et les paramètres Wi-Fi, puis réessayez.</value>
+  </data>
+  <data name="SaveTorrentFilesFailed" xml:space="preserve">
+    <value>Impossible d’appliquer la sélection. Le transfert est peut-être en pause. Réessayez.</value>
+  </data>
+  <data name="DownloadSelectedFiles" xml:space="preserve">
+    <value>Télécharger la sélection</value>
+  </data>
 </root>
