@@ -5,7 +5,7 @@
 - **Android (Google Play):** https://play.google.com/store/apps/details?id=com.torrentfree.app
 - **Microsoft Store:** https://apps.microsoft.com/detail/9nnx2ztpxc26
 - **Samsung Galaxy Store:** preparation only; not submitted or published. See [Galaxy Store preparation](store/galaxy-store/README.md) for seller requirements, reusable Play assets, signing and store routing.
-- **Huawei AppGallery:** version **1.20 / code 25 is live**, verified October 8, 2026. Version 1.22 / code 27 is in preparation; see the [Huawei release record](store/huawei-store/release-notes-1.22.md).
+- **Huawei AppGallery:** version **1.20 / code 25 is live**, verified October 8, 2026. Version 1.23 / code 28 is in preparation; see the [Huawei release record](store/huawei-store/release-notes-1.23.md).
 
 Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real engine, not simulated). Supports importing `.torrent` files and magnet links, shows live stats, and on Windows stores downloads next to the picked `.torrent` when possible.
 
@@ -33,17 +33,17 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 
 ## 📝 Release Overview
 
-Version **1.22** (Android code **27**, Windows **1.22.0.0**, x64 and ARM64) adds
+Version **1.23** (Android code **28**, Windows **1.23.0.0**, x64 and ARM64) adds
 torrent file selection: search files and folders, choose what to download, review
 the selected size, and change saved choices later. Progress reflects the chosen
 files. The picker adapts to mobile portrait, landscape, and keyboard layouts.
 PR [#24](https://github.com/kirakosyan/torrent-free/pull/24) is merged into `main`.
 
 Release preparation started on **October 8, 2026**. Microsoft submission **20**
-and Google Play and Huawei AppGallery production drafts are being prepared; **1.22 is not submitted
+and Google Play and Huawei AppGallery production drafts are being prepared; **1.23 is not submitted
 or live yet**. Both stores currently have **1.19 live**, verified on October 8.
 Google Play reports publication on October 4 and full rollout to 178 countries.
-See the [1.22 release record](store/microsoft-store/release-notes-1.22.md) for the
+See the [1.23 release record](store/microsoft-store/release-notes-1.23.md) for the
 source tag, validation, package hashes, and current submission status.
 
 ### Previous release history
@@ -193,9 +193,9 @@ See the [review findings and validation](docs/review-findings.md) for the curren
 - **Atomic storage writes** — Settings and torrent data are written atomically to prevent corruption on crash.
 - **Full backward compatibility** — Upgrading from v1.1 preserves all existing settings.
 
-Google Play builds require **Android 7.0 (API 24)** or later for Play automatic
-protection. Huawei and Galaxy builds retain **Android 6.0 (API 23)** support;
-Huawei packages target **ARM64**.
+All Android store builds retain **Android 6.0 (API 23)** support. Google Play
+app signing remains enabled; its optional automatic installer check was disabled
+with owner approval to preserve compatibility. Huawei packages target **ARM64**.
 
 ## 📱 Supported Platforms
 

@@ -4,14 +4,14 @@ Package `com.torrentfree.app`, listed as **Torrent Client - Downloader**.
 
 ## Current release
 
-**1.22 / code 27** is being prepared for production on **October 8, 2026**. The
+**1.23 / code 28** is being prepared for production on **October 8, 2026**. The
 release is a draft, **not submitted or live yet**. It adds torrent file selection
 with search, saved choices, accurate selected-file progress, and a responsive
-mobile picker. See the [1.22 release record](../microsoft-store/release-notes-1.22.md).
+mobile picker. See the [1.23 release record](../microsoft-store/release-notes-1.23.md).
 
-Google Play builds now require Android 7.0 (API 24) for automatic protection.
-The code-26 upload was rejected before review because it declared API 23; its
-tag and artifacts remain unchanged. Huawei and Galaxy retain minimum API 23.
+Android 6.0 (API 23) support is retained. With owner approval, the optional
+automatic installer check was disabled on October 8; app signing remains enabled.
+Versions 1.21 and 1.22 were never submitted and retain their original tags/artifacts.
 
 Version **1.19 / code 24 is live**, published October 4, 2026 and verified on
 October 8. Production reports a 100% rollout across 178 countries/regions.
@@ -55,9 +55,9 @@ also checks the length limits. The Play default language is en-GB (filled from t
 English text). Spanish is written once for `es-419` and `es-ES`; Ukrainian exists only
 on Play.
 
-`release-notes-1.22.txt` is in Play Console's multi-language format: paste it into the
+`release-notes-1.23.txt` is in Play Console's multi-language format: paste it into the
 release notes box of the production release as is. The generator retains the 1.16
-base listing; the 1.22 notes are maintained separately.
+base listing; the 1.23 notes are maintained separately.
 
 Translations inherit the default graphics, so only the text needs updating per language.
 Version 1.16 (code 21) and this listing were sent for review on September 27, 2026,
@@ -80,4 +80,4 @@ encourage copyright infringement.
 ## Release
 
 Build the signed AAB as described in `.codex/AGENTS.md`, upload it to the production track
-with `release-notes-1.22.txt`, and upload the matching native debug symbols ZIP.
+with `release-notes-1.23.txt`, and upload the matching native debug symbols ZIP.

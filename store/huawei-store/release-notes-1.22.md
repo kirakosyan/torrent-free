@@ -10,7 +10,4 @@ validation, source tag and package hashes. This release aligns all three stores.
 
 ## Store status
 
-Prepared on October 8, 2026; **not submitted or live yet**. App ID **119226643**.
-The previous submission is documented in [1.20](release-notes-1.20.md).
-Submission identifiers, verified status and package evidence will be recorded
-after building from the clean **v1.22** source commit and uploading to AppGallery.
+Built and validated but never uploaded or submitted. Superseded by [1.23](release-notes-1.23.md) to align the three stores while preserving Android 6.0 support.

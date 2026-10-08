@@ -47,18 +47,21 @@ for review. Its tag and artifacts remain unchanged.
   the packages are built from the clean tagged source.
 - iOS and Mac Catalyst are not part of this release.
 
-## Release traceability
+## Release traceability and outcome
 
-Final packages will be built from the clean commit identified by the annotated
-**v1.22** tag. Signed Android packages, R8 mapping, native debug symbols, Windows
-packages, hashes, and verification evidence are retained under the ignored
-`artifacts/store-1.22/` directory, with upload copies in `C:\temp`.
+Android artifacts were built from clean commit
+`985b84968b49cc64cf54ef025b31d16fa741c534`, annotated tag **v1.22**.
+Google Play's code-27 AAB passed upload processing but was not submitted for review.
+The Huawei APK was built and verified but never uploaded. Windows packages were
+not built. The release is superseded by [1.23](release-notes-1.23.md) to retain
+Android 6.0 support, as requested by the owner. All 1.22 artifacts are retained in
+ignored `artifacts/store-1.22/`; its tag is unchanged.
 
-## Store status
-
-**Prepared for submission on October 8, 2026; not submitted or live yet.**
-Microsoft submission **20** (`1152921505702078202`) and a Google Play production
-draft have been created. Huawei AppGallery is also included in this release. The previous **1.19** release was verified live in both
-store consoles on October 8. Google Play shows full rollout across 178 countries
-and publication on October 4, 2026. Microsoft identifies submission 19 as its
-current Store presence; its exact publication date was not shown.
+| Artifact | SHA-256 |
+|---|---|
+| com.torrentfree.app-v1.22-code27-google-play-upload-key.aab | `025ad9452cc04820ad5a21db39706fb3a3488f6ce0842341737175acecb2a204` |
+| mapping.txt | `871d9a09988dd22e4d5d95050ce47894e7c28ff17b94a25c1871e280cf1dbd87` |
+| com.torrentfree.app-v1.22-code27-native-debug-symbols.zip | `aa16ecd5fd968a388143d46be263f3b7fbd9d1c3deed9cdaea0aabfabbf007dd` |
+| huawei/com.torrentfree.app.huawei-v1.22-code27.apk | `84e0aa5e93caafb750bc3fda86fdfd61c0574e838898f19775a207b7e54420c4` |
+| huawei/mapping.txt | `66d498d79a1b63ff6106699f67e3529ccde95fdb699028ae7e7c01ea580a4080` |
+| huawei/native-symbols.zip | `77a034017fce12967a56cec6cc07842d38694b76f4f55a6e38c202ca51efae45` |

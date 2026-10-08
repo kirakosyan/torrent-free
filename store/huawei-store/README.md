@@ -61,9 +61,9 @@ The app itself retains its 24 UI languages. Ukrainian remains listing-only.
 
 ## Release
 
-**1.22 / code 27** is being prepared on October 8, 2026, aligned with Google Play
+**1.23 / code 28** is being prepared on October 8, 2026, aligned with Google Play
 and Microsoft Store. It includes torrent file selection and the Huawei follow-up
-fixes below. See the [1.22 release record](release-notes-1.22.md) for current status.
+fixes below. See the [1.23 release record](release-notes-1.23.md) for current status.
 
 
 See the [1.20 release record](release-notes-1.20.md#traceability-and-status) for

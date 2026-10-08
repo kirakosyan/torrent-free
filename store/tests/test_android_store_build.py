@@ -38,14 +38,14 @@ class AndroidStoreBuildTests(unittest.TestCase):
                 else:
                     self.assertIn("aab", values["AndroidPackageFormats"].split(";"))
 
-    def test_play_protection_minimum_keeps_other_stores_compatible(self):
+    def test_all_stores_retain_android_6_compatibility(self):
         for configuration in ("Debug", "Release"):
             for store in (None, "Play", "Galaxy", "Huawei"):
                 with self.subTest(configuration=configuration, store=store):
                     result = self.msbuild(configuration=configuration, **({"AndroidStore": store} if store else {}))
                     self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                     minimum = json.loads(result.stdout)["Properties"]["SupportedOSPlatformVersion"]
-                    self.assertEqual(minimum, "24.0" if store in (None, "Play") else "23.0")
+                    self.assertEqual(minimum, "23.0")
 
     def test_huawei_has_only_arm64_in_debug_and_release(self):
         for configuration in ("Debug", "Release"):
