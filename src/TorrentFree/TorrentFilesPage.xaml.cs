@@ -13,6 +13,7 @@ public partial class TorrentFilesPage : ContentPage
     private bool _saving;
     private bool _loaded;
     private bool _accepted;
+    private (bool Compact, bool Wide, bool Minimal)? _layoutMode;
 
     public Task<bool> Result => _result.Task;
 
@@ -31,6 +32,45 @@ public partial class TorrentFilesPage : ContentPage
         base.OnAppearing();
         if (!_loaded) await LoadFilesAsync();
     }
+
+    private void OnLayoutSizeChanged(object sender, EventArgs args)
+    {
+        if (LayoutRoot.Width <= 0 || LayoutRoot.Height <= 0) return;
+        var compact = LayoutRoot.Height < 540;
+        var wide = compact && LayoutRoot.Width >= 600;
+        var minimal = LayoutRoot.Height < 260;
+        if (_layoutMode == (compact, wide, minimal)) return;
+        _layoutMode = (compact, wide, minimal);
+
+        // A landscape keyboard can leave only a narrow strip for search and results.
+        // The keyboard's Search action dismisses it and restores the selection controls.
+        HeaderLayout.IsVisible = FooterLayout.IsVisible = BulkActions.IsVisible = !minimal;
+        LayoutRoot.Padding = minimal ? 8 : compact ? 12 : 20;
+        LayoutRoot.RowSpacing = minimal ? 4 : compact ? 8 : 12;
+        Heading.FontSize = compact ? 20 : 24;
+        HelpLabel.IsVisible = !compact;
+        TorrentName.MaxLines = compact ? 1 : 2;
+        Grid.SetColumnSpan(Heading, wide ? 1 : 2);
+        Grid.SetRow(TorrentName, wide ? 0 : 1);
+        Grid.SetColumn(TorrentName, wide ? 1 : 0);
+        Grid.SetColumnSpan(TorrentName, wide ? 1 : 2);
+
+        Grid.SetColumnSpan(FileSearch, wide && !minimal ? 1 : 2);
+        Grid.SetRow(BulkActions, wide ? 0 : 1);
+        Grid.SetColumn(BulkActions, wide ? 1 : 0);
+        Grid.SetColumnSpan(BulkActions, wide ? 1 : 2);
+
+        SelectionNote.IsVisible = !compact;
+        ScrollableNote.IsVisible = compact;
+        FooterLayout.RowSpacing = compact ? 6 : 10;
+        Grid.SetColumnSpan(SummaryLabel, wide ? 1 : 2);
+        Grid.SetColumnSpan(SelectionError, wide ? 1 : 2);
+        Grid.SetRow(ConfirmationActions, wide ? 0 : 3);
+        Grid.SetColumn(ConfirmationActions, wide ? 1 : 0);
+        Grid.SetColumnSpan(ConfirmationActions, wide ? 1 : 2);
+    }
+
+    private void OnSearchButtonPressed(object sender, EventArgs args) => FileSearch.Unfocus();
 
     private async Task LoadFilesAsync()
     {

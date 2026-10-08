@@ -8,32 +8,37 @@
              x:DataType="models:TorrentFileSelectionViewModel"
              Title="{helpers:Translate ChooseFiles}"
              BackgroundColor="{AppThemeBinding Light=#F5F7FB, Dark=#101522}"
-             SafeAreaEdges="Container">
-    <Grid Padding="20" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" MaximumWidthRequest="760" HorizontalOptions="Fill">
-        <VerticalStackLayout Spacing="6">
-            <Label Text="{helpers:Translate ChooseFiles}" FontSize="24" FontAttributes="Bold" SemanticProperties.HeadingLevel="Level1"/>
-            <Label x:Name="TorrentName" FontSize="14" MaxLines="2" LineBreakMode="TailTruncation"
+             SafeAreaEdges="All">
+    <Grid x:Name="LayoutRoot" Padding="20" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" MaximumWidthRequest="760" HorizontalOptions="Fill" SizeChanged="OnLayoutSizeChanged">
+        <Grid x:Name="HeaderLayout" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*" RowSpacing="6" ColumnSpacing="12">
+            <Label x:Name="Heading" Grid.ColumnSpan="2" Text="{helpers:Translate ChooseFiles}" FontSize="24" FontAttributes="Bold" SemanticProperties.HeadingLevel="Level1"/>
+            <Label x:Name="TorrentName" Grid.Row="1" Grid.ColumnSpan="2" FontSize="14" MaxLines="2" LineBreakMode="TailTruncation" VerticalOptions="Center"
                    TextColor="{AppThemeBinding Light=#526078, Dark=#B8C4DA}"/>
-            <Label Text="{helpers:Translate FileSelectionHelp}" FontSize="13"
+            <Label x:Name="HelpLabel" Grid.Row="2" Grid.ColumnSpan="2" Text="{helpers:Translate FileSelectionHelp}" FontSize="13"
                    TextColor="{AppThemeBinding Light=#526078, Dark=#B8C4DA}"/>
-        </VerticalStackLayout>
-        <VerticalStackLayout x:Name="SelectionTools" Grid.Row="1" Spacing="6" IsVisible="False">
-            <SearchBar Text="{Binding SearchText}" Placeholder="{helpers:Translate SearchFiles}"
+        </Grid>
+        <Grid x:Name="SelectionTools" Grid.Row="1" RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="6" ColumnSpacing="12" IsVisible="False">
+            <SearchBar x:Name="FileSearch" Grid.ColumnSpan="2" Text="{Binding SearchText}" Placeholder="{helpers:Translate SearchFiles}"
+                       SearchButtonPressed="OnSearchButtonPressed"
                        SemanticProperties.Description="{helpers:Translate SearchFiles}"/>
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+            <Grid x:Name="BulkActions" Grid.Row="1" Grid.ColumnSpan="2" ColumnDefinitions="*,*" ColumnSpacing="10">
                 <Button Text="{helpers:Translate SelectShown}" Command="{Binding SelectAllCommand}"
                         BackgroundColor="{AppThemeBinding Light=#E5EBF6, Dark=#26334A}"
-                        TextColor="{AppThemeBinding Light=#234B8A, Dark=#DBE8FF}" MinimumHeightRequest="44"/>
+                        TextColor="{AppThemeBinding Light=#234B8A, Dark=#DBE8FF}" MinimumHeightRequest="44" LineBreakMode="WordWrap"/>
                 <Button Grid.Column="1" Text="{helpers:Translate ClearShown}" Command="{Binding SelectNoneCommand}"
                         BackgroundColor="{AppThemeBinding Light=#E5EBF6, Dark=#26334A}"
-                        TextColor="{AppThemeBinding Light=#234B8A, Dark=#DBE8FF}" MinimumHeightRequest="44"/>
+                        TextColor="{AppThemeBinding Light=#234B8A, Dark=#DBE8FF}" MinimumHeightRequest="44" LineBreakMode="WordWrap"/>
             </Grid>
-        </VerticalStackLayout>
+        </Grid>
         <Grid Grid.Row="2">
             <CollectionView x:Name="FileList" ItemsSource="{Binding VisibleFiles}" SelectionMode="None" IsVisible="False">
                 <CollectionView.EmptyView>
                     <Label Text="{helpers:Translate NoMatchingFiles}" Padding="16" HorizontalTextAlignment="Center"/>
                 </CollectionView.EmptyView>
+                <CollectionView.Footer>
+                    <Label x:Name="ScrollableNote" Text="{helpers:Translate FileSelectionNote}" FontSize="11" Padding="0,8" IsVisible="False"
+                           TextColor="{AppThemeBinding Light=#526078, Dark=#B8C4DA}"/>
+                </CollectionView.Footer>
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:TorrentFileChoice">
                         <Border Margin="0,0,0,6" Padding="8" StrokeThickness="1" StrokeShape="RoundRectangle 10"
@@ -63,17 +68,17 @@
                 <Button x:Name="RetryButton" Text="{helpers:Translate RetryFiles}" Clicked="OnRetryClicked" IsVisible="False" HorizontalOptions="Center"/>
             </VerticalStackLayout>
         </Grid>
-        <VerticalStackLayout Grid.Row="3" Spacing="10">
-            <Label x:Name="SummaryLabel" Text="{Binding Summary}" FontSize="15" FontAttributes="Bold" IsVisible="False"/>
-            <Label x:Name="SelectionError" FontSize="13" TextColor="{AppThemeBinding Light=#B3261E, Dark=#FFB4AB}" IsVisible="False"/>
-            <Label Text="{helpers:Translate FileSelectionNote}" FontSize="11"
+        <Grid x:Name="FooterLayout" Grid.Row="3" RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="10" ColumnSpacing="16">
+            <Label x:Name="SummaryLabel" Grid.ColumnSpan="2" Text="{Binding Summary}" FontSize="15" FontAttributes="Bold" IsVisible="False" VerticalOptions="Center"/>
+            <Label x:Name="SelectionError" Grid.Row="1" Grid.ColumnSpan="2" FontSize="13" TextColor="{AppThemeBinding Light=#B3261E, Dark=#FFB4AB}" IsVisible="False"/>
+            <Label x:Name="SelectionNote" Grid.Row="2" Grid.ColumnSpan="2" Text="{helpers:Translate FileSelectionNote}" FontSize="11"
                    TextColor="{AppThemeBinding Light=#526078, Dark=#B8C4DA}"/>
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+            <Grid x:Name="ConfirmationActions" Grid.Row="3" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*" ColumnSpacing="10">
                 <Button x:Name="CancelButton" Text="{helpers:Translate Cancel}" Clicked="OnCancelClicked"
-                        BackgroundColor="{AppThemeBinding Light=#E5EBF6, Dark=#26334A}" TextColor="{AppThemeBinding Light=#234B8A, Dark=#DBE8FF}" MinimumHeightRequest="48"/>
+                        BackgroundColor="{AppThemeBinding Light=#E5EBF6, Dark=#26334A}" TextColor="{AppThemeBinding Light=#234B8A, Dark=#DBE8FF}" MinimumHeightRequest="48" MinimumWidthRequest="90" LineBreakMode="WordWrap"/>
                 <Button x:Name="ConfirmButton" Grid.Column="1" Text="{helpers:Translate ApplyFileSelection}" Clicked="OnConfirmClicked"
-                        IsEnabled="{Binding CanConfirm}" BackgroundColor="#2563EB" TextColor="White" MinimumHeightRequest="48"/>
+                        IsEnabled="{Binding CanConfirm}" BackgroundColor="#2563EB" TextColor="White" MinimumHeightRequest="48" LineBreakMode="WordWrap"/>
             </Grid>
-        </VerticalStackLayout>
+        </Grid>
     </Grid>
 </ContentPage>
