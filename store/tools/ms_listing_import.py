@@ -31,7 +31,7 @@ SCREENSHOTS = 6
 def search_terms(t):
     local = re.split(r"\s+[-–&:]\s+|:\s", t["play_title"])[0].strip()
     terms = []
-    for term in [local, "torrent client", "torrent downloader", "bittorrent", "magnet link", "torrent free",
+    for term in [local, "torrent client", "torrent downloader", "bittorrent", "magnet link", "file download",
                  "p2p download"]:
         if term.lower() not in (existing.lower() for existing in terms):
             terms.append(term[:30])
@@ -57,7 +57,7 @@ def main(export_path, output_path):
         t = texts.setdefault(source, bl.load(source))
         col = header.index(column)
         values = {
-            "Title": bl.MS_TITLE, "SortTitle": "Torrent Free", "Description": bl.ms_description(t),
+            "Title": bl.MS_TITLE, "SortTitle": bl.MS_TITLE, "Description": bl.ms_description(t),
             "ShortDescription": t["ms_short"], "ReleaseNotes": bl.ms_notes(t),
         }
         values.update({f"Feature{i + 1}": (t["features"][i] if i < len(t["features"]) else "") for i in range(20)})

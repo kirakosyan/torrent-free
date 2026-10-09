@@ -39,16 +39,20 @@ the selected size, and change saved choices later. Progress reflects the chosen
 files. The picker adapts to mobile portrait, landscape, and keyboard layouts.
 PR [#24](https://github.com/kirakosyan/torrent-free/pull/24) is merged into `main`.
 
-Submitted to all three stores on **October 8, 2026**:
+Initially submitted to all three stores on **October 8, 2026**. Last verified status:
 
 - **Google Play:** submission **22**, production release **12**, **1.23 / code 28**;
-  **In review**, verified **22:47 Europe/Oslo**.
+  **In review**, verified **October 8, 22:47 Europe/Oslo**.
 - **Microsoft Store:** submission **20**, **1.23.0.0 x64/ARM64**;
-  **In certification**, verified **22:54 Europe/Oslo**.
+  **Resubmitted and In certification**, verified **October 9, 09:36 Europe/Oslo**.
 - **Huawei AppGallery:** version record **2057049026322245120**, **1.23 / code 28**;
-  **Reviewing**, verified **22:48 Europe/Oslo**.
+  **Reviewing**, verified **October 8, 22:48 Europe/Oslo**.
 
-Version **1.23 is not live yet**; each store will publish automatically after
+Microsoft rejected the legacy `torrent free` search keyword (policy 10.1.3).
+The October 9 resubmission replaces it with `file download` in all 31 languages
+and uses `Torrent Client App` as the sort title. The same Windows packages are retained.
+
+Version **1.23 is pending in the last verified store states**; each store publishes after
 approval. Android 6.0 support is retained, and Google reports zero newly unsupported
 devices. All **428 local Release tests** and **five store-configuration tests** passed;
 the picker was also checked on a physical Android phone in portrait and landscape.

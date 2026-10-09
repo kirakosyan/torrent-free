@@ -2,10 +2,17 @@
 
 ## Current release
 
-**1.23 / build 28 / MSIX 1.23.0.0 (x64 and ARM64)** was submitted on
-**October 8, 2026**, submission **20** (`1152921505702078202`). Status:
-**In certification**, verified **22:54 Europe/Oslo**. **1.23 is not live yet**;
-publication is automatic after certification.
+**1.23 / build 28 / MSIX 1.23.0.0 (x64 and ARM64)** was initially submitted on
+**October 8, 2026**, submission **20** (`1152921505702078202`). Microsoft rejected
+the legacy search keyword `torrent free` under policy **10.1.3 Search Terms**.
+
+**Resubmitted October 9, 2026**, with **In certification** verified at
+**09:36 Europe/Oslo**. **1.23 is not live yet**; publication is automatic
+after certification. All 31 languages now use `file download` instead of the
+rejected keyword and `Torrent Client App` as the sort title. A fresh export
+confirmed every other listing field and asset was preserved. Reviewer notes
+explain the correction. The same validated packages, hashes and v1.23 tag are
+retained; this listing-only correction required no rebuild or version increase.
 
 Adds torrent file selection, search, saved choices, selected-file progress and a
 responsive picker. Both packages validated. All 31 localized notes were verified
@@ -95,7 +102,10 @@ keep all state and downloads there.
 
 - **Device families:** keep Windows 10/11 Desktop and Windows 10 Team (Surface Hub);
   clear Mobile and Holographic, which cannot run a full-trust desktop app.
-- **Sort title:** `Torrent Free`, so searches for the name used before 1.16 still find the listing.
+- **Sort title:** `Torrent Client App`, matching the current product title.
+- **Search terms:** use relevant terms such as `file download`. Microsoft rejected
+  the legacy `torrent free` keyword under policy 10.1.3 on October 8, 2026; do not
+  restore it in future imports. Keep at most seven distinct terms per language.
 - **Listing languages:** one listing per app language, plus the regional listings older
   submissions created (`ar-ae`, `en`, `es-es`, `fr-fr`, `hi-in`, `ru-ru`, `tr-tr`); the
   import fills those with the matching language's text.
@@ -146,7 +156,7 @@ for certification.
    python store/tools/ms_listing_import.py "<export.csv>" "<import.csv>"
    ```
 
-   Every language gets the new text, 14 features, seven search terms, the sort title,
+   Every language gets the new text, 14 features, up to seven search terms, the sort title,
    the en-us screenshot URLs and its own captions. Missing languages are added as new
    columns and regional duplicates (`es-es`, `fr-fr`, `hi-in`, `ru-ru`, `tr-tr`, `ar-ae`,
    `en`) receive the matching language's text.

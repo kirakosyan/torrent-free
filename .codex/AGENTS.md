@@ -62,6 +62,13 @@ the filtered `rtk dotnet test` wrapper can report zero tests with this runner.
 - After every submission or publication to Microsoft Store or Google Play, update the root `README.md` before considering the release task complete. Include the latest display version and platform build/package numbers, release highlights, submission/publication date, and the verified status for each store. Distinguish submitted, in review/certification, and live; never describe a pending release as published.
 - Keep the relevant `store/microsoft-store/README.md`, `store/google-play/README.md`, and versioned release notes consistent with the root README. Update usage instructions when release changes affect the UI, and commit the documentation with the release work. When publishing or pushing is authorized, push these updates to the release branch or `main` as appropriate.
 
+## Microsoft Store listing corrections
+
+- Never use `torrent free` as a Microsoft Store search term. Certification rejected this legacy keyword under policy 10.1.3 on October 8, 2026. Use relevant descriptive terms such as `file download`, with at most seven distinct search terms per language. Keep `SortTitle` aligned with the current Microsoft product title (`Torrent Client App`).
+- Apply search-term corrections to every listing language and update `store/tools/ms_listing_import.py` so future imports cannot restore the rejected metadata.
+- Build listing-only corrections from a fresh Partner Center export. Preserve all non-asset text fields and `OverrideLogosForWin10`; omit unchanged asset/caption rows to avoid reordering images. Export again after saving and verify that only the intended fields changed across all languages, including unchanged release notes, screenshots, captions, asset order and logo settings.
+- For a listing-only certification rejection, reuse the validated packages and their existing version, hashes and immutable source tag. Rebuild and increment versions only if package contents must change. Record the rejection reason, correction, resubmission date and verified status in the release documentation.
+
 ## Release traceability
 
 - For every store release, commit the version changes and release notes before building the final packages. Build from a clean, committed checkout, and create an annotated `v<display-version>` Git tag on the exact source commit used for those packages. Push the tag when release publishing is authorized; never move or overwrite an existing release tag.

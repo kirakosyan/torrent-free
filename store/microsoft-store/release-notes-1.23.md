@@ -96,15 +96,16 @@ build logs and output under the existing private Apps release folder.
 
 ## Store status
 
-All three stores were submitted on **October 8, 2026**. Version 1.23 is
-**pending store review/certification, not live**. Automatic publication after
-approval is enabled in all three consoles.
+All three stores were initially submitted on **October 8, 2026**. Microsoft
+was corrected and resubmitted on **October 9**, as detailed below. The table
+records each store's last verified state; pending does not mean live. Automatic
+publication after approval is enabled in all three consoles.
 
 | Store | Submission | Verified status and time (Europe/Oslo) |
 |---|---|---|
-| Google Play | **22**, production release **12**, code **28** | **In review**, **22:47** (20:47 UTC). Initial automated checks were still running. |
-| Microsoft Store | **20**, `1152921505702078202` | **In certification**, **22:54**. |
-| Huawei AppGallery | App **119226643**, version **2057049026322245120** | **Reviewing**, **22:48** (20:48 UTC). |
+| Google Play | **22**, production release **12**, code **28** | **In review**, **October 8, 22:47** (20:47 UTC). Initial automated checks were still running. |
+| Microsoft Store | **20**, `1152921505702078202` | **Resubmitted, In certification**, **October 9, 09:36**. |
+| Huawei AppGallery | App **119226643**, version **2057049026322245120** | **Reviewing**, **October 8, 22:48** (20:48 UTC). |
 
 Google Play: full rollout across all **178** existing targeted countries/regions,
 managed publishing off, all 26 release notes and both debug attachments accepted.
@@ -117,3 +118,35 @@ settings preserved, with publication as soon as certification passes.
 Previous live releases verified during submission were **1.19** on Google Play
 and Microsoft Store, and **1.20** on Huawei. The Android 7-only Google Play 1.22
 draft was replaced before submission; its tag and artifacts remain unchanged.
+
+## Microsoft listing rejection and resubmission: October 9, 2026
+
+Certification report [`59ef343b-1cbd-4ef8-86e4-3f84ad58a3d4`](https://partner.microsoft.com/en-us/dashboard/products/9NNX2ZTPXC26/certification/reports/59ef343b-1cbd-4ef8-86e4-3f84ad58a3d4)
+shows review completed **October 8** and **Attention needed**, with one issue:
+**10.1.3 Search Terms**, language **GLOBAL**, problematic keyword **torrent free**.
+The retained legacy keyword came from `store/tools/ms_listing_import.py` and was
+present in all 31 localized listings. No package issue was listed in the report.
+
+- Replaced that search term with **file download** in all 31 languages and changed
+  the legacy sort title to the current **Torrent Client App** title.
+- Updated the import generator, Microsoft Store README and `.codex/AGENTS.md` to
+  prevent future imports from restoring the rejected metadata.
+- Used a fresh export, preserving every other non-asset text field and the logo
+  override flag; unchanged asset and caption rows were excluded from the import.
+- Verified the newly downloaded export against the expected result: **62 intended
+  cell changes across 31 languages**, with every other field identical, including
+  release notes, screenshots, captions, asset order and logo settings. Generator
+  output matches the corrected search terms; every locale has at most seven
+  distinct terms, each within 30 characters.
+- Added the correction to Notes for Certification, retaining existing test steps.
+- Resubmitted submission **20** (`1152921505702078202`) on **October 9, 2026**;
+  **In certification** verified **09:36 Europe/Oslo**, with automatic
+  publication after approval. Version 1.23 is **not live yet** on Microsoft Store.
+
+No application code or submitted package changed. The existing **1.23.0.0
+x64/ARM64** packages, SHA-256 hashes and immutable **v1.23** source tag above
+remain the release artifacts. No app rebuild or new app tests were needed for
+this metadata correction. The previously recorded CI limitation remains unchanged.
+Before/import/expected/verified CSVs, the correction audit and report/confirmation
+screenshots are retained under ignored `artifacts/store-1.23/` with the
+`listing-keywords-*` and `microsoft-*-2026-10-09` names.
