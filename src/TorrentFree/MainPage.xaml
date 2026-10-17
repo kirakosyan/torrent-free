@@ -443,8 +443,6 @@
                      <!-- Downloads List -->
                       <CollectionView x:Name="DownloadsList"
                                       Grid.Row="1"
-                                      Loaded="OnDownloadsListReady"
-                                      SizeChanged="OnDownloadsListReady"
                                       ItemsSource="{Binding DisplayTorrents}"
                                       SemanticProperties.Description="{helpers:Translate DownloadsTitle}"
                                       SelectionMode="Single"

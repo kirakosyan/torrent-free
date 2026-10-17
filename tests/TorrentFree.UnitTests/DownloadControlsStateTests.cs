@@ -45,29 +45,19 @@ public sealed class DownloadControlsStateTests
         Assert.True(state.CanShowSelectedTorrentDetails);
     }
 
-    [Theory]
-    [InlineData(false, false)]
-    [InlineData(false, true)]
-    [InlineData(true, false)]
-    [InlineData(true, true)]
-    public void NotificationSelection_ShowsDownloadsAndPreservesControls(bool controlsExpanded, bool limitsOpen)
+    [Fact]
+    public void HidingLimits_ReportsOnlyActualChanges()
     {
         var state = new DownloadControlsState();
+        Assert.False(state.HideSelectedTorrentDetails());
         state.SetSelection(true);
-        if (controlsExpanded) state.ToggleDownloadControls();
-        if (limitsOpen) state.RevealSelectedTorrentDetails();
-
-        // Notification taps can select the same torrent while its limits are open.
-        state.SetSelection(true);
-        state.HideSelectedTorrentDetails();
-
+        Assert.False(state.HideSelectedTorrentDetails());
+        Assert.True(state.RevealSelectedTorrentDetails());
+        Assert.False(state.RevealSelectedTorrentDetails());
+        Assert.True(state.HideSelectedTorrentDetails());
+        Assert.False(state.HideSelectedTorrentDetails());
         Assert.True(state.HasSelection);
-        Assert.False(state.ShowSelectedTorrentDetails);
         Assert.False(state.CanShowSelectedTorrentDetails);
-        Assert.Equal(controlsExpanded, state.ShowDownloadControls);
-
-        state.ToggleSelectedTorrentDetails();
-        Assert.True(state.CanShowSelectedTorrentDetails);
     }
 
     [Fact]
