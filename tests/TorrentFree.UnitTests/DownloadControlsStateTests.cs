@@ -34,7 +34,7 @@ public sealed class DownloadControlsStateTests
     }
 
     [Fact]
-    public void NotificationRevealOpensLimitsWithoutExpandingControls()
+    public void LimitsButtonRevealOpensLimitsWithoutExpandingControls()
     {
         var state = new DownloadControlsState();
         Assert.False(state.RevealSelectedTorrentDetails());
@@ -43,6 +43,21 @@ public sealed class DownloadControlsStateTests
         Assert.True(state.RevealSelectedTorrentDetails());
         Assert.False(state.ShowDownloadControls);
         Assert.True(state.CanShowSelectedTorrentDetails);
+    }
+
+    [Fact]
+    public void HidingLimits_ReportsOnlyActualChanges()
+    {
+        var state = new DownloadControlsState();
+        Assert.False(state.HideSelectedTorrentDetails());
+        state.SetSelection(true);
+        Assert.False(state.HideSelectedTorrentDetails());
+        Assert.True(state.RevealSelectedTorrentDetails());
+        Assert.False(state.RevealSelectedTorrentDetails());
+        Assert.True(state.HideSelectedTorrentDetails());
+        Assert.False(state.HideSelectedTorrentDetails());
+        Assert.True(state.HasSelection);
+        Assert.False(state.CanShowSelectedTorrentDetails);
     }
 
     [Fact]

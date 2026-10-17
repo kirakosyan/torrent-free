@@ -30,9 +30,16 @@ public sealed class DownloadControlsState
         ShowSelectedTorrentDetails = !ShowSelectedTorrentDetails;
     }
 
+    public bool HideSelectedTorrentDetails()
+    {
+        if (!ShowSelectedTorrentDetails) return false;
+        ShowSelectedTorrentDetails = false;
+        return true;
+    }
+
     public bool RevealSelectedTorrentDetails()
     {
-        if (!HasSelection) return false;
+        if (!HasSelection || ShowSelectedTorrentDetails) return false;
         ShowSelectedTorrentDetails = true;
         return true;
     }

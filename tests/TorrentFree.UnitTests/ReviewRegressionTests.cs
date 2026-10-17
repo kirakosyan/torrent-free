@@ -222,8 +222,12 @@ public sealed class ReviewRegressionTests
             .PrepareAsync(new TorrentPickedFile("renamed.torrent", null, data.Encode()), TestContext.Current.CancellationToken);
         var torrent = (await fixture.Service.AddTorrentFileAsync(metadata))!;
         await fixture.Service.StartTorrentAsync(torrent);
-        var managerPath = Assert.Single(Assert.Single(fixture.Engine.Torrents).Files).FullPath;
+        var manager = Assert.Single(fixture.Engine.Torrents);
+        // StartAsync returns before startup hashing and fast-resume writes finish.
+        await CoreServiceFixture.WaitUntilAsync(() => manager.State == TorrentState.Downloading);
+        var managerPath = Assert.Single(manager.Files).FullPath;
         await fixture.Service.PauseTorrentAsync(torrent);
+        Assert.Equal(TorrentState.Paused, manager.State);
         Assert.Equal(managerPath, torrent.DownloadedFilePath);
         Assert.Equal(managerPath, Assert.Single(await fixture.Storage.LoadTorrentsAsync()).DownloadedFilePath);
         await File.WriteAllTextAsync(managerPath, "downloaded", TestContext.Current.CancellationToken);

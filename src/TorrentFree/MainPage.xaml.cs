@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Linq;
 using Microsoft.Maui.ApplicationModel;
+using TorrentFree.Models;
 using TorrentFree.Services;
 using TorrentFree.ViewModels;
 
@@ -11,6 +12,7 @@ public partial class MainPage : ContentPage
     private const string GitHubUrl = "https://github.com/kirakosyan/torrent-free";
     private Window? _promptWindow;
     private bool _isPageVisible;
+    private CancellationTokenSource? _notificationScrollCancellation;
 
     public MainPage(MainViewModel viewModel)
     {
@@ -80,22 +82,84 @@ public partial class MainPage : ContentPage
         });
     }
 
-    private static void SelectPendingNotification(MainViewModel viewModel)
+    private void SelectPendingNotification(MainViewModel viewModel)
     {
         // InitializeCommand reports errors in the UI rather than throwing. Keep a
         // cold-start tap queued until its torrent list has actually been restored.
-        if (!viewModel.IsInitialized) return;
+        if (!viewModel.IsInitialized || !_isPageVisible) return;
         var id = NotificationService.TakePendingTorrentId();
         if (id is null) return;
         var torrent = viewModel.Torrents.FirstOrDefault(item => item.Id == id);
         if (torrent is null) return;
-        viewModel.SelectedTorrent = torrent;
-        viewModel.RevealSelectedTorrentDetails();
+        viewModel.ShowDownloadsForNotification(torrent);
+        _ = ScrollToNotificationSafelyAsync(viewModel, torrent);
+    }
+
+    private async Task ScrollToNotificationSafelyAsync(MainViewModel viewModel, TorrentItem torrent)
+    {
+        _notificationScrollCancellation?.Cancel();
+        using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        _notificationScrollCancellation = cancellation;
+        var reachedDownload = false;
+
+        void OnSelectionChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (!ReferenceEquals(viewModel.SelectedTorrent, torrent) || viewModel.CanShowSelectedTorrentDetails)
+                cancellation.Cancel();
+        }
+
+        void OnScrolled(object? sender, ItemsViewScrolledEventArgs e)
+        {
+            var index = viewModel.DisplayTorrents.IndexOf(torrent);
+            reachedDownload |= index >= 0 && index >= e.FirstVisibleItemIndex && index <= e.LastVisibleItemIndex;
+        }
+
+        try
+        {
+            viewModel.PropertyChanged += OnSelectionChanged;
+            DownloadsList.Scrolled += OnScrolled;
+            // ScrollTo can be dropped while a hidden native list is being arranged.
+            // Retry briefly until Scrolled confirms the target is visible.
+            for (var attempt = 0; attempt < 20 && !reachedDownload; attempt++)
+            {
+                await Task.Delay(100, cancellation.Token);
+                cancellation.Token.ThrowIfCancellationRequested();
+                if (reachedDownload) return;
+                if (!_isPageVisible || !ReferenceEquals(viewModel.SelectedTorrent, torrent)
+                    || viewModel.CanShowSelectedTorrentDetails)
+                    return;
+                if (!DownloadsList.IsLoaded || DownloadsList.Height <= 0
+                    || !viewModel.DisplayTorrents.Contains(torrent))
+                    continue;
+
+                try
+                {
+                    DownloadsList.ScrollTo(torrent, position: ScrollToPosition.Center, animate: false);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Scrolling to completed download failed: {ex}");
+                }
+            }
+        }
+        catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Opening completed download in list failed: {ex}");
+        }
+        finally
+        {
+            viewModel.PropertyChanged -= OnSelectionChanged;
+            DownloadsList.Scrolled -= OnScrolled;
+            if (ReferenceEquals(_notificationScrollCancellation, cancellation))
+                _notificationScrollCancellation = null;
+        }
     }
 
     protected override void OnDisappearing()
     {
         _isPageVisible = false;
+        _notificationScrollCancellation?.Cancel();
         DetachPromptWindow();
         _ = SetPromptForegroundSafelyAsync(false);
         base.OnDisappearing();
