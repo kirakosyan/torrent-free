@@ -346,6 +346,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         return true;
     }
 
+    public void HideSelectedTorrentDetails()
+    {
+        _downloadControls.HideSelectedTorrentDetails();
+        NotifyDownloadControlsStateChanged();
+    }
+
     private async Task PersistSortPreferenceAsync()
     {
         if (_isLoadingSettings)

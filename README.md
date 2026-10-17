@@ -289,6 +289,10 @@ speed and seeding limits in a full-page editor. Its name appears above the limit
 fields. **Hide limits** returns to Downloads and preserves whether the controls
 were collapsed. **Hide controls** collapses the bandwidth and bulk controls.
 
+On Windows and Android, tapping a download-complete notification returns to
+Downloads and scrolls to the selected completed torrent, including after an
+app restart. Any open torrent limits editor closes so the download is visible.
+
 Each download in the list has action buttons:
 
 | Button | Action |

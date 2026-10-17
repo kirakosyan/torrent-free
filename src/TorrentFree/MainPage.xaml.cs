@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Linq;
 using Microsoft.Maui.ApplicationModel;
+using TorrentFree.Models;
 using TorrentFree.Services;
 using TorrentFree.ViewModels;
 
@@ -11,6 +12,7 @@ public partial class MainPage : ContentPage
     private const string GitHubUrl = "https://github.com/kirakosyan/torrent-free";
     private Window? _promptWindow;
     private bool _isPageVisible;
+    private TorrentItem? _pendingNotificationScroll;
 
     public MainPage(MainViewModel viewModel)
     {
@@ -80,7 +82,7 @@ public partial class MainPage : ContentPage
         });
     }
 
-    private static void SelectPendingNotification(MainViewModel viewModel)
+    private void SelectPendingNotification(MainViewModel viewModel)
     {
         // InitializeCommand reports errors in the UI rather than throwing. Keep a
         // cold-start tap queued until its torrent list has actually been restored.
@@ -90,7 +92,26 @@ public partial class MainPage : ContentPage
         var torrent = viewModel.Torrents.FirstOrDefault(item => item.Id == id);
         if (torrent is null) return;
         viewModel.SelectedTorrent = torrent;
-        viewModel.RevealSelectedTorrentDetails();
+        _pendingNotificationScroll = torrent;
+        viewModel.HideSelectedTorrentDetails();
+        DownloadsList.Dispatcher.Dispatch(ScrollToPendingNotification);
+    }
+
+    private void OnDownloadsListReady(object? sender, EventArgs e)
+    {
+        ScrollToPendingNotification();
+    }
+
+    private void ScrollToPendingNotification()
+    {
+        if (_pendingNotificationScroll is not { } torrent || !_isPageVisible
+            || !DownloadsList.IsLoaded || DownloadsList.Height <= 0
+            || BindingContext is not MainViewModel viewModel || viewModel.CanShowSelectedTorrentDetails)
+            return;
+
+        _pendingNotificationScroll = null;
+        if (viewModel.DisplayTorrents.Contains(torrent))
+            DownloadsList.ScrollTo(torrent, position: ScrollToPosition.Center, animate: false);
     }
 
     protected override void OnDisappearing()
