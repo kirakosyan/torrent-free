@@ -12,12 +12,12 @@ Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real eng
 ![.NET MAUI](https://img.shields.io/badge/.NET-MAUI-purple)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20|%20Android%20|%20iOS-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
-[![Support on Patreon](https://img.shields.io/badge/Support-Patreon-FF424D?logo=patreon&logoColor=white)](https://patreon.com/ArmenKirakosyan)
+[![Support on Patreon](https://img.shields.io/badge/Support-Patreon-FF424D?logo=patreon&logoColor=white)](https://www.patreon.com/16981794/join)
 
 ## ♥ Support the project
 
 Enjoying Torrent Free? Your optional support helps fund development, bug fixes,
-and improvements. [Support the project on Patreon](https://patreon.com/ArmenKirakosyan).
+and improvements. [Support the project on Patreon](https://www.patreon.com/16981794/join).
 Thank you! Torrent Free remains free to use, and donations are entirely optional.
 
 ## ✨ Features

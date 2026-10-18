@@ -5,7 +5,7 @@ namespace TorrentFree;
 
 public partial class AboutPage : ContentPage
 {
-    private static readonly Uri PatreonUri = new("https://patreon.com/ArmenKirakosyan");
+    private static readonly Uri PatreonUri = new("https://www.patreon.com/16981794/join");
     private readonly Uri _sourceUri;
     private bool _openingLink;
     private bool _closing;
