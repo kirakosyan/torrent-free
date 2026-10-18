@@ -324,6 +324,21 @@
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/a</value>
   </data>
+  <data name="SupportProjectTitle" xml:space="preserve">
+    <value>Támogasd a projektet</value>
+  </data>
+  <data name="SupportProjectMessage" xml:space="preserve">
+    <value>A Patreonon nyújtott önkéntes támogatásod segít finanszírozni a fejlesztést, a hibajavításokat és a továbbfejlesztéseket. Köszönjük, hogy támogatod a Torrent Free-t!</value>
+  </data>
+  <data name="SupportOnPatreon" xml:space="preserve">
+    <value>Támogatás a Patreonon</value>
+  </data>
+  <data name="OpenInDefaultBrowser" xml:space="preserve">
+    <value>Az alapértelmezett böngésződben nyílik meg.</value>
+  </data>
+  <data name="ErrorOpenBrowser" xml:space="preserve">
+    <value>Nem sikerült megnyitni a böngészőt. Ellenőrizd, hogy telepítve van-e alapértelmezett böngésző, és próbáld újra.</value>
+  </data>
   <data name="OpenSource" xml:space="preserve">
     <value>Nyílt forráskód</value>
   </data>

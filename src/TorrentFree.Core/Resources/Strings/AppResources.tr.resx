@@ -324,6 +324,21 @@
   <data name="AboutUnavailable" xml:space="preserve">
     <value>yok</value>
   </data>
+  <data name="SupportProjectTitle" xml:space="preserve">
+    <value>Projeyi destekleyin</value>
+  </data>
+  <data name="SupportProjectMessage" xml:space="preserve">
+    <value>Patreon üzerinden gönüllü desteğiniz geliştirme, hata düzeltmeleri ve iyileştirmelerin finansmanına yardımcı olur. Torrent Free&apos;yi desteklediğiniz için teşekkür ederiz!</value>
+  </data>
+  <data name="SupportOnPatreon" xml:space="preserve">
+    <value>Patreon&apos;da destekleyin</value>
+  </data>
+  <data name="OpenInDefaultBrowser" xml:space="preserve">
+    <value>Varsayılan tarayıcınızda açılır.</value>
+  </data>
+  <data name="ErrorOpenBrowser" xml:space="preserve">
+    <value>Tarayıcınız açılamadı. Varsayılan bir tarayıcının yüklü olduğunu kontrol edip yeniden deneyin.</value>
+  </data>
   <data name="OpenSource" xml:space="preserve">
     <value>Kaynak kodu</value>
   </data>

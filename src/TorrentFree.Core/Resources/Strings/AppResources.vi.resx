@@ -324,6 +324,21 @@
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/a</value>
   </data>
+  <data name="SupportProjectTitle" xml:space="preserve">
+    <value>Ủng hộ dự án</value>
+  </data>
+  <data name="SupportProjectMessage" xml:space="preserve">
+    <value>Sự ủng hộ tự nguyện của bạn trên Patreon giúp tài trợ cho việc phát triển, sửa lỗi và cải tiến. Cảm ơn bạn đã ủng hộ Torrent Free!</value>
+  </data>
+  <data name="SupportOnPatreon" xml:space="preserve">
+    <value>Ủng hộ trên Patreon</value>
+  </data>
+  <data name="OpenInDefaultBrowser" xml:space="preserve">
+    <value>Mở trong trình duyệt mặc định của bạn.</value>
+  </data>
+  <data name="ErrorOpenBrowser" xml:space="preserve">
+    <value>Không thể mở trình duyệt. Vui lòng kiểm tra xem trình duyệt mặc định đã được cài đặt chưa rồi thử lại.</value>
+  </data>
   <data name="OpenSource" xml:space="preserve">
     <value>Nguồn mở</value>
   </data>

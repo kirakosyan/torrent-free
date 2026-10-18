@@ -324,6 +324,21 @@
   <data name="AboutUnavailable" xml:space="preserve">
     <value>उपलब्ध नहीं</value>
   </data>
+  <data name="SupportProjectTitle" xml:space="preserve">
+    <value>परियोजना का समर्थन करें</value>
+  </data>
+  <data name="SupportProjectMessage" xml:space="preserve">
+    <value>Patreon पर आपका वैकल्पिक समर्थन विकास, बग सुधारों और बेहतर सुविधाओं के लिए धन जुटाने में मदद करता है। Torrent Free का समर्थन करने के लिए धन्यवाद!</value>
+  </data>
+  <data name="SupportOnPatreon" xml:space="preserve">
+    <value>Patreon पर समर्थन करें</value>
+  </data>
+  <data name="OpenInDefaultBrowser" xml:space="preserve">
+    <value>आपके डिफ़ॉल्ट ब्राउज़र में खुलता है।</value>
+  </data>
+  <data name="ErrorOpenBrowser" xml:space="preserve">
+    <value>आपका ब्राउज़र नहीं खुल सका। जाँचें कि डिफ़ॉल्ट ब्राउज़र इंस्टॉल है और फिर से कोशिश करें।</value>
+  </data>
   <data name="OpenSource" xml:space="preserve">
     <value>स्रोत कोड</value>
   </data>

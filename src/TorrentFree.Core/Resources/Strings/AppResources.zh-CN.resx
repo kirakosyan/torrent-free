@@ -324,6 +324,21 @@
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/a</value>
   </data>
+  <data name="SupportProjectTitle" xml:space="preserve">
+    <value>支持项目</value>
+  </data>
+  <data name="SupportProjectMessage" xml:space="preserve">
+    <value>您在 Patreon 上的自愿支持有助于资助开发、错误修复和功能改进。感谢您支持 Torrent Free！</value>
+  </data>
+  <data name="SupportOnPatreon" xml:space="preserve">
+    <value>在 Patreon 上支持</value>
+  </data>
+  <data name="OpenInDefaultBrowser" xml:space="preserve">
+    <value>在默认浏览器中打开。</value>
+  </data>
+  <data name="ErrorOpenBrowser" xml:space="preserve">
+    <value>无法打开浏览器。请确认已安装默认浏览器，然后重试。</value>
+  </data>
   <data name="OpenSource" xml:space="preserve">
     <value>开源</value>
   </data>

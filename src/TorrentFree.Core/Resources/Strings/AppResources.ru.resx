@@ -335,6 +335,21 @@
   <data name="AboutUnavailable" xml:space="preserve">
     <value>н/д</value>
   </data>
+  <data name="SupportProjectTitle" xml:space="preserve">
+    <value>Поддержите проект</value>
+  </data>
+  <data name="SupportProjectMessage" xml:space="preserve">
+    <value>Ваша добровольная поддержка на Patreon помогает финансировать разработку, исправление ошибок и улучшения. Спасибо за поддержку Torrent Free!</value>
+  </data>
+  <data name="SupportOnPatreon" xml:space="preserve">
+    <value>Поддержать на Patreon</value>
+  </data>
+  <data name="OpenInDefaultBrowser" xml:space="preserve">
+    <value>Открывается в браузере по умолчанию.</value>
+  </data>
+  <data name="ErrorOpenBrowser" xml:space="preserve">
+    <value>Не удалось открыть браузер. Убедитесь, что установлен браузер по умолчанию, и повторите попытку.</value>
+  </data>
   <data name="OpenSource" xml:space="preserve">
     <value>Исходный код</value>
   </data>

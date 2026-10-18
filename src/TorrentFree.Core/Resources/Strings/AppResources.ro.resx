@@ -324,6 +324,21 @@
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/a</value>
   </data>
+  <data name="SupportProjectTitle" xml:space="preserve">
+    <value>Susține proiectul</value>
+  </data>
+  <data name="SupportProjectMessage" xml:space="preserve">
+    <value>Sprijinul tău voluntar pe Patreon ajută la finanțarea dezvoltării, a corectării erorilor și a îmbunătățirilor. Îți mulțumim că susții Torrent Free!</value>
+  </data>
+  <data name="SupportOnPatreon" xml:space="preserve">
+    <value>Susține pe Patreon</value>
+  </data>
+  <data name="OpenInDefaultBrowser" xml:space="preserve">
+    <value>Se deschide în browserul implicit.</value>
+  </data>
+  <data name="ErrorOpenBrowser" xml:space="preserve">
+    <value>Browserul nu a putut fi deschis. Verifică dacă este instalat un browser implicit și încearcă din nou.</value>
+  </data>
   <data name="OpenSource" xml:space="preserve">
     <value>Sursă deschisă</value>
   </data>

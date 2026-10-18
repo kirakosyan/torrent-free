@@ -324,6 +324,21 @@
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/a</value>
   </data>
+  <data name="SupportProjectTitle" xml:space="preserve">
+    <value>Dukung proyek ini</value>
+  </data>
+  <data name="SupportProjectMessage" xml:space="preserve">
+    <value>Dukungan sukarela Anda di Patreon membantu mendanai pengembangan, perbaikan bug, dan penyempurnaan. Terima kasih telah mendukung Torrent Free!</value>
+  </data>
+  <data name="SupportOnPatreon" xml:space="preserve">
+    <value>Dukung di Patreon</value>
+  </data>
+  <data name="OpenInDefaultBrowser" xml:space="preserve">
+    <value>Terbuka di browser default Anda.</value>
+  </data>
+  <data name="ErrorOpenBrowser" xml:space="preserve">
+    <value>Tidak dapat membuka browser Anda. Pastikan browser default telah terpasang dan coba lagi.</value>
+  </data>
   <data name="OpenSource" xml:space="preserve">
     <value>Sumber Terbuka</value>
   </data>

@@ -215,49 +215,13 @@ public partial class MainPage : ContentPage
                 GitHubUrl,
                 LocalizationResourceManager.Instance["AboutUnavailable"]);
 
-            var openSources = await DisplayAlertAsync(
-                LocalizationResourceManager.Instance["AboutTitle"],
-                aboutMessage,
-                LocalizationResourceManager.Instance["OpenSource"],
-                LocalizationResourceManager.Instance["OK"]);
-
-            if (openSources)
-            {
-                await TryOpenSourceUrlAsync();
-            }
+            if (!Navigation.ModalStack.OfType<AboutPage>().Any())
+                await Navigation.PushModalAsync(new AboutPage(aboutMessage, GitHubUrl));
         }
         catch (Exception ex)
         {
             // async void: an unhandled exception here would crash the app.
             System.Diagnostics.Debug.WriteLine($"About dialog error: {ex}");
-        }
-    }
-
-    private static async Task TryOpenSourceUrlAsync()
-    {
-        var sourceUri = new Uri(GitHubUrl);
-
-        try
-        {
-            await Browser.Default.OpenAsync(sourceUri, BrowserLaunchMode.External);
-            return;
-        }
-        catch (FeatureNotSupportedException ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"External browser is not supported: {ex}");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Failed to open source URL in external browser: {ex}");
-        }
-
-        try
-        {
-            await Launcher.Default.OpenAsync(sourceUri);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Failed to open source URL: {ex}");
         }
     }
 

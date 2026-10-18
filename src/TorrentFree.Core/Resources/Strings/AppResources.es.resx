@@ -335,6 +335,21 @@
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/d</value>
   </data>
+  <data name="SupportProjectTitle" xml:space="preserve">
+    <value>Apoya el proyecto</value>
+  </data>
+  <data name="SupportProjectMessage" xml:space="preserve">
+    <value>Tu apoyo voluntario en Patreon ayuda a financiar el desarrollo, las correcciones de errores y las mejoras. ¡Gracias por apoyar Torrent Free!</value>
+  </data>
+  <data name="SupportOnPatreon" xml:space="preserve">
+    <value>Apoyar en Patreon</value>
+  </data>
+  <data name="OpenInDefaultBrowser" xml:space="preserve">
+    <value>Se abre en tu navegador predeterminado.</value>
+  </data>
+  <data name="ErrorOpenBrowser" xml:space="preserve">
+    <value>No se pudo abrir el navegador. Comprueba que haya un navegador predeterminado instalado e inténtalo de nuevo.</value>
+  </data>
   <data name="OpenSource" xml:space="preserve">
     <value>Código fuente</value>
   </data>
