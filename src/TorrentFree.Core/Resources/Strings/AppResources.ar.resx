@@ -637,4 +637,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>تنزيل المحدد</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>البحث في التنزيلات</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>تصفية التنزيلات</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>كل التنزيلات</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>نشطة</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>تحتاج إلى انتباه</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>لا توجد تنزيلات مطابقة.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>مسح عوامل التصفية</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>إظهار التفاصيل</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>إخفاء التفاصيل</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>تفاصيل الخطأ</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>نسخ تفاصيل الخطأ</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>فشل التنزيل. راجع تفاصيل الخطأ ثم حاول البدء مجددًا.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>تعذر استعادة التنزيلات المحفوظة. تم الاحتفاظ بملفات الاسترداد. استعد نسخة احتياطية صالحة وحاول مجددًا.</value>
+  </data>
 </root>

@@ -651,4 +651,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>ดาวน์โหลดที่เลือก</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>ค้นหาการดาวน์โหลด</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>กรองการดาวน์โหลด</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>การดาวน์โหลดทั้งหมด</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>กำลังทำงาน</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>ต้องตรวจสอบ</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>ไม่พบการดาวน์โหลดที่ตรงกัน</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>ล้างตัวกรอง</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>แสดงรายละเอียด</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>ซ่อนรายละเอียด</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>รายละเอียดข้อผิดพลาด</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>คัดลอกรายละเอียดข้อผิดพลาด</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>ดาวน์โหลดไม่สำเร็จ ตรวจสอบรายละเอียดข้อผิดพลาด แล้วลองเริ่มอีกครั้ง</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>ไม่สามารถกู้คืนการดาวน์โหลดที่บันทึกไว้ได้ ไฟล์กู้คืนยังคงอยู่ โปรดคืนค่าข้อมูลสำรองที่ถูกต้องแล้วลองอีกครั้ง</value>
+  </data>
 </root>

@@ -651,4 +651,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Auswahl herunterladen</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Downloads durchsuchen</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Downloads filtern</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Alle Downloads</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>Handlungsbedarf</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>Keine passenden Downloads.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Filter zurücksetzen</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Details anzeigen</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Details ausblenden</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Fehlerdetails</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Fehlerdetails kopieren</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>Download fehlgeschlagen. Prüfen Sie die Fehlerdetails und versuchen Sie erneut zu starten.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>Gespeicherte Downloads konnten nicht wiederhergestellt werden. Wiederherstellungsdateien wurden aufbewahrt. Stellen Sie eine gültige Sicherung wieder her und versuchen Sie es erneut.</value>
+  </data>
 </root>

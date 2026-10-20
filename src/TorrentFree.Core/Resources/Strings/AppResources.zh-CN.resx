@@ -651,4 +651,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>下载所选文件</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>搜索下载</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>筛选下载</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>所有下载</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>进行中</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>需要处理</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>没有匹配的下载。</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>清除筛选</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>显示详情</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>隐藏详情</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>错误详情</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>复制错误详情</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>下载失败。请查看错误详情，然后尝试重新开始。</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>无法恢复已保存的下载。恢复文件已保留。请还原有效的备份后重试。</value>
+  </data>
 </root>

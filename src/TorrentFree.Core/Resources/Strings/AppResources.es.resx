@@ -665,4 +665,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Descargar selección</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Buscar descargas</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Filtrar descargas</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Todas las descargas</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Activas</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>Requieren atención</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>No hay descargas coincidentes.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Borrar filtros</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Mostrar detalles</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Ocultar detalles</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Detalles del error</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Copiar detalles del error</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>La descarga falló. Revisa los detalles del error e intenta iniciarla de nuevo.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>No se pudieron recuperar las descargas guardadas. Se conservaron los archivos de recuperación. Restaura una copia de seguridad válida e inténtalo de nuevo.</value>
+  </data>
 </root>

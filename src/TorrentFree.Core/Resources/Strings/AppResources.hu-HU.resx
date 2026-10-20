@@ -651,4 +651,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Kijelöltek letöltése</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Letöltések keresése</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Letöltések szűrése</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Összes letöltés</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Aktív</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>Figyelmet igényel</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>Nincs megfelelő letöltés.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Szűrők törlése</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Részletek megjelenítése</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Részletek elrejtése</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Hiba részletei</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Hiba részleteinek másolása</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>A letöltés sikertelen. Ellenőrizze a hiba részleteit, majd próbálja újra elindítani.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>A mentett letöltéseket nem sikerült helyreállítani. A helyreállítási fájlok megmaradtak. Állítson vissza egy érvényes biztonsági másolatot, majd próbálja újra.</value>
+  </data>
 </root>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:helpers="clr-namespace:TorrentFree.Helpers"
+             x:Class="TorrentFree.DownloadErrorPage"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}"
+             SafeAreaEdges="Container" Title="{helpers:Translate DownloadErrorDetails}">
+    <Grid Padding="20" RowDefinitions="Auto,*,Auto" RowSpacing="12">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <Label Text="{helpers:Translate DownloadErrorDetails}" FontSize="22" FontAttributes="Bold"
+                   SemanticProperties.HeadingLevel="Level1" VerticalOptions="Center"/>
+            <Button Grid.Column="1" Text="{helpers:Translate OK}" Clicked="OnCloseClicked"/>
+        </Grid>
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="16">
+                <Label x:Name="TorrentNameLabel" FontSize="18" FontAttributes="Bold"/>
+                <Label x:Name="ErrorDetailsLabel" FontSize="14" LineBreakMode="CharacterWrap"/>
+                <Label x:Name="CopyFailureLabel" FontSize="14" IsVisible="False"/>
+            </VerticalStackLayout>
+        </ScrollView>
+        <Button Grid.Row="2" x:Name="CopyButton" Text="{helpers:Translate CopyErrorDetails}" Clicked="OnCopyClicked"/>
+    </Grid>
+</ContentPage>

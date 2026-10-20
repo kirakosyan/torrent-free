@@ -7,6 +7,46 @@ namespace TorrentFree.UnitTests;
 
 public sealed class StorageServiceTests
 {
+    [Theory]
+    [InlineData("{broken", null)]
+    [InlineData(null, "null")]
+    [InlineData("{broken", "null")]
+    public async Task MissingPrimaryWithCorruptRecoveryFiles_PreservesEvidenceAndBlocksSaves(string? temporary, string? backup)
+    {
+        using var directory = new CoreTestDirectory();
+        var path = Path.Combine(directory.Path, "torrents.json");
+        if (temporary is not null) await File.WriteAllTextAsync(path + ".tmp", temporary, TestContext.Current.CancellationToken);
+        if (backup is not null) await File.WriteAllTextAsync(path + ".bak", backup, TestContext.Current.CancellationToken);
+        using var storage = new StorageService(directory.StoragePaths);
+        await Assert.ThrowsAnyAsync<JsonException>(() => storage.LoadTorrentsAsync());
+        await Assert.ThrowsAnyAsync<JsonException>(() => storage.LoadSettingsAsync());
+        await Assert.ThrowsAsync<InvalidOperationException>(() => storage.SaveTorrentsAsync([]));
+        await Assert.ThrowsAnyAsync<JsonException>(() => storage.SaveSettingsAsync(new AppSettings()));
+        await Assert.ThrowsAnyAsync<JsonException>(() => storage.UpdateDesktopWindowStateAsync(true));
+        Assert.False(File.Exists(path));
+        if (temporary is not null) Assert.Equal(temporary, await File.ReadAllTextAsync(path + ".tmp", TestContext.Current.CancellationToken));
+        if (backup is not null) Assert.Equal(backup, await File.ReadAllTextAsync(path + ".bak", TestContext.Current.CancellationToken));
+
+        // Restoring a valid backup makes the same service retryable without restarting.
+        await File.WriteAllTextAsync(path + ".bak", """{"torrents":[{"id":"restored"}]}""", TestContext.Current.CancellationToken);
+        Assert.Equal("restored", Assert.Single(await storage.LoadTorrentsAsync()).Id);
+        await storage.SaveTorrentsAsync([new TorrentItem { Id = "restored" }]);
+    }
+
+    [Theory]
+    [InlineData(".tmp", ".bak")]
+    [InlineData(".bak", ".tmp")]
+    public async Task MissingPrimary_UsesValidRecoveryCopyEvenWhenOtherCopyIsCorrupt(string validSuffix, string corruptSuffix)
+    {
+        using var directory = new CoreTestDirectory();
+        var path = Path.Combine(directory.Path, "torrents.json");
+        await File.WriteAllTextAsync(path + validSuffix, """{"torrents":[{"id":"kept"}]}""", TestContext.Current.CancellationToken);
+        await File.WriteAllTextAsync(path + corruptSuffix, "{broken", TestContext.Current.CancellationToken);
+        using var storage = new StorageService(directory.StoragePaths);
+        Assert.Equal("kept", Assert.Single(await storage.LoadTorrentsAsync()).Id);
+        Assert.Equal("{broken", await File.ReadAllTextAsync(path + corruptSuffix, TestContext.Current.CancellationToken));
+    }
+
     [Fact]
     public async Task UnrelatedSettingsEdits_DoNotRewriteStoredPassword()
     {

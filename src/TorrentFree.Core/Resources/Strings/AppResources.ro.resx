@@ -651,4 +651,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Descarcă selecția</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Caută descărcări</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Filtrează descărcările</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Toate descărcările</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>Necesită atenție</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>Nicio descărcare corespunzătoare.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Șterge filtrele</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Arată detaliile</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Ascunde detaliile</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Detaliile erorii</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Copiază detaliile erorii</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>Descărcarea a eșuat. Verifică detaliile erorii, apoi încearcă să pornești din nou.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>Descărcările salvate nu au putut fi recuperate. Fișierele de recuperare au fost păstrate. Restaurează o copie de siguranță validă și încearcă din nou.</value>
+  </data>
 </root>

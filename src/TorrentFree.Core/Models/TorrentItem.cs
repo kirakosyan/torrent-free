@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using TorrentFree.Services;
 
 namespace TorrentFree.Models;
@@ -269,6 +270,24 @@ public partial class TorrentItem : ObservableObject
     [JsonIgnore]
     public ICommand? ChooseFilesCommand { get; set; }
 
+    [JsonIgnore]
+    public ICommand? ShowErrorDetailsCommand { get; set; }
+
+    [ObservableProperty]
+    [JsonIgnore]
+    public partial bool ShowDownloadDetails { get; set; }
+
+    [JsonIgnore]
+    public string DownloadDetailsButtonText => LocalizationResourceManager.Instance[
+        ShowDownloadDetails ? "HideDownloadDetails" : "ShowDownloadDetails"];
+
+    private ICommand? _toggleDownloadDetailsCommand;
+    [JsonIgnore]
+    public ICommand ToggleDownloadDetailsCommand => _toggleDownloadDetailsCommand
+        ??= new RelayCommand(() => ShowDownloadDetails = !ShowDownloadDetails);
+
+    partial void OnShowDownloadDetailsChanged(bool value) => OnPropertyChanged(nameof(DownloadDetailsButtonText));
+
     /// <summary>
     /// Gets the full path to the downloaded file or folder.
     /// </summary>
@@ -388,9 +407,8 @@ public partial class TorrentItem : ObservableObject
         {
             if (Status == DownloadStatus.Failed)
             {
-                return string.IsNullOrWhiteSpace(ErrorMessage)
-                    ? LocalizationResourceManager.Instance["HintDownloadFailed"]
-                    : ErrorMessage;
+                return LocalizationResourceManager.Instance[string.IsNullOrWhiteSpace(ErrorMessage)
+                    ? "HintDownloadFailed" : "DownloadFailedRecoveryHint"];
             }
 
             return Status switch
@@ -460,6 +478,7 @@ public partial class TorrentItem : ObservableObject
     {
         OnPropertyChanged(nameof(StatusText));
         OnPropertyChanged(nameof(StatusHint));
+        OnPropertyChanged(nameof(DownloadDetailsButtonText));
     }
 
     partial void OnStatusChanged(DownloadStatus value)

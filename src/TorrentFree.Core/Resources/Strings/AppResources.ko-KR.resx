@@ -651,4 +651,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>선택한 파일 다운로드</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>다운로드 검색</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>다운로드 필터</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>모든 다운로드</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>진행 중</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>확인 필요</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>일치하는 다운로드가 없습니다.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>필터 지우기</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>자세히 보기</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>세부 정보 숨기기</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>오류 세부 정보</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>오류 세부 정보 복사</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>다운로드에 실패했습니다. 오류 세부 정보를 확인한 후 다시 시작해 보세요.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>저장된 다운로드를 복구할 수 없습니다. 복구 파일은 보존되었습니다. 유효한 백업을 복원하고 다시 시도하세요.</value>
+  </data>
 </root>

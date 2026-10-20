@@ -665,4 +665,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Скачать выбранное</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Поиск загрузок</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Фильтр загрузок</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Все загрузки</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Активные</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>Требуют внимания</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>Подходящих загрузок нет.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Сбросить фильтры</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Показать подробности</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Скрыть подробности</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Подробности ошибки</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Копировать подробности ошибки</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>Загрузка не удалась. Проверьте подробности ошибки и попробуйте запустить её снова.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>Не удалось восстановить сохранённые загрузки. Файлы восстановления сохранены. Восстановите корректную резервную копию и повторите попытку.</value>
+  </data>
 </root>

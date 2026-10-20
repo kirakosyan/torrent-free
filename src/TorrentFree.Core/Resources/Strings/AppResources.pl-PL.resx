@@ -651,4 +651,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Pobierz wybrane</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Szukaj pobrań</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Filtruj pobrania</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Wszystkie pobrania</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Aktywne</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>Wymagają uwagi</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>Brak pasujących pobrań.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Wyczyść filtry</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Pokaż szczegóły</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Ukryj szczegóły</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Szczegóły błędu</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Kopiuj szczegóły błędu</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>Pobieranie nie powiodło się. Sprawdź szczegóły błędu i spróbuj uruchomić ponownie.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>Nie można odzyskać zapisanych pobrań. Zachowano pliki odzyskiwania. Przywróć prawidłową kopię zapasową i spróbuj ponownie.</value>
+  </data>
 </root>

@@ -651,4 +651,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Unduh pilihan</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Cari unduhan</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Filter unduhan</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Semua unduhan</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Aktif</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>Perlu perhatian</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>Tidak ada unduhan yang cocok.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Hapus filter</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Tampilkan detail</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Sembunyikan detail</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Detail kesalahan</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Salin detail kesalahan</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>Unduhan gagal. Periksa detail kesalahan, lalu coba mulai lagi.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>Unduhan tersimpan tidak dapat dipulihkan. File pemulihan tetap disimpan. Pulihkan cadangan yang valid dan coba lagi.</value>
+  </data>
 </root>

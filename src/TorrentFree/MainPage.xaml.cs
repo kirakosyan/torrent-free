@@ -25,12 +25,13 @@ public partial class MainPage : ContentPage
     {
         if (DashboardGrid is null || DashboardHeader is null || StorePrompts is null
             || MagnetInput is null || DownloadsHeading is null || DownloadControlsScroll is null
-            || DashboardGrid.Height <= 0)
+            || DownloadSearchControls is null || DashboardGrid.Height <= 0)
             return;
 
         // Preserve room for the download list as the window, banner, or keyboard changes size.
         var available = DashboardGrid.Height - DashboardHeader.Height - StorePrompts.Height
-            - MagnetInput.Height - DownloadsHeading.Height - 36 - 120;
+            - MagnetInput.Height - DownloadsHeading.Height
+            - (DownloadSearchControls.IsVisible ? DownloadSearchControls.Height + 8 : 0) - 36 - 120;
         var maximum = Math.Clamp(available, 56, 280);
         if (Math.Abs(DownloadControlsScroll.MaximumHeightRequest - maximum) > 1)
             DownloadControlsScroll.MaximumHeightRequest = maximum;

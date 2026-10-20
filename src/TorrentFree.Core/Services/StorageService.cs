@@ -261,6 +261,7 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
     /// </summary>
     private async Task<TorrentStorageData> RecoverMissingStateAsync()
     {
+        JsonException? recoveryError = null;
         foreach (var candidate in new[] { _dataPath + ".tmp", _dataPath + ".bak" })
         {
             string json;
@@ -270,8 +271,13 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
                 json = await File.ReadAllTextAsync(candidate).ConfigureAwait(false);
                 recovered = DeserializeData(json);
             }
-            catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or JsonException)
+            catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
             {
+                continue;
+            }
+            catch (JsonException ex)
+            {
+                recoveryError = ex;
                 continue;
             }
 
@@ -285,6 +291,10 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
             return recovered;
         }
 
+        // Missing files mean a fresh install; existing but unreadable state does not.
+        // Leave all recovery candidates intact and prevent later saves from replacing them.
+        if (recoveryError is not null)
+            throw new JsonException(LocalizationResourceManager.Instance["StateRecoveryFailed"], recoveryError);
         return new();
     }
 

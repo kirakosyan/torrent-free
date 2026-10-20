@@ -324,7 +324,9 @@
                             IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
                             FontSize="12"
                             HorizontalOptions="Center"/>
-
+                     <Button Text="{helpers:Translate RetryFiles}"
+                             IsVisible="{Binding HasInitializationError}"
+                             Command="{Binding InitializeCommand}"/>
 
               </VerticalStackLayout>
 
@@ -350,6 +352,19 @@
                                            BackgroundColor="#EEF2FF"
                                            TextColor="#4F46E5"
                                            HeightRequest="44"/>
+                            </Grid>
+                            <Grid x:Name="DownloadSearchControls" RowDefinitions="Auto,Auto" RowSpacing="4"
+                                  IsVisible="{Binding ShowDownloadSearch}"
+                                  IsEnabled="{Binding ShowDownloadSearch}"
+                                  SizeChanged="OnDashboardLayoutChanged">
+                                   <SearchBar Text="{Binding DownloadSearchText}"
+                                              Placeholder="{helpers:Translate SearchDownloads}"
+                                              SemanticProperties.Description="{helpers:Translate SearchDownloads}"/>
+                                   <Picker Grid.Row="1" Title="{helpers:Translate FilterDownloads}"
+                                           ItemsSource="{Binding DownloadFilters}"
+                                           ItemDisplayBinding="{Binding Label, x:DataType=models:DownloadFilterOption}"
+                                           SelectedItem="{Binding SelectedDownloadFilter}"
+                                           SemanticProperties.Description="{helpers:Translate FilterDownloads}"/>
                             </Grid>
                             <ScrollView x:Name="DownloadControlsScroll"
                                         IsVisible="{Binding ShowDownloadControls}"
@@ -426,7 +441,7 @@
 
                      <!-- Empty State -->
                      <VerticalStackLayout Grid.Row="1"
-                                          IsVisible="{Binding IsEmpty}"
+                                          IsVisible="{Binding ShowEmptyDownloads}"
                                           VerticalOptions="Center"
                                           HorizontalOptions="Center"
                                           Spacing="16">
@@ -440,6 +455,13 @@
                                    HorizontalOptions="Center"/>
                      </VerticalStackLayout>
 
+                     <VerticalStackLayout Grid.Row="1" IsVisible="{Binding NoMatchingDownloads}"
+                                          VerticalOptions="Center" Spacing="12" Padding="16">
+                            <Label Text="{helpers:Translate NoMatchingDownloads}" HorizontalTextAlignment="Center"/>
+                            <Button Text="{helpers:Translate ClearDownloadFilters}"
+                                    Command="{Binding ClearDownloadFiltersCommand}"/>
+                     </VerticalStackLayout>
+
                      <!-- Downloads List -->
                       <CollectionView x:Name="DownloadsList"
                                       Grid.Row="1"
@@ -448,6 +470,11 @@
                                       SelectionMode="Single"
                                      SelectedItem="{Binding SelectedTorrent}"
                                      IsVisible="{Binding IsEmpty, Converter={StaticResource InverseBoolConverter}}">
+                            <CollectionView.Triggers>
+                                   <DataTrigger TargetType="CollectionView" Binding="{Binding NoMatchingDownloads}" Value="True">
+                                          <Setter Property="IsVisible" Value="False"/>
+                                   </DataTrigger>
+                            </CollectionView.Triggers>
                             <CollectionView.ItemTemplate>
                                    <DataTemplate x:DataType="models:TorrentItem">
                                           <Border Margin="0,0,0,12"
@@ -476,7 +503,7 @@
                                                                        Value="{AppThemeBinding Light={StaticResource CardBackgroundAlt}, Dark={StaticResource CardBackgroundAltDark}}"/>
                                                         </DataTrigger>
                                                  </Border.Triggers>
-                                                 <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+                                                 <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto"
                                                        RowSpacing="8">
 
                                                         <!-- Row 0: Name and Status -->
@@ -490,18 +517,18 @@
                                                                              FontAttributes="Bold"
                                                                              LineBreakMode="TailTruncation"
                                                                              MaxLines="2"/>
-                                                                      <Label Text="{Binding ErrorMessage}"
-                                                                             FontSize="11"
-                                                                             TextColor="{StaticResource StatusFailed}"
-                                                                             IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
-                                                                             LineBreakMode="TailTruncation"
-                                                                             MaxLines="2"/>
                                                                       <Label Text="{Binding StatusHint}"
-                                                                             FontSize="11"
+                                                                             FontSize="12"
                                                                              TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                                                              IsVisible="{Binding StatusHint, Converter={StaticResource StringNotEmptyConverter}}"
-                                                                             LineBreakMode="TailTruncation"
-                                                                             MaxLines="2"/>
+                                                                             LineBreakMode="WordWrap"/>
+                                                                      <Button Text="{helpers:Translate DownloadErrorDetails}"
+                                                                              Command="{Binding ShowErrorDetailsCommand}" CommandParameter="{Binding .}"
+                                                                              IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                                                                              BackgroundColor="{AppThemeBinding Light=#F1F5F9, Dark=#263244}"
+                                                                              TextColor="{AppThemeBinding Light=#334155, Dark=#E2E8F0}"
+                                                                              FontSize="12" Padding="10,4"
+                                                                              HorizontalOptions="Start" MinimumHeightRequest="44"/>
                                                                       <Button Text="{helpers:Translate OpenInLibroNest}"
                                                                               ImageSource="{AppThemeBinding Light=libronest_headphones.png, Dark=libronest_headphones_dark.png}"
                                                                               ContentLayout="Left,8"
@@ -568,68 +595,37 @@
                                                                       VerticalOptions="Center"/>
                                                         </Grid>
 
-                                                        <!-- Row 2: Stats -->
-                                                        <Grid Grid.Row="2"
-                                                              ColumnDefinitions="*,*,*,*,*,*"
-                                                              ColumnSpacing="8">
-                                                               <VerticalStackLayout Grid.Column="0"
-                                                                                    Spacing="2">
-                                                                      <Label Text="{helpers:Translate Size}"
-                                                                             FontSize="10"
-                                                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                                                      <Label Text="{Binding FormattedTotalSize}"
-                                                                             FontSize="12"
-                                                                             FontAttributes="Bold"/>
+                                                               <Grid Grid.Row="2" ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                                                               <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                                                      <Label Text="{helpers:Translate Size}" FontSize="12"/>
+                                                                      <Label Text="{Binding FormattedTotalSize}" FontSize="13" FontAttributes="Bold"/>
                                                                </VerticalStackLayout>
-                                                               <VerticalStackLayout Grid.Column="1"
-                                                                                    Spacing="2">
-                                                                      <Label Text="{helpers:Translate Down}"
-                                                                             FontSize="10"
-                                                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                                                      <Label Text="{Binding FormattedDownloadSpeed}"
-                                                                             FontSize="12"
-                                                                             FontAttributes="Bold"/>
+                                                               <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                                                      <Label Text="{helpers:Translate Down}" FontSize="12"/>
+                                                                      <Label Text="{Binding FormattedDownloadSpeed}" FontSize="13" FontAttributes="Bold"/>
                                                                </VerticalStackLayout>
-                                                               <VerticalStackLayout Grid.Column="2"
-                                                                                    Spacing="2">
-                                                                      <Label Text="{helpers:Translate Up}"
-                                                                             FontSize="10"
-                                                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                                                      <Label Text="{Binding FormattedUploadSpeed}"
-                                                                             FontSize="12"
-                                                                             FontAttributes="Bold"/>
+                                                               <VerticalStackLayout Grid.Column="2" Spacing="2">
+                                                                      <Label Text="{helpers:Translate ETA}" FontSize="12"/>
+                                                                      <Label Text="{Binding FormattedEstimatedTime}" FontSize="13" FontAttributes="Bold"/>
                                                                </VerticalStackLayout>
-                                                               <VerticalStackLayout Grid.Column="3"
-                                                                                    Spacing="2">
-                                                                      <Label Text="{helpers:Translate Seeds}"
-                                                                             FontSize="10"
-                                                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                                                      <Label Text="{Binding Seeders}"
-                                                                             FontSize="12"
-                                                                             FontAttributes="Bold"/>
+                                                               </Grid>
+                                                        <VerticalStackLayout Grid.Row="3" Spacing="12" IsVisible="{Binding ShowDownloadDetails}">
+                                                               <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                                                               <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                                                      <Label Text="{helpers:Translate Up}" FontSize="12"/>
+                                                                      <Label Text="{Binding FormattedUploadSpeed}" FontSize="13" FontAttributes="Bold"/>
                                                                </VerticalStackLayout>
-                                                               <VerticalStackLayout Grid.Column="4"
-                                                                                    Spacing="2">
-                                                                      <Label Text="{helpers:Translate Peers}"
-                                                                             FontSize="10"
-                                                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                                                      <Label Text="{Binding Leechers}"
-                                                                             FontSize="12"
-                                                                             FontAttributes="Bold"/>
+                                                               <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                                                      <Label Text="{helpers:Translate Seeds}" FontSize="12"/>
+                                                                      <Label Text="{Binding Seeders}" FontSize="13" FontAttributes="Bold"/>
                                                                </VerticalStackLayout>
-                                                               <VerticalStackLayout Grid.Column="5"
-                                                                                    Spacing="2">
-                                                                      <Label Text="{helpers:Translate ETA}"
-                                                                             FontSize="10"
-                                                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                                                      <Label Text="{Binding FormattedEstimatedTime}"
-                                                                             FontSize="12"
-                                                                             FontAttributes="Bold"/>
+                                                               <VerticalStackLayout Grid.Column="2" Spacing="2">
+                                                                      <Label Text="{helpers:Translate Peers}" FontSize="12"/>
+                                                                      <Label Text="{Binding Leechers}" FontSize="13" FontAttributes="Bold"/>
                                                                </VerticalStackLayout>
-                                                        </Grid>
-
+                                                               </Grid>
                                                         <!-- Row 3: Health & Availability -->
-                                                        <Grid Grid.Row="3"
+                                                        <Grid
                                                               ColumnDefinitions="*,*"
                                                               ColumnSpacing="12">
                                                                <VerticalStackLayout Grid.Column="0"
@@ -667,7 +663,7 @@
                                                         </Grid>
 
                                                         <!-- Row 4: Bandwidth Charts -->
-                                                        <Grid Grid.Row="4"
+                                                        <Grid
                                                               ColumnDefinitions="*,*"
                                                               ColumnSpacing="12">
                                                                <VerticalStackLayout Grid.Column="0"
@@ -692,49 +688,57 @@
                                                                </VerticalStackLayout>
                                                         </Grid>
 
-                                                        <!-- Row 5: Action Buttons -->
-                                                        <HorizontalStackLayout Grid.Row="5"
-                                                                               Spacing="8"
-                                                                               HorizontalOptions="End"
-                                                                               Margin="0,8,0,0">
-                                                                <Button Text="▶️"
+                                                        </VerticalStackLayout>
+
+                                                        <!-- Transfer actions remain visible in compact cards. -->
+                                                        <Grid Grid.Row="4" ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="0,4,0,0">
+                                                               <Button Text="{Binding DownloadDetailsButtonText}"
+                                                                       Command="{Binding ToggleDownloadDetailsCommand}"
+                                                                       SemanticProperties.Description="{Binding DownloadDetailsButtonText}"
+                                                                       BackgroundColor="Transparent" BorderWidth="0"
+                                                                       TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
+                                                                       FontSize="12" Padding="8,4" MinimumHeightRequest="44"
+                                                                       HorizontalOptions="Start" VerticalOptions="Center"/>
+                                                               <FlexLayout Grid.Column="1" Wrap="Wrap" JustifyContent="End" AlignItems="Center">
+                                                                <Button Margin="4,0,4,4" Text="▶️"
                                                                         SemanticProperties.Description="{helpers:Translate StartButton}"
                                                                         Style="{StaticResource StartButton}"
                                                                        Command="{Binding StartSpecificTorrentCommand}"
                                                                        CommandParameter="{Binding .}"
                                                                        IsVisible="{Binding CanStart}"/>
-                                                                <Button Text="⏸️"
+                                                                <Button Margin="4,0,4,4" Text="⏸️"
                                                                         SemanticProperties.Description="{helpers:Translate PauseButton}"
                                                                         Style="{StaticResource PauseButton}"
                                                                        Command="{Binding PauseSpecificTorrentCommand}"
                                                                        CommandParameter="{Binding .}"
                                                                        IsVisible="{Binding CanPause}"/>
-                                                                <Button Text="⏹️"
+                                                                <Button Margin="4,0,4,4" Text="⏹️"
                                                                          SemanticProperties.Description="{helpers:Translate StopButton}"
                                                                         Style="{StaticResource StopButton}"
                                                                        Command="{Binding StopSpecificTorrentCommand}"
                                                                        CommandParameter="{Binding .}"
                                                                        IsVisible="{Binding CanStop}"/>
-                                                                <ImageButton Source="files_icon.png"
+                                                                <ImageButton Margin="4,0,4,4" Source="files_icon.png"
                                                                              WidthRequest="44"
                                                                              SemanticProperties.Description="{helpers:Translate ChooseFiles}"
                                                                              ToolTipProperties.Text="{helpers:Translate ChooseFiles}"
                                                                              Style="{StaticResource LimitsButton}"
                                                                              Command="{Binding ChooseFilesCommand}"
                                                                              CommandParameter="{Binding .}"/>
-                                                                <ImageButton Source="limits_icon.png"
+                                                                <ImageButton Margin="4,0,4,4" Source="limits_icon.png"
                                                                              SemanticProperties.Description="{helpers:Translate ShowTorrentLimits}"
                                                                              SemanticProperties.Hint="{helpers:Translate TorrentLimitsHint}"
                                                                              ToolTipProperties.Text="{helpers:Translate ShowTorrentLimits}"
                                                                              Style="{StaticResource LimitsButton}"
                                                                              Command="{Binding ShowSpecificTorrentLimitsCommand}"
                                                                              CommandParameter="{Binding .}"/>
-                                                                <Button Text="🗑️"
+                                                                <Button Margin="4,0,4,4" Text="🗑️"
                                                                         SemanticProperties.Description="{helpers:Translate RemoveButton}"
                                                                         Style="{StaticResource RemoveButton}"
                                                                        Command="{Binding RemoveSpecificTorrentCommand}"
                                                                        CommandParameter="{Binding .}"/>
-                                                        </HorizontalStackLayout>
+                                                               </FlexLayout>
+                                                        </Grid>
                                                  </Grid>
                                           </Border>
                                    </DataTemplate>

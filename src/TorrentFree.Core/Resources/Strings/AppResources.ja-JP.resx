@@ -651,4 +651,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>選択した項目をダウンロード</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>ダウンロードを検索</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>ダウンロードを絞り込む</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>すべてのダウンロード</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>実行中</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>対応が必要</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>一致するダウンロードはありません。</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>絞り込みを解除</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>詳細を表示</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>詳細を非表示</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>エラーの詳細</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>エラーの詳細をコピー</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>ダウンロードに失敗しました。エラーの詳細を確認し、もう一度開始してください。</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>保存されたダウンロードを復元できませんでした。復元用ファイルは保持されています。有効なバックアップを復元して再試行してください。</value>
+  </data>
 </root>

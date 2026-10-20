@@ -651,4 +651,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Download selected</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Search downloads</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Filter downloads</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>All downloads</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>Needs attention</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>No matching downloads.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Clear filters</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Show details</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Hide details</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Error details</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Copy error details</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>Download failed. Check the error details, then try Start again.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>Saved downloads could not be recovered. Recovery files were kept. Restore a valid backup and try again.</value>
+  </data>
 </root>

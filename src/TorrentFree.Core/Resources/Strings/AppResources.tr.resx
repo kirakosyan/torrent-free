@@ -651,4 +651,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Seçilenleri indir</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>İndirmelerde ara</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>İndirmeleri filtrele</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Tüm indirmeler</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Etkin</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>İlgilenilmesi gerekiyor</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>Eşleşen indirme yok.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Filtreleri temizle</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Ayrıntıları göster</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Ayrıntıları gizle</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Hata ayrıntıları</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Hata ayrıntılarını kopyala</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>İndirme başarısız oldu. Hata ayrıntılarını kontrol edip yeniden başlatmayı deneyin.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>Kaydedilen indirmeler kurtarılamadı. Kurtarma dosyaları korundu. Geçerli bir yedeği geri yükleyip yeniden deneyin.</value>
+  </data>
 </root>

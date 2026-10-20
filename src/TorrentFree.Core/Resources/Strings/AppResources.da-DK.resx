@@ -651,4 +651,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Download valgte</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Søg i downloads</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Filtrer downloads</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Alle downloads</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Aktive</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>Kræver handling</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>Ingen matchende downloads.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Ryd filtre</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Vis detaljer</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Skjul detaljer</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Fejldetaljer</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Kopiér fejldetaljer</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>Download mislykkedes. Se fejldetaljerne, og prøv at starte igen.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>Gemte downloads kunne ikke gendannes. Gendannelsesfilerne er bevaret. Gendan en gyldig sikkerhedskopi, og prøv igen.</value>
+  </data>
 </root>
