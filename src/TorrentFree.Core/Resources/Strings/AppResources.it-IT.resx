@@ -651,4 +651,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Scarica selezionati</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Cerca download</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Filtra download</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Tutti i download</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Attivi</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>Richiedono attenzione</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>Nessun download corrispondente.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Cancella filtri</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Mostra dettagli</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Nascondi dettagli</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Dettagli errore</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Copia dettagli errore</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>Download non riuscito. Controlla i dettagli dell’errore e prova ad avviarlo di nuovo.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>Impossibile recuperare i download salvati. I file di recupero sono stati conservati. Ripristina un backup valido e riprova.</value>
+  </data>
 </root>

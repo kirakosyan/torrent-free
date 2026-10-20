@@ -45,10 +45,13 @@ public partial class DownloadSelectionViewModel : ObservableObject
     public void ShowDownloadsForNotification(TorrentItem? torrent)
     {
         if (torrent is null) return;
+        OnOpeningDownloadNotification(torrent);
         SelectedTorrent = torrent;
         if (_downloadControls.HideSelectedTorrentDetails())
             NotifyDownloadControlsStateChanged();
     }
+
+    protected virtual void OnOpeningDownloadNotification(TorrentItem torrent) { }
 
     [RelayCommand]
     private void ToggleDownloadControls()

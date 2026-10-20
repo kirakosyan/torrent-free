@@ -651,4 +651,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Lataa valitut</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Hae latauksia</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Suodata latauksia</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Kaikki lataukset</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Aktiiviset</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>Vaatii huomiota</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>Vastaavia latauksia ei löytynyt.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Tyhjennä suodattimet</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Näytä tiedot</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Piilota tiedot</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Virheen tiedot</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Kopioi virheen tiedot</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>Lataus epäonnistui. Tarkista virheen tiedot ja yritä käynnistää uudelleen.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>Tallennettuja latauksia ei voitu palauttaa. Palautustiedostot säilytettiin. Palauta kelvollinen varmuuskopio ja yritä uudelleen.</value>
+  </data>
 </root>

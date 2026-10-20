@@ -651,4 +651,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>चुनी हुई डाउनलोड करें</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>डाउनलोड खोजें</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>डाउनलोड फ़िल्टर करें</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>सभी डाउनलोड</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>सक्रिय</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>ध्यान देना आवश्यक</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>कोई मेल खाते डाउनलोड नहीं।</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>फ़िल्टर हटाएँ</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>विवरण दिखाएँ</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>विवरण छिपाएँ</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>त्रुटि का विवरण</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>त्रुटि का विवरण कॉपी करें</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>डाउनलोड विफल हुआ। त्रुटि का विवरण देखें और फिर से शुरू करने का प्रयास करें।</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>सहेजे गए डाउनलोड पुनर्स्थापित नहीं हो सके। पुनर्प्राप्ति फ़ाइलें सुरक्षित हैं। मान्य बैकअप पुनर्स्थापित करें और फिर प्रयास करें।</value>
+  </data>
 </root>

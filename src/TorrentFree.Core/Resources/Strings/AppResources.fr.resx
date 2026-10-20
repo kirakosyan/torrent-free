@@ -665,4 +665,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Télécharger la sélection</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Rechercher des téléchargements</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Filtrer les téléchargements</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Tous les téléchargements</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Actifs</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>À vérifier</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>Aucun téléchargement correspondant.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Effacer les filtres</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Afficher les détails</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Masquer les détails</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Détails de l’erreur</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Copier les détails de l’erreur</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>Le téléchargement a échoué. Consultez les détails de l’erreur, puis réessayez de le démarrer.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>Les téléchargements enregistrés n’ont pas pu être récupérés. Les fichiers de récupération ont été conservés. Restaurez une sauvegarde valide et réessayez.</value>
+  </data>
 </root>

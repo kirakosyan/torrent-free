@@ -651,4 +651,43 @@
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Stáhnout vybrané</value>
   </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Hledat stahování</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Filtrovat stahování</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Všechna stahování</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Aktivní</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>Vyžaduje pozornost</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>Žádná odpovídající stahování.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Vymazat filtry</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Zobrazit podrobnosti</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Skrýt podrobnosti</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Podrobnosti chyby</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Kopírovat podrobnosti chyby</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>Stahování selhalo. Zkontrolujte podrobnosti chyby a zkuste znovu spustit.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>Uložená stahování se nepodařilo obnovit. Soubory pro obnovu byly zachovány. Obnovte platnou zálohu a zkuste to znovu.</value>
+  </data>
 </root>
