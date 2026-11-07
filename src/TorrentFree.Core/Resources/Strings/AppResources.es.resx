@@ -704,4 +704,10 @@
   <data name="StateRecoveryFailed" xml:space="preserve">
     <value>No se pudieron recuperar las descargas guardadas. Se conservaron los archivos de recuperación. Restaura una copia de seguridad válida e inténtalo de nuevo.</value>
   </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>Comentarios y valoración</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>Abre la tienda para valorar la aplicación o escribir una reseña.</value>
+  </data>
 </root>

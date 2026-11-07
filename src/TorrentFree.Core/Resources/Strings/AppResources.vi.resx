@@ -690,4 +690,10 @@
   <data name="StateRecoveryFailed" xml:space="preserve">
     <value>Không thể khôi phục các bản tải xuống đã lưu. Các tệp khôi phục được giữ nguyên. Hãy khôi phục bản sao lưu hợp lệ rồi thử lại.</value>
   </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>Phản hồi và đánh giá</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>Mở cửa hàng để chấm điểm ứng dụng hoặc viết bài đánh giá.</value>
+  </data>
 </root>

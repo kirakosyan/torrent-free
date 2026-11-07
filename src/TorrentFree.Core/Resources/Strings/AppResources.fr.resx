@@ -704,4 +704,10 @@
   <data name="StateRecoveryFailed" xml:space="preserve">
     <value>Les téléchargements enregistrés n’ont pas pu être récupérés. Les fichiers de récupération ont été conservés. Restaurez une sauvegarde valide et réessayez.</value>
   </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>Avis et évaluation</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>Ouvrez la boutique pour noter l’application ou rédiger un avis.</value>
+  </data>
 </root>

@@ -690,4 +690,10 @@
   <data name="StateRecoveryFailed" xml:space="preserve">
     <value>Kaydedilen indirmeler kurtarılamadı. Kurtarma dosyaları korundu. Geçerli bir yedeği geri yükleyip yeniden deneyin.</value>
   </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>Geri bildirim ve puanlama</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>Uygulamaya puan vermek veya yorum yazmak için mağazayı açın.</value>
+  </data>
 </root>

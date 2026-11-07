@@ -23,6 +23,19 @@ internal static class AndroidStoreRouting
     internal static string CacheIdentity(string version, string build, AndroidStore store) =>
         $"{version}:{build}:{store}";
 
+    internal static AndroidStoreLink? GetManualReviewLink(AndroidStore installerStore, string packageId)
+    {
+        // Explicit feedback remains available for sideloads; automatic prompts still require a known installer.
+        var store = installerStore != AndroidStore.Unknown ? installerStore : packageId switch
+        {
+            "com.torrentfree.app" => AndroidStore.GooglePlay,
+            "com.torrentfree.app.galaxy" => AndroidStore.GalaxyStore,
+            "com.torrentfree.app.huawei" => AndroidStore.HuaweiAppGallery,
+            _ => AndroidStore.Unknown
+        };
+        return GetLink(store, packageId, review: true);
+    }
+
     internal static AndroidStoreLink? GetLink(AndroidStore store, string packageId, bool review = false)
     {
         var id = Uri.EscapeDataString(packageId);

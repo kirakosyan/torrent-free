@@ -690,4 +690,10 @@
   <data name="StateRecoveryFailed" xml:space="preserve">
     <value>Gemte downloads kunne ikke gendannes. Gendannelsesfilerne er bevaret. Gendan en gyldig sikkerhedskopi, og prøv igen.</value>
   </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>Feedback og bedømmelse</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>Åbn butikken for at bedømme appen eller skrive en anmeldelse.</value>
+  </data>
 </root>

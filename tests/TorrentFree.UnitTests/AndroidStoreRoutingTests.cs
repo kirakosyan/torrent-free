@@ -76,4 +76,25 @@ public sealed class AndroidStoreRoutingTests
         Assert.NotEqual(galaxy, huawei);
         Assert.NotEqual("1.19:24", huawei);
     }
+
+    [Theory]
+    [InlineData("com.torrentfree.app", "com.android.vending")]
+    [InlineData("com.torrentfree.app.galaxy", "com.sec.android.app.samsungapps")]
+    [InlineData("com.torrentfree.app.huawei", "com.huawei.appmarket")]
+    public void ExplicitFeedbackFromSideloadUsesItsOwnStore(string package, string expectedStore)
+    {
+        var link = AndroidStoreRouting.GetManualReviewLink(AndroidStore.Unknown, package);
+        Assert.NotNull(link);
+        Assert.Equal(expectedStore, link.StorePackage);
+        Assert.Contains(package, link.AppUri, StringComparison.Ordinal);
+        Assert.Null(AndroidStoreRouting.GetLink(AndroidStore.Unknown, package, review: true));
+    }
+
+    [Fact]
+    public void ExplicitFeedbackHonorsInstallerAndRejectsUnknownPackages()
+    {
+        Assert.Equal(AndroidStoreRouting.GalaxyStorePackage,
+            AndroidStoreRouting.GetManualReviewLink(AndroidStore.GalaxyStore, "com.torrentfree.app")!.StorePackage);
+        Assert.Null(AndroidStoreRouting.GetManualReviewLink(AndroidStore.Unknown, "unrelated.app"));
+    }
 }

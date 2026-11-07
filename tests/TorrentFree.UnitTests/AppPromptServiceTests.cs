@@ -623,5 +623,6 @@ public sealed class AppPromptServiceTests
             return Task.FromResult(UpdateHandoffSucceeds);
         }
         public Task<AppReviewResult> RequestReviewAsync() { ReviewRequests++; return Task.FromResult(ReviewResult); }
+        public Task<bool> OpenReviewPageAsync() => Task.FromResult(true);
     }
 }

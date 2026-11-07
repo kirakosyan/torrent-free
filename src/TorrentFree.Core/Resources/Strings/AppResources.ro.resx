@@ -690,4 +690,10 @@
   <data name="StateRecoveryFailed" xml:space="preserve">
     <value>Descărcările salvate nu au putut fi recuperate. Fișierele de recuperare au fost păstrate. Restaurează o copie de siguranță validă și încearcă din nou.</value>
   </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>Feedback și evaluare</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>Deschide magazinul pentru a evalua aplicația sau a scrie o recenzie.</value>
+  </data>
 </root>

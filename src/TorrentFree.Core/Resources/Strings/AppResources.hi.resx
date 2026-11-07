@@ -690,4 +690,10 @@
   <data name="StateRecoveryFailed" xml:space="preserve">
     <value>सहेजे गए डाउनलोड पुनर्स्थापित नहीं हो सके। पुनर्प्राप्ति फ़ाइलें सुरक्षित हैं। मान्य बैकअप पुनर्स्थापित करें और फिर प्रयास करें।</value>
   </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>प्रतिक्रिया और रेटिंग</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>ऐप को रेटिंग देने या समीक्षा लिखने के लिए स्टोर खोलें।</value>
+  </data>
 </root>

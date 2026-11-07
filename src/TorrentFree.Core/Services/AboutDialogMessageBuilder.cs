@@ -10,16 +10,12 @@ internal static class AboutDialogMessageBuilder
         string? build,
         string fileVersionLabel,
         string? fileVersion,
-        string sourceLabel,
-        string sourceUrl,
         string unavailableValue)
     {
         ArgumentNullException.ThrowIfNull(introMessage);
         ArgumentNullException.ThrowIfNull(versionLabel);
         ArgumentNullException.ThrowIfNull(buildLabel);
         ArgumentNullException.ThrowIfNull(fileVersionLabel);
-        ArgumentNullException.ThrowIfNull(sourceLabel);
-        ArgumentNullException.ThrowIfNull(sourceUrl);
         ArgumentNullException.ThrowIfNull(unavailableValue);
 
         var lines = new List<string>();
@@ -33,12 +29,6 @@ internal static class AboutDialogMessageBuilder
         lines.Add($"{versionLabel}: {Normalize(version, unavailableValue)}");
         lines.Add($"{buildLabel}: {Normalize(build, unavailableValue)}");
         lines.Add($"{fileVersionLabel}: {Normalize(fileVersion, unavailableValue)}");
-
-        if (!string.IsNullOrWhiteSpace(sourceUrl))
-        {
-            lines.Add(string.Empty);
-            lines.Add($"{sourceLabel}: {sourceUrl.Trim()}");
-        }
 
         return string.Join(Environment.NewLine, lines);
     }

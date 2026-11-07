@@ -690,4 +690,10 @@
   <data name="StateRecoveryFailed" xml:space="preserve">
     <value>Gespeicherte Downloads konnten nicht wiederhergestellt werden. Wiederherstellungsdateien wurden aufbewahrt. Stellen Sie eine gültige Sicherung wieder her und versuchen Sie es erneut.</value>
   </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>Feedback und Bewertung</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>Öffne den Store, um die App zu bewerten oder eine Rezension zu schreiben.</value>
+  </data>
 </root>

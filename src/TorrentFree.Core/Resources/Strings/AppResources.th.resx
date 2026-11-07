@@ -690,4 +690,10 @@
   <data name="StateRecoveryFailed" xml:space="preserve">
     <value>ไม่สามารถกู้คืนการดาวน์โหลดที่บันทึกไว้ได้ ไฟล์กู้คืนยังคงอยู่ โปรดคืนค่าข้อมูลสำรองที่ถูกต้องแล้วลองอีกครั้ง</value>
   </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>ความคิดเห็นและการให้คะแนน</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>เปิดร้านค้าเพื่อให้คะแนนแอปหรือเขียนรีวิว</value>
+  </data>
 </root>

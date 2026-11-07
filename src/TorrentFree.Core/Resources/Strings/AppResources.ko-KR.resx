@@ -690,4 +690,10 @@
   <data name="StateRecoveryFailed" xml:space="preserve">
     <value>저장된 다운로드를 복구할 수 없습니다. 복구 파일은 보존되었습니다. 유효한 백업을 복원하고 다시 시도하세요.</value>
   </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>피드백 및 평가</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>스토어를 열어 앱을 평가하거나 리뷰를 작성하세요.</value>
+  </data>
 </root>

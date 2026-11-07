@@ -690,4 +690,10 @@
   <data name="StateRecoveryFailed" xml:space="preserve">
     <value>Saved downloads could not be recovered. Recovery files were kept. Restore a valid backup and try again.</value>
   </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>Feedback and rating</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>Open the store to rate the app or write a review.</value>
+  </data>
 </root>

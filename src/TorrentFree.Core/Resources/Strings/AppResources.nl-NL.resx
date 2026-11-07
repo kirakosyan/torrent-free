@@ -690,4 +690,10 @@
   <data name="StateRecoveryFailed" xml:space="preserve">
     <value>Opgeslagen downloads konden niet worden hersteld. Herstelbestanden zijn bewaard. Zet een geldige back-up terug en probeer het opnieuw.</value>
   </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>Feedback en beoordeling</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>Open de winkel om de app te beoordelen of een recensie te schrijven.</value>
+  </data>
 </root>

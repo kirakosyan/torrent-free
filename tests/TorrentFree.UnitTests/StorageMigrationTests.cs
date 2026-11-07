@@ -96,6 +96,43 @@ public sealed class StorageMigrationTests : IDisposable
         Assert.False(StorageMigration.ContainsUserState(path));
     }
 
+    [Theory]
+    [InlineData(".tmp", false)]
+    [InlineData(".bak", false)]
+    [InlineData(".bak", true)]
+    public async Task TryMigrate_PreservesCurrentRecoveryState(string suffix, bool corruptPrimary)
+    {
+        var source = Path.Combine(_testDirectory, "legacy", "torrents.json");
+        var destination = Path.Combine(_testDirectory, "current", "torrents.json");
+        WriteStorageFile(source, torrentsJson: "[{\"id\":\"legacy-id\"}]");
+        WriteStorageFile(destination + suffix, torrentsJson: "[{\"id\":\"current-id\"}]");
+        if (corruptPrimary) File.WriteAllText(destination, "{broken");
+        var recoveryBytes = File.ReadAllBytes(destination + suffix);
+
+        Assert.False(StorageMigration.TryMigrate(destination, [source]));
+        Assert.Equal(recoveryBytes, File.ReadAllBytes(destination + suffix));
+        using var storage = new StorageService(new StoragePaths(Path.GetDirectoryName(destination)!, _testDirectory));
+        Assert.Equal("current-id", Assert.Single(await storage.LoadTorrentsAsync()).Id);
+    }
+
+    [Theory]
+    [InlineData(".tmp")]
+    [InlineData(".bak")]
+    public async Task TryMigrate_DoesNotHideDamagedRecoveryStateWithLegacyData(string suffix)
+    {
+        var source = Path.Combine(_testDirectory, "legacy", "torrents.json");
+        var destination = Path.Combine(_testDirectory, "current", "torrents.json");
+        WriteStorageFile(source, torrentsJson: "[{\"id\":\"legacy-id\"}]");
+        Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+        File.WriteAllText(destination + suffix, "{broken");
+
+        Assert.False(StorageMigration.TryMigrate(destination, [source]));
+        Assert.False(File.Exists(destination));
+        using var storage = new StorageService(new StoragePaths(Path.GetDirectoryName(destination)!, _testDirectory));
+        await Assert.ThrowsAsync<JsonException>(() => storage.LoadTorrentsAsync());
+        Assert.Equal("{broken", File.ReadAllText(destination + suffix));
+    }
+
     private static void WriteStorageFile(
         string path,
         string torrentsJson = "[]",

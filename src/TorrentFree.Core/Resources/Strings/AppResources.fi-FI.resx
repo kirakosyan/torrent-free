@@ -690,4 +690,10 @@
   <data name="StateRecoveryFailed" xml:space="preserve">
     <value>Tallennettuja latauksia ei voitu palauttaa. Palautustiedostot säilytettiin. Palauta kelvollinen varmuuskopio ja yritä uudelleen.</value>
   </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>Palaute ja arviointi</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>Avaa kauppa ja arvioi sovellus tai kirjoita arvostelu.</value>
+  </data>
 </root>

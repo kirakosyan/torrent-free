@@ -699,7 +699,7 @@
                                                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                                                        FontSize="12" Padding="8,4" MinimumHeightRequest="44"
                                                                        HorizontalOptions="Start" VerticalOptions="Center"/>
-                                                               <FlexLayout Grid.Column="1" Wrap="Wrap" JustifyContent="End" AlignItems="Center">
+                                                               <controls:ActionWrapLayout Grid.Column="1" VerticalOptions="Center">
                                                                 <Button Margin="4,0,4,4" Text="▶️"
                                                                         SemanticProperties.Description="{helpers:Translate StartButton}"
                                                                         Style="{StaticResource StartButton}"
@@ -737,7 +737,7 @@
                                                                         Style="{StaticResource RemoveButton}"
                                                                        Command="{Binding RemoveSpecificTorrentCommand}"
                                                                        CommandParameter="{Binding .}"/>
-                                                               </FlexLayout>
+                                                               </controls:ActionWrapLayout>
                                                         </Grid>
                                                  </Grid>
                                           </Border>

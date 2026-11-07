@@ -676,4 +676,10 @@
   <data name="StateRecoveryFailed" xml:space="preserve">
     <value>تعذر استعادة التنزيلات المحفوظة. تم الاحتفاظ بملفات الاسترداد. استعد نسخة احتياطية صالحة وحاول مجددًا.</value>
   </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>الملاحظات والتقييم</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>افتح المتجر لتقييم التطبيق أو كتابة مراجعة.</value>
+  </data>
 </root>

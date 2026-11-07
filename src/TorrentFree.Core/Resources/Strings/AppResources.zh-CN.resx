@@ -690,4 +690,10 @@
   <data name="StateRecoveryFailed" xml:space="preserve">
     <value>无法恢复已保存的下载。恢复文件已保留。请还原有效的备份后重试。</value>
   </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>反馈与评分</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>打开应用商店，为应用评分或撰写评价。</value>
+  </data>
 </root>

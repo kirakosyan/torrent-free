@@ -704,4 +704,10 @@
   <data name="StateRecoveryFailed" xml:space="preserve">
     <value>Не удалось восстановить сохранённые загрузки. Файлы восстановления сохранены. Восстановите корректную резервную копию и повторите попытку.</value>
   </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>Отзывы и оценка</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>Откройте магазин, чтобы оценить приложение или написать отзыв.</value>
+  </data>
 </root>

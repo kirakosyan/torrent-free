@@ -9,14 +9,15 @@ namespace TorrentFree;
 
 public partial class MainPage : ContentPage
 {
-    private const string GitHubUrl = "https://github.com/kirakosyan/torrent-free";
+    private readonly IAppStore _appStore;
     private Window? _promptWindow;
     private bool _isPageVisible;
     private CancellationTokenSource? _notificationScrollCancellation;
 
-    public MainPage(MainViewModel viewModel)
+    public MainPage(MainViewModel viewModel, IAppStore appStore)
     {
         InitializeComponent();
+        _appStore = appStore;
         BindingContext = viewModel;
         NotificationService.DownloadNotificationTapped += OnDownloadNotificationTapped;
     }
@@ -212,12 +213,10 @@ public partial class MainPage : ContentPage
                 TryGetBuildNumber(),
                 LocalizationResourceManager.Instance["AboutFileVersionLabel"],
                 TryGetFileVersion(),
-                LocalizationResourceManager.Instance["AboutSourceLabel"],
-                GitHubUrl,
                 LocalizationResourceManager.Instance["AboutUnavailable"]);
 
             if (!Navigation.ModalStack.OfType<AboutPage>().Any())
-                await Navigation.PushModalAsync(new AboutPage(aboutMessage, GitHubUrl));
+                await Navigation.PushModalAsync(new AboutPage(aboutMessage, _appStore));
         }
         catch (Exception ex)
         {

@@ -42,6 +42,13 @@ internal static class StorageMigration
             return false;
         }
 
+        // Recovery files belong to the current installation, even when damaged.
+        // Let StorageService recover them or report the failure before legacy data can replace them.
+        if (File.Exists(destinationFile + ".tmp") || File.Exists(destinationFile + ".bak"))
+        {
+            return false;
+        }
+
         var sourceFile = sourceFiles
             .Where(static path => !string.IsNullOrWhiteSpace(path))
             .Where(path => !PathsReferToSameFile(path, destinationFile))

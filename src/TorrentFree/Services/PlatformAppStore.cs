@@ -102,6 +102,19 @@ public sealed class PlatformAppStore : IAppStore
 #endif
     });
 
+    public Task<bool> OpenReviewPageAsync() => MainThread.InvokeOnMainThreadAsync(async () =>
+    {
+#if WINDOWS
+        if (await TryLaunchAsync("ms-windows-store://review/?ProductId=9NNX2ZTPXC26")) return true;
+        return await TryLaunchAsync("https://apps.microsoft.com/detail/9NNX2ZTPXC26");
+#elif ANDROID
+        return await OpenAndroidLinkAsync(AndroidStoreRouting.GetManualReviewLink(GetAndroidStore(), AppInfo.Current.PackageName));
+#else
+        await Task.CompletedTask;
+        return false;
+#endif
+    });
+
     public Task<AppReviewResult> RequestReviewAsync() => MainThread.InvokeOnMainThreadAsync(async () =>
     {
 #if WINDOWS

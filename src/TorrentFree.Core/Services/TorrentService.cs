@@ -2875,7 +2875,7 @@ public partial class TorrentService : ITorrentService
                 else
                     _pendingProgressSave = true;
 
-                if (previousStatus == DownloadStatus.Downloading && currentStatus != DownloadStatus.Downloading)
+                if (previousStatus is DownloadStatus.Downloading or DownloadStatus.Seeding && previousStatus != currentStatus)
                 {
                     try
                     {
@@ -2883,7 +2883,7 @@ public partial class TorrentService : ITorrentService
                     }
                     catch (Exception ex)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Queue drain error after '{torrent.Name}' left Downloading: {ex.Message}");
+                        System.Diagnostics.Debug.WriteLine($"Queue drain error after '{torrent.Name}' left {previousStatus}: {ex.Message}");
                     }
                 }
 
@@ -2916,25 +2916,33 @@ public partial class TorrentService : ITorrentService
             System.Diagnostics.Debug.WriteLine($"Monitor error: {ex.Message}");
             try
             {
-                await using var operationLock = await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalToken);
-                if (!cancellationToken.IsCancellationRequested)
+                var releasedSlot = false;
+                await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalToken))
                 {
-                    var stopped = false;
-                    try { await StopManagerAsync(manager).ConfigureAwait(false); stopped = true; }
-                    catch (Exception stopError) { System.Diagnostics.Debug.WriteLine($"Monitor cleanup failed: {stopError}"); }
-                    await _dispatcher.InvokeAsync(() =>
+                    if (!cancellationToken.IsCancellationRequested)
                     {
-                        if (stopped)
+                        var stopped = false;
+                        try { await StopManagerAsync(manager).ConfigureAwait(false); stopped = true; }
+                        catch (Exception stopError) { System.Diagnostics.Debug.WriteLine($"Monitor cleanup failed: {stopError}"); }
+                        await _dispatcher.InvokeAsync(() =>
                         {
-                            UpdateSeedingTime(torrent, active: false);
-                            torrent.DownloadSpeed = 0;
-                            torrent.UploadSpeed = 0;
-                            torrent.Status = DownloadStatus.Failed;
-                        }
-                        // If stopping failed, retain active controls so the user can retry.
-                        torrent.ErrorMessage = ex.Message;
-                    }).ConfigureAwait(false);
+                            if (stopped)
+                            {
+                                releasedSlot = torrent.Status is DownloadStatus.Downloading or DownloadStatus.Seeding;
+                                UpdateSeedingTime(torrent, active: false);
+                                torrent.DownloadSpeed = 0;
+                                torrent.UploadSpeed = 0;
+                                torrent.Status = DownloadStatus.Failed;
+                            }
+                            // If stopping failed, retain active controls so the user can retry.
+                            torrent.ErrorMessage = ex.Message;
+                        }).ConfigureAwait(false);
+                    }
                 }
+
+                // Starting queued work can take other torrent locks, so release this one first.
+                if (releasedSlot)
+                    await TryStartQueuedTorrentsAsync().ConfigureAwait(false);
             }
             catch (OperationCanceledException) when (_disposalToken.IsCancellationRequested) { }
             catch (ObjectDisposedException) when (_disposed) { }
