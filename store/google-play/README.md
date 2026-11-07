@@ -4,11 +4,20 @@ Package `com.torrentfree.app`, listed as **Torrent Client - Downloader**.
 
 ## Current release
 
+**1.24 / code 29** was submitted to production on **November 7, 2026 at 20:28
+Europe/Oslo** as submission **23**. Play Console shows **In review**, with quick
+checks underway at submission. Full rollout is set for all existing targeted
+countries. Managed publishing is off. Play accepted all 26 release notes,
+embedded R8 mapping, and native debug symbols. The bundle retains API 23 minimum
+and targets API 36. See the [1.24 release record](../microsoft-store/release-notes-1.24.md).
+
+## Version 1.23
+
 **1.23 / code 28** was submitted on **October 8, 2026 at 22:47 Europe/Oslo
 (20:47 UTC)**, submission **22**, production release **12**. Status: **In review**;
 initial automated checks were still running. Full rollout is requested across the
 existing 178 countries/regions. Managed publishing is off, so approval triggers
-publication. **1.23 is not live yet.**
+publication. **1.23 went live on October 9, 2026**, verified November 7.
 
 Adds torrent file selection, search, saved choices, selected-file progress and a
 responsive mobile picker. All 26 release notes, embedded ReTrace mapping and
@@ -17,8 +26,6 @@ unsupported devices. **Android 6.0 / API 23 is retained**; the owner approved
 disabling the optional installer check, while Play app signing remains enabled.
 Superseded 1.21/1.22 tags and artifacts remain unchanged and were never submitted.
 See the [1.23 release record](../microsoft-store/release-notes-1.23.md).
-
-Version **1.19 / code 24 is live**, published October 4 and verified October 8.
 
 ## Previous release history
 
@@ -59,9 +66,8 @@ also checks the length limits. The Play default language is en-GB (filled from t
 English text). Spanish is written once for `es-419` and `es-ES`; Ukrainian exists only
 on Play.
 
-`release-notes-1.23.txt` is in Play Console's multi-language format: paste it into the
-release notes box of the production release as is. The generator retains the 1.16
-base listing; the 1.23 notes are maintained separately.
+`release-notes-1.24.txt` uses Play Console's multi-language format and can be pasted
+into the production release notes box. The generator retains the 1.16 base listing.
 
 Translations inherit the default graphics, so only the text needs updating per language.
 Version 1.16 (code 21) and this listing were sent for review on September 27, 2026,

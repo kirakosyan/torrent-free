@@ -40,6 +40,19 @@ Thank you! Torrent Free remains free to use, and donations are entirely optional
 
 ## 📝 Release Overview
 
+Version **1.24** (Android code **29**, Windows **1.24.0.0** for x64 and ARM64)
+adds compact download cards, search and status filters for larger queues,
+copyable error details, and Feedback and rating in About. It also improves
+saved download recovery, queue handling, and completion notification navigation.
+
+Submitted on **November 7, 2026**. Microsoft Store submission **21** is
+**In certification**. Google Play submission **23** is **In review** for a full
+production rollout. Both stores are set to publish automatically after approval.
+Version **1.23** is still the live release on both stores at the time of verification.
+See the [1.24 release record](store/microsoft-store/release-notes-1.24.md).
+
+### Version 1.23
+
 Version **1.23** (Android code **28**, Windows **1.23.0.0**, x64 and ARM64) adds
 torrent file selection: search files and folders, choose what to download, review
 the selected size, and change saved choices later. Progress reflects the chosen
@@ -49,9 +62,9 @@ PR [#24](https://github.com/kirakosyan/torrent-free/pull/24) is merged into `mai
 Initially submitted to all three stores on **October 8, 2026**. Last verified status:
 
 - **Google Play:** submission **22**, production release **12**, **1.23 / code 28**;
-  **In review**, verified **October 8, 22:47 Europe/Oslo**.
+  **Published October 9**, verified November 7, 2026.
 - **Microsoft Store:** submission **20**, **1.23.0.0 x64/ARM64**;
-  **Resubmitted and In certification**, verified **October 9, 09:36 Europe/Oslo**.
+  **Published**, verified November 7, 2026, after resubmission on October 9.
 - **Huawei AppGallery:** version record **2057049026322245120**, **1.23 / code 28**;
   **Reviewing**, verified **October 8, 22:48 Europe/Oslo**.
 
@@ -59,9 +72,8 @@ Microsoft rejected the legacy `torrent free` search keyword (policy 10.1.3).
 The October 9 resubmission replaces it with `file download` in all 31 languages
 and uses `Torrent Client App` as the sort title. The same Windows packages are retained.
 
-Version **1.23 is pending in the last verified store states**; each store publishes after
-approval. Android 6.0 support is retained, and Google reports zero newly unsupported
-devices. All **428 local Release tests** and **five store-configuration tests** passed;
+Android 6.0 support was retained, and Google reported zero newly unsupported
+devices for 1.23. All **428 local Release tests** and **five store-configuration tests** passed;
 the picker was also checked on a physical Android phone in portrait and landscape.
 CI builds and Linux tests passed; Windows CI still hits an existing resume-file
 locking failure (427/428 tests passed on both attempts).

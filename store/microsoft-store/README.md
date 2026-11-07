@@ -2,13 +2,22 @@
 
 ## Current release
 
+**1.24 / build 29 / MSIX 1.24.0.0 (x64 and ARM64)** was submitted on
+**November 7, 2026** as submission **21** (`1152921505702342637`). Partner Center
+shows **In certification** with automatic publication after approval. Both
+packages validated. A fresh export verified all 31 localized release notes and
+preserved the remaining listing fields and assets. Desktop and Windows Team
+availability were retained. See the [1.24 release record](release-notes-1.24.md).
+
+## Version 1.23
+
 **1.23 / build 28 / MSIX 1.23.0.0 (x64 and ARM64)** was initially submitted on
 **October 8, 2026**, submission **20** (`1152921505702078202`). Microsoft rejected
 the legacy search keyword `torrent free` under policy **10.1.3 Search Terms**.
 
 **Resubmitted October 9, 2026**, with **In certification** verified at
-**09:36 Europe/Oslo**. **1.23 is not live yet**; publication is automatic
-after certification. All 31 languages now use `file download` instead of the
+**09:36 Europe/Oslo**. **1.23 is live**, verified November 7, 2026.
+All 31 languages use `file download` instead of the
 rejected keyword and `Torrent Client App` as the sort title. A fresh export
 confirmed every other listing field and asset was preserved. Reviewer notes
 explain the correction. The same validated packages, hashes and v1.23 tag are
@@ -20,8 +29,6 @@ against a fresh export, with every other field and image unchanged. Certificatio
 instructions describe the new file-selection workflow. Existing availability and
 mandatory-update settings are preserved; Xbox remains unchecked.
 See the [1.23 release record](release-notes-1.23.md).
-
-Version **1.19 is live**, verified October 8. Submission 19 is the Store presence.
 
 ## Previous release history
 
@@ -68,7 +75,7 @@ Store and Play length limits and regenerates:
 - `STORE_DESCRIPTION.md` and the Google Play files under `store/google-play`
 
 The generator retains the 1.16 base listing. The current update uses
-`release-notes-1.23.json`. Start with a fresh Partner Center export and replace
+`release-notes-1.24.json`. Start with a fresh Partner Center export and replace
 only the `ReleaseNotes` values. Preserve the original non-asset text rows,
 including `Feature*`, `SearchTerm*`, hardware requirements and the
 `OverrideLogosForWin10` flag in the import: omitting these can clear optional
