@@ -9,6 +9,133 @@ namespace TorrentFree.UnitTests;
 public sealed class DownloadListViewModelTests
 {
     [Fact]
+    public void FilteredOutSelection_ClearsDetailsAndListVisibilityIsUnambiguous()
+    {
+        var queue = Queue();
+        using var model = new DownloadListViewModel(queue);
+        model.ShowSpecificTorrentLimitsCommand.Execute(queue[0]);
+        model.DownloadSearchText = "missing";
+        Assert.Null(model.SelectedTorrent);
+        Assert.False(model.CanShowSelectedTorrentDetails);
+        Assert.False(model.ShowDownloadList);
+        Assert.True(model.NoMatchingDownloads);
+        Assert.False(model.ShowEmptyDownloads);
+        model.ClearDownloadFiltersCommand.Execute(null);
+        Assert.True(model.ShowDownloadList);
+        Assert.Null(model.SelectedTorrent);
+    }
+
+    [Fact]
+    public void CompletedFilter_OnlyRefreshesAtMembershipTransitions()
+    {
+        var queue = Queue(1000);
+        using var model = new DownloadListViewModel(queue) { SortByStatus = true };
+        model.SelectedDownloadFilter = model.DownloadFilters.Single(f => f.Filter == DownloadFilter.Completed);
+        var projections = 0;
+        model.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(model.ShowDownloadList)) projections++; };
+        foreach (var torrent in queue) torrent.Progress = 50;
+        Assert.Equal(0, projections);
+        queue[0].Progress = 100;
+        Assert.Equal(1, projections);
+        queue[0].DateCompleted = DateTime.Now;
+        queue[0].Progress = 99;
+        Assert.Equal(1, projections);
+        queue[0].DateCompleted = null;
+        Assert.Equal(2, projections);
+        Assert.Empty(model.DisplayTorrents);
+    }
+
+    [Fact]
+    public void HiddenControls_ResetBothFiltersWithOneProjection()
+    {
+        var queue = Queue();
+        using var model = new DownloadListViewModel(queue) { DownloadSearchText = "missing" };
+        model.SelectedDownloadFilter = model.DownloadFilters.Single(f => f.Filter == DownloadFilter.Completed);
+        var projections = 0;
+        model.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(model.ShowDownloadList)) projections++; };
+        queue.RemoveAt(0);
+        Assert.Equal(1, projections);
+        Assert.Equal(queue, model.DisplayTorrents);
+    }
+
+    [Fact]
+    public void LanguageChange_ReplacesPickerItemsAndPreservesSelectedFilter()
+    {
+        using var model = new DownloadListViewModel(Queue());
+        model.SelectedDownloadFilter = model.DownloadFilters.Single(f => f.Filter == DownloadFilter.Completed);
+        var previousItems = model.DownloadFilters;
+        var culture = System.Globalization.CultureInfo.CurrentUICulture;
+        try
+        {
+            LocalizationResourceManager.Instance.SetCulture(new System.Globalization.CultureInfo("de-DE"));
+            Assert.NotSame(previousItems, model.DownloadFilters);
+            Assert.Equal(DownloadFilter.Completed, model.SelectedDownloadFilter!.Filter);
+            Assert.Equal(LocalizationResourceManager.Instance["StatusCompleted"], model.SelectedDownloadFilter.Label);
+            Assert.Contains(model.SelectedDownloadFilter, model.DownloadFilters);
+        }
+        finally { LocalizationResourceManager.Instance.SetCulture(culture); }
+    }
+
+    [Fact]
+    public void ObservationHooks_PrepareInitialRowsAndDoNotChurnOnMoves()
+    {
+        var queue = Queue();
+        var model = new ObservingList(queue);
+        Assert.Equal(6, model.Attached.Count);
+        Assert.All(model.DisplayTorrents, torrent => Assert.NotNull(torrent.ShowErrorDetailsCommand));
+        queue.Move(0, 3);
+        Assert.Equal(6, model.Attached.Count);
+        Assert.Empty(model.Detached);
+        var removed = queue[0];
+        queue.RemoveAt(0);
+        Assert.Same(removed, Assert.Single(model.Detached));
+        model.Dispose();
+        Assert.Equal(6, model.Detached.Count);
+    }
+
+    private sealed class ObservingList : DownloadListViewModel
+    {
+        public List<TorrentItem> Attached { get; } = [];
+        public List<TorrentItem> Detached { get; } = [];
+        public ObservingList(ObservableCollection<TorrentItem> torrents) : base(torrents, initialize: false) => InitializeDownloads();
+        protected override void OnTorrentObserved(TorrentItem torrent)
+        {
+            Attached.Add(torrent);
+            torrent.ShowErrorDetailsCommand = new CommunityToolkit.Mvvm.Input.RelayCommand(() => { });
+        }
+        protected override void OnTorrentUnobserved(TorrentItem torrent) => Detached.Add(torrent);
+    }
+
+    [Fact]
+    public void InitializationFailure_KeepsRetryAndEmptyStateInSync()
+    {
+        using var model = new DownloadListViewModel(Queue(0));
+        Assert.True(model.ShowEmptyDownloads);
+        model.InitializationErrorMessage = "Cannot load downloads";
+        Assert.True(model.HasInitializationError);
+        Assert.False(model.ShowEmptyDownloads);
+        model.InitializationErrorMessage = null;
+        Assert.False(model.HasInitializationError);
+        Assert.True(model.ShowEmptyDownloads);
+    }
+
+    [Theory]
+    [InlineData(null, false)]
+    [InlineData("", false)]
+    [InlineData(" \t\n", false)]
+    [InlineData("Disk failure", true)]
+    public void ErrorDetails_UseSamePredicateForButtonAndHint(string? error, bool hasDetails)
+    {
+        var torrent = new TorrentItem { Status = DownloadStatus.Failed, ErrorMessage = error };
+        Assert.Equal(hasDetails, torrent.HasErrorDetails);
+        var changes = new List<string?>();
+        torrent.PropertyChanged += (_, e) => changes.Add(e.PropertyName);
+        torrent.ErrorMessage = "new details";
+        Assert.Contains(nameof(torrent.HasErrorDetails), changes);
+        Assert.Contains(nameof(torrent.StatusHint), changes);
+    }
+
+    [Fact]
     public void NewRows_ArePreparedBeforeTheyReachCollectionView()
     {
         var queue = Queue();

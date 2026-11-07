@@ -407,7 +407,7 @@ public partial class TorrentItem : ObservableObject
         {
             if (Status == DownloadStatus.Failed)
             {
-                return LocalizationResourceManager.Instance[string.IsNullOrWhiteSpace(ErrorMessage)
+                return LocalizationResourceManager.Instance[!HasErrorDetails
                     ? "HintDownloadFailed" : "DownloadFailedRecoveryHint"];
             }
 
@@ -557,8 +557,12 @@ public partial class TorrentItem : ObservableObject
         OnPropertyChanged(nameof(FormattedEstimatedTime));
     }
 
+    [JsonIgnore]
+    public bool HasErrorDetails => !string.IsNullOrWhiteSpace(ErrorMessage);
+
     partial void OnErrorMessageChanged(string? value)
     {
+        OnPropertyChanged(nameof(HasErrorDetails));
         OnPropertyChanged(nameof(StatusHint));
     }
 

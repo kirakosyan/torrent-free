@@ -9,11 +9,10 @@ namespace TorrentFree.Models;
 
 public enum DownloadFilter { All, Active, Completed, Paused, NeedsAttention }
 
-public sealed class DownloadFilterOption(DownloadFilter filter, string resourceKey) : ObservableObject
+public sealed class DownloadFilterOption(DownloadFilter filter, string resourceKey)
 {
     public DownloadFilter Filter { get; } = filter;
     public string Label => LocalizationResourceManager.Instance[resourceKey];
-    internal void RefreshLabel() => OnPropertyChanged(nameof(Label));
 }
 
 /// <summary>The live, filtered projection of the queue. Filtering never changes transfer state.</summary>
@@ -21,10 +20,15 @@ public partial class DownloadListViewModel : DownloadSelectionViewModel, IDispos
 {
     private readonly ObservableCollection<TorrentItem> _torrents;
     private readonly HashSet<TorrentItem> _observed = [];
+    private HashSet<TorrentItem> _visible = [];
+    private bool _updatingFilters;
+    private bool _initialized;
     private bool _disposed;
 
     public ObservableCollection<TorrentItem> DisplayTorrents { get; } = [];
-    public IReadOnlyList<DownloadFilterOption> DownloadFilters { get; } =
+    public IReadOnlyList<DownloadFilterOption> DownloadFilters { get; private set; } = CreateDownloadFilters();
+
+    private static IReadOnlyList<DownloadFilterOption> CreateDownloadFilters() =>
     [
         new(DownloadFilter.All, "FilterAllDownloads"),
         new(DownloadFilter.Active, "FilterActiveDownloads"),
@@ -44,11 +48,27 @@ public partial class DownloadListViewModel : DownloadSelectionViewModel, IDispos
 
     public bool ShowDownloadSearch => _torrents.Count > 5;
     public bool NoMatchingDownloads => ShowDownloadSearch && DisplayTorrents.Count == 0;
+    public bool ShowDownloadList => DisplayTorrents.Count > 0;
+    public bool IsEmpty => _torrents.Count == 0;
+    public bool ShowEmptyDownloads => IsEmpty && !HasInitializationError;
+    public bool HasInitializationError => !string.IsNullOrWhiteSpace(InitializationErrorMessage);
 
-    public DownloadListViewModel(ObservableCollection<TorrentItem> torrents)
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasInitializationError))]
+    [NotifyPropertyChangedFor(nameof(ShowEmptyDownloads))]
+    public partial string? InitializationErrorMessage { get; set; }
+
+    public DownloadListViewModel(ObservableCollection<TorrentItem> torrents, bool initialize = true)
     {
         _torrents = torrents;
-        SelectedDownloadFilter = DownloadFilters[0];
+        ResetFilters();
+        if (initialize) InitializeDownloads();
+    }
+
+    protected void InitializeDownloads()
+    {
+        if (_initialized) return;
+        _initialized = true;
         _torrents.CollectionChanged += OnQueueChanged;
         LocalizationResourceManager.Instance.PropertyChanged += OnLanguageChanged;
         ObserveQueue();
@@ -57,13 +77,17 @@ public partial class DownloadListViewModel : DownloadSelectionViewModel, IDispos
 
     partial void OnDownloadSearchTextChanged(string value)
     {
-        if (!ShowDownloadSearch && !string.IsNullOrEmpty(value)) DownloadSearchText = string.Empty;
-        else RefreshDownloads();
+        OnFilterChanged();
     }
     partial void OnSelectedDownloadFilterChanged(DownloadFilterOption? value)
     {
-        if (!ShowDownloadSearch && value != DownloadFilters[0]) SelectedDownloadFilter = DownloadFilters[0];
-        else RefreshDownloads();
+        OnFilterChanged();
+    }
+    private void OnFilterChanged()
+    {
+        if (_updatingFilters) return;
+        if (!ShowDownloadSearch) ResetFilters();
+        RefreshDownloads();
     }
     partial void OnSortByStatusChanged(bool value)
     {
@@ -76,8 +100,19 @@ public partial class DownloadListViewModel : DownloadSelectionViewModel, IDispos
     [RelayCommand]
     private void ClearDownloadFilters()
     {
-        DownloadSearchText = string.Empty;
-        SelectedDownloadFilter = DownloadFilters[0];
+        ResetFilters();
+        RefreshDownloads();
+    }
+
+    private void ResetFilters()
+    {
+        _updatingFilters = true;
+        try
+        {
+            DownloadSearchText = string.Empty;
+            SelectedDownloadFilter = DownloadFilters[0];
+        }
+        finally { _updatingFilters = false; }
     }
 
     protected override void OnOpeningDownloadNotification(TorrentItem torrent)
@@ -92,22 +127,32 @@ public partial class DownloadListViewModel : DownloadSelectionViewModel, IDispos
         // Attach platform commands before publishing new rows to the UI. The command
         // properties are intentionally not persisted or observable on TorrentItem.
         OnDownloadsChanged(e);
-        if (!ShowDownloadSearch) ClearDownloadFilters();
+        if (!ShowDownloadSearch) ResetFilters();
         RefreshDownloads();
         OnPropertyChanged(nameof(ShowDownloadSearch));
+        OnPropertyChanged(nameof(IsEmpty));
+        OnPropertyChanged(nameof(ShowEmptyDownloads));
     }
 
     protected virtual void OnDownloadsChanged(NotifyCollectionChangedEventArgs e) { }
+    protected virtual void OnTorrentObserved(TorrentItem torrent) { }
+    protected virtual void OnTorrentUnobserved(TorrentItem torrent) { }
 
     private void ObserveQueue()
     {
-        foreach (var removed in _observed.Where(t => !_torrents.Contains(t)).ToArray())
+        var current = _torrents.ToHashSet();
+        foreach (var removed in _observed.Where(t => !current.Contains(t)).ToArray())
         {
             removed.PropertyChanged -= OnTorrentChanged;
             _observed.Remove(removed);
+            OnTorrentUnobserved(removed);
         }
         foreach (var torrent in _torrents)
-            if (_observed.Add(torrent)) torrent.PropertyChanged += OnTorrentChanged;
+        {
+            if (!_observed.Add(torrent)) continue;
+            torrent.PropertyChanged += OnTorrentChanged;
+            OnTorrentObserved(torrent);
+        }
     }
 
     private void OnTorrentChanged(object? sender, PropertyChangedEventArgs e)
@@ -120,7 +165,10 @@ public partial class DownloadListViewModel : DownloadSelectionViewModel, IDispos
             nameof(TorrentItem.Progress) or nameof(TorrentItem.DateCompleted) => filter == DownloadFilter.Completed,
             _ => false
         };
-        if (needsRefresh)
+        // Ordinary progress ticks do not change membership or ordering.
+        if (needsRefresh && sender is TorrentItem torrent
+            && ((SortByStatus && e.PropertyName is nameof(TorrentItem.Status) or nameof(TorrentItem.Name))
+                || Matches(torrent) != _visible.Contains(torrent)))
             RefreshDownloads();
     }
 
@@ -143,21 +191,27 @@ public partial class DownloadListViewModel : DownloadSelectionViewModel, IDispos
 
     private void RefreshDownloads()
     {
+        if (!_initialized) return;
         IEnumerable<TorrentItem> visible = _torrents.Where(Matches);
         if (SortByStatus)
             visible = visible.OrderBy(t => StatusOrder(t.Status)).ThenBy(t => t.Name, StringComparer.OrdinalIgnoreCase);
         var ordered = visible.ToList();
+        var previouslyVisible = _visible;
+        _visible = ordered.ToHashSet();
+        if (SelectedTorrent is { } selected && !_visible.Contains(selected))
+            SelectedTorrent = ordered.FirstOrDefault(t => t.Id == selected.Id);
         // Reconcile rather than replacing the collection, preserving scroll and row identity.
         for (var i = 0; i < ordered.Count; i++)
         {
             ordered[i].DisplayIndex = i;
             if (i < DisplayTorrents.Count && ReferenceEquals(DisplayTorrents[i], ordered[i])) continue;
-            var previousIndex = DisplayTorrents.IndexOf(ordered[i]);
+            var previousIndex = previouslyVisible.Contains(ordered[i]) ? DisplayTorrents.IndexOf(ordered[i]) : -1;
             if (previousIndex >= 0) DisplayTorrents.Move(previousIndex, i);
             else DisplayTorrents.Insert(i, ordered[i]);
         }
         while (DisplayTorrents.Count > ordered.Count) DisplayTorrents.RemoveAt(DisplayTorrents.Count - 1);
         OnPropertyChanged(nameof(NoMatchingDownloads));
+        OnPropertyChanged(nameof(ShowDownloadList));
     }
 
     private static int StatusOrder(DownloadStatus status) => status switch
@@ -175,7 +229,16 @@ public partial class DownloadListViewModel : DownloadSelectionViewModel, IDispos
 
     private void OnLanguageChanged(object? sender, PropertyChangedEventArgs e)
     {
-        foreach (var option in DownloadFilters) option.RefreshLabel();
+        var filter = SelectedDownloadFilter?.Filter ?? DownloadFilter.All;
+        _updatingFilters = true;
+        try
+        {
+            // Native pickers cache item labels, so replace their source on language changes.
+            DownloadFilters = CreateDownloadFilters();
+            OnPropertyChanged(nameof(DownloadFilters));
+            SelectedDownloadFilter = DownloadFilters.Single(option => option.Filter == filter);
+        }
+        finally { _updatingFilters = false; }
         foreach (var torrent in _observed) torrent.RefreshLocalizableProperties();
     }
 
@@ -185,8 +248,13 @@ public partial class DownloadListViewModel : DownloadSelectionViewModel, IDispos
         _disposed = true;
         _torrents.CollectionChanged -= OnQueueChanged;
         LocalizationResourceManager.Instance.PropertyChanged -= OnLanguageChanged;
-        foreach (var torrent in _observed) torrent.PropertyChanged -= OnTorrentChanged;
+        foreach (var torrent in _observed)
+        {
+            torrent.PropertyChanged -= OnTorrentChanged;
+            OnTorrentUnobserved(torrent);
+        }
         _observed.Clear();
+        _visible.Clear();
         GC.SuppressFinalize(this);
     }
 }

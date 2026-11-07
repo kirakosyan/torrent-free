@@ -318,9 +318,6 @@
   <data name="AboutFileVersionLabel" xml:space="preserve">
     <value>Verze souboru</value>
   </data>
-  <data name="AboutSourceLabel" xml:space="preserve">
-    <value>Zdroj</value>
-  </data>
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/a</value>
   </data>
@@ -338,9 +335,6 @@
   </data>
   <data name="ErrorOpenBrowser" xml:space="preserve">
     <value>Prohlížeč se nepodařilo otevřít. Zkontrolujte, zda je nainstalován výchozí prohlížeč, a zkuste to znovu.</value>
-  </data>
-  <data name="OpenSource" xml:space="preserve">
-    <value>Otevřený zdroj</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
@@ -688,7 +682,7 @@
     <value>Stahování selhalo. Zkontrolujte podrobnosti chyby a zkuste znovu spustit.</value>
   </data>
   <data name="StateRecoveryFailed" xml:space="preserve">
-    <value>Uložená stahování se nepodařilo obnovit. Soubory pro obnovu byly zachovány. Obnovte platnou zálohu a zkuste to znovu.</value>
+    <value>Uložená stahování nelze přečíst. Existující soubory stavu byly zachovány. Obnovte platná uložená data a zkuste to znovu.</value>
   </data>
   <data name="StoreFeedbackAction" xml:space="preserve">
     <value>Zpětná vazba a hodnocení</value>

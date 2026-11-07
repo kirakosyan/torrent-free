@@ -318,9 +318,6 @@
   <data name="AboutFileVersionLabel" xml:space="preserve">
     <value>파일 버전</value>
   </data>
-  <data name="AboutSourceLabel" xml:space="preserve">
-    <value>원천</value>
-  </data>
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/a</value>
   </data>
@@ -338,9 +335,6 @@
   </data>
   <data name="ErrorOpenBrowser" xml:space="preserve">
     <value>브라우저를 열 수 없습니다. 기본 브라우저가 설치되어 있는지 확인한 후 다시 시도하세요.</value>
-  </data>
-  <data name="OpenSource" xml:space="preserve">
-    <value>오픈 소스</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>확인</value>
@@ -688,7 +682,7 @@
     <value>다운로드에 실패했습니다. 오류 세부 정보를 확인한 후 다시 시작해 보세요.</value>
   </data>
   <data name="StateRecoveryFailed" xml:space="preserve">
-    <value>저장된 다운로드를 복구할 수 없습니다. 복구 파일은 보존되었습니다. 유효한 백업을 복원하고 다시 시도하세요.</value>
+    <value>저장된 다운로드를 읽을 수 없습니다. 기존 상태 파일은 보존되었습니다. 유효한 저장 데이터를 복원한 후 다시 시도하세요.</value>
   </data>
   <data name="StoreFeedbackAction" xml:space="preserve">
     <value>피드백 및 평가</value>

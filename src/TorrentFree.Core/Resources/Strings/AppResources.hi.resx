@@ -318,9 +318,6 @@
   <data name="AboutFileVersionLabel" xml:space="preserve">
     <value>फाइल संस्करण</value>
   </data>
-  <data name="AboutSourceLabel" xml:space="preserve">
-    <value>स्रोत कोड</value>
-  </data>
   <data name="AboutUnavailable" xml:space="preserve">
     <value>उपलब्ध नहीं</value>
   </data>
@@ -338,9 +335,6 @@
   </data>
   <data name="ErrorOpenBrowser" xml:space="preserve">
     <value>आपका ब्राउज़र नहीं खुल सका। जाँचें कि डिफ़ॉल्ट ब्राउज़र इंस्टॉल है और फिर से कोशिश करें।</value>
-  </data>
-  <data name="OpenSource" xml:space="preserve">
-    <value>स्रोत कोड</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>ठीक है</value>
@@ -688,7 +682,7 @@
     <value>डाउनलोड विफल हुआ। त्रुटि का विवरण देखें और फिर से शुरू करने का प्रयास करें।</value>
   </data>
   <data name="StateRecoveryFailed" xml:space="preserve">
-    <value>सहेजे गए डाउनलोड पुनर्स्थापित नहीं हो सके। पुनर्प्राप्ति फ़ाइलें सुरक्षित हैं। मान्य बैकअप पुनर्स्थापित करें और फिर प्रयास करें।</value>
+    <value>सहेजे गए डाउनलोड पढ़े नहीं जा सके। मौजूदा स्थिति फ़ाइलें रखी गई हैं। मान्य सहेजा गया डेटा बहाल करें और फिर से कोशिश करें।</value>
   </data>
   <data name="StoreFeedbackAction" xml:space="preserve">
     <value>प्रतिक्रिया और रेटिंग</value>

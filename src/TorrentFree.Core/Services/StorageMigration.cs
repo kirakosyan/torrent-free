@@ -44,7 +44,8 @@ internal static class StorageMigration
 
         // Recovery files belong to the current installation, even when damaged.
         // Let StorageService recover them or report the failure before legacy data can replace them.
-        if (File.Exists(destinationFile + ".tmp") || File.Exists(destinationFile + ".bak"))
+        if (!HasReadableState(destinationFile)
+            && (File.Exists(destinationFile + ".tmp") || File.Exists(destinationFile + ".bak")))
         {
             return false;
         }
@@ -108,6 +109,19 @@ internal static class StorageMigration
             {
                 TryDelete(tempFile);
             }
+        }
+    }
+
+    private static bool HasReadableState(string path)
+    {
+        try
+        {
+            using var stream = File.OpenRead(path);
+            return JsonSerializer.Deserialize<TorrentStorageData>(stream, JsonOptions) is not null;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
+        {
+            return false;
         }
     }
 

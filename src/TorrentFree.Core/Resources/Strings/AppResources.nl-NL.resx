@@ -318,9 +318,6 @@
   <data name="AboutFileVersionLabel" xml:space="preserve">
     <value>Bestandsversie</value>
   </data>
-  <data name="AboutSourceLabel" xml:space="preserve">
-    <value>Bron</value>
-  </data>
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/a</value>
   </data>
@@ -338,9 +335,6 @@
   </data>
   <data name="ErrorOpenBrowser" xml:space="preserve">
     <value>Je browser kon niet worden geopend. Controleer of er een standaardbrowser is geïnstalleerd en probeer het opnieuw.</value>
-  </data>
-  <data name="OpenSource" xml:space="preserve">
-    <value>Open bron</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
@@ -688,7 +682,7 @@
     <value>Download mislukt. Bekijk de foutdetails en probeer opnieuw te starten.</value>
   </data>
   <data name="StateRecoveryFailed" xml:space="preserve">
-    <value>Opgeslagen downloads konden niet worden hersteld. Herstelbestanden zijn bewaard. Zet een geldige back-up terug en probeer het opnieuw.</value>
+    <value>Opgeslagen downloads konden niet worden gelezen. Bestaande statusbestanden zijn bewaard. Herstel geldige opgeslagen gegevens en probeer het opnieuw.</value>
   </data>
   <data name="StoreFeedbackAction" xml:space="preserve">
     <value>Feedback en beoordeling</value>

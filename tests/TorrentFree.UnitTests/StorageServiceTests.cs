@@ -8,7 +8,36 @@ namespace TorrentFree.UnitTests;
 public sealed class StorageServiceTests
 {
     [Theory]
-    [InlineData("{broken", null)]
+    [InlineData("{broken")]
+    [InlineData("null")]
+    [InlineData("")]
+    public async Task TornFirstSave_ArchivesEvidenceAndAllowsNewState(string contents)
+    {
+        using var directory = new CoreTestDirectory();
+        var path = Path.Combine(directory.Path, "torrents.json");
+        await File.WriteAllTextAsync(path + ".tmp", contents, TestContext.Current.CancellationToken);
+        using var storage = new StorageService(directory.StoragePaths);
+        Assert.Empty(await storage.LoadTorrentsAsync());
+        Assert.Equal(contents, File.ReadAllText(Assert.Single(Directory.GetFiles(directory.Path, "*.corrupt-*"))));
+        await storage.SaveTorrentsAsync([new TorrentItem { Id = "new" }]);
+        Assert.Equal("new", Assert.Single(await storage.LoadTorrentsAsync()).Id);
+    }
+
+    [Fact]
+    public async Task CorruptRecoveryCopies_ReportNewestFailureAndPreserveBoth()
+    {
+        using var directory = new CoreTestDirectory();
+        var path = Path.Combine(directory.Path, "torrents.json");
+        File.WriteAllText(path + ".tmp", "null");
+        File.WriteAllText(path + ".bak", "{broken");
+        using var storage = new StorageService(directory.StoragePaths);
+        var error = await Assert.ThrowsAsync<SavedStateRecoveryException>(() => storage.LoadTorrentsAsync());
+        Assert.Contains("state is null", error.InnerException!.Message);
+        Assert.Equal("null", File.ReadAllText(path + ".tmp"));
+        Assert.Equal("{broken", File.ReadAllText(path + ".bak"));
+    }
+
+    [Theory]
     [InlineData(null, "null")]
     [InlineData("{broken", "null")]
     public async Task MissingPrimaryWithCorruptRecoveryFiles_PreservesEvidenceAndBlocksSaves(string? temporary, string? backup)
@@ -18,11 +47,11 @@ public sealed class StorageServiceTests
         if (temporary is not null) await File.WriteAllTextAsync(path + ".tmp", temporary, TestContext.Current.CancellationToken);
         if (backup is not null) await File.WriteAllTextAsync(path + ".bak", backup, TestContext.Current.CancellationToken);
         using var storage = new StorageService(directory.StoragePaths);
-        await Assert.ThrowsAnyAsync<JsonException>(() => storage.LoadTorrentsAsync());
-        await Assert.ThrowsAnyAsync<JsonException>(() => storage.LoadSettingsAsync());
+        await Assert.ThrowsAsync<SavedStateRecoveryException>(() => storage.LoadTorrentsAsync());
+        await Assert.ThrowsAsync<SavedStateRecoveryException>(() => storage.LoadSettingsAsync());
         await Assert.ThrowsAsync<InvalidOperationException>(() => storage.SaveTorrentsAsync([]));
-        await Assert.ThrowsAnyAsync<JsonException>(() => storage.SaveSettingsAsync(new AppSettings()));
-        await Assert.ThrowsAnyAsync<JsonException>(() => storage.UpdateDesktopWindowStateAsync(true));
+        await Assert.ThrowsAsync<SavedStateRecoveryException>(() => storage.SaveSettingsAsync(new AppSettings()));
+        await Assert.ThrowsAsync<SavedStateRecoveryException>(() => storage.UpdateDesktopWindowStateAsync(true));
         Assert.False(File.Exists(path));
         if (temporary is not null) Assert.Equal(temporary, await File.ReadAllTextAsync(path + ".tmp", TestContext.Current.CancellationToken));
         if (backup is not null) Assert.Equal(backup, await File.ReadAllTextAsync(path + ".bak", TestContext.Current.CancellationToken));
@@ -140,10 +169,10 @@ public sealed class StorageServiceTests
         var path = Path.Combine(directory.Path, "torrents.json");
         await File.WriteAllTextAsync(path, contents, TestContext.Current.CancellationToken);
         using var storage = new StorageService(directory.StoragePaths);
-        await Assert.ThrowsAnyAsync<JsonException>(() => storage.LoadTorrentsAsync());
-        await Assert.ThrowsAnyAsync<JsonException>(() => storage.LoadSettingsAsync());
+        await Assert.ThrowsAsync<SavedStateRecoveryException>(() => storage.LoadTorrentsAsync());
+        await Assert.ThrowsAsync<SavedStateRecoveryException>(() => storage.LoadSettingsAsync());
         await Assert.ThrowsAsync<InvalidOperationException>(() => storage.SaveTorrentsAsync([]));
-        await Assert.ThrowsAnyAsync<JsonException>(() => storage.SaveSettingsAsync(new AppSettings()));
+        await Assert.ThrowsAsync<SavedStateRecoveryException>(() => storage.SaveSettingsAsync(new AppSettings()));
         Assert.Equal(contents, await File.ReadAllTextAsync(path, TestContext.Current.CancellationToken));
     }
 

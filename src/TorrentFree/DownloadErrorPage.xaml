@@ -15,6 +15,7 @@
             <VerticalStackLayout Spacing="16">
                 <Label x:Name="TorrentNameLabel" FontSize="18" FontAttributes="Bold"/>
                 <Label x:Name="ErrorDetailsLabel" FontSize="14" LineBreakMode="CharacterWrap"/>
+                <Label x:Name="CopySuccessLabel" IsVisible="False" Text="{helpers:Translate CopyErrorDetails, StringFormat='{0} ✓'}"/>
                 <Label x:Name="CopyFailureLabel" FontSize="14" IsVisible="False"/>
             </VerticalStackLayout>
         </ScrollView>

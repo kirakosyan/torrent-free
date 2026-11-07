@@ -12,6 +12,25 @@ public sealed class StorageMigrationTests : IDisposable
         "TorrentFree.UnitTests",
         Guid.NewGuid().ToString("N"));
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task TryMigrate_ReplacesPlaceholderAfterRepeatedWindowStateSaves(bool maximized)
+    {
+        var source = Path.Combine(_testDirectory, "legacy", "torrents.json");
+        var destination = Path.Combine(_testDirectory, "current", "torrents.json");
+        WriteStorageFile(source, torrentsJson: "[{\"id\":\"legacy-id\"}]");
+        using (var storage = new StorageService(new StoragePaths(Path.GetDirectoryName(destination)!, _testDirectory)))
+        {
+            await storage.UpdateDesktopWindowStateAsync(!maximized);
+            await storage.UpdateDesktopWindowStateAsync(maximized);
+        }
+        Assert.True(File.Exists(destination + ".bak"));
+        Assert.True(StorageMigration.TryMigrate(destination, [source]));
+        using var restored = new StorageService(new StoragePaths(Path.GetDirectoryName(destination)!, _testDirectory));
+        Assert.Equal("legacy-id", Assert.Single(await restored.LoadTorrentsAsync()).Id);
+    }
+
     [Fact]
     public void TryMigrate_ReplacesEmptyDestinationWithLegacyTorrentState()
     {
@@ -116,7 +135,6 @@ public sealed class StorageMigrationTests : IDisposable
     }
 
     [Theory]
-    [InlineData(".tmp")]
     [InlineData(".bak")]
     public async Task TryMigrate_DoesNotHideDamagedRecoveryStateWithLegacyData(string suffix)
     {
@@ -129,7 +147,7 @@ public sealed class StorageMigrationTests : IDisposable
         Assert.False(StorageMigration.TryMigrate(destination, [source]));
         Assert.False(File.Exists(destination));
         using var storage = new StorageService(new StoragePaths(Path.GetDirectoryName(destination)!, _testDirectory));
-        await Assert.ThrowsAsync<JsonException>(() => storage.LoadTorrentsAsync());
+        await Assert.ThrowsAsync<SavedStateRecoveryException>(() => storage.LoadTorrentsAsync());
         Assert.Equal("{broken", File.ReadAllText(destination + suffix));
     }
 

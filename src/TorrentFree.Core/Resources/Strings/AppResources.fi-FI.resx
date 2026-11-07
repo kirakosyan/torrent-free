@@ -318,9 +318,6 @@
   <data name="AboutFileVersionLabel" xml:space="preserve">
     <value>Tiedoston versio</value>
   </data>
-  <data name="AboutSourceLabel" xml:space="preserve">
-    <value>Lähde</value>
-  </data>
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/a</value>
   </data>
@@ -338,9 +335,6 @@
   </data>
   <data name="ErrorOpenBrowser" xml:space="preserve">
     <value>Selainta ei voitu avata. Tarkista, että oletusselain on asennettu, ja yritä uudelleen.</value>
-  </data>
-  <data name="OpenSource" xml:space="preserve">
-    <value>Avoin lähdekoodi</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
@@ -688,7 +682,7 @@
     <value>Lataus epäonnistui. Tarkista virheen tiedot ja yritä käynnistää uudelleen.</value>
   </data>
   <data name="StateRecoveryFailed" xml:space="preserve">
-    <value>Tallennettuja latauksia ei voitu palauttaa. Palautustiedostot säilytettiin. Palauta kelvollinen varmuuskopio ja yritä uudelleen.</value>
+    <value>Tallennettuja latauksia ei voitu lukea. Nykyiset tilatiedostot säilytettiin. Palauta kelvolliset tallennetut tiedot ja yritä uudelleen.</value>
   </data>
   <data name="StoreFeedbackAction" xml:space="preserve">
     <value>Palaute ja arviointi</value>

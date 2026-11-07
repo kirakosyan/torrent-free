@@ -329,9 +329,6 @@
   <data name="AboutFileVersionLabel" xml:space="preserve">
     <value>Versión del archivo</value>
   </data>
-  <data name="AboutSourceLabel" xml:space="preserve">
-    <value>Código fuente</value>
-  </data>
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/d</value>
   </data>
@@ -349,9 +346,6 @@
   </data>
   <data name="ErrorOpenBrowser" xml:space="preserve">
     <value>No se pudo abrir el navegador. Comprueba que haya un navegador predeterminado instalado e inténtalo de nuevo.</value>
-  </data>
-  <data name="OpenSource" xml:space="preserve">
-    <value>Código fuente</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
@@ -702,7 +696,7 @@
     <value>La descarga falló. Revisa los detalles del error e intenta iniciarla de nuevo.</value>
   </data>
   <data name="StateRecoveryFailed" xml:space="preserve">
-    <value>No se pudieron recuperar las descargas guardadas. Se conservaron los archivos de recuperación. Restaura una copia de seguridad válida e inténtalo de nuevo.</value>
+    <value>No se pudieron leer las descargas guardadas. Se conservaron los archivos de estado existentes. Restaura datos guardados válidos e inténtalo de nuevo.</value>
   </data>
   <data name="StoreFeedbackAction" xml:space="preserve">
     <value>Comentarios y valoración</value>

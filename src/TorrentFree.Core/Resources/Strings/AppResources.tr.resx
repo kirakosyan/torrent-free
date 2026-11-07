@@ -318,9 +318,6 @@
   <data name="AboutFileVersionLabel" xml:space="preserve">
     <value>Dosya sürümü</value>
   </data>
-  <data name="AboutSourceLabel" xml:space="preserve">
-    <value>Kaynak kodu</value>
-  </data>
   <data name="AboutUnavailable" xml:space="preserve">
     <value>yok</value>
   </data>
@@ -338,9 +335,6 @@
   </data>
   <data name="ErrorOpenBrowser" xml:space="preserve">
     <value>Tarayıcınız açılamadı. Varsayılan bir tarayıcının yüklü olduğunu kontrol edip yeniden deneyin.</value>
-  </data>
-  <data name="OpenSource" xml:space="preserve">
-    <value>Kaynak kodu</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>Tamam</value>
@@ -688,7 +682,7 @@
     <value>İndirme başarısız oldu. Hata ayrıntılarını kontrol edip yeniden başlatmayı deneyin.</value>
   </data>
   <data name="StateRecoveryFailed" xml:space="preserve">
-    <value>Kaydedilen indirmeler kurtarılamadı. Kurtarma dosyaları korundu. Geçerli bir yedeği geri yükleyip yeniden deneyin.</value>
+    <value>Kaydedilen indirmeler okunamadı. Mevcut durum dosyaları korundu. Geçerli kayıtlı verileri geri yükleyip tekrar deneyin.</value>
   </data>
   <data name="StoreFeedbackAction" xml:space="preserve">
     <value>Geri bildirim ve puanlama</value>

@@ -4,6 +4,7 @@ public partial class DownloadErrorPage : ContentPage
 {
     private readonly string _error;
     private bool _closing;
+    private bool _copying;
 
     public DownloadErrorPage(string torrentName, string error)
     {
@@ -14,17 +15,24 @@ public partial class DownloadErrorPage : ContentPage
 
     private async void OnCopyClicked(object? sender, EventArgs e)
     {
+        if (_copying) return;
+        _copying = true;
         CopyButton.IsEnabled = false;
+        CopySuccessLabel.IsVisible = false;
         CopyFailureLabel.IsVisible = false;
         try
         {
             await Clipboard.Default.SetTextAsync(_error);
-            CopyButton.Text = Services.LocalizationResourceManager.Instance["CopyErrorDetails"] + " ✓";
+            CopySuccessLabel.IsVisible = true;
         }
         catch (Exception ex)
         {
             CopyFailureLabel.Text = ex.Message;
             CopyFailureLabel.IsVisible = true;
+        }
+        finally
+        {
+            _copying = false;
             CopyButton.IsEnabled = true;
         }
     }

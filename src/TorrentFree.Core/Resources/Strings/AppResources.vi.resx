@@ -318,9 +318,6 @@
   <data name="AboutFileVersionLabel" xml:space="preserve">
     <value>Phiên bản tập tin</value>
   </data>
-  <data name="AboutSourceLabel" xml:space="preserve">
-    <value>Nguồn</value>
-  </data>
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/a</value>
   </data>
@@ -338,9 +335,6 @@
   </data>
   <data name="ErrorOpenBrowser" xml:space="preserve">
     <value>Không thể mở trình duyệt. Vui lòng kiểm tra xem trình duyệt mặc định đã được cài đặt chưa rồi thử lại.</value>
-  </data>
-  <data name="OpenSource" xml:space="preserve">
-    <value>Nguồn mở</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
@@ -688,7 +682,7 @@
     <value>Tải xuống thất bại. Kiểm tra chi tiết lỗi rồi thử bắt đầu lại.</value>
   </data>
   <data name="StateRecoveryFailed" xml:space="preserve">
-    <value>Không thể khôi phục các bản tải xuống đã lưu. Các tệp khôi phục được giữ nguyên. Hãy khôi phục bản sao lưu hợp lệ rồi thử lại.</value>
+    <value>Không thể đọc các bản tải xuống đã lưu. Các tệp trạng thái hiện có được giữ nguyên. Hãy khôi phục dữ liệu đã lưu hợp lệ và thử lại.</value>
   </data>
   <data name="StoreFeedbackAction" xml:space="preserve">
     <value>Phản hồi và đánh giá</value>

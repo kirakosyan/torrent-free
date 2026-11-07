@@ -318,9 +318,6 @@
   <data name="AboutFileVersionLabel" xml:space="preserve">
     <value>Versiunea fișierului</value>
   </data>
-  <data name="AboutSourceLabel" xml:space="preserve">
-    <value>Sursă</value>
-  </data>
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/a</value>
   </data>
@@ -338,9 +335,6 @@
   </data>
   <data name="ErrorOpenBrowser" xml:space="preserve">
     <value>Browserul nu a putut fi deschis. Verifică dacă este instalat un browser implicit și încearcă din nou.</value>
-  </data>
-  <data name="OpenSource" xml:space="preserve">
-    <value>Sursă deschisă</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
@@ -688,7 +682,7 @@
     <value>Descărcarea a eșuat. Verifică detaliile erorii, apoi încearcă să pornești din nou.</value>
   </data>
   <data name="StateRecoveryFailed" xml:space="preserve">
-    <value>Descărcările salvate nu au putut fi recuperate. Fișierele de recuperare au fost păstrate. Restaurează o copie de siguranță validă și încearcă din nou.</value>
+    <value>Descărcările salvate nu au putut fi citite. Fișierele de stare existente au fost păstrate. Restaurați date salvate valide și încercați din nou.</value>
   </data>
   <data name="StoreFeedbackAction" xml:space="preserve">
     <value>Feedback și evaluare</value>

@@ -47,6 +47,10 @@
                      <Color x:Key="AccentColorLight">#8B8CF1</Color>
 
                      <!-- Button Styles -->
+                     <Style x:Key="DownloadStatCaption" TargetType="Label">
+                            <Setter Property="FontSize" Value="12"/>
+                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
+                     </Style>
                      <Style x:Key="ActionButton"
                             TargetType="Button">
                             <Setter Property="FontSize"
@@ -319,6 +323,9 @@
                             </Grid>
                      </Border>
 
+                     <Label Text="{Binding InitializationErrorMessage}"
+                            TextColor="{StaticResource StatusFailed}" IsVisible="{Binding HasInitializationError}"
+                            FontSize="12"/>
                      <Label Text="{Binding ErrorMessage}"
                             TextColor="{StaticResource StatusFailed}"
                             IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
@@ -469,12 +476,7 @@
                                       SemanticProperties.Description="{helpers:Translate DownloadsTitle}"
                                       SelectionMode="Single"
                                      SelectedItem="{Binding SelectedTorrent}"
-                                     IsVisible="{Binding IsEmpty, Converter={StaticResource InverseBoolConverter}}">
-                            <CollectionView.Triggers>
-                                   <DataTrigger TargetType="CollectionView" Binding="{Binding NoMatchingDownloads}" Value="True">
-                                          <Setter Property="IsVisible" Value="False"/>
-                                   </DataTrigger>
-                            </CollectionView.Triggers>
+                                     IsVisible="{Binding ShowDownloadList}">
                             <CollectionView.ItemTemplate>
                                    <DataTemplate x:DataType="models:TorrentItem">
                                           <Border Margin="0,0,0,12"
@@ -524,7 +526,7 @@
                                                                              LineBreakMode="WordWrap"/>
                                                                       <Button Text="{helpers:Translate DownloadErrorDetails}"
                                                                               Command="{Binding ShowErrorDetailsCommand}" CommandParameter="{Binding .}"
-                                                                              IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                                                                              IsVisible="{Binding HasErrorDetails}"
                                                                               BackgroundColor="{AppThemeBinding Light=#F1F5F9, Dark=#263244}"
                                                                               TextColor="{AppThemeBinding Light=#334155, Dark=#E2E8F0}"
                                                                               FontSize="12" Padding="10,4"
@@ -597,30 +599,30 @@
 
                                                                <Grid Grid.Row="2" ColumnDefinitions="*,*,*" ColumnSpacing="12">
                                                                <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                                                      <Label Text="{helpers:Translate Size}" FontSize="12"/>
+                                                                      <Label Text="{helpers:Translate Size}" Style="{StaticResource DownloadStatCaption}"/>
                                                                       <Label Text="{Binding FormattedTotalSize}" FontSize="13" FontAttributes="Bold"/>
                                                                </VerticalStackLayout>
                                                                <VerticalStackLayout Grid.Column="1" Spacing="2">
-                                                                      <Label Text="{helpers:Translate Down}" FontSize="12"/>
+                                                                      <Label Text="{helpers:Translate Down}" Style="{StaticResource DownloadStatCaption}"/>
                                                                       <Label Text="{Binding FormattedDownloadSpeed}" FontSize="13" FontAttributes="Bold"/>
                                                                </VerticalStackLayout>
                                                                <VerticalStackLayout Grid.Column="2" Spacing="2">
-                                                                      <Label Text="{helpers:Translate ETA}" FontSize="12"/>
+                                                                      <Label Text="{helpers:Translate ETA}" Style="{StaticResource DownloadStatCaption}"/>
                                                                       <Label Text="{Binding FormattedEstimatedTime}" FontSize="13" FontAttributes="Bold"/>
                                                                </VerticalStackLayout>
                                                                </Grid>
                                                         <VerticalStackLayout Grid.Row="3" Spacing="12" IsVisible="{Binding ShowDownloadDetails}">
                                                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
                                                                <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                                                      <Label Text="{helpers:Translate Up}" FontSize="12"/>
+                                                                      <Label Text="{helpers:Translate Up}" Style="{StaticResource DownloadStatCaption}"/>
                                                                       <Label Text="{Binding FormattedUploadSpeed}" FontSize="13" FontAttributes="Bold"/>
                                                                </VerticalStackLayout>
                                                                <VerticalStackLayout Grid.Column="1" Spacing="2">
-                                                                      <Label Text="{helpers:Translate Seeds}" FontSize="12"/>
+                                                                      <Label Text="{helpers:Translate Seeds}" Style="{StaticResource DownloadStatCaption}"/>
                                                                       <Label Text="{Binding Seeders}" FontSize="13" FontAttributes="Bold"/>
                                                                </VerticalStackLayout>
                                                                <VerticalStackLayout Grid.Column="2" Spacing="2">
-                                                                      <Label Text="{helpers:Translate Peers}" FontSize="12"/>
+                                                                      <Label Text="{helpers:Translate Peers}" Style="{StaticResource DownloadStatCaption}"/>
                                                                       <Label Text="{Binding Leechers}" FontSize="13" FontAttributes="Bold"/>
                                                                </VerticalStackLayout>
                                                                </Grid>

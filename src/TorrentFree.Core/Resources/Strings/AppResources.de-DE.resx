@@ -318,9 +318,6 @@
   <data name="AboutFileVersionLabel" xml:space="preserve">
     <value>Dateiversion</value>
   </data>
-  <data name="AboutSourceLabel" xml:space="preserve">
-    <value>Quelle</value>
-  </data>
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/a</value>
   </data>
@@ -338,9 +335,6 @@
   </data>
   <data name="ErrorOpenBrowser" xml:space="preserve">
     <value>Dein Browser konnte nicht geöffnet werden. Prüfe, ob ein Standardbrowser installiert ist, und versuche es erneut.</value>
-  </data>
-  <data name="OpenSource" xml:space="preserve">
-    <value>Quelloffen</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
@@ -688,7 +682,7 @@
     <value>Download fehlgeschlagen. Prüfen Sie die Fehlerdetails und versuchen Sie erneut zu starten.</value>
   </data>
   <data name="StateRecoveryFailed" xml:space="preserve">
-    <value>Gespeicherte Downloads konnten nicht wiederhergestellt werden. Wiederherstellungsdateien wurden aufbewahrt. Stellen Sie eine gültige Sicherung wieder her und versuchen Sie es erneut.</value>
+    <value>Gespeicherte Downloads konnten nicht gelesen werden. Vorhandene Zustandsdateien wurden beibehalten. Stellen Sie gültige gespeicherte Daten wieder her und versuchen Sie es erneut.</value>
   </data>
   <data name="StoreFeedbackAction" xml:space="preserve">
     <value>Feedback und Bewertung</value>
