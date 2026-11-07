@@ -1,0 +1,103 @@
+<en-GB>
+Compact download cards with expandable details. Search and filter larger queues. Improved recovery and queue handling, copyable errors, and a Feedback and rating button in About.
+</en-GB>
+
+<ar>
+بطاقات تنزيل مدمجة بتفاصيل قابلة للتوسيع. ابحث وصفِّ قوائم التنزيل الكبيرة. تحسين الاستعادة وإدارة قائمة الانتظار، مع إمكانية نسخ الأخطاء وزر للملاحظات والتقييم في «حول».
+</ar>
+
+<cs-CZ>
+Kompaktní karty stahování s rozbalitelnými podrobnostmi. Vyhledávání a filtrování delších front. Lepší obnova a správa fronty, kopírování chyb a tlačítko pro zpětnou vazbu a hodnocení v informacích o aplikaci.
+</cs-CZ>
+
+<da-DK>
+Kompakte downloadkort med detaljer, der kan foldes ud. Søg og filtrer i længere køer. Bedre gendannelse og køstyring, mulighed for at kopiere fejl og en knap til feedback og bedømmelse under Om.
+</da-DK>
+
+<de-DE>
+Kompakte Downloadkarten mit aufklappbaren Details. Größere Warteschlangen durchsuchen und filtern. Verbesserte Wiederherstellung und Warteschlangenverwaltung, kopierbare Fehlerdetails und eine Schaltfläche für Feedback und Bewertungen unter „Info“.
+</de-DE>
+
+<es-419>
+Tarjetas de descarga compactas con detalles desplegables. Busca y filtra en colas grandes. Mejoras en la recuperación y la gestión de colas, errores que puedes copiar y un botón de comentarios y valoración en Acerca de.
+</es-419>
+
+<es-ES>
+Tarjetas de descarga compactas con detalles desplegables. Busca y filtra en colas grandes. Mejoras en la recuperación y la gestión de colas, errores que puedes copiar y un botón de comentarios y valoración en Acerca de.
+</es-ES>
+
+<fi-FI>
+Pienet latauskortit, joiden tiedot voi laajentaa. Hae ja suodata pitkiä jonoja. Parempi palautus ja jononhallinta, kopioitavat virhetiedot sekä palaute- ja arviointipainike Tietoja-näkymässä.
+</fi-FI>
+
+<fr-FR>
+Cartes de téléchargement compactes avec détails dépliables. Recherchez et filtrez dans les longues files d’attente. Récupération et gestion des files améliorées, erreurs copiables et bouton d’avis et de notation dans À propos.
+</fr-FR>
+
+<hi-IN>
+विस्तार योग्य विवरण वाले छोटे डाउनलोड कार्ड। लंबी कतारों में खोजें और फ़िल्टर करें। बेहतर पुनर्प्राप्ति और कतार प्रबंधन, त्रुटियाँ कॉपी करने की सुविधा और परिचय में प्रतिक्रिया व रेटिंग बटन।
+</hi-IN>
+
+<hu-HU>
+Kompakt letöltési kártyák kibontható részletekkel. Keresés és szűrés hosszabb sorokban. Jobb helyreállítás és sorkezelés, másolható hibaüzenetek, valamint visszajelzés és értékelés a Névjegyben.
+</hu-HU>
+
+<id>
+Kartu unduhan ringkas dengan detail yang dapat diperluas. Cari dan filter antrean panjang. Pemulihan dan pengelolaan antrean lebih baik, detail kesalahan dapat disalin, dan tombol masukan dan penilaian tersedia di Tentang.
+</id>
+
+<it-IT>
+Schede di download compatte con dettagli espandibili. Cerca e filtra le code più lunghe. Ripristino e gestione delle code migliorati, errori copiabili e un pulsante per feedback e valutazioni in Informazioni.
+</it-IT>
+
+<ja-JP>
+ダウンロードカードをコンパクトにし、詳細を展開できるようになりました。件数が多い場合は検索や絞り込みができます。復元と待ち行列の処理を改善し、エラー詳細のコピーとアプリ情報からのフィードバック・評価に対応しました。
+</ja-JP>
+
+<ko-KR>
+세부 정보를 펼칠 수 있는 간결한 다운로드 카드입니다. 대기열이 길면 검색하고 필터링할 수 있습니다. 복구와 대기열 처리를 개선했으며, 오류 복사와 앱 정보의 피드백 및 평가 버튼을 추가했습니다.
+</ko-KR>
+
+<no-NO>
+Kompakte nedlastingskort med detaljer som kan utvides. Søk og filtrer i større køer. Bedre gjenoppretting og køhåndtering, mulighet til å kopiere feildetaljer og en knapp for tilbakemelding og vurdering under Om.
+</no-NO>
+
+<nl-NL>
+Compacte downloadkaarten met uitklapbare details. Zoek en filter in langere wachtrijen. Beter herstel en wachtrijbeheer, kopieerbare foutdetails en een knop voor feedback en beoordelingen onder Over.
+</nl-NL>
+
+<pl-PL>
+Kompaktowe karty pobierania z rozwijanymi szczegółami. Wyszukiwanie i filtrowanie w dłuższych kolejkach. Ulepszone odzyskiwanie i obsługa kolejki, kopiowanie błędów oraz przycisk opinii i oceny w informacjach o aplikacji.
+</pl-PL>
+
+<pt-BR>
+Cartões de download compactos com detalhes expansíveis. Pesquise e filtre filas maiores. Melhorias na recuperação e no gerenciamento de filas, erros que podem ser copiados e um botão de feedback e avaliação na seção Sobre.
+</pt-BR>
+
+<ro>
+Carduri compacte pentru descărcări, cu detalii extensibile. Caută și filtrează în cozi mai lungi. Recuperare și gestionare îmbunătățite, erori care pot fi copiate și un buton pentru feedback și evaluare în Despre.
+</ro>
+
+<ru-RU>
+Компактные карточки загрузок с раскрываемыми подробностями. Поиск и фильтрация в длинных очередях. Улучшены восстановление и обработка очереди, добавлены копирование ошибок и кнопка обратной связи и оценки в разделе «О приложении».
+</ru-RU>
+
+<th>
+การ์ดดาวน์โหลดแบบกะทัดรัดที่ขยายดูรายละเอียดได้ ค้นหาและกรองคิวขนาดใหญ่ได้ ปรับปรุงการกู้คืนและการจัดการคิว คัดลอกรายละเอียดข้อผิดพลาดได้ และเพิ่มปุ่มส่งความคิดเห็นและให้คะแนนในหน้าเกี่ยวกับ
+</th>
+
+<tr-TR>
+Açılabilir ayrıntılar içeren kompakt indirme kartları. Uzun kuyruklarda arama ve filtreleme. Geliştirilmiş kurtarma ve kuyruk yönetimi, kopyalanabilir hata ayrıntıları ve Hakkında bölümünde geri bildirim ve puanlama düğmesi.
+</tr-TR>
+
+<vi>
+Thẻ tải xuống gọn hơn với chi tiết có thể mở rộng. Tìm kiếm và lọc hàng đợi dài. Cải thiện khôi phục và quản lý hàng đợi, cho phép sao chép lỗi và thêm nút phản hồi và đánh giá trong mục Giới thiệu.
+</vi>
+
+<zh-CN>
+下载卡片更紧凑，可展开查看详情。下载较多时可搜索和筛选。改进了状态恢复和队列处理，支持复制错误详情，并在“关于”中加入反馈和评分按钮。
+</zh-CN>
+
+<uk>
+Компактні картки завантажень із розгортанням деталей. Пошук і фільтрація у довгих чергах. Покращено відновлення та обробку черги, додано копіювання помилок і кнопку відгуку й оцінки в розділі «Про програму».
+</uk>
