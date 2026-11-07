@@ -12,6 +12,8 @@ public interface IAppStore
     /// <summary>Opens the update destination and closes the Windows app after a successful handoff.</summary>
     Task<bool> OpenUpdateAsync();
     Task<AppReviewResult> RequestReviewAsync();
+    /// <summary>Opens the store for a user-initiated rating or written review, independently of automatic prompts.</summary>
+    Task<bool> OpenReviewPageAsync();
 }
 
 public interface IDownloadCompletionObserver

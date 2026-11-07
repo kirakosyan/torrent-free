@@ -289,6 +289,25 @@ Magnet links opened from other apps appear in the input field for review. Press 
 
 ### Managing Downloads
 
+Search and status filters appear only when the full queue contains **more than five
+downloads**. At five or fewer, both controls are hidden and disabled, search/filter
+values reset, and every download is shown. A small number of search results does
+not hide the controls. Filter by Active (downloading or seeding), Completed
+(including completed items that are now paused), Paused, or Needs attention
+(failed or waiting for Wi-Fi). Filters affect the list only; bulk actions still
+apply to the full queue. A completion-notification tap clears filters when needed
+to reveal its download.
+
+Download cards start compact, showing progress, size, download speed, ETA, and
+transfer actions. **Show details** expands upload speed, peer statistics, health,
+availability, and charts for that card. Expansion lasts for the current session.
+Failed downloads show one recovery hint; **Error details** opens the full,
+scrollable diagnostic with an explicit copy action.
+
+If the saved queue is missing and the remaining recovery files are corrupt, the
+app preserves those files and reports recovery failure instead of treating the
+queue as a new installation. Restore a valid backup, then use **Try again**.
+
 The bandwidth charts and bulk controls start collapsed. Tap **Show controls** above
 the downloads to access **Start All**, **Stop All**, and **Downloading on top**.
 Tap the **sliders icon** beside a torrent's delete button to edit that torrent's

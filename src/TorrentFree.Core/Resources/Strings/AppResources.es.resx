@@ -329,9 +329,6 @@
   <data name="AboutFileVersionLabel" xml:space="preserve">
     <value>Versión del archivo</value>
   </data>
-  <data name="AboutSourceLabel" xml:space="preserve">
-    <value>Código fuente</value>
-  </data>
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/d</value>
   </data>
@@ -349,9 +346,6 @@
   </data>
   <data name="ErrorOpenBrowser" xml:space="preserve">
     <value>No se pudo abrir el navegador. Comprueba que haya un navegador predeterminado instalado e inténtalo de nuevo.</value>
-  </data>
-  <data name="OpenSource" xml:space="preserve">
-    <value>Código fuente</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
@@ -664,5 +658,50 @@
   </data>
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Descargar selección</value>
+  </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Buscar descargas</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Filtrar descargas</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Todas las descargas</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Activas</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>Requieren atención</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>No hay descargas coincidentes.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Borrar filtros</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Mostrar detalles</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Ocultar detalles</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Detalles del error</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Copiar detalles del error</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>La descarga falló. Revisa los detalles del error e intenta iniciarla de nuevo.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>No se pudieron leer las descargas guardadas. Se conservaron los archivos de estado existentes. Restaura datos guardados válidos e inténtalo de nuevo.</value>
+  </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>Comentarios y valoración</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>Abre la tienda para valorar la aplicación o escribir una reseña.</value>
   </data>
 </root>

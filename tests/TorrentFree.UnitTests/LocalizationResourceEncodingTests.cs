@@ -9,8 +9,8 @@ public sealed class LocalizationResourceEncodingTests
     {
         var content = ReadResource("AppResources.es.resx");
 
-        Assert.Contains("Código fuente", content, StringComparison.Ordinal);
-        Assert.DoesNotContain("CÃ³digo fuente", content, StringComparison.Ordinal);
+        Assert.Contains("datos guardados válidos", content, StringComparison.Ordinal);
+        Assert.DoesNotContain("vÃ¡lidos", content, StringComparison.Ordinal);
         Assert.Contains("Sí", content, StringComparison.Ordinal);
         Assert.DoesNotContain("SÃ­", content, StringComparison.Ordinal);
         Assert.Contains("Versión del archivo", content, StringComparison.Ordinal);
@@ -36,7 +36,7 @@ public sealed class LocalizationResourceEncodingTests
 
         Assert.Contains("Остановить", content, StringComparison.Ordinal);
         Assert.DoesNotContain("ÐžÑ", content, StringComparison.Ordinal);
-        Assert.Contains("Исходный код", content, StringComparison.Ordinal);
+        Assert.Contains("Существующие файлы состояния сохранены", content, StringComparison.Ordinal);
         Assert.DoesNotContain("Ð˜Ñ", content, StringComparison.Ordinal);
         Assert.Contains("Версия файла", content, StringComparison.Ordinal);
         Assert.Contains("Сборка", content, StringComparison.Ordinal);
@@ -47,7 +47,7 @@ public sealed class LocalizationResourceEncodingTests
     {
         var content = ReadResource("AppResources.tr.resx");
 
-        Assert.Contains("Kaynak kodu", content, StringComparison.Ordinal);
+        Assert.Contains("Mevcut durum dosyaları korundu", content, StringComparison.Ordinal);
         Assert.Contains("Dosya sürümü", content, StringComparison.Ordinal);
         Assert.Contains("Özel indirme klasörü", content, StringComparison.Ordinal);
         Assert.Contains("Evet", content, StringComparison.Ordinal);
@@ -58,7 +58,7 @@ public sealed class LocalizationResourceEncodingTests
     {
         var content = ReadResource("AppResources.hi.resx");
 
-        Assert.Contains("स्रोत कोड", content, StringComparison.Ordinal);
+        Assert.Contains("मौजूदा स्थिति फ़ाइलें", content, StringComparison.Ordinal);
         Assert.Contains("फाइल संस्करण", content, StringComparison.Ordinal);
         Assert.Contains("कस्टम डाउनलोड फोल्डर", content, StringComparison.Ordinal);
         Assert.Contains("हाँ", content, StringComparison.Ordinal);
@@ -72,7 +72,7 @@ public sealed class LocalizationResourceEncodingTests
         Assert.Contains("التنزيلات", content, StringComparison.Ordinal);
         Assert.Contains("الإعدادات", content, StringComparison.Ordinal);
         Assert.Contains("نعم", content, StringComparison.Ordinal);
-        Assert.Contains("الشيفرة المصدرية", content, StringComparison.Ordinal);
+        Assert.Contains("تم الاحتفاظ بملفات الحالة الموجودة", content, StringComparison.Ordinal);
     }
 
     private static string ReadResource(string fileName)

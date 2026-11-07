@@ -9,15 +9,20 @@ namespace TorrentFree;
 
 public partial class MainPage : ContentPage
 {
-    private const string GitHubUrl = "https://github.com/kirakosyan/torrent-free";
+    private readonly IAppStore _appStore;
     private Window? _promptWindow;
     private bool _isPageVisible;
     private CancellationTokenSource? _notificationScrollCancellation;
 
-    public MainPage(MainViewModel viewModel)
+    public MainPage(MainViewModel viewModel, IAppStore appStore)
     {
         InitializeComponent();
+        _appStore = appStore;
         BindingContext = viewModel;
+        DownloadSearchControls.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(IsVisible)) OnDashboardLayoutChanged(null, EventArgs.Empty);
+        };
         NotificationService.DownloadNotificationTapped += OnDownloadNotificationTapped;
     }
 
@@ -25,12 +30,14 @@ public partial class MainPage : ContentPage
     {
         if (DashboardGrid is null || DashboardHeader is null || StorePrompts is null
             || MagnetInput is null || DownloadsHeading is null || DownloadControlsScroll is null
-            || DashboardGrid.Height <= 0)
+            || DownloadSearchControls is null || DashboardGrid.Height <= 0)
             return;
 
         // Preserve room for the download list as the window, banner, or keyboard changes size.
-        var available = DashboardGrid.Height - DashboardHeader.Height - StorePrompts.Height
-            - MagnetInput.Height - DownloadsHeading.Height - 36 - 120;
+        static double MeasuredHeight(VisualElement element) => element.IsVisible ? Math.Max(0, element.Height) : 0;
+        var available = DashboardGrid.Height - MeasuredHeight(DashboardHeader) - MeasuredHeight(StorePrompts)
+            - MeasuredHeight(MagnetInput) - MeasuredHeight(DownloadsHeading)
+            - (DownloadSearchControls.IsVisible ? MeasuredHeight(DownloadSearchControls) + 8 : 0) - 36 - 120;
         var maximum = Math.Clamp(available, 56, 280);
         if (Math.Abs(DownloadControlsScroll.MaximumHeightRequest - maximum) > 1)
             DownloadControlsScroll.MaximumHeightRequest = maximum;
@@ -211,12 +218,10 @@ public partial class MainPage : ContentPage
                 TryGetBuildNumber(),
                 LocalizationResourceManager.Instance["AboutFileVersionLabel"],
                 TryGetFileVersion(),
-                LocalizationResourceManager.Instance["AboutSourceLabel"],
-                GitHubUrl,
                 LocalizationResourceManager.Instance["AboutUnavailable"]);
 
             if (!Navigation.ModalStack.OfType<AboutPage>().Any())
-                await Navigation.PushModalAsync(new AboutPage(aboutMessage, GitHubUrl));
+                await Navigation.PushModalAsync(new AboutPage(aboutMessage, _appStore));
         }
         catch (Exception ex)
         {

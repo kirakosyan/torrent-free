@@ -19,9 +19,10 @@
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Spacing="20">
                 <Label x:Name="AboutMessageLabel" FontSize="14"/>
-                <Button Text="{helpers:Translate OpenSource}"
-                        SemanticProperties.Hint="{helpers:Translate OpenInDefaultBrowser}"
-                        Clicked="OnSourceClicked"/>
+                <Button x:Name="FeedbackButton"
+                        Text="{helpers:Translate StoreFeedbackAction}"
+                        SemanticProperties.Hint="{helpers:Translate StoreFeedbackHint}"
+                        Clicked="OnFeedbackClicked"/>
                 <Border Padding="20" StrokeThickness="0"
                         BackgroundColor="{AppThemeBinding Light=White, Dark=#1F2937}">
                     <Border.StrokeShape>

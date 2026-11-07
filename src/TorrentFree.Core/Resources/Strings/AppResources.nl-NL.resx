@@ -318,9 +318,6 @@
   <data name="AboutFileVersionLabel" xml:space="preserve">
     <value>Bestandsversie</value>
   </data>
-  <data name="AboutSourceLabel" xml:space="preserve">
-    <value>Bron</value>
-  </data>
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/a</value>
   </data>
@@ -338,9 +335,6 @@
   </data>
   <data name="ErrorOpenBrowser" xml:space="preserve">
     <value>Je browser kon niet worden geopend. Controleer of er een standaardbrowser is geïnstalleerd en probeer het opnieuw.</value>
-  </data>
-  <data name="OpenSource" xml:space="preserve">
-    <value>Open bron</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
@@ -650,5 +644,50 @@
   </data>
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Selectie downloaden</value>
+  </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Downloads zoeken</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Downloads filteren</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Alle downloads</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Actief</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>Aandacht nodig</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>Geen overeenkomende downloads.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Filters wissen</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Details tonen</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Details verbergen</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Foutdetails</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Foutdetails kopiëren</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>Download mislukt. Bekijk de foutdetails en probeer opnieuw te starten.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>Opgeslagen downloads konden niet worden gelezen. Bestaande statusbestanden zijn bewaard. Herstel geldige opgeslagen gegevens en probeer het opnieuw.</value>
+  </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>Feedback en beoordeling</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>Open de winkel om de app te beoordelen of een recensie te schrijven.</value>
   </data>
 </root>

@@ -12,6 +12,25 @@ public sealed class StorageMigrationTests : IDisposable
         "TorrentFree.UnitTests",
         Guid.NewGuid().ToString("N"));
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task TryMigrate_ReplacesPlaceholderAfterRepeatedWindowStateSaves(bool maximized)
+    {
+        var source = Path.Combine(_testDirectory, "legacy", "torrents.json");
+        var destination = Path.Combine(_testDirectory, "current", "torrents.json");
+        WriteStorageFile(source, torrentsJson: "[{\"id\":\"legacy-id\"}]");
+        using (var storage = new StorageService(new StoragePaths(Path.GetDirectoryName(destination)!, _testDirectory)))
+        {
+            await storage.UpdateDesktopWindowStateAsync(!maximized);
+            await storage.UpdateDesktopWindowStateAsync(maximized);
+        }
+        Assert.True(File.Exists(destination + ".bak"));
+        Assert.True(StorageMigration.TryMigrate(destination, [source]));
+        using var restored = new StorageService(new StoragePaths(Path.GetDirectoryName(destination)!, _testDirectory));
+        Assert.Equal("legacy-id", Assert.Single(await restored.LoadTorrentsAsync()).Id);
+    }
+
     [Fact]
     public void TryMigrate_ReplacesEmptyDestinationWithLegacyTorrentState()
     {
@@ -94,6 +113,42 @@ public sealed class StorageMigrationTests : IDisposable
         WriteStorageFile(path);
 
         Assert.False(StorageMigration.ContainsUserState(path));
+    }
+
+    [Theory]
+    [InlineData(".tmp", false)]
+    [InlineData(".bak", false)]
+    [InlineData(".bak", true)]
+    public async Task TryMigrate_PreservesCurrentRecoveryState(string suffix, bool corruptPrimary)
+    {
+        var source = Path.Combine(_testDirectory, "legacy", "torrents.json");
+        var destination = Path.Combine(_testDirectory, "current", "torrents.json");
+        WriteStorageFile(source, torrentsJson: "[{\"id\":\"legacy-id\"}]");
+        WriteStorageFile(destination + suffix, torrentsJson: "[{\"id\":\"current-id\"}]");
+        if (corruptPrimary) File.WriteAllText(destination, "{broken");
+        var recoveryBytes = File.ReadAllBytes(destination + suffix);
+
+        Assert.False(StorageMigration.TryMigrate(destination, [source]));
+        Assert.Equal(recoveryBytes, File.ReadAllBytes(destination + suffix));
+        using var storage = new StorageService(new StoragePaths(Path.GetDirectoryName(destination)!, _testDirectory));
+        Assert.Equal("current-id", Assert.Single(await storage.LoadTorrentsAsync()).Id);
+    }
+
+    [Theory]
+    [InlineData(".bak")]
+    public async Task TryMigrate_DoesNotHideDamagedRecoveryStateWithLegacyData(string suffix)
+    {
+        var source = Path.Combine(_testDirectory, "legacy", "torrents.json");
+        var destination = Path.Combine(_testDirectory, "current", "torrents.json");
+        WriteStorageFile(source, torrentsJson: "[{\"id\":\"legacy-id\"}]");
+        Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+        File.WriteAllText(destination + suffix, "{broken");
+
+        Assert.False(StorageMigration.TryMigrate(destination, [source]));
+        Assert.False(File.Exists(destination));
+        using var storage = new StorageService(new StoragePaths(Path.GetDirectoryName(destination)!, _testDirectory));
+        await Assert.ThrowsAsync<SavedStateRecoveryException>(() => storage.LoadTorrentsAsync());
+        Assert.Equal("{broken", File.ReadAllText(destination + suffix));
     }
 
     private static void WriteStorageFile(

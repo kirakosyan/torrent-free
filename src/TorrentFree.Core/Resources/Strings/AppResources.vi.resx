@@ -318,9 +318,6 @@
   <data name="AboutFileVersionLabel" xml:space="preserve">
     <value>Phiên bản tập tin</value>
   </data>
-  <data name="AboutSourceLabel" xml:space="preserve">
-    <value>Nguồn</value>
-  </data>
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/a</value>
   </data>
@@ -338,9 +335,6 @@
   </data>
   <data name="ErrorOpenBrowser" xml:space="preserve">
     <value>Không thể mở trình duyệt. Vui lòng kiểm tra xem trình duyệt mặc định đã được cài đặt chưa rồi thử lại.</value>
-  </data>
-  <data name="OpenSource" xml:space="preserve">
-    <value>Nguồn mở</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
@@ -650,5 +644,50 @@
   </data>
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Tải mục đã chọn</value>
+  </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Tìm kiếm bản tải xuống</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Lọc bản tải xuống</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Tất cả bản tải xuống</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Đang hoạt động</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>Cần chú ý</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>Không có bản tải xuống phù hợp.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Xóa bộ lọc</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Hiện chi tiết</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Ẩn chi tiết</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Chi tiết lỗi</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Sao chép chi tiết lỗi</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>Tải xuống thất bại. Kiểm tra chi tiết lỗi rồi thử bắt đầu lại.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>Không thể đọc các bản tải xuống đã lưu. Các tệp trạng thái hiện có được giữ nguyên. Hãy khôi phục dữ liệu đã lưu hợp lệ và thử lại.</value>
+  </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>Phản hồi và đánh giá</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>Mở cửa hàng để chấm điểm ứng dụng hoặc viết bài đánh giá.</value>
   </data>
 </root>

@@ -14,7 +14,7 @@ namespace TorrentFree.ViewModels;
 /// <summary>
 /// Main view model for the torrent client.
 /// </summary>
-public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
+public partial class MainViewModel : DownloadListViewModel
 {
     private const int MaxChartPoints = 60;
     private readonly ITorrentService _torrentService;
@@ -42,10 +42,7 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
     /// </summary>
     public ObservableCollection<TorrentItem> Torrents => _torrentService.Torrents;
 
-    /// <summary>
-    /// Collection of torrents shown in the UI (can be sorted).
-    /// </summary>
-    public ObservableCollection<TorrentItem> DisplayTorrents { get; } = [];
+    private bool _openingErrorDetails;
 
     /// <summary>
     /// Global download speed history in KB/s.
@@ -69,12 +66,6 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
     /// </summary>
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
-
-    /// <summary>
-    /// When enabled, torrents are grouped by status priority.
-    /// </summary>
-    [ObservableProperty]
-    public partial bool SortByStatus { get; set; }
 
     /// <summary>
     /// Error message to display to the user.
@@ -118,11 +109,6 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
     [ObservableProperty]
     public partial int GlobalMaxSeedMinutes { get; set; }
 
-    /// <summary>
-    /// Indicates if there are no torrents in the list.
-    /// </summary>
-    public bool IsEmpty => Torrents.Count == 0;
-
     public bool IsInitialized => _hasInitialized;
 
     public bool RequiresMagnetConfirmation => _magnetRequiresExplicitStart;
@@ -140,6 +126,7 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
     public AppPromptService Prompts { get; }
 
     public MainViewModel(ITorrentService torrentService, ITorrentFilePicker torrentFilePicker, IStorageService storageService, IFileAssociationService fileAssociationService, INotificationService notificationService, TorrentImportService torrentImportService, AppPromptService prompts, ILibroNestLauncher libroNestLauncher)
+        : base(torrentService.Torrents, initialize: false)
     {
         _libroNestLauncher = libroNestLauncher;
         Prompts = prompts;
@@ -149,11 +136,10 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
         _storageService = storageService;
         _fileAssociationService = fileAssociationService;
         _notificationService = notificationService;
-        Torrents.CollectionChanged += OnTorrentsCollectionChanged;
 
         LocalizationResourceManager.Instance.PropertyChanged += OnLocalizationChanged;
 
-        InitializeDisplayTorrents();
+        InitializeDownloads();
 
         ApplyGlobalSettings();
     }
@@ -179,9 +165,8 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
         SafeFireAndForget(AutoStartMagnetInputAsync(trimmed, cts.Token));
     }
 
-    partial void OnSortByStatusChanged(bool value)
+    protected override void OnSortPreferenceChanged()
     {
-        SyncDisplayTorrents();
         SafeFireAndForget(PersistSortPreferenceAsync());
     }
 
@@ -260,6 +245,23 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
             _loadedSettings.ProxyPort,
             _loadedSettings.ProxyUsername,
             _loadedSettings.ProxyPassword);
+    }
+
+    [RelayCommand]
+    private async Task ShowErrorDetailsAsync(TorrentItem? torrent)
+    {
+        if (torrent is null || !torrent.HasErrorDetails || Shell.Current is not { } shell
+            || _openingErrorDetails || shell.Navigation.ModalStack.OfType<DownloadErrorPage>().Any()) return;
+        _openingErrorDetails = true;
+        try
+        {
+            await shell.Navigation.PushModalAsync(new DownloadErrorPage(torrent.Name, torrent.ErrorMessage!));
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Unable to show download error: {ex}");
+        }
+        finally { _openingErrorDetails = false; }
     }
 
     [RelayCommand]
@@ -456,70 +458,19 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
         }
     }
 
-    private void OnTorrentsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    protected override void OnDownloadsChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        var selected = SelectedTorrent;
-        if (selected is not null && !Torrents.Contains(selected))
-            SelectedTorrent = Torrents.FirstOrDefault(torrent => torrent.Id == selected.Id);
-
-        OnPropertyChanged(nameof(IsEmpty));
-        UpdateTorrentHandlers(e);
-        SyncDisplayTorrents();
         UpdateBulkActionState();
     }
 
-    private void InitializeDisplayTorrents()
-    {
-        foreach (var torrent in Torrents)
-        {
-            AttachTorrentHandlers(torrent);
-        }
-
-        SyncDisplayTorrents();
-    }
-
-    private void UpdateTorrentHandlers(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-    {
-        if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
-        {
-            foreach (var existing in DisplayTorrents)
-            {
-                DetachTorrentHandlers(existing);
-            }
-
-            foreach (var torrent in Torrents)
-            {
-                AttachTorrentHandlers(torrent);
-            }
-
-            return;
-        }
-
-        if (e.OldItems is not null)
-        {
-            foreach (var oldItem in e.OldItems.OfType<TorrentItem>())
-            {
-                DetachTorrentHandlers(oldItem);
-            }
-        }
-
-        if (e.NewItems is not null)
-        {
-            foreach (var newItem in e.NewItems.OfType<TorrentItem>())
-            {
-                AttachTorrentHandlers(newItem);
-            }
-        }
-    }
-
-    private void AttachTorrentHandlers(TorrentItem torrent)
+    protected override void OnTorrentObserved(TorrentItem torrent)
     {
         AttachTorrentCommands(torrent);
         torrent.PropertyChanged += OnTorrentPropertyChanged;
         _ = RefreshAudiobookActionAsync(torrent);
     }
 
-    private void DetachTorrentHandlers(TorrentItem torrent)
+    protected override void OnTorrentUnobserved(TorrentItem torrent)
     {
         torrent.PropertyChanged -= OnTorrentPropertyChanged;
         _audiobookAvailability.Invalidate(torrent.DownloadedFilePath);
@@ -529,11 +480,6 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
     {
         OnPropertyChanged(nameof(DownloadControlsButtonText));
         OnPropertyChanged(nameof(DownloadControlsAccessibilityHint));
-
-        foreach (var torrent in DisplayTorrents)
-        {
-            torrent.RefreshLocalizableProperties();
-        }
     }
 
     private void AttachTorrentCommands(TorrentItem torrent)
@@ -547,6 +493,7 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
         torrent.RemoveSpecificTorrentCommand = RemoveSpecificTorrentCommand;
         torrent.ShowSpecificTorrentLimitsCommand = ShowSpecificTorrentLimitsCommand;
         torrent.ChooseFilesCommand = ChooseFilesCommand;
+        torrent.ShowErrorDetailsCommand = ShowErrorDetailsCommand;
     }
 
     private void OnTorrentPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -557,11 +504,6 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
         if (e.PropertyName == nameof(TorrentItem.Status))
         {
             UpdateBulkActionState();
-        }
-
-        if (SortByStatus && e.PropertyName is nameof(TorrentItem.Status) or nameof(TorrentItem.Name))
-        {
-            SyncDisplayTorrents();
         }
     }
 
@@ -622,76 +564,6 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
         StopAllTorrentsCommand.NotifyCanExecuteChanged();
     }
 
-    private void SyncDisplayTorrents()
-    {
-        var ordered = SortByStatus
-            ? Torrents
-                .Select((torrent, index) => new { torrent, index })
-                .OrderBy(entry => GetStatusSortOrder(entry.torrent.Status))
-                .ThenBy(entry => entry.torrent.Name, StringComparer.OrdinalIgnoreCase)
-                .ThenBy(entry => entry.index)
-                .Select(entry => entry.torrent)
-                .ToList()
-            : Torrents.ToList();
-
-        // Reconcile in-place to minimise CollectionChanged events.
-        for (var i = 0; i < ordered.Count; i++)
-        {
-            ordered[i].DisplayIndex = i;
-
-            if (i < DisplayTorrents.Count)
-            {
-                if (!ReferenceEquals(DisplayTorrents[i], ordered[i]))
-                {
-                    var existingIndex = IndexOfRef(DisplayTorrents, ordered[i], i);
-                    if (existingIndex >= 0)
-                    {
-                        DisplayTorrents.Move(existingIndex, i);
-                    }
-                    else
-                    {
-                        DisplayTorrents.Insert(i, ordered[i]);
-                    }
-                }
-            }
-            else
-            {
-                DisplayTorrents.Add(ordered[i]);
-            }
-        }
-
-        // Remove any trailing items.
-        while (DisplayTorrents.Count > ordered.Count)
-        {
-            DisplayTorrents.RemoveAt(DisplayTorrents.Count - 1);
-        }
-    }
-
-    private static int GetStatusSortOrder(DownloadStatus status) => status switch
-    {
-        DownloadStatus.Downloading => 0,
-        DownloadStatus.Seeding => 1,
-        DownloadStatus.Paused => 2,
-        DownloadStatus.Stopped => 3,
-        DownloadStatus.Queued => 4,
-        DownloadStatus.WaitingForWifi => 5,
-        DownloadStatus.Completed => 6,
-        DownloadStatus.Failed => 7,
-        _ => 8
-    };
-
-    private static int IndexOfRef(ObservableCollection<TorrentItem> collection, TorrentItem item, int startIndex)
-    {
-        for (var i = startIndex; i < collection.Count; i++)
-        {
-            if (ReferenceEquals(collection[i], item))
-            {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     /// <summary>
     /// Initializes the view model.
     /// </summary>
@@ -728,6 +600,8 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
             }
 
             IsBusy = true;
+            InitializationErrorMessage = null;
+            ErrorMessage = null;
             try
             {
                 _isLoadingSettings = true;
@@ -738,6 +612,7 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
                 await _torrentService.InitializeAsync();
                 StartStatsTimer();
                 _hasInitialized = true;
+                OnPropertyChanged(nameof(IsInitialized));
 
                 // Restored transfers which were active when the app closed come back Queued.
                 SafeFireAndForget(_torrentService.StartQueuedTorrentsAsync());
@@ -750,7 +625,8 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Initialization error: {ex}");
-                ErrorMessage = LocalizationResourceManager.Instance["ErrorLoadDownloads"];
+                InitializationErrorMessage = LocalizationResourceManager.Instance[ex is SavedStateRecoveryException
+                    ? "StateRecoveryFailed" : "ErrorLoadDownloads"];
                 throw;
             }
             finally
@@ -781,11 +657,13 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
             var currentSettings = await AppSettingsPersistence.LoadAsync(_storageService);
             ApplyLoadedSettings(currentSettings);
             ApplyGlobalSettings();
+            InitializationErrorMessage = null;
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Settings refresh error: {ex}");
-            ErrorMessage = LocalizationResourceManager.Instance["ErrorLoadDownloads"];
+            InitializationErrorMessage = LocalizationResourceManager.Instance[ex is SavedStateRecoveryException
+                ? "StateRecoveryFailed" : "ErrorLoadDownloads"];
         }
         finally
         {
@@ -1491,7 +1369,7 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
         }
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
         if (_disposed)
         {
@@ -1503,11 +1381,7 @@ public partial class MainViewModel : DownloadSelectionViewModel, IDisposable
         StopStatsTimer();
         _initializationLock.Dispose();
         LocalizationResourceManager.Instance.PropertyChanged -= OnLocalizationChanged;
-        foreach (var torrent in DisplayTorrents)
-        {
-            DetachTorrentHandlers(torrent);
-        }
-        Torrents.CollectionChanged -= OnTorrentsCollectionChanged;
+        base.Dispose();
         GC.SuppressFinalize(this);
     }
 

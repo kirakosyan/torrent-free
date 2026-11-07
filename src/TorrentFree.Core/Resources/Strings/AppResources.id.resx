@@ -318,9 +318,6 @@
   <data name="AboutFileVersionLabel" xml:space="preserve">
     <value>Versi berkas</value>
   </data>
-  <data name="AboutSourceLabel" xml:space="preserve">
-    <value>Sumber</value>
-  </data>
   <data name="AboutUnavailable" xml:space="preserve">
     <value>n/a</value>
   </data>
@@ -338,9 +335,6 @@
   </data>
   <data name="ErrorOpenBrowser" xml:space="preserve">
     <value>Tidak dapat membuka browser Anda. Pastikan browser default telah terpasang dan coba lagi.</value>
-  </data>
-  <data name="OpenSource" xml:space="preserve">
-    <value>Sumber Terbuka</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
@@ -650,5 +644,50 @@
   </data>
   <data name="DownloadSelectedFiles" xml:space="preserve">
     <value>Unduh pilihan</value>
+  </data>
+  <data name="SearchDownloads" xml:space="preserve">
+    <value>Cari unduhan</value>
+  </data>
+  <data name="FilterDownloads" xml:space="preserve">
+    <value>Filter unduhan</value>
+  </data>
+  <data name="FilterAllDownloads" xml:space="preserve">
+    <value>Semua unduhan</value>
+  </data>
+  <data name="FilterActiveDownloads" xml:space="preserve">
+    <value>Aktif</value>
+  </data>
+  <data name="FilterNeedsAttention" xml:space="preserve">
+    <value>Perlu perhatian</value>
+  </data>
+  <data name="NoMatchingDownloads" xml:space="preserve">
+    <value>Tidak ada unduhan yang cocok.</value>
+  </data>
+  <data name="ClearDownloadFilters" xml:space="preserve">
+    <value>Hapus filter</value>
+  </data>
+  <data name="ShowDownloadDetails" xml:space="preserve">
+    <value>Tampilkan detail</value>
+  </data>
+  <data name="HideDownloadDetails" xml:space="preserve">
+    <value>Sembunyikan detail</value>
+  </data>
+  <data name="DownloadErrorDetails" xml:space="preserve">
+    <value>Detail kesalahan</value>
+  </data>
+  <data name="CopyErrorDetails" xml:space="preserve">
+    <value>Salin detail kesalahan</value>
+  </data>
+  <data name="DownloadFailedRecoveryHint" xml:space="preserve">
+    <value>Unduhan gagal. Periksa detail kesalahan, lalu coba mulai lagi.</value>
+  </data>
+  <data name="StateRecoveryFailed" xml:space="preserve">
+    <value>Unduhan tersimpan tidak dapat dibaca. File status yang ada tetap disimpan. Pulihkan data tersimpan yang valid dan coba lagi.</value>
+  </data>
+  <data name="StoreFeedbackAction" xml:space="preserve">
+    <value>Masukan dan penilaian</value>
+  </data>
+  <data name="StoreFeedbackHint" xml:space="preserve">
+    <value>Buka toko untuk memberi nilai aplikasi atau menulis ulasan.</value>
   </data>
 </root>

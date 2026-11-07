@@ -238,7 +238,7 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
             }
             catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or JsonException)
             {
-                throw new JsonException("The saved application state is corrupt and no valid backup is available.", ex);
+                throw new SavedStateRecoveryException(ex);
             }
 
             var corruptPath = _dataPath + $".corrupt-{Guid.NewGuid():N}";
@@ -261,6 +261,8 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
     /// </summary>
     private async Task<TorrentStorageData> RecoverMissingStateAsync()
     {
+        JsonException? recoveryError = null;
+        var corruptBackup = false;
         foreach (var candidate in new[] { _dataPath + ".tmp", _dataPath + ".bak" })
         {
             string json;
@@ -270,8 +272,14 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
                 json = await File.ReadAllTextAsync(candidate).ConfigureAwait(false);
                 recovered = DeserializeData(json);
             }
-            catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or JsonException)
+            catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
             {
+                continue;
+            }
+            catch (JsonException ex)
+            {
+                recoveryError ??= ex;
+                corruptBackup |= candidate.EndsWith(".bak", StringComparison.Ordinal);
                 continue;
             }
 
@@ -285,6 +293,16 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
             return recovered;
         }
 
+        // Missing files mean a fresh install; existing but unreadable state does not.
+        // Leave all recovery candidates intact and prevent later saves from replacing them.
+        if (corruptBackup)
+            throw new SavedStateRecoveryException(recoveryError!);
+        if (recoveryError is not null)
+        {
+            // A torn first save has never committed a primary or backup. Archive the
+            // evidence before allowing a fresh state to replace that temporary file.
+            File.Move(_dataPath + ".tmp", _dataPath + $".corrupt-{Guid.NewGuid():N}");
+        }
         return new();
     }
 

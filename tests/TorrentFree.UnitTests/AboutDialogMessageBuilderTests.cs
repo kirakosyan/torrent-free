@@ -6,7 +6,7 @@ namespace TorrentFree.UnitTests;
 public sealed class AboutDialogMessageBuilderTests
 {
     [Fact]
-    public void Build_IncludesVersionBuildFileVersionAndSource()
+    public void Build_IncludesOnlyIntroAndVersionInformation()
     {
         var message = AboutDialogMessageBuilder.Build(
             "Torrent Free is free to use.",
@@ -16,8 +16,6 @@ public sealed class AboutDialogMessageBuilderTests
             "4",
             "File version",
             "1.4.0.0",
-            "Source",
-            "https://github.com/kirakosyan/torrent-free",
             "n/a");
 
         Assert.Equal(
@@ -26,9 +24,7 @@ public sealed class AboutDialogMessageBuilderTests
                 string.Empty,
                 "Version: 1.4",
                 "Build: 4",
-                "File version: 1.4.0.0",
-                string.Empty,
-                "Source: https://github.com/kirakosyan/torrent-free"),
+                "File version: 1.4.0.0"),
             message);
     }
 
@@ -43,8 +39,6 @@ public sealed class AboutDialogMessageBuilderTests
             "",
             "File version",
             " ",
-            "Source",
-            "https://example.test",
             "n/a");
 
         Assert.Contains("Version: n/a", message, StringComparison.Ordinal);
