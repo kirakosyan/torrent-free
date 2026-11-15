@@ -1,0 +1,103 @@
+<en-GB>
+More reliable torrent restarts, seeding limits, proxy settings and progress display. Exports work offline, with cancellation and storage checks. Clearer notification icons.
+</en-GB>
+
+<ar>
+تحسين موثوقية إعادة تشغيل التورنت وحدود الرفع وإعدادات الوكيل وعرض التقدم. يعمل التصدير دون اتصال، مع إمكانية الإلغاء والتحقق من مساحة التخزين. أيقونات إشعارات أوضح.
+</ar>
+
+<cs-CZ>
+Spolehlivější opětovné spouštění torrentů, limity seedování, nastavení proxy a zobrazení průběhu. Export funguje offline, s možností zrušení a kontrolou volného místa. Přehlednější ikony oznámení.
+</cs-CZ>
+
+<da-DK>
+Mere pålidelig genstart af torrents, seedningsgrænser, proxyindstillinger og visning af fremdrift. Eksport virker offline med mulighed for annullering og kontrol af lagerplads. Tydeligere notifikationsikoner.
+</da-DK>
+
+<de-DE>
+Zuverlässigerer Torrent-Neustart, Seeding-Limits, Proxy-Einstellungen und Fortschrittsanzeige. Exporte funktionieren offline, mit Abbruchmöglichkeit und Speicherplatzprüfung. Klarere Benachrichtigungssymbole.
+</de-DE>
+
+<es-419>
+Mayor fiabilidad al reiniciar torrents, aplicar límites de siembra, configurar el proxy y mostrar el progreso. Exportación sin conexión, con cancelación y comprobación del espacio disponible. Iconos de notificación más claros.
+</es-419>
+
+<es-ES>
+Mayor fiabilidad al reiniciar torrents, aplicar límites de siembra, configurar el proxy y mostrar el progreso. Exportación sin conexión, con cancelación y comprobación del espacio disponible. Iconos de notificación más claros.
+</es-ES>
+
+<fi-FI>
+Luotettavampi torrentien uudelleenkäynnistys, jakamisrajat, välityspalvelinasetukset ja edistymisen näyttö. Vienti toimii ilman verkkoyhteyttä, ja sen voi perua. Tallennustila tarkistetaan ennen kopiointia. Selkeämmät ilmoituskuvakkeet.
+</fi-FI>
+
+<fr-FR>
+Redémarrage des torrents, limites de partage, réglages du proxy et affichage de la progression plus fiables. Export hors connexion, avec annulation et vérification de l’espace disponible. Icônes de notification plus claires.
+</fr-FR>
+
+<hi-IN>
+टोरेंट फिर से शुरू करने, सीडिंग सीमाओं, प्रॉक्सी सेटिंग और प्रगति दिखाने की विश्वसनीयता में सुधार। निर्यात ऑफ़लाइन काम करता है, रद्द किया जा सकता है और खाली जगह की जाँच करता है। सूचना आइकन अधिक स्पष्ट हैं।
+</hi-IN>
+
+<hu-HU>
+Megbízhatóbb torrent-újraindítás, visszaosztási korlátok, proxybeállítások és folyamatjelzés. Offline exportálás megszakítási lehetőséggel és tárhelyellenőrzéssel. Jobban látható értesítési ikonok.
+</hu-HU>
+
+<id>
+Mulai ulang torrent, batas seeding, pengaturan proxy, dan tampilan progres lebih andal. Ekspor berfungsi offline, dengan pembatalan dan pemeriksaan ruang penyimpanan. Ikon notifikasi lebih jelas.
+</id>
+
+<it-IT>
+Riavvio dei torrent, limiti di seeding, impostazioni proxy e visualizzazione dei progressi più affidabili. Esportazione offline, con annullamento e verifica dello spazio disponibile. Icone delle notifiche più chiare.
+</it-IT>
+
+<ja-JP>
+トレントの再開、シード制限、プロキシ設定、進捗表示の信頼性を改善しました。 オフラインでのエクスポート、キャンセル、空き容量の確認に対応しました。通知アイコンも見やすくなりました。
+</ja-JP>
+
+<ko-KR>
+토렌트 재시작, 시딩 제한, 프록시 설정 및 진행률 표시의 안정성을 개선했습니다. 내보내기가 오프라인에서 작동하며, 취소와 저장 공간 확인을 지원합니다. 알림 아이콘도 더 명확해졌습니다.
+</ko-KR>
+
+<no-NO>
+Mer pålitelig omstart av torrenter, delingsgrenser, proxyinnstillinger og fremdriftsvisning. Eksport fungerer uten nett, med avbryting og kontroll av lagringsplass. Tydeligere varslingsikoner.
+</no-NO>
+
+<nl-NL>
+Betrouwbaarder herstarten van torrents, seedlimieten, proxyinstellingen en voortgangsweergave. Exporteren werkt offline, met annulering en controle van de opslagruimte. Duidelijkere meldingspictogrammen.
+</nl-NL>
+
+<pl-PL>
+Bardziej niezawodne ponowne uruchamianie torrentów, limity seedowania, ustawienia proxy i wyświetlanie postępu. Eksport działa offline, z możliwością anulowania i sprawdzaniem wolnego miejsca. Czytelniejsze ikony powiadomień.
+</pl-PL>
+
+<pt-BR>
+Mais confiabilidade ao reiniciar torrents, aplicar limites de semeadura, configurar o proxy e exibir o progresso. Exportação offline, com cancelamento e verificação do espaço disponível. Ícones de notificação mais claros.
+</pt-BR>
+
+<ro>
+Repornirea torrentelor, limitele de seeding, setările proxy și afișarea progresului sunt mai fiabile. Exportul funcționează offline, cu anulare și verificarea spațiului disponibil. Pictograme de notificare mai clare.
+</ro>
+
+<ru-RU>
+Повышена надёжность перезапуска торрентов, лимитов раздачи, настроек прокси и отображения прогресса. Экспорт работает без сети, поддерживает отмену и проверяет свободное место. Значки уведомлений стали чётче.
+</ru-RU>
+
+<th>
+ปรับปรุงความเสถียรในการเริ่มทอร์เรนต์ใหม่ ขีดจำกัดการปล่อยไฟล์ การตั้งค่าพร็อกซี และการแสดงความคืบหน้า ส่งออกแบบออฟไลน์ได้ พร้อมการยกเลิกและตรวจสอบพื้นที่จัดเก็บ ไอคอนการแจ้งเตือนชัดเจนขึ้น
+</th>
+
+<tr-TR>
+Torrentleri yeniden başlatma, gönderim sınırları, proxy ayarları ve ilerleme gösterimi daha güvenilir. Dışa aktarma çevrimdışı çalışır; iptal ve depolama alanı denetimi desteklenir. Bildirim simgeleri daha net.
+</tr-TR>
+
+<vi>
+Cải thiện độ ổn định khi khởi động lại torrent, giới hạn chia sẻ, cài đặt proxy và hiển thị tiến độ. Xuất tệp ngoại tuyến, hỗ trợ hủy và kiểm tra dung lượng lưu trữ. Biểu tượng thông báo rõ ràng hơn.
+</vi>
+
+<zh-CN>
+提高了种子重新启动、做种限制、代理设置和进度显示的可靠性。 支持离线导出、取消操作和存储空间检查。通知图标更加清晰。
+</zh-CN>
+
+<uk>
+Підвищено надійність перезапуску торрентів, обмежень роздачі, налаштувань проксі та відображення прогресу. Експорт працює без мережі, підтримує скасування та перевіряє вільне місце. Значки сповіщень стали чіткішими.
+</uk>

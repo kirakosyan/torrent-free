@@ -40,6 +40,20 @@ Thank you! Torrent Free remains free to use, and donations are entirely optional
 
 ## 📝 Release Overview
 
+Version **1.25** (Android code **30**, Windows **1.25.0.0** for x64 and ARM64)
+is being prepared locally. **Not uploaded, submitted, or published.**
+
+- More reliable torrent restart and seed-limit completion, with private metadata safeguards.
+- Proxy drafts survive settings navigation until Apply; settings errors and numeric input are clearer.
+- Progress no longer rounds incomplete downloads up to 100%.
+- Android exports work offline, support cancellation and check space for the complete export.
+- Consistent Android notification icons and improved Windows activation handling and local diagnostics.
+
+See the [1.25 preparation record](store/microsoft-store/release-notes-1.25.md)
+for package details, validation and remaining device qualification.
+
+### Version 1.24 (last verified November 7, 2026)
+
 Version **1.24** (Android code **29**, Windows **1.24.0.0** for x64 and ARM64)
 adds compact download cards, search and status filters for larger queues,
 copyable error details, and Feedback and rating in About. It also improves

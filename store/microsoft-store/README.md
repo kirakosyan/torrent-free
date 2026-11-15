@@ -1,6 +1,13 @@
 # Microsoft Store listings
 
-## Current release
+## Next release: 1.25 preparation
+
+**1.25 / build 30 / MSIX 1.25.0.0 (x64 and ARM64)** is being prepared locally.
+**Not uploaded, submitted, or published.** Localized notes are in
+`release-notes-1.25.json`; see the [preparation record](release-notes-1.25.md)
+for package hashes, validation and source traceability.
+
+## Version 1.24 (last verified November 7, 2026)
 
 **1.24 / build 29 / MSIX 1.24.0.0 (x64 and ARM64)** was submitted on
 **November 7, 2026** as submission **21** (`1152921505702342637`). Partner Center
