@@ -48,6 +48,9 @@ public interface ITorrentService : IDisposable, IAsyncDisposable
     /// <summary>Loads the file list. Magnets fetch metadata only, with cancellable network access.</summary>
     Task<IReadOnlyList<TorrentFileChoice>> GetTorrentFilesAsync(TorrentItem torrent, CancellationToken cancellationToken = default);
 
+    /// <summary>Builds a cancellable export plan from local metadata or completed payload files; never fetches metadata.</summary>
+    Task<DownloadExportPlan> CreateDownloadExportPlanAsync(TorrentItem torrent, CancellationToken cancellationToken = default);
+
     /// <summary>Persists and applies a nonempty selection. Active transfers resume with the new selection.</summary>
     Task SetTorrentFileSelectionAsync(TorrentItem torrent, IReadOnlyCollection<string> selectedPaths);
 
@@ -156,6 +159,7 @@ public partial class TorrentService : ITorrentService
     private bool _sleepPreventionRequested;
     private readonly AsyncKeyedLocker _torrentOperationLock = new();
     private readonly ConcurrentDictionary<string, CancellationTokenSource> _downloadTokens = new();
+    private readonly InFlightOperations<TorrentManager> _managerStops = new();
     private readonly ConcurrentDictionary<string, TorrentManager> _managers = new();
     private readonly Dictionary<string, long> _seedingSessions = new();
     private readonly ConcurrentDictionary<string, byte> _proxyRebuildPendingResumeIds = new();
@@ -2592,12 +2596,12 @@ public partial class TorrentService : ITorrentService
         await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalToken))
         {
             if (!IsTracked(torrent) || torrent.Status != DownloadStatus.Seeding) return;
-            if (_managers.TryGetValue(torrent.Id, out var manager)) await StopManagerAsync(manager);
             if (_downloadTokens.TryRemove(torrent.Id, out var monitor))
             {
                 await monitor.CancelAsync();
                 monitor.Dispose();
             }
+            if (_managers.TryGetValue(torrent.Id, out var manager)) await StopManagerAsync(manager);
             await _dispatcher.InvokeAsync(() =>
             {
                 UpdateSeedingTime(torrent, active: false);
@@ -3376,8 +3380,11 @@ public partial class TorrentService : ITorrentService
         TorrentManager manager;
         if (metadata is not null)
         {
-            await _dispatcher.InvokeAsync(() => torrent.IsPrivate = metadata.IsPrivate);
-            await SaveAsync();
+            if (torrent.IsPrivate != metadata.IsPrivate)
+            {
+                await _dispatcher.InvokeAsync(() => torrent.IsPrivate = metadata.IsPrivate);
+                await SaveAsync();
+            }
             manager = await engine.AddAsync(metadata, downloadPath, torrentSettings);
         }
         else
@@ -3401,8 +3408,7 @@ public partial class TorrentService : ITorrentService
 
     private static void EnsureMagnetFallbackAllowed(TorrentItem torrent)
     {
-        if (torrent.IsPrivate == true || (torrent.IsPrivate is null
-            && (torrent.ImportedFromFile || !string.IsNullOrEmpty(torrent.CachedTorrentFilePath))))
+        if (torrent.IsPrivate == true || (torrent.IsPrivate is null && torrent.ImportedFromFile))
             throw new InvalidOperationException(LocalizationResourceManager.Instance["ErrorPrivateTorrentMetadata"]);
     }
 
@@ -3414,20 +3420,39 @@ public partial class TorrentService : ITorrentService
 
     private async Task WaitForManagerStopAsync(TorrentManager manager)
     {
-        // A caller's WaitAsync timeout does not cancel MonoTorrent's in-flight stop.
-        // Never issue another StopAsync or StartAsync until that operation completes.
-        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(_disposalToken);
-        timeout.CancelAfter(TimeSpan.FromSeconds(30));
-        while (manager.State == TorrentState.Stopping)
-            await Task.Delay(25, timeout.Token);
+        await _managerStops.WaitAsync(manager, _disposalToken).ConfigureAwait(false);
+        await WaitForStoppedStateAsync(manager, _disposalToken).ConfigureAwait(false);
     }
 
-    protected virtual async Task StopManagerAsync(TorrentManager manager)
+    private static async Task WaitForStoppedStateAsync(TorrentManager manager, CancellationToken cancellationToken)
     {
-        await WaitForManagerStopAsync(manager);
-        if (TorrentManagerStateRules.RequiresFullStop(manager.State))
-            await manager.StopAsync(ManagerStopTimeout);
+        if (manager.State != TorrentState.Stopping) return;
+        var stopped = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        void OnStateChanged(object? sender, TorrentStateChangedEventArgs args)
+        {
+            if (args.NewState != TorrentState.Stopping) stopped.TrySetResult();
+        }
+        manager.TorrentStateChanged += OnStateChanged;
+        try
+        {
+            // Subscribe before rechecking: a stop can finish between the first check and subscription.
+            if (manager.State != TorrentState.Stopping) stopped.TrySetResult();
+            await stopped.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+        }
+        finally { manager.TorrentStateChanged -= OnStateChanged; }
     }
+
+    protected virtual Task StopManagerAsync(TorrentManager manager)
+        => _managerStops.RunAsync(manager, async () =>
+        {
+            // Engine-originated stops have no task in our registry; await their state event.
+            await WaitForStoppedStateAsync(manager, CancellationToken.None).ConfigureAwait(false);
+            if (TorrentManagerStateRules.RequiresFullStop(manager.State))
+                await StopManagerCoreAsync(manager).ConfigureAwait(false);
+        });
+
+    protected virtual Task StopManagerCoreAsync(TorrentManager manager)
+        => manager.StopAsync(ManagerStopTimeout);
 
     private Task PauseManagerAsync(TorrentManager manager)
         => TorrentManagerStateRules.CanPauseInPlace(manager.State)

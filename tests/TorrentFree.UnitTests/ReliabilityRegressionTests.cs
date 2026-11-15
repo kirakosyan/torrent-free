@@ -34,6 +34,17 @@ public sealed class ReliabilityRegressionTests
     public void Progress_DoesNotRoundUpToCompletion(double progress, double expected)
         => Assert.Equal(expected, new TorrentItem { Progress = progress }.DisplayProgress);
 
+    [Theory]
+    [InlineData(99.96, 99.9)]
+    [InlineData(99.99, 99.9)]
+    [InlineData(100, 100)]
+    [InlineData(double.NaN, 0)]
+    public void StatusText_DoesNotRoundUpToCompletion(double progress, double expected)
+    {
+        var item = new TorrentItem { Progress = progress, Status = DownloadStatus.Downloading };
+        Assert.Contains(expected.ToString("F1", CultureInfo.CurrentCulture) + "%", item.StatusText);
+    }
+
     [Fact]
     public void CompletedSeeds_AllowExplicitStartButNotBulkRestart()
     {
@@ -80,6 +91,129 @@ public sealed class ReliabilityRegressionTests
         Assert.DoesNotContain("Window.Event-00", content);
         // A filesystem failure must not mask the original crash.
         new DiagnosticLog(directory.Path, "test").Write("failure", new Exception("original"));
+    }
+
+    [Fact]
+    public void RoutineLifecycleBreadcrumbs_DoNotEvictPreviousCrash()
+    {
+        using var directory = new CoreTestDirectory();
+        var path = Path.Combine(directory.Path, "crash.log");
+        new DiagnosticLog(path, "test").Write("crash", new IOException("preserved evidence"));
+        var original = File.ReadAllText(path);
+        for (var session = 0; session < 100; session++)
+        {
+            var log = new DiagnosticLog(path, "test");
+            log.Breadcrumb("Session.Start");
+            for (var window = 0; window < 100; window++) log.Breadcrumb("Window.Activated");
+            log.Breadcrumb("Window.Destroying");
+        }
+        Assert.Equal(original, File.ReadAllText(path));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task LegacyPublicMagnet_WithMissingOrCorruptCache_CanResume(bool corruptCache)
+    {
+        await using var fixture = new CoreServiceFixture(serviceFactory: (storage, notifications, background, time) =>
+            new RegisterWithoutNetwork(storage, notifications, background, time));
+        var cache = Path.Combine(fixture.Directory.Path, "missing.torrent");
+        if (corruptCache) await File.WriteAllTextAsync(cache, "not torrent metadata", TestContext.Current.CancellationToken);
+        var item = new TorrentItem
+        {
+            MagnetLink = "magnet:?xt=urn:btih:0123456789abcdef0123456789abcdef01234567",
+            CachedTorrentFilePath = cache, SavePath = fixture.Storage.GetDefaultDownloadPath(),
+            Status = DownloadStatus.Downloading, IsPrivate = null, ImportedFromFile = false
+        };
+        await fixture.Storage.LoadTorrentsAsync();
+        await fixture.Storage.SaveTorrentsAsync([item]);
+        await fixture.Service.InitializeAsync();
+        var restored = Assert.Single(fixture.Service.Torrents);
+        Assert.False(restored.ImportedFromFile);
+        Assert.Equal(DownloadStatus.Queued, restored.Status);
+        await fixture.Service.StartQueuedTorrentsAsync();
+        Assert.Single(fixture.Engine.Torrents);
+        Assert.Null(restored.ErrorMessage);
+        Assert.Equal(DownloadStatus.Downloading, restored.Status);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task CompletedDownload_ExportsOfflineWithMissingMetadata(bool importedPrivate)
+    {
+        await using var fixture = new CoreServiceFixture();
+        await fixture.Service.InitializeAsync();
+        var folder = Path.Combine(fixture.Directory.Path, "completed");
+        Directory.CreateDirectory(folder);
+        await File.WriteAllTextAsync(Path.Combine(folder, "selected.bin"), "data", TestContext.Current.CancellationToken);
+        await File.WriteAllTextAsync(Path.Combine(folder, "skipped.bin"), "partial", TestContext.Current.CancellationToken);
+        var item = new TorrentItem
+        {
+            Name = "completed", SavePath = fixture.Directory.Path, ResolvedDownloadPath = folder,
+            Status = DownloadStatus.Completed, Progress = 100, ImportedFromFile = importedPrivate,
+            IsPrivate = importedPrivate ? true : null, SelectedFilePaths = ["selected.bin"],
+            CachedTorrentFilePath = Path.Combine(fixture.Directory.Path, "missing.torrent")
+        };
+        fixture.Service.Torrents.Add(item);
+        var plan = await fixture.Service.CreateDownloadExportPlanAsync(item, TestContext.Current.CancellationToken);
+        Assert.EndsWith("selected.bin", Assert.Single(plan.Files).SourcePath);
+        Assert.Empty(fixture.Engine.Torrents);
+    }
+
+    [Fact]
+    public async Task SeedCompletion_CancelsMonitorBeforeSlowStopAndPublishesCompletedAfterward()
+    {
+        await using var fixture = new CoreServiceFixture(serviceFactory: (storage, notifications, background, time) =>
+            new ControlledStop(storage, notifications, background, time));
+        var service = (ControlledStop)fixture.Service;
+        await service.InitializeAsync();
+        var item = (await service.AddTorrentFileAsync(await fixture.PrepareTorrentAsync()))!;
+        await service.StartTorrentAsync(item);
+        await CoreServiceFixture.WaitUntilAsync(() => item.Status == DownloadStatus.Seeding);
+        var monitors = (System.Collections.Concurrent.ConcurrentDictionary<string, CancellationTokenSource>)typeof(TorrentService)
+            .GetField("_downloadTokens", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.GetValue(service)!;
+        var monitorToken = monitors[item.Id].Token;
+        var completion = CoreServiceFixture.InvokeAsync(service, "CompleteSeedingAsync", item);
+        try
+        {
+            await service.Entered.Task.WaitAsync(TestContext.Current.CancellationToken);
+            Assert.True(monitorToken.IsCancellationRequested);
+            Assert.False(monitors.ContainsKey(item.Id));
+            Assert.Equal(DownloadStatus.Seeding, item.Status);
+            var duplicateStop = service.StopAgain(Assert.Single(fixture.Engine.Torrents));
+            Assert.False(duplicateStop.IsCompleted);
+            Assert.Equal(1, service.StopCalls);
+            service.Release.TrySetResult();
+            await Task.WhenAll(completion, duplicateStop);
+            Assert.Equal(DownloadStatus.Completed, item.Status);
+            Assert.False(item.CanStartInBulk);
+        }
+        finally { service.Release.TrySetResult(); }
+    }
+
+    private sealed class RegisterWithoutNetwork(IStorageService storage, INotificationService notifications,
+        IBackgroundDownloadService background, TimeProvider time)
+        : TorrentService(storage, notifications, background, ImmediateDispatcher.Instance, time)
+    {
+        protected override Task StartManagerAsync(TorrentManager manager) => Task.CompletedTask;
+    }
+
+    private sealed class ControlledStop(IStorageService storage, INotificationService notifications,
+        IBackgroundDownloadService background, TimeProvider time)
+        : TorrentService(storage, notifications, background, ImmediateDispatcher.Instance, time)
+    {
+        public TaskCompletionSource Entered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public TaskCompletionSource Release { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public int StopCalls;
+        public Task StopAgain(TorrentManager manager) => StopManagerAsync(manager);
+        protected override async Task StopManagerCoreAsync(TorrentManager manager)
+        {
+            Interlocked.Increment(ref StopCalls);
+            Entered.TrySetResult();
+            await Release.Task;
+            await base.StopManagerCoreAsync(manager);
+        }
     }
 
     [Fact]

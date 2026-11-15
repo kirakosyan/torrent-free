@@ -6,7 +6,9 @@ public sealed class MauiTorrentFilePicker : ITorrentFilePicker
     {
         var torrentFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
         {
-            { DevicePlatform.Android, new[] { "application/x-bittorrent", "application/octet-stream" } },
+            // This explicit picker is the fallback for providers with generic/missing MIME
+            // types. It does not register TorrentFree in other apps' Open with choosers.
+            { DevicePlatform.Android, new[] { "*/*" } },
             { DevicePlatform.iOS, new[] { "org.bittorrent.torrent", "public.data" } },
             { DevicePlatform.MacCatalyst, new[] { "torrent", "public.data" } },
             { DevicePlatform.WinUI, new[] { ".torrent" } },

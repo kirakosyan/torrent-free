@@ -18,6 +18,36 @@ public partial class TorrentService
 
     private sealed class MetadataPreviewInterruptedException : OperationCanceledException;
 
+    public async Task<DownloadExportPlan> CreateDownloadExportPlanAsync(TorrentItem torrent, CancellationToken cancellationToken = default)
+    {
+        using var lifetime = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposalToken);
+        await using var operation = await _torrentOperationLock.AcquireAsync(torrent.Id, lifetime.Token);
+        if (!IsTracked(torrent)) throw new InvalidOperationException("This torrent has been removed.");
+        if (torrent.Progress < 100 && torrent.DateCompleted is null && torrent.Status is not (DownloadStatus.Completed or DownloadStatus.Seeding))
+            throw new InvalidOperationException("This download has not completed.");
+        var downloadPath = torrent.DownloadedFilePath;
+        var selectedPaths = torrent.SelectedFilePaths?.ToArray();
+        var metadata = _managers.TryGetValue(torrent.Id, out var manager) ? manager.Torrent : null;
+        // Local cache lookup, metadata parsing, enumeration and stat calls all stay off the UI thread.
+        return await Task.Run(async () =>
+        {
+            if (metadata is null && (GetMetadataPath(torrent) ?? FindEngineMetadataCachePath(torrent)) is { } metadataPath)
+            {
+                try { metadata = await LoadTorrentFileBoundedAsync(metadataPath, torrent).WaitAsync(lifetime.Token); }
+                catch (Exception ex) when (ex is IOException or InvalidDataException or FormatException or UnauthorizedAccessException or TorrentException)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Export metadata unavailable: {ex.Message}");
+                }
+            }
+            var selected = selectedPaths?.ToHashSet(StringComparer.Ordinal);
+            var choices = metadata?.Files.Select(file => new TorrentFileChoice(NormalizeFilePath(file.Path), file.Length,
+                selected is null || selected.Contains(NormalizeFilePath(file.Path)))).ToArray();
+            return choices is not null
+                ? DownloadExportPlan.Create(downloadPath, Directory.Exists(downloadPath), choices, lifetime.Token)
+                : DownloadExportPlan.FromCompletedFiles(downloadPath, Directory.Exists(downloadPath), selectedPaths, lifetime.Token);
+        }, lifetime.Token);
+    }
+
     public async Task<IReadOnlyList<TorrentFileChoice>> GetTorrentFilesAsync(
         TorrentItem torrent, CancellationToken cancellationToken = default)
     {

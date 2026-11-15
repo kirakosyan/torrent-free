@@ -118,7 +118,13 @@ public sealed class NotificationService : INotificationService
             NotificationId = torrent.Id.GetHashCode() & 0x7FFFFFFF,
             Title = title,
             Description = body,
-            ReturningData = torrent.Id
+            ReturningData = torrent.Id,
+#if ANDROID
+            Android = new Plugin.LocalNotification.Core.Models.AndroidOption.AndroidOptions
+            {
+                IconSmallName = new Plugin.LocalNotification.Core.Models.AndroidOption.AndroidIcon("ic_stat_transfer")
+            }
+#endif
         };
 
         await LocalNotificationCenter.Current.Show(request);

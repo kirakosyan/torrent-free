@@ -418,8 +418,8 @@ public partial class MainViewModel : DownloadListViewModel
             // Android 6-9 need the runtime storage permission to write to public Downloads.
             async () => OperatingSystem.IsAndroidVersionAtLeast(29)
                 || await Permissions.RequestAsync<Permissions.StorageWrite>() == PermissionStatus.Granted,
-            async () => await AndroidDownloadExportService.ExportToPublicDownloadsAsync(torrent.Id, downloadPath, isDirectory,
-                await _torrentService.GetTorrentFilesAsync(torrent)),
+            () => AndroidDownloadExportService.ExportToPublicDownloadsAsync(torrent.Id, downloadPath,
+                cancellationToken => _torrentService.CreateDownloadExportPlanAsync(torrent, cancellationToken)),
             AndroidDownloadExportService.TryOpenFolder,
             () => AndroidDownloadExportService.TryOpenPublicDownloadsFolder());
     }

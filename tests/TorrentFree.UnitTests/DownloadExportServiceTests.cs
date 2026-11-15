@@ -6,6 +6,66 @@ namespace TorrentFree.UnitTests;
 public sealed class DownloadExportServiceTests
 {
     [Fact]
+    public async Task Batch_RequiresSpaceForEveryMissingCopyBeforeCreatingAny()
+    {
+        using var directory = new CoreTestDirectory();
+        var store = new RecordingExportStore();
+        var service = new DownloadExportService(Path.Combine(directory.Path, "state"), store, () => 6);
+        var files = new[] { "one", "two" }.Select(name => new DownloadExportFile(Path.Combine(directory.Path, name), "folder", 4)).ToArray();
+        foreach (var file in files) await File.WriteAllTextAsync(file.SourcePath, "data", TestContext.Current.CancellationToken);
+        await Assert.ThrowsAsync<DownloadExportSpaceException>(() => service.ExportBatchAsync("owner", files, TestContext.Current.CancellationToken));
+        Assert.Equal(0, store.Created);
+        Assert.Empty(store.Completed);
+    }
+
+    [Fact]
+    public async Task Batch_OnlyVerifiedReusableCopiesAreExcludedFromSpaceBudget()
+    {
+        using var directory = new CoreTestDirectory();
+        var store = new RecordingExportStore();
+        long free = 8;
+        var service = new DownloadExportService(Path.Combine(directory.Path, "state"), store, () => free);
+        var files = new[] { "one", "two" }.Select(name => new DownloadExportFile(Path.Combine(directory.Path, name), "folder", 4)).ToArray();
+        foreach (var file in files) await File.WriteAllTextAsync(file.SourcePath, "data", TestContext.Current.CancellationToken);
+        var first = await service.ExportAsync("owner", files[0].SourcePath, "folder", TestContext.Current.CancellationToken);
+        free = 4;
+        var results = await service.ExportBatchAsync("owner", files, TestContext.Current.CancellationToken);
+        Assert.Equal(first, results[0]);
+        Assert.Equal(2, store.Created);
+        store.Completed[first] = "edit"u8.ToArray();
+        free = 3;
+        await Assert.ThrowsAsync<DownloadExportSpaceException>(() => service.ExportBatchAsync("owner", files, TestContext.Current.CancellationToken));
+        Assert.Equal(2, store.Created);
+    }
+
+    [Fact]
+    public void ExportPlan_AcceptsTrailingRootSeparatorAndHonorsOfflineSelection()
+    {
+        using var directory = new CoreTestDirectory();
+        Directory.CreateDirectory(Path.Combine(directory.Path, "sub"));
+        File.WriteAllText(Path.Combine(directory.Path, "sub", "selected.bin"), "data");
+        File.WriteAllText(Path.Combine(directory.Path, "unrelated.bin"), "other");
+        var root = directory.Path + Path.DirectorySeparatorChar;
+        var plan = DownloadExportPlan.Create(root, true, [new("sub/selected.bin", 4)], TestContext.Current.CancellationToken);
+        Assert.Equal("sub", Assert.Single(plan.Files).RelativeDirectory);
+        var fallback = DownloadExportPlan.FromCompletedFiles(root, true, ["sub/selected.bin"], TestContext.Current.CancellationToken);
+        Assert.Equal(plan.Files, fallback.Files);
+    }
+
+    [Fact]
+    public void OfflinePlan_SkipsPartialFilesAndCanBeCancelledDuringEnumeration()
+    {
+        using var directory = new CoreTestDirectory();
+        File.WriteAllText(Path.Combine(directory.Path, "complete.bin"), "data");
+        File.WriteAllText(Path.Combine(directory.Path, "partial.bin.!mt"), "partial");
+        var plan = DownloadExportPlan.FromCompletedFiles(directory.Path, true, null, TestContext.Current.CancellationToken);
+        Assert.EndsWith("complete.bin", Assert.Single(plan.Files).SourcePath);
+        using var cancellation = new CancellationTokenSource();
+        cancellation.Cancel();
+        Assert.Throws<OperationCanceledException>(() => DownloadExportPlan.FromCompletedFiles(directory.Path, true, null, cancellation.Token));
+    }
+
+    [Fact]
     public async Task CancelCopy_AbortsPartialDestinationAndAllowsRetry()
     {
         using var directory = new CoreTestDirectory();
@@ -69,11 +129,11 @@ public sealed class DownloadExportServiceTests
         File.WriteAllText(Path.Combine(directory.Path, "skipped.bin"), "partial");
         File.WriteAllText(Path.Combine(directory.Path, "unrelated.bin"), "unrelated");
         var plan = DownloadExportPlan.Create(directory.Path, true,
-            [new("selected.bin", 4), new("skipped.bin", 100, false)]);
+            [new("selected.bin", 4), new("skipped.bin", 100, false)], TestContext.Current.CancellationToken);
         Assert.EndsWith("selected.bin", Assert.Single(plan.Files).SourcePath);
         Assert.Equal(4, plan.TotalBytes);
-        Assert.Throws<InvalidDataException>(() => DownloadExportPlan.Create(directory.Path, true, [new("../outside.bin", 0)]));
-        Assert.Throws<InvalidDataException>(() => DownloadExportPlan.Create(directory.Path, true, [new("skipped.bin", 100)]));
+        Assert.Throws<InvalidDataException>(() => DownloadExportPlan.Create(directory.Path, true, [new("../outside.bin", 0)], TestContext.Current.CancellationToken));
+        Assert.Throws<InvalidDataException>(() => DownloadExportPlan.Create(directory.Path, true, [new("skipped.bin", 100)], TestContext.Current.CancellationToken));
     }
 
     private sealed class ImmediateProgress(Action<DownloadExportProgress> report) : IProgress<DownloadExportProgress>
@@ -195,10 +255,12 @@ public sealed class DownloadExportServiceTests
         public Dictionary<string, byte[]> Completed { get; } = [];
         public List<string> Aborted { get; } = [];
         public bool FailCompletion { get; set; }
+        public int Created { get; private set; }
         public string ReadText(string id) => System.Text.Encoding.UTF8.GetString(Completed[id]);
         public Task<Stream?> OpenReadAsync(string id) => Task.FromResult<Stream?>(Completed.TryGetValue(id, out var data) ? new MemoryStream(data) : null);
         public Task<ExportWriteTarget> CreateAsync(string directory, string name)
         {
+            Created++;
             var id = Guid.NewGuid().ToString();
             var stream = new MemoryStream();
             _pending.Add(id, stream);

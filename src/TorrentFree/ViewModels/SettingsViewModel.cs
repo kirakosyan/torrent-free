@@ -321,6 +321,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         // Reopening the page immediately after an edit must not reload an older snapshot.
         await FlushPendingSettingsAsync();
+        var pendingProxy = HasProxyChanges ? ProxyDraft : null;
         _isLoadingSettings = true;
         try
         {
@@ -359,6 +360,16 @@ public partial class SettingsViewModel : ObservableObject
         }
         finally
         {
+            if (pendingProxy is not null)
+            {
+                ProxyEnabled = pendingProxy.Enabled;
+                ProxyHost = pendingProxy.Host;
+                ProxyPort = pendingProxy.Port;
+                ProxyUsername = pendingProxy.Username;
+                ProxyPassword = pendingProxy.Password;
+                _proxyPasswordUnavailable = pendingProxy.PasswordUnavailable;
+                HasProxyChanges = ProxyDraft != _appliedProxy;
+            }
             // Must always run: leaving this true would silently stop every later
             // settings change from being persisted (see OnXxxChanged partial methods).
             _isLoadingSettings = false;

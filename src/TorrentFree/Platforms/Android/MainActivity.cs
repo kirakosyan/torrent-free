@@ -22,17 +22,8 @@ namespace TorrentFree;
     Categories = [Intent.CategoryDefault, Intent.CategoryBrowsable],
     DataSchemes = ["content", "file"],
     DataMimeType = "application/x-bittorrent")]
-[IntentFilter(
-    [Intent.ActionView],
-    Categories = [Intent.CategoryDefault, Intent.CategoryBrowsable],
-    DataSchemes = ["content", "file"],
-    DataMimeType = "application/octet-stream")]
-[IntentFilter(
-    [Intent.ActionView],
-    Categories = [Intent.CategoryDefault, Intent.CategoryBrowsable],
-    // Some providers omit both MIME type and a filename in the URI. The bounded
-    // torrent parser validates content before anything can be imported.
-    DataSchemes = ["content", "file"])]
+// Do not register generic binary or untyped content handlers. Android cannot use
+// the provider's display name when matching an opaque URI; use Browse for those.
 public class MainActivity : MauiAppCompatActivity
 {
     protected override void OnCreate(Bundle? savedInstanceState)
@@ -83,16 +74,19 @@ public class MainActivity : MauiAppCompatActivity
             return;
         }
 
-        _ = ImportTorrentContentAsync(viewModel, uri);
+        _ = ImportTorrentContentAsync(viewModel, uri, intent.Type);
     }
 
-    private async Task ImportTorrentContentAsync(MainViewModel viewModel, Android.Net.Uri uri)
+    private async Task ImportTorrentContentAsync(MainViewModel viewModel, Android.Net.Uri uri, string? mimeType)
     {
         string fileName;
         byte[] content;
         try
         {
-            fileName = QueryDisplayName(uri) ?? "download.torrent";
+            fileName = QueryDisplayName(uri) ?? Path.GetFileName(uri.Path) ?? "download.torrent";
+            if (!string.Equals(mimeType, "application/x-bittorrent", StringComparison.OrdinalIgnoreCase)
+                && !fileName.EndsWith(".torrent", StringComparison.OrdinalIgnoreCase))
+                throw new InvalidDataException("The shared file is not a .torrent file.");
             await using var stream = ContentResolver?.OpenInputStream(uri)
                 ?? throw new IOException("The .torrent file could not be opened.");
             content = await TorrentFileContentReader.ReadAsync(stream).ConfigureAwait(false);

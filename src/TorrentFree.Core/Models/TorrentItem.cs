@@ -391,7 +391,7 @@ public partial class TorrentItem : ObservableObject
     public string StatusText => Status switch
     {
         DownloadStatus.Queued => LocalizationResourceManager.Instance[HasCompletedDownload ? "StatusQueuedForSeeding" : "StatusQueued"],
-        DownloadStatus.Downloading => $"{LocalizationResourceManager.Instance["StatusDownloading"]} - {Progress:F1}%",
+        DownloadStatus.Downloading => $"{LocalizationResourceManager.Instance["StatusDownloading"]} - {DisplayProgressTenths:F1}%",
         DownloadStatus.Paused => LocalizationResourceManager.Instance["StatusPaused"],
         DownloadStatus.Completed => LocalizationResourceManager.Instance["StatusCompleted"],
         DownloadStatus.Seeding => LocalizationResourceManager.Instance["StatusSeeding"],
@@ -437,7 +437,10 @@ public partial class TorrentItem : ObservableObject
     public bool CanStartInBulk => CanStart && Status != DownloadStatus.Completed;
 
     [JsonIgnore]
-    public double DisplayProgress => double.IsFinite(Progress) ? Math.Floor(Math.Clamp(Progress, 0, 100)) : 0;
+    public double DisplayProgress => Math.Floor(DisplayProgressTenths);
+
+    [JsonIgnore]
+    public double DisplayProgressTenths => double.IsFinite(Progress) ? Math.Floor(Math.Clamp(Progress, 0, 100) * 10) / 10 : 0;
 
     /// <summary>
     /// Indicates whether the download can be paused.
@@ -467,6 +470,7 @@ public partial class TorrentItem : ObservableObject
     partial void OnProgressChanged(double value)
     {
         OnPropertyChanged(nameof(DisplayProgress));
+        OnPropertyChanged(nameof(DisplayProgressTenths));
         OnPropertyChanged(nameof(StatusText));
         OnPropertyChanged(nameof(StatusHint));
         InvalidateCanOpenDownloadedFileCache();

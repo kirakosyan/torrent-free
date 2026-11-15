@@ -48,41 +48,41 @@ public static class AndroidDownloadExportService
     }
 
     public static async Task<string?> ExportToPublicDownloadsAsync(string ownerId, string downloadPath,
-        bool isDirectory, IReadOnlyList<TorrentFileChoice> choices)
+        Func<CancellationToken, Task<DownloadExportPlan>> preparePlan)
     {
 #if ANDROID
-        var plan = DownloadExportPlan.Create(downloadPath, isDirectory, choices);
         var page = Shell.Current ?? throw new InvalidOperationException("No export host is available.");
-        var available = GetAvailableBytes();
-        var message = string.Format(LocalizationResourceManager.Instance["ExportConfirm"],
-            TorrentItem.FormatBytes(plan.TotalBytes), available.HasValue ? TorrentItem.FormatBytes(available.Value) : "—");
-        if (!await page.DisplayAlertAsync(LocalizationResourceManager.Instance["ExportDownload"], message,
-            LocalizationResourceManager.Instance["ExportDownload"], LocalizationResourceManager.Instance["Cancel"]))
-            throw new OperationCanceledException();
-
         using var cancellation = new CancellationTokenSource();
         var progressPage = new DownloadExportPage(cancellation);
         await page.Navigation.PushModalAsync(progressPage);
         try
         {
+            var plan = await preparePlan(cancellation.Token);
+            cancellation.Token.ThrowIfCancellationRequested();
+            var available = GetAvailableBytes();
+            var message = string.Format(LocalizationResourceManager.Instance["ExportConfirm"],
+                TorrentItem.FormatBytes(plan.TotalBytes), available.HasValue ? TorrentItem.FormatBytes(available.Value) : "—");
+            if (!await progressPage.DisplayAlertAsync(LocalizationResourceManager.Instance["ExportDownload"], message,
+                LocalizationResourceManager.Instance["ExportDownload"], LocalizationResourceManager.Instance["Cancel"]))
+                throw new OperationCanceledException();
+            cancellation.Token.ThrowIfCancellationRequested();
             var ownerSuffix = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(ownerId)))[..12];
             var folderName = GetSafeFolderName(Path.GetFileName(downloadPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))) + "-" + ownerSuffix;
-            for (var index = 0; index < plan.Files.Count; index++)
+            var files = plan.Files.Select(file => file with
             {
-                cancellation.Token.ThrowIfCancellationRequested();
-                var fileNumber = index + 1;
-                var file = plan.Files[index];
-                var progress = new Progress<DownloadExportProgress>(value =>
-                {
-                    if (!cancellation.IsCancellationRequested) progressPage.Report(fileNumber, plan.Files.Count, value);
-                });
-                // File hashing and copies run off the UI thread; progress is marshalled back.
-                await Task.Run(() => Exporter.Value.ExportAsync(ownerId, file.SourcePath,
-                    BuildAndroidDownloadsRelativePath(folderName, file.RelativeDirectory), cancellation.Token, progress), cancellation.Token);
-            }
+                RelativeDirectory = BuildAndroidDownloadsRelativePath(folderName, file.RelativeDirectory)
+            }).ToArray();
+            var progress = new Progress<DownloadExportBatchProgress>(value =>
+            {
+                if (!cancellation.IsCancellationRequested) progressPage.Report(value.FileNumber, value.FileCount, value.Progress);
+            });
+            await Task.Run(() => Exporter.Value.ExportBatchAsync(ownerId, files, cancellation.Token, progress), cancellation.Token);
             return GetPublicDownloadsPath(folderName);
         }
-        finally { await page.Navigation.PopModalAsync(); }
+        finally
+        {
+            if (page.Navigation.ModalStack.LastOrDefault() == progressPage) await page.Navigation.PopModalAsync();
+        }
 #else
         await Task.CompletedTask;
         return null;

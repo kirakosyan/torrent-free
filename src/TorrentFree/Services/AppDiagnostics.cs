@@ -32,7 +32,7 @@ internal static class AppDiagnostics
             Record("TaskScheduler.UnobservedTaskException", e.Exception);
             e.SetObserved();
         };
-        Record("Session.Start");
+        State("Session.Start");
     }
 
     public static void State(string state)

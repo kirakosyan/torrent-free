@@ -10,6 +10,37 @@ namespace TorrentFree.UnitTests;
 public sealed class SettingsViewModelTests
 {
     [Fact]
+    public async Task ProxyDraft_SurvivesReopeningAndFailedReloadWithoutBeingApplied()
+    {
+        var storage = new SettingsStorage();
+        var transfers = new Transfers();
+        var vm = Create(storage, transfers);
+        await vm.InitializeCommand.ExecuteAsync(null);
+        vm.ProxyEnabled = true;
+        vm.ProxyHost = "proxy.example";
+        vm.ProxyPort = 1081;
+        vm.ProxyPassword = "draft-secret";
+        await vm.InitializeCommand.ExecuteAsync(null);
+        Assert.True(vm.HasProxyChanges);
+        Assert.Equal("proxy.example", vm.ProxyHost);
+        Assert.Equal(1081, vm.ProxyPort);
+        Assert.Equal("draft-secret", vm.ProxyPassword);
+        Assert.False(transfers.ProxyEnabled);
+        storage.FailLoad = true;
+        await vm.InitializeCommand.ExecuteAsync(null);
+        Assert.True(vm.HasProxyChanges);
+        Assert.Equal("draft-secret", vm.ProxyPassword);
+        storage.FailLoad = false;
+        await vm.InitializeCommand.ExecuteAsync(null);
+        vm.GlobalUploadLimitKbps = 50;
+        await vm.FlushPendingSettingsAsync();
+        Assert.False(storage.Value.ProxyEnabled);
+        await vm.ApplyProxyCommand.ExecuteAsync(null);
+        Assert.True(transfers.ProxyEnabled);
+        Assert.Equal("draft-secret", storage.Value.ProxyPassword);
+    }
+
+    [Fact]
     public async Task FailedLoad_DisablesEditingAndRetryRestoresPersistence()
     {
         var storage = new SettingsStorage { FailLoad = true };
@@ -128,6 +159,7 @@ public sealed class SettingsViewModelTests
     private sealed class Transfers : ITorrentService
     {
         public int ProxyCalls;
+        public bool ProxyEnabled;
         public ObservableCollection<TorrentItem> Torrents { get; } = [];
         public Task InitializeAsync() => Task.CompletedTask;
         public Task UpdateWifiOnlyAsync(bool enabled) => Task.CompletedTask;
@@ -135,10 +167,11 @@ public sealed class SettingsViewModelTests
         public void UpdateGlobalSpeedLimits(int down, int up) { }
         public void UpdateQueueLimits(int downloads, int seeds) { }
         public void UpdateSeedingLimits(double ratio, int minutes) { }
-        public void UpdateProxySettings(bool enabled, string host, int port, string username, string password) => ProxyCalls++;
+        public void UpdateProxySettings(bool enabled, string host, int port, string username, string password) { ProxyCalls++; ProxyEnabled = enabled; }
         public Task<TorrentItem?> AddTorrentAsync(string link, bool startPaused = false) => throw new NotSupportedException();
         public Task<TorrentItem?> AddTorrentFileAsync(TorrentMetadata metadata, bool startPaused = false) => throw new NotSupportedException();
         public Task<IReadOnlyList<TorrentFileChoice>> GetTorrentFilesAsync(TorrentItem torrent, CancellationToken cancellationToken = default) => throw new NotSupportedException();
+        public Task<DownloadExportPlan> CreateDownloadExportPlanAsync(TorrentItem torrent, CancellationToken cancellationToken = default) => throw new NotSupportedException();
         public Task SetTorrentFileSelectionAsync(TorrentItem torrent, IReadOnlyCollection<string> paths) => throw new NotSupportedException();
         public Task StartTorrentAsync(TorrentItem torrent) => throw new NotSupportedException();
         public Task PauseTorrentAsync(TorrentItem torrent) => throw new NotSupportedException();

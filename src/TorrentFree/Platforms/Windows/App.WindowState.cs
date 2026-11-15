@@ -32,8 +32,6 @@ public partial class App
         if (sender is not Window window) return;
         window.Created -= OnDesktopWindowCreated;
         AppDiagnostics.State("Window.Created");
-        if (window.Handler?.PlatformView is Microsoft.UI.Xaml.Window native)
-            _responsiveness = new WinUI.WindowResponsivenessMonitor(native.DispatcherQueue);
         TrackDesktopWindow(window);
     }
 
@@ -55,14 +53,15 @@ public partial class App
 
     private void TrackDesktopWindow(Window window)
     {
-        if (ReferenceEquals(_trackedDesktopWindow, window))
+        if (!ReferenceEquals(_trackedDesktopWindow, window))
         {
-            return;
+            UntrackDesktopWindow();
+            _trackedDesktopWindow = window;
         }
 
-        UntrackDesktopWindow();
-
-        _trackedDesktopWindow = window;
+        if (_responsiveness is null && window.Handler?.PlatformView is Microsoft.UI.Xaml.Window native)
+            _responsiveness = new WinUI.WindowResponsivenessMonitor(native.DispatcherQueue);
+        if (_desktopAppWindow is not null) return;
         _desktopAppWindow = TryGetDesktopAppWindow(window);
         if (_desktopAppWindow is not null)
         {
@@ -73,6 +72,8 @@ public partial class App
 
     private void UntrackDesktopWindow()
     {
+        _responsiveness?.Dispose();
+        _responsiveness = null;
         if (_desktopAppWindow is not null)
         {
             _desktopAppWindow.Changed -= OnDesktopAppWindowChanged;
@@ -162,9 +163,7 @@ public partial class App
         }
 
         window.Destroying -= OnDesktopWindowDestroying;
-        _responsiveness?.Dispose();
-        _responsiveness = null;
-        AppDiagnostics.Record("Window.Destroying");
+        AppDiagnostics.State("Window.Destroying");
 
         if (!ReferenceEquals(_trackedDesktopWindow, window))
         {
