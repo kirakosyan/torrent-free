@@ -1,7 +1,10 @@
 # Huawei AppGallery
 
-**Next release: 1.25.1 / code 31**, prepared locally for ARM64 only. **Not uploaded,
-submitted, or published.** See the [1.25.1 preparation record](release-notes-1.25.1.md).
+**1.25.1 / code 31**, ARM64 only, was submitted on **November 15, 2026** and is
+**Reviewing** (version record **2084573205246301376**). It retains the existing
+198-region scope and will publish immediately after approval. All 26 localized
+release notes were saved and verified after reloading. See the
+[1.25.1 release record](release-notes-1.25.1.md).
 
 Huawei builds use `-p:AndroidStore=Huawei -p:AppTargetFramework=net10.0-android`.
 This produces an APK with identity `com.torrentfree.app.huawei`.
@@ -64,16 +67,16 @@ The app itself retains its 24 UI languages. Ukrainian remains listing-only.
 
 ## Release
 
-**1.23 / code 28** was submitted on **October 8, 2026** and is **Reviewing**,
-verified **22:48 Europe/Oslo**. It aligns with Google Play and Microsoft Store and
-includes torrent file selection and the Huawei follow-up fixes. It will publish
-immediately after approval; **1.23 is not live yet**. See the [1.23 release record](release-notes-1.23.md)
+**1.23 / code 28** was submitted on **October 8, 2026** and **released October 14,
+2026 at 16:38:45**, as shown in AppGallery Connect and verified November 15.
+It includes torrent file selection and the Huawei follow-up fixes and remains
+live while 1.25.1 is reviewed. See the [1.23 release record](release-notes-1.23.md)
 for source, hashes, validation, submission ID and the inherited 198-region scope.
-The previous **1.20 is live**, verified October 8.
+The earlier **1.20** live status was verified October 8.
 
 
 See the [1.20 release record](release-notes-1.20.md#traceability-and-status) for
-the sole verified review/publication status and its timestamp. That submission
+the historical review/publication status and its timestamp. That submission
 selected all 199 available regions outside mainland China and new regions.
 The completed questionnaire yielded
 3+ (Brazil: All ages); the app is not intended only for children. Privacy URLs,

@@ -12,4 +12,6 @@ mapping in `prepare_submission.py` supplies the 24 supported listing languages.
 
 See the [shared preparation record](../microsoft-store/release-notes-1.25.1.md)
 for source, package hashes, signing validation and remaining device qualification.
-Seller eligibility and device/store handoffs have not been rechecked in this preparation.
+On November 15, 2026, Seller Portal required a fresh sign-in. The owner requested
+skipping Samsung because this app is not available there yet. No package was
+uploaded and seller eligibility was not rechecked.

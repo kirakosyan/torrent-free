@@ -1,6 +1,6 @@
 # Version 1.25.1 release record
 
-Prepared November 15, 2026 (Europe/Oslo). **Not uploaded, submitted or published.**
+Prepared and submitted November 15, 2026 (Europe/Oslo). **Store review pending; not yet live.**
 Windows **1.25.1.0**, x64 and ARM64; Android **1.25.1**, version code **31**.
 
 ## Changes
@@ -76,4 +76,30 @@ Artifacts are retained in ignored `artifacts/store-1.25.1/`. The packages are:
 
 ## Store status
 
-Submission pending final CI verification. No 1.25.1 package has been submitted yet.
+All six [release-source CI jobs](https://github.com/kirakosyan/torrent-free/actions/runs/43753417315)
+and all six [main CI jobs](https://github.com/kirakosyan/torrent-free/actions/runs/43754243394)
+passed. The annotated `v1.25.1` tag and release commits are pushed.
+
+| Store | Submission | Status verified November 15, 2026 |
+| --- | --- | --- |
+| Microsoft Store | **22**, ID `1152921505702410872` | **In certification**; pre-processing started, publish after approval |
+| Google Play | **24**, production release **14**, submitted 20:55 Europe/Oslo | **In review**, full production rollout, managed publishing off |
+| Huawei AppGallery | App **119226643**, version record `2084573205246301376` | **Reviewing**; publish immediately after approval |
+| Samsung Galaxy Store | None | Skipped at the owner's request; APK retained locally |
+
+Microsoft accepted both packages. Its existing Xbox toast warning is irrelevant
+to the retained Desktop/Windows Team selection. A fresh before/after listing
+export proved that only `ReleaseNotes` changed across 24 languages (31 populated
+locale columns); text, search terms, screenshots, captions, asset order and logo
+settings were unchanged. Google accepted all 26 notes, embedded R8 mapping and
+matching native symbols; preview showed no newly unsupported devices and retained
+178 countries/regions. Huawei retained 198 countries/regions, the existing rating,
+free pricing and immediate publication; all 26 saved notes matched after reload.
+
+Previous live releases verified in the consoles: Microsoft **1.24** (submission 21),
+Play **1.24** (submission 23, published November 10), Huawei **1.23** (released
+October 14). These remain live while 1.25.1 is reviewed.
+
+Console screenshots, listing comparisons and submission metadata are retained in
+ignored `artifacts/store-1.25.1/submissions/`. The original package ZIP is retained
+unchanged as the pre-submission snapshot; current store status is recorded separately.

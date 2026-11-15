@@ -5,7 +5,7 @@
 - **Android (Google Play):** https://play.google.com/store/apps/details?id=com.torrentfree.app
 - **Microsoft Store:** https://apps.microsoft.com/detail/9nnx2ztpxc26
 - **Samsung Galaxy Store:** preparation only; not submitted or published. See [Galaxy Store preparation](store/galaxy-store/README.md) for seller requirements, reusable Play assets, signing and store routing.
-- **Huawei AppGallery:** version **1.20 / code 25 is live**, verified October 8, 2026. Version 1.23 / code 28 is submitted and Reviewing; see the [Huawei release record](store/huawei-store/release-notes-1.23.md).
+- **Huawei AppGallery:** version **1.23 / code 28 is live**, verified November 15, 2026. Version **1.25.1 / code 31** is submitted and **Reviewing**; see the [Huawei release record](store/huawei-store/release-notes-1.25.1.md).
 
 Cross-platform torrent client built with .NET MAUI and **MonoTorrent** (real engine, not simulated). Supports importing `.torrent` files and magnet links, shows live stats, and on Windows stores downloads next to the picked `.torrent` when possible.
 
@@ -41,7 +41,15 @@ Thank you! Torrent Free remains free to use, and donations are entirely optional
 ## 📝 Release Overview
 
 Version **1.25.1** (Android code **31**, Windows **1.25.1.0** for x64 and ARM64)
-is prepared and validated locally. **Not uploaded, submitted, or published.**
+was submitted on **November 15, 2026** after Windows x64 smoke testing and all
+six main CI jobs passed. **1.25.1 is not yet live.**
+
+| Store | Verified status | Release scope |
+| --- | --- | --- |
+| Microsoft Store | **In certification**, submission **22** | x64 and ARM64; publish after approval |
+| Google Play | **In review**, submission **24** | Code 31; full rollout across the existing 178 countries/regions; managed publishing off |
+| Huawei AppGallery | **Reviewing**, version record **2084573205246301376** | Code 31, ARM64; existing 198 countries/regions; publish after approval |
+| Samsung Galaxy Store | **Not submitted** | Skipped at the owner's request; this app is not available there yet |
 
 - More reliable torrent restart and seed-limit completion, with private metadata safeguards.
 - Proxy drafts survive settings navigation until Apply; settings errors and numeric input are clearer.
@@ -50,20 +58,19 @@ is prepared and validated locally. **Not uploaded, submitted, or published.**
 - Consistent Android notification icons and improved Windows activation handling and local diagnostics.
 - File activation clears old import errors when opening another torrent.
 
-See the [1.25.1 preparation record](store/microsoft-store/release-notes-1.25.1.md)
-for package details, validation and remaining device qualification.
+See the [1.25.1 release record](store/microsoft-store/release-notes-1.25.1.md)
+for package hashes, source tag, validation and runtime qualification limits.
 
-### Version 1.24 (last verified November 7, 2026)
+### Version 1.24 (verified November 15, 2026)
 
 Version **1.24** (Android code **29**, Windows **1.24.0.0** for x64 and ARM64)
 adds compact download cards, search and status filters for larger queues,
 copyable error details, and Feedback and rating in About. It also improves
 saved download recovery, queue handling, and completion notification navigation.
 
-Submitted on **November 7, 2026**. Microsoft Store submission **21** is
-**In certification**. Google Play submission **23** is **In review** for a full
-production rollout. Both stores are set to publish automatically after approval.
-Version **1.23** is still the live release on both stores at the time of verification.
+Submitted on **November 7, 2026**. Microsoft Store submission **21** and Google
+Play submission **23** are now **live**. Play Console reports publication on
+**November 10, 2026**. They remain the current live releases while 1.25.1 is reviewed.
 See the [1.24 release record](store/microsoft-store/release-notes-1.24.md).
 
 ### Version 1.23

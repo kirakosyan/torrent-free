@@ -2,6 +2,8 @@
 
 **Next release: 1.25.1 / code 31**, prepared locally as a signed APK. **Not uploaded,
 submitted, or published.** See the [1.25.1 preparation record](release-notes-1.25.1.md).
+On **November 15, 2026**, the owner requested skipping Samsung because this app
+is not available there yet. The signed APK is retained locally; no submission was made.
 
 Status on **October 4, 2026 (Europe/Oslo): prepared locally, not registered,
 submitted, or published**. No production Galaxy APK, new release version or tag has

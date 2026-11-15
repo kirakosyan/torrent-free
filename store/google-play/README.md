@@ -2,18 +2,20 @@
 
 Package `com.torrentfree.app`, listed as **Torrent Client - Downloader**.
 
-## Next release: 1.25.1 preparation
+## Version 1.25.1 (submitted November 15, 2026)
 
-**1.25.1 / code 31** is prepared and validated locally as a signed Play bundle.
-**Not uploaded, submitted, or published.** The 26 localized notes are in
-`release-notes-1.25.1.txt`; see the [preparation record](../microsoft-store/release-notes-1.25.1.md)
-for package hashes, validation and source traceability.
+**1.25.1 / code 31** is **In review**, submission **24**, production release **14**,
+submitted at **20:55 Europe/Oslo**. Full rollout retains all 178 targeted
+countries/regions; managed publishing is off. Play accepted all 26 localized
+notes, embedded R8 mapping and matching native debug symbols. Preview reported
+zero newly unsupported devices. Notes are in `release-notes-1.25.1.txt`; see the
+[release record](../microsoft-store/release-notes-1.25.1.md) for hashes and qualification.
 
-## Version 1.24 (last verified November 7, 2026)
+## Version 1.24 (verified November 15, 2026)
 
 **1.24 / code 29** was submitted to production on **November 7, 2026 at 20:28
-Europe/Oslo** as submission **23**. Play Console shows **In review**, with quick
-checks underway at submission. Full rollout is set for all existing targeted
+Europe/Oslo** as submission **23**. It is **Published**, with the console reporting
+publication on **November 10, 2026**. Full rollout covers all existing targeted
 countries. Managed publishing is off. Play accepted all 26 release notes,
 embedded R8 mapping, and native debug symbols. The bundle retains API 23 minimum
 and targets API 36. See the [1.24 release record](../microsoft-store/release-notes-1.24.md).

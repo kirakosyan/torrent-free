@@ -1,17 +1,19 @@
 # Microsoft Store listings
 
-## Next release: 1.25.1 preparation
+## Version 1.25.1 (submitted November 15, 2026)
 
-**1.25.1 / build 31 / MSIX 1.25.1.0 (x64 and ARM64)** is prepared and validated locally.
-**Not uploaded, submitted, or published.** Localized notes are in
-`release-notes-1.25.1.json`; see the [preparation record](release-notes-1.25.1.md)
-for package hashes, validation and source traceability.
+**1.25.1 / build 31 / MSIX 1.25.1.0 (x64 and ARM64)** is **In certification** as
+submission **22** (`1152921505702410872`), with publication after approval.
+Both packages validated. Export comparison verified only release notes changed
+across 24 languages (31 populated locale columns); all other text and assets were
+preserved. Localized notes are in `release-notes-1.25.1.json`; see the
+[release record](release-notes-1.25.1.md) for hashes, smoke tests and source traceability.
 
-## Version 1.24 (last verified November 7, 2026)
+## Version 1.24 (verified November 15, 2026)
 
 **1.24 / build 29 / MSIX 1.24.0.0 (x64 and ARM64)** was submitted on
 **November 7, 2026** as submission **21** (`1152921505702342637`). Partner Center
-shows **In certification** with automatic publication after approval. Both
+now shows it as the **live** Store presence. Both
 packages validated. A fresh export verified all 31 localized release notes and
 preserved the remaining listing fields and assets. Desktop and Windows Team
 availability were retained. See the [1.24 release record](release-notes-1.24.md).
