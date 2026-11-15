@@ -15,10 +15,15 @@ public partial class App
     private bool? _lastDesktopWasMaximized;
     private Task? _desktopShutdownTask;
     private bool _desktopShutdownComplete;
+    private WinUI.WindowResponsivenessMonitor? _responsiveness;
 
     partial void ConfigurePlatformWindow(Window window)
     {
         window.Created += OnDesktopWindowCreated;
+        window.Activated += (_, _) => AppDiagnostics.State("Window.Activated");
+        window.Deactivated += (_, _) => AppDiagnostics.State("Window.Deactivated");
+        window.Resumed += (_, _) => AppDiagnostics.State($"Window.Resumed activated={window.IsActivated}");
+        window.Stopped += (_, _) => AppDiagnostics.State($"Window.Stopped activated={window.IsActivated}");
         window.Destroying += OnDesktopWindowDestroying;
     }
 
@@ -26,6 +31,9 @@ public partial class App
     {
         if (sender is not Window window) return;
         window.Created -= OnDesktopWindowCreated;
+        AppDiagnostics.State("Window.Created");
+        if (window.Handler?.PlatformView is Microsoft.UI.Xaml.Window native)
+            _responsiveness = new WinUI.WindowResponsivenessMonitor(native.DispatcherQueue);
         TrackDesktopWindow(window);
     }
 
@@ -154,6 +162,9 @@ public partial class App
         }
 
         window.Destroying -= OnDesktopWindowDestroying;
+        _responsiveness?.Dispose();
+        _responsiveness = null;
+        AppDiagnostics.Record("Window.Destroying");
 
         if (!ReferenceEquals(_trackedDesktopWindow, window))
         {

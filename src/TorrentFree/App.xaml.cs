@@ -7,8 +7,6 @@ namespace TorrentFree;
 
 public partial class App : Application
 {
-    private static readonly BoundedCrashLog CrashLog = new(GetCrashLogPath());
-
     private readonly AppShell _appShell;
     private readonly IStorageService _storageService;
     private readonly ILocalizationService _localizationService;
@@ -17,50 +15,14 @@ public partial class App : Application
 
     public App(AppShell appShell, IStorageService storageService, ILocalizationService localizationService, IThemeService themeService, ITorrentService torrentService)
     {
+        AppDiagnostics.Initialize();
         InitializeComponent();
-
-        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
-            LogCrash("AppDomain.UnhandledException", e.ExceptionObject as Exception, e.ExceptionObject);
-
-        TaskScheduler.UnobservedTaskException += (_, e) =>
-        {
-            LogCrash("TaskScheduler.UnobservedTaskException", e.Exception, e.Exception);
-            e.SetObserved();
-        };
 
         _appShell = appShell;
         _storageService = storageService;
         _localizationService = localizationService;
         _themeService = themeService;
         _torrentService = torrentService;
-    }
-
-    private static string GetCrashLogPath()
-    {
-        var appDataDirectory = OperatingSystem.IsWindows()
-            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TorrentFree")
-            : FileSystem.AppDataDirectory;
-
-        return Path.Combine(appDataDirectory, "crash.log");
-    }
-
-    private static void LogCrash(string source, Exception? ex, object? rawValue)
-    {
-        try
-        {
-            var details = ex?.ToString() ?? rawValue?.ToString() ?? "(no exception information)";
-            var entry = $"""
-                [{DateTime.UtcNow:O}] {source}
-                {details}
-                ---
-
-                """;
-            CrashLog.Append(entry);
-        }
-        catch
-        {
-            // Nothing we can do if logging itself fails.
-        }
     }
 
     protected override Window CreateWindow(IActivationState? activationState)

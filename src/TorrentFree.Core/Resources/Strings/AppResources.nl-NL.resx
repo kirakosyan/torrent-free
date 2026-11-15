@@ -199,7 +199,7 @@
     <value>Instellingen</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>Wijzigingen worden automatisch opgeslagen.</value>
+    <value>Wijzigingen buiten het proxygedeelte worden automatisch opgeslagen.</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>Locatie downloaden</value>
@@ -430,7 +430,7 @@
     <value>Selecteer een .torrent bestand</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>Plak een magneet-URI of URL en druk vervolgens op Enter, Plakken of Bladeren.</value>
+    <value>Plak een magnetlink.</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>Indien ingeschakeld, verschijnen downloaditems bovenaan.</value>
@@ -689,5 +689,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>Open de winkel om de app te beoordelen of een recensie te schrijven.</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>Importeer het oorspronkelijke .torrent-bestand opnieuw om deze privé- of ongeverifieerde torrent veilig te starten.</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>De instellingen konden niet worden geladen. Probeer het opnieuw voordat u wijzigingen aanbrengt.</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>De instellingen konden niet worden opgeslagen. Probeer het opnieuw.</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>Voer een proxyhost en een poort van 1 tot 65535 in.</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>Bewerk de proxyinstellingen en kies Proxy toepassen om op te slaan en overdrachten opnieuw te verbinden. Trackers gebruiken de proxy ook.</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>Proxy toepassen</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>Kopiëren naar Downloads</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>{0} kopiëren naar openbare Downloads? De originelen blijven in de app om te seeden. Beschikbare ruimte: {1}. Bestaande kopieën worden gecontroleerd. Annuleren behoudt voltooide kopieën.</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>Kopiëren</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>Controleren</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>Er is onvoldoende vrije ruimte om deze download te kopiëren.</value>
   </data>
 </root>

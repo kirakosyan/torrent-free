@@ -34,12 +34,12 @@ internal sealed class CoreServiceFixture : IAsyncDisposable
         typeof(TorrentService).GetField("_engine", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(Service, Engine);
     }
 
-    public async Task<TorrentMetadata> PrepareTorrentAsync(string name = "payload.bin", string? providerPath = "content://test.provider/document/1")
+    public async Task<TorrentMetadata> PrepareTorrentAsync(string name = "payload.bin", string? providerPath = "content://test.provider/document/1", bool isPrivate = false)
     {
         var source = Path.Combine(Storage.GetDefaultDownloadPath(), name);
         await File.WriteAllTextAsync(source, "Local regression test data: " + name);
         var torrentPath = Path.Combine(Directory.Path, name + ".torrent");
-        await new TorrentCreator(TorrentType.V1Only).CreateAsync(new TorrentFileSource(source), torrentPath);
+        await new TorrentCreator(TorrentType.V1Only) { Private = isPrivate }.CreateAsync(new TorrentFileSource(source), torrentPath);
         return await new TorrentImportService(Directory.StoragePaths, new TorrentFileParser()).PrepareAsync(
             new TorrentPickedFile(name + ".torrent", providerPath, await File.ReadAllBytesAsync(torrentPath)));
     }

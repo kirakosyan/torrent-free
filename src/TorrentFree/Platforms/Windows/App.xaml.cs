@@ -35,6 +35,12 @@ public partial class App : MauiWinUIApplication
 	/// </summary>
 	public App()
 	{
+        AppDiagnostics.Initialize();
+        UnhandledException += (_, e) =>
+        {
+            AppDiagnostics.Record("WinUI.UnhandledException", e.Exception, e.Message);
+            // Preserve WinUI's default termination behavior; unknown errors are not safe to suppress.
+        };
 		this.InitializeComponent();
 
 		_dispatcherQueue = DispatcherQueue.GetForCurrentThread();
@@ -82,6 +88,7 @@ public partial class App : MauiWinUIApplication
 		}
 		catch (Exception ex)
 		{
+			AppDiagnostics.Record("Activation.Redirect", ex);
 			System.Diagnostics.Debug.WriteLine($"Activation redirection failed: {ex}");
 		}
 		finally
@@ -114,6 +121,7 @@ public partial class App : MauiWinUIApplication
 
 	private void OnActivated(object? sender, AppActivationArguments args)
 	{
+        AppDiagnostics.State($"AppInstance.Activated kind={args.Kind}");
 		if (args.Data is AppNotificationActivatedEventArgs notification)
 		{
 			HandleDownloadNotification(notification);
@@ -142,18 +150,13 @@ public partial class App : MauiWinUIApplication
 
 	private void DispatchActivation(IReadOnlyList<string> paths, IReadOnlyList<string> magnetLinks)
 	{
-		if (_dispatcherQueue?.HasThreadAccess == true)
-		{
-			_ = ProcessActivationSafelyAsync(paths, magnetLinks);
-			return;
-		}
-
+		// Even on the UI thread, unwind the activation callback before importing or showing dialogs.
 		if (_dispatcherQueue?.TryEnqueue(async () => await ProcessActivationSafelyAsync(paths, magnetLinks)) == true)
 		{
 			return;
 		}
 
-		System.Diagnostics.Debug.WriteLine("Unable to dispatch activation to the WinUI UI thread.");
+		AppDiagnostics.Record("Activation.DispatchFailed");
 	}
 
 	private async Task ProcessActivationSafelyAsync(IReadOnlyList<string> paths, IReadOnlyList<string> magnetLinks)
@@ -164,6 +167,7 @@ public partial class App : MauiWinUIApplication
 		}
 		catch (Exception ex)
 		{
+			AppDiagnostics.Record("Activation.Import", ex);
 			System.Diagnostics.Debug.WriteLine($"Activation import failed: {ex}");
 		}
 	}
@@ -286,7 +290,14 @@ public partial class App : MauiWinUIApplication
 		var window = Microsoft.Maui.Controls.Application.Current?.Windows?.FirstOrDefault();
 		if (window?.Handler?.PlatformView is Microsoft.UI.Xaml.Window platformWindow)
 		{
-			platformWindow.Activate();
+            // Queue activation after any currently executing lifecycle callback. Repeated
+            // file/notification requests must not re-enter MAUI's two-stage activation.
+            platformWindow.DispatcherQueue.TryEnqueue(() =>
+            {
+                if (!ReferenceEquals(window.Handler?.PlatformView, platformWindow) || window.IsActivated) return;
+                AppDiagnostics.State("Window.Activate requested");
+                platformWindow.Activate();
+            });
 		}
 	}
 

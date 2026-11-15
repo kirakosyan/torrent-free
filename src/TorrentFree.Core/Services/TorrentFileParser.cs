@@ -68,7 +68,10 @@ public sealed class TorrentFileParser : ITorrentFileParser
 
         var infoHashHex = TryComputeInfoHashHex(torrentFileContent, dict, document);
 
-        return new TorrentMetadata(name, infoHashHex, trackers);
+        var isPrivate = TryGetValue(dict, "info", out var info) && info is BDictionary infoDictionary
+            && infoDictionary.Values.TryGetValue("private", out var privateValue)
+            && privateValue is BInteger { Value: 1 };
+        return new TorrentMetadata(name, infoHashHex, trackers) { IsPrivate = isPrivate };
     }
 
     private static bool TryGetValue(BDictionary dict, string key, out BElement value)

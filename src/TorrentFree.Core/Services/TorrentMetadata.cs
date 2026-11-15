@@ -5,6 +5,7 @@ public sealed record TorrentMetadata(
     string? InfoHashHex,
     IReadOnlyList<string> Trackers)
 {
+    public bool IsPrivate { get; init; }
     public string? SourceFilePath { get; init; }
     public string? SourceFileName { get; init; }
     public string? CachedFilePath { get; init; }

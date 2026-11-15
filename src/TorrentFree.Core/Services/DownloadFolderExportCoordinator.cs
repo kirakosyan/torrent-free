@@ -1,6 +1,6 @@
 namespace TorrentFree.Services;
 
-public enum DownloadFolderExportResult { Completed, DownloadUnavailable, PermissionDenied, ExportFailed }
+public enum DownloadFolderExportResult { Completed, Cancelled, InsufficientSpace, DownloadUnavailable, PermissionDenied, ExportFailed }
 
 /// <summary>Opening public Downloads is useful only after a successful export.</summary>
 public static class DownloadFolderExportCoordinator
@@ -14,6 +14,7 @@ public static class DownloadFolderExportCoordinator
         {
             if (!await requestPermission()) return DownloadFolderExportResult.PermissionDenied;
         }
+        catch (OperationCanceledException) { return DownloadFolderExportResult.Cancelled; }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Download export permission error: {ex}");
@@ -24,6 +25,8 @@ public static class DownloadFolderExportCoordinator
             return await ExportAndOpenAsync(export, openExportedFolder, openDownloads)
                 ? DownloadFolderExportResult.Completed : DownloadFolderExportResult.ExportFailed;
         }
+        catch (OperationCanceledException) { return DownloadFolderExportResult.Cancelled; }
+        catch (DownloadExportSpaceException) { return DownloadFolderExportResult.InsufficientSpace; }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Download export error: {ex}");
@@ -33,7 +36,8 @@ public static class DownloadFolderExportCoordinator
 
     public static string? GetErrorResourceKey(DownloadFolderExportResult result) => result switch
     {
-        DownloadFolderExportResult.Completed => null,
+        DownloadFolderExportResult.Completed or DownloadFolderExportResult.Cancelled => null,
+        DownloadFolderExportResult.InsufficientSpace => "ErrorExportSpace",
         DownloadFolderExportResult.ExportFailed => "ErrorExportDownload",
         _ => "ErrorOpenFolder"
     };

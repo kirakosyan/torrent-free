@@ -191,7 +191,7 @@
     <value>الإعدادات</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>يتم حفظ التغييرات تلقائيًا.</value>
+    <value>تُحفظ التغييرات خارج قسم الوكيل تلقائيًا.</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>موقع التنزيل</value>
@@ -416,7 +416,7 @@
     <value>اختر ملف .torrent</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>الصق رابط magnet أو URL، ثم اضغط Enter أو لصق أو استعراض.</value>
+    <value>الصق رابط magnet.</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>عند التفعيل، تظهر التنزيلات النشطة في الأعلى.</value>
@@ -675,5 +675,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>افتح المتجر لتقييم التطبيق أو كتابة مراجعة.</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>أعد استيراد ملف ‎.torrent الأصلي لبدء هذا التورنت الخاص أو غير المتحقق منه بأمان.</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>تعذر تحميل الإعدادات. حاول مجددًا قبل إجراء تغييرات.</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>تعذر حفظ الإعدادات. حاول مجددًا.</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>أدخل مضيف الوكيل ومنفذًا من 1 إلى 65535.</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>عدّل إعدادات الوكيل ثم اختر تطبيق الوكيل للحفظ وإعادة توصيل عمليات النقل. تستخدم المتتبعات الوكيل أيضًا.</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>تطبيق الوكيل</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>نسخ إلى التنزيلات</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>نسخ {0} إلى التنزيلات العامة؟ تبقى الملفات الأصلية في التطبيق للمشاركة. المساحة المتاحة: {1}. سيتم التحقق من النسخ الموجودة. يحتفظ الإلغاء بالنسخ المكتملة.</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>جارٍ النسخ</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>جارٍ التحقق</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>لا توجد مساحة خالية كافية لنسخ هذا التنزيل.</value>
   </data>
 </root>

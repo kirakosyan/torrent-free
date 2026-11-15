@@ -199,7 +199,7 @@
     <value>Settings</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>Changes are saved automatically.</value>
+    <value>Changes outside the proxy section are saved automatically.</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>Download Location</value>
@@ -430,7 +430,7 @@
     <value>Select a .torrent file</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>Paste a magnet URI or URL, then press Enter, Paste, or Browse.</value>
+    <value>Paste a magnet link.</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>When enabled, downloading items appear at the top.</value>
@@ -689,5 +689,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>Open the store to rate the app or write a review.</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>Import the original .torrent file again to safely start this private or unverified torrent.</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>Settings could not be loaded. Try again before making changes.</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>Settings could not be saved. Try again.</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>Enter a proxy host and a port from 1 to 65535.</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>Edit the proxy settings, then select Apply proxy to save and reconnect transfers. Trackers also use the proxy.</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>Apply proxy</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>Copy to Downloads</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>Copy {0} to public Downloads? Originals stay in the app for seeding. Available space: {1}. Existing copies will be verified. Cancelling keeps completed copies.</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>Copying</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>Verifying</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>There is not enough free space to copy this download.</value>
   </data>
 </root>

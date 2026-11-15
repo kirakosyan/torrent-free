@@ -207,7 +207,7 @@
     <value>Настройки</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>Изменения сохраняются автоматически.</value>
+    <value>Изменения вне раздела прокси сохраняются автоматически.</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>Папка загрузки</value>
@@ -444,7 +444,7 @@
     <value>Выберите файл .torrent</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>Вставьте magnet URI или URL, затем нажмите Enter, Вставить или Обзор.</value>
+    <value>Вставьте magnet-ссылку.</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>Если включено, активные загрузки отображаются сверху.</value>
@@ -703,5 +703,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>Откройте магазин, чтобы оценить приложение или написать отзыв.</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>Повторно импортируйте исходный файл .torrent для безопасного запуска этого приватного или непроверенного торрента.</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>Не удалось загрузить настройки. Повторите попытку перед внесением изменений.</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>Не удалось сохранить настройки. Повторите попытку.</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>Введите адрес прокси и порт от 1 до 65535.</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>Измените настройки прокси и выберите «Применить прокси», чтобы сохранить их и переподключить передачи. Трекеры также используют прокси.</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>Применить прокси</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>Копировать в Загрузки</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>Скопировать {0} в общую папку «Загрузки»? Оригиналы останутся в приложении для раздачи. Свободное место: {1}. Существующие копии будут проверены. Отмена сохраняет завершённые копии.</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>Копирование</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>Проверка</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>Недостаточно свободного места для копирования этой загрузки.</value>
   </data>
 </root>

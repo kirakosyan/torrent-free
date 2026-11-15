@@ -116,7 +116,7 @@ public partial class MainViewModel : DownloadListViewModel
     /// <summary>
     /// Indicates whether any torrent can be started or resumed.
     /// </summary>
-    public bool CanStartAllTorrents => !IsBusy && Torrents.Any(torrent => torrent.CanStart);
+    public bool CanStartAllTorrents => !IsBusy && Torrents.Any(torrent => torrent.CanStartInBulk);
 
     /// <summary>
     /// Indicates whether any torrent can be stopped.
@@ -376,12 +376,12 @@ public partial class MainViewModel : DownloadListViewModel
 #if ANDROID
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
-                // Exporting copies the whole download to public storage, which can take a while.
+                // Export only completed selected files, after explaining the copy and its storage cost.
                 var wasBusy = IsBusy;
                 IsBusy = true;
                 try
                 {
-                    var result = await TryOpenAndroidFolderAsync(torrent.Id, downloadPath, folderPath, isDirectory);
+                    var result = await TryOpenAndroidFolderAsync(torrent, downloadPath, folderPath, isDirectory);
                     if (DownloadFolderExportCoordinator.GetErrorResourceKey(result) is { } errorKey)
                         ErrorMessage = LocalizationResourceManager.Instance[errorKey];
                 }
@@ -409,7 +409,7 @@ public partial class MainViewModel : DownloadListViewModel
     }
 
 #if ANDROID
-    private static Task<DownloadFolderExportResult> TryOpenAndroidFolderAsync(string ownerId, string downloadPath, string folderPath, bool isDirectory)
+    private Task<DownloadFolderExportResult> TryOpenAndroidFolderAsync(TorrentItem torrent, string downloadPath, string folderPath, bool isDirectory)
     {
         var targetFolder = isDirectory ? downloadPath : folderPath;
         return DownloadFolderExportCoordinator.TryExportAndOpenAsync(
@@ -418,7 +418,8 @@ public partial class MainViewModel : DownloadListViewModel
             // Android 6-9 need the runtime storage permission to write to public Downloads.
             async () => OperatingSystem.IsAndroidVersionAtLeast(29)
                 || await Permissions.RequestAsync<Permissions.StorageWrite>() == PermissionStatus.Granted,
-            () => AndroidDownloadExportService.ExportToPublicDownloadsAsync(ownerId, downloadPath, isDirectory),
+            async () => await AndroidDownloadExportService.ExportToPublicDownloadsAsync(torrent.Id, downloadPath, isDirectory,
+                await _torrentService.GetTorrentFilesAsync(torrent)),
             AndroidDownloadExportService.TryOpenFolder,
             () => AndroidDownloadExportService.TryOpenPublicDownloadsFolder());
     }
@@ -1006,7 +1007,7 @@ public partial class MainViewModel : DownloadListViewModel
     [RelayCommand(CanExecute = nameof(CanStartAllTorrents))]
     private async Task StartAllTorrentsAsync()
     {
-        var torrentsToStart = Torrents.Where(torrent => torrent.CanStart).ToList();
+        var torrentsToStart = Torrents.Where(torrent => torrent.CanStartInBulk).ToList();
         if (torrentsToStart.Count == 0)
         {
             return;

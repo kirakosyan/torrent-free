@@ -60,6 +60,7 @@ public partial class TorrentService
             }
         }
 
+        EnsureMagnetFallbackAllowed(torrent);
         using var preview = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposalToken);
         var session = new MetadataPreview(preview);
         lock (_engineRebuildStateGate)
@@ -105,7 +106,11 @@ public partial class TorrentService
             var cachePath = TorrentImportService.GetCachePath(_storageService.GetAppDataPath(), torrent.InfoHash);
             await using (await TorrentImportService.LockCacheAsync(cachePath, preview.Token))
                 await TorrentImportService.WriteCacheAsync(cachePath, content.ToArray(), preview.Token);
-            await _dispatcher.InvokeAsync(() => torrent.CachedTorrentFilePath = cachePath);
+            await _dispatcher.InvokeAsync(() =>
+            {
+                torrent.CachedTorrentFilePath = cachePath;
+                torrent.IsPrivate = metadata.IsPrivate;
+            });
             await SaveAsync();
             return metadata;
         }

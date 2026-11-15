@@ -103,7 +103,8 @@ public sealed class CoreTransferRegressionTests
         Assert.Equal(DownloadStatus.Seeding, torrent.Status);
         fixture.Clock.Advance(TimeSpan.FromSeconds(1));
         await CoreServiceFixture.InvokeAsync(fixture.Service, "EnforceSeedingLimitsAsync", torrent, Assert.Single(fixture.Engine.Torrents));
-        Assert.Equal(DownloadStatus.Paused, torrent.Status);
+        Assert.Equal(DownloadStatus.Completed, torrent.Status);
+        Assert.False(torrent.CanStartInBulk);
         Assert.Equal(60, torrent.SeededSeconds);
         using var reopened = new StorageService(fixture.Directory.StoragePaths);
         var restored = Assert.Single(await reopened.LoadTorrentsAsync());

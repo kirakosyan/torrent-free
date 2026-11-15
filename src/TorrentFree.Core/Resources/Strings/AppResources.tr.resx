@@ -199,7 +199,7 @@
     <value>Ayarlar</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>Değişiklikler otomatik olarak kaydedilir.</value>
+    <value>Proxy bölümü dışındaki değişiklikler otomatik kaydedilir.</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>İndirme konumu</value>
@@ -430,7 +430,7 @@
     <value>.torrent dosyası seçin</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>Bir magnet URI'si veya URL yapıştırın, ardından Enter, Yapıştır veya Gözat'a basın.</value>
+    <value>Bir magnet bağlantısı yapıştırın.</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>Etkinleştirildiğinde, indirilen öğeler üstte görünür.</value>
@@ -689,5 +689,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>Uygulamaya puan vermek veya yorum yazmak için mağazayı açın.</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>Bu özel veya doğrulanmamış torrenti güvenle başlatmak için özgün .torrent dosyasını yeniden içe aktarın.</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>Ayarlar yüklenemedi. Değişiklik yapmadan önce tekrar deneyin.</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>Ayarlar kaydedilemedi. Tekrar deneyin.</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>Bir proxy sunucusu ve 1 ile 65535 arasında bir bağlantı noktası girin.</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>Proxy ayarlarını düzenleyip kaydetmek ve aktarımları yeniden bağlamak için Proxy uygula seçeneğini seçin. İzleyiciler de proxy kullanır.</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>Proxy uygula</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>İndirilenlere kopyala</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>{0} ortak İndirilenler klasörüne kopyalansın mı? Özgün dosyalar paylaşım için uygulamada kalır. Kullanılabilir alan: {1}. Mevcut kopyalar doğrulanır. İptal etmek tamamlanmış kopyaları korur.</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>Kopyalanıyor</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>Doğrulanıyor</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>Bu indirmeyi kopyalamak için yeterli boş alan yok.</value>
   </data>
 </root>

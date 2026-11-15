@@ -10,6 +10,7 @@ namespace TorrentFree;
 public partial class MainPage : ContentPage
 {
     private readonly IAppStore _appStore;
+    private readonly DeferredForegroundUpdates _foregroundUpdates;
     private Window? _promptWindow;
     private bool _isPageVisible;
     private CancellationTokenSource? _notificationScrollCancellation;
@@ -18,6 +19,7 @@ public partial class MainPage : ContentPage
     {
         InitializeComponent();
         _appStore = appStore;
+        _foregroundUpdates = new(action => Dispatcher.Dispatch(action), SetPromptForegroundSafelyAsync);
         BindingContext = viewModel;
         DownloadSearchControls.PropertyChanged += (_, e) =>
         {
@@ -63,7 +65,7 @@ public partial class MainPage : ContentPage
                     _promptWindow.Stopped += OnPromptWindowStopped;
                 }
             }
-            await SetPromptForegroundSafelyAsync(true);
+            _foregroundUpdates.Request(true);
         }
     }
 
@@ -168,7 +170,7 @@ public partial class MainPage : ContentPage
         _isPageVisible = false;
         _notificationScrollCancellation?.Cancel();
         DetachPromptWindow();
-        _ = SetPromptForegroundSafelyAsync(false);
+        _foregroundUpdates.Request(false);
         base.OnDisappearing();
     }
 
@@ -182,15 +184,15 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private async void OnPromptWindowResumed(object? sender, EventArgs e)
+    private void OnPromptWindowResumed(object? sender, EventArgs e)
     {
         if (_isPageVisible)
-            await SetPromptForegroundSafelyAsync(true);
+            _foregroundUpdates.Request(true);
     }
 
-    private async void OnPromptWindowStopped(object? sender, EventArgs e)
+    private void OnPromptWindowStopped(object? sender, EventArgs e)
     {
-        await SetPromptForegroundSafelyAsync(false);
+        _foregroundUpdates.Request(false);
     }
 
     private async Task SetPromptForegroundSafelyAsync(bool foreground)
@@ -202,6 +204,7 @@ public partial class MainPage : ContentPage
         }
         catch (Exception ex)
         {
+            AppDiagnostics.Record("StorePrompt.Foreground", ex);
             System.Diagnostics.Debug.WriteLine($"Store prompt lifecycle failed: {ex.Message}");
         }
     }

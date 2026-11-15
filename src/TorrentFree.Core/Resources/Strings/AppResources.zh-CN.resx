@@ -199,7 +199,7 @@
     <value>设置</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>更改会自动保存。</value>
+    <value>代理部分以外的更改会自动保存。</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>下载位置</value>
@@ -430,7 +430,7 @@
     <value>选择 .torrent 文件</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>粘贴磁力 URI 或 URL，然后按 Enter、粘贴或浏览。</value>
+    <value>粘贴磁力链接。</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>启用后，下载项目将显示在顶部。</value>
@@ -689,5 +689,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>打开应用商店，为应用评分或撰写评价。</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>请重新导入原始 .torrent 文件，以安全启动此私有或未经验证的种子。</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>无法加载设置。请重试后再进行更改。</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>无法保存设置。请重试。</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>请输入代理主机和 1 到 65535 之间的端口。</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>编辑代理设置后，选择“应用代理”以保存并重新连接传输。Tracker 也会使用代理。</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>应用代理</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>复制到下载文件夹</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>将 {0} 复制到公共下载文件夹？原文件会保留在应用中用于做种。可用空间：{1}。将验证现有副本。取消后会保留已完成的副本。</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>正在复制</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>正在验证</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>可用空间不足，无法复制此下载。</value>
   </data>
 </root>

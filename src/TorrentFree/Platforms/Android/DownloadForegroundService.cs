@@ -220,7 +220,7 @@ public sealed class DownloadForegroundService : Service
         {
             builder.SetContentText($"{LocalizationResourceManager.Instance["StatusSeeding"]}: {seeding}");
         }
-        builder.SetSmallIcon(Resource.Mipmap.appicon);
+        builder.SetSmallIcon(Resource.Drawable.ic_stat_transfer);
         builder.SetOngoing(true);
         builder.SetOnlyAlertOnce(true);
         builder.SetCategory(NotificationCompat.CategoryService);

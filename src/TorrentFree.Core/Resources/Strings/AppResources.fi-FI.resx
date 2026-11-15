@@ -199,7 +199,7 @@
     <value>Asetukset</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>Muutokset tallennetaan automaattisesti.</value>
+    <value>Välityspalvelinosion ulkopuoliset muutokset tallennetaan automaattisesti.</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>Lataa sijainti</value>
@@ -430,7 +430,7 @@
     <value>Valitse tiedosto .torrent</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>Liitä magneetti URI tai URL ja paina sitten Enter, Liitä tai Selaa.</value>
+    <value>Liitä magnet-linkki.</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>Kun tämä on käytössä, ladattavat kohteet näkyvät yläreunassa.</value>
@@ -689,5 +689,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>Avaa kauppa ja arvioi sovellus tai kirjoita arvostelu.</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>Tuo alkuperäinen .torrent-tiedosto uudelleen, jotta tämä yksityinen tai vahvistamaton torrent voidaan käynnistää turvallisesti.</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>Asetuksia ei voitu ladata. Yritä uudelleen ennen muutosten tekemistä.</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>Asetuksia ei voitu tallentaa. Yritä uudelleen.</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>Anna välityspalvelimen osoite ja portti väliltä 1–65535.</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>Muokkaa välityspalvelinasetuksia ja valitse Käytä välityspalvelinta tallentaaksesi ja yhdistääksesi siirrot uudelleen. Myös seurantapalvelimet käyttävät välityspalvelinta.</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>Käytä välityspalvelinta</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>Kopioi Lataukset-kansioon</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>Kopioidaanko {0} julkiseen Lataukset-kansioon? Alkuperäiset jäävät sovellukseen jakamista varten. Vapaata tilaa: {1}. Olemassa olevat kopiot tarkistetaan. Peruuttaminen säilyttää valmiit kopiot.</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>Kopioidaan</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>Tarkistetaan</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>Vapaata tilaa ei ole riittävästi tämän latauksen kopioimiseen.</value>
   </data>
 </root>

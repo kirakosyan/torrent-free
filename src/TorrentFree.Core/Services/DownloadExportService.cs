@@ -16,14 +16,15 @@ public interface IDownloadExportStore
 }
 
 /// <summary>Tracks export ownership and verifies content before reusing a destination.</summary>
-public sealed class DownloadExportService(string stateDirectory, IDownloadExportStore store)
+public sealed class DownloadExportService(string stateDirectory, IDownloadExportStore store, Func<long?>? availableBytes = null)
 {
     private const int CopyBufferSize = 1024 * 1024;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
-    public async Task<string> ExportAsync(string ownerId, string sourcePath, string relativeDirectory)
+    public async Task<string> ExportAsync(string ownerId, string sourcePath, string relativeDirectory,
+        CancellationToken cancellationToken = default, IProgress<DownloadExportProgress>? progress = null)
     {
-        await _gate.WaitAsync();
+        await _gate.WaitAsync(cancellationToken);
         try
         {
             Directory.CreateDirectory(stateDirectory);
@@ -41,12 +42,14 @@ public sealed class DownloadExportService(string stateDirectory, IDownloadExport
                 // time) keeps its recorded digest, so only the destination is read to verify it.
                 var digest = existing.SourceLength == sourceLength && existing.SourceWriteTicks == sourceWriteTicks
                     ? existing.Digest
-                    : Convert.ToHexString(await SHA256.HashDataAsync(source));
-                if (existing.Digest == digest && await DestinationMatchesAsync(existing.Id, digest))
+                    : await HashAsync(source, sourceLength, cancellationToken, progress);
+                if (existing.Digest == digest && await DestinationMatchesAsync(existing.Id, digest, sourceLength, cancellationToken, progress))
                     return existing.Id;
                 source.Position = 0;
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
+            if (availableBytes?.Invoke() is { } free && free < sourceLength) throw new DownloadExportSpaceException();
             var target = await store.CreateAsync(relativeDirectory, Path.GetFileName(sourcePath));
             string exportedDigest;
             try
@@ -54,17 +57,22 @@ public sealed class DownloadExportService(string stateDirectory, IDownloadExport
                 // Hash while copying: a first export reads the source once.
                 using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
                 var buffer = new byte[CopyBufferSize];
+                long copied = 0;
+                progress?.Report(new(DownloadExportPhase.Copying, 0, sourceLength));
                 await using (target.Stream)
                 {
                     int read;
-                    while ((read = await source.ReadAsync(buffer)) > 0)
+                    while ((read = await source.ReadAsync(buffer, cancellationToken)) > 0)
                     {
                         hash.AppendData(buffer, 0, read);
-                        await target.Stream.WriteAsync(buffer.AsMemory(0, read));
+                        await target.Stream.WriteAsync(buffer.AsMemory(0, read), cancellationToken);
+                        copied += read;
+                        progress?.Report(new(DownloadExportPhase.Copying, copied, sourceLength));
                     }
                 }
 
                 exportedDigest = Convert.ToHexString(hash.GetHashAndReset());
+                cancellationToken.ThrowIfCancellationRequested();
                 await store.CompleteAsync(target.Id);
             }
             catch
@@ -88,18 +96,38 @@ public sealed class DownloadExportService(string stateDirectory, IDownloadExport
         finally { _gate.Release(); }
     }
 
-    private async Task<bool> DestinationMatchesAsync(string id, string digest)
+    private async Task<bool> DestinationMatchesAsync(string id, string digest, long length,
+        CancellationToken cancellationToken, IProgress<DownloadExportProgress>? progress)
     {
         try
         {
             await using var destination = await store.OpenReadAsync(id);
-            return destination is not null && Convert.ToHexString(await SHA256.HashDataAsync(destination)) == digest;
+            return destination is not null && await HashAsync(destination, length, cancellationToken, progress) == digest;
         }
+        catch (OperationCanceledException) { throw; }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Previous export is unavailable: {ex.Message}");
             return false;
         }
+    }
+
+    private static async Task<string> HashAsync(Stream stream, long length, CancellationToken cancellationToken,
+        IProgress<DownloadExportProgress>? progress)
+    {
+        using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+        var buffer = new byte[CopyBufferSize];
+        long completed = 0;
+        progress?.Report(new(DownloadExportPhase.Verifying, 0, length));
+        int read;
+        while ((read = await stream.ReadAsync(buffer, cancellationToken)) > 0)
+        {
+            hash.AppendData(buffer, 0, read);
+            completed += read;
+            progress?.Report(new(DownloadExportPhase.Verifying, completed, length));
+        }
+        cancellationToken.ThrowIfCancellationRequested();
+        return Convert.ToHexString(hash.GetHashAndReset());
     }
 
     private static async Task<ExportRecord?> ReadManifestAsync(string path)

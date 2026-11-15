@@ -29,6 +29,19 @@ public partial class SettingsViewModel : ObservableObject
     private bool _languageChanged;
     // The page shows no password because secure storage could not return it; saving must keep it.
     private bool _proxyPasswordUnavailable;
+    private ProxyConfiguration _appliedProxy = new(false, "", 1080, "", "");
+
+    [ObservableProperty]
+    public partial bool IsSettingsLoaded { get; set; }
+
+    [ObservableProperty]
+    public partial bool HasLoadError { get; set; }
+
+    [ObservableProperty]
+    public partial bool HasProxyChanges { get; set; }
+
+    private ProxyConfiguration ProxyDraft => new(ProxyEnabled, ProxyHost.Trim(), ProxyPort,
+        ProxyUsername, ProxyPassword, _proxyPasswordUnavailable);
 
     private const int MaxKbpsLimit = 1_000_000;
     private const int MaxActiveLimit = 200;
@@ -286,11 +299,20 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private async Task InitializeAsync()
     {
-        try { await LoadSettingsCoreAsync(); }
+        IsSettingsLoaded = false;
+        HasLoadError = false;
+        ValidationMessage = null;
+        try
+        {
+            await LoadSettingsCoreAsync();
+            IsSettingsLoaded = true;
+        }
         catch (Exception ex)
         {
             _isLoadingSettings = true;
-            ValidationMessage = ex.Message;
+            HasLoadError = true;
+            ValidationMessage = LocalizationResourceManager.Instance["ErrorLoadSettings"];
+            AppDiagnostics.Record("Settings.Load", ex);
             System.Diagnostics.Debug.WriteLine($"Settings initialization failed: {ex}");
         }
     }
@@ -322,6 +344,8 @@ public partial class SettingsViewModel : ObservableObject
             ProxyUsername = settings.ProxyUsername ?? string.Empty;
             ProxyPassword = settings.ProxyPassword ?? string.Empty;
             _proxyPasswordUnavailable = settings.ProxyPasswordUnavailable;
+            _appliedProxy = ProxyDraft;
+            HasProxyChanges = false;
 
             var languageCode = NormalizeLanguageCode(settings.Language ?? "");
             SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == languageCode)
@@ -490,46 +514,50 @@ public partial class SettingsViewModel : ObservableObject
         return Task.CompletedTask;
     }
 
-    partial void OnProxyEnabledChanged(bool value)
-    {
-        if (_isLoadingSettings) return;
-        ApplyProxySettings();
-        SafeFireAndForget(PersistSettingsAsync());
-    }
-
-    partial void OnProxyHostChanged(string value)
-    {
-        if (_isLoadingSettings) return;
-        ApplyProxySettings();
-        SafeFireAndForget(PersistSettingsAsync());
-    }
-
-    partial void OnProxyPortChanged(int value)
-    {
-        if (TryNormalizeInt(nameof(ProxyPort), value, 1, 65535, LocalizationResourceManager.Instance["Port"], "", out var normalized))
-        {
-            ApplyNormalizedValue(() => ProxyPort = normalized);
-            return;
-        }
-
-        if (_isLoadingSettings) return;
-        ApplyProxySettings();
-        SafeFireAndForget(PersistSettingsAsync());
-    }
-
-    partial void OnProxyUsernameChanged(string value)
-    {
-        if (_isLoadingSettings) return;
-        ApplyProxySettings();
-        SafeFireAndForget(PersistSettingsAsync());
-    }
-
+    partial void OnProxyEnabledChanged(bool value) => UpdateProxyDraft();
+    partial void OnProxyHostChanged(string value) => UpdateProxyDraft();
+    partial void OnProxyPortChanged(int value) => UpdateProxyDraft();
+    partial void OnProxyUsernameChanged(string value) => UpdateProxyDraft();
     partial void OnProxyPasswordChanged(string value)
     {
         if (_isLoadingSettings) return;
         _proxyPasswordUnavailable = false;
-        ApplyProxySettings();
-        SafeFireAndForget(PersistSettingsAsync());
+        UpdateProxyDraft();
+    }
+
+    private void UpdateProxyDraft()
+    {
+        if (!_isLoadingSettings) HasProxyChanges = ProxyDraft != _appliedProxy;
+    }
+
+    [RelayCommand]
+    private async Task ApplyProxyAsync()
+    {
+        if (!IsSettingsLoaded) return;
+        var draft = ProxyDraft;
+        if (!draft.IsValid)
+        {
+            ValidationMessage = LocalizationResourceManager.Instance["ValidationProxy"];
+            return;
+        }
+        var previous = _appliedProxy;
+        try
+        {
+            // Finish unrelated saves, then persist one complete configuration before reconnecting.
+            await FlushPendingSettingsAsync();
+            _appliedProxy = draft;
+            await SaveSettingsCoreAsync();
+            ApplyProxySettings();
+            HasProxyChanges = ProxyDraft != _appliedProxy;
+            ValidationMessage = null;
+        }
+        catch (Exception ex)
+        {
+            _appliedProxy = previous;
+            HasProxyChanges = ProxyDraft != _appliedProxy;
+            ValidationMessage = LocalizationResourceManager.Instance["ErrorSaveSettings"];
+            AppDiagnostics.Record("Settings.Proxy", ex);
+        }
     }
 
     partial void OnIsTorrentAssociatedChanged(bool value)
@@ -605,7 +633,7 @@ public partial class SettingsViewModel : ObservableObject
     private void ApplyProxySettings()
     {
         if (_isLoadingSettings || _isNormalizing) return;
-        _torrentService.UpdateProxySettings(ProxyEnabled, ProxyHost, ProxyPort, ProxyUsername, ProxyPassword);
+        _torrentService.UpdateProxySettings(_appliedProxy.Enabled, _appliedProxy.Host, _appliedProxy.Port, _appliedProxy.Username, _appliedProxy.Password);
     }
 
     private Task PersistSettingsAsync()
@@ -636,16 +664,16 @@ public partial class SettingsViewModel : ObservableObject
                 GlobalMaxSeedMinutes,
                 DownloadToTorrentFolder,
                 SpecificDownloadFolder,
-                ProxyEnabled,
-                ProxyHost,
-                ProxyPort,
-                ProxyUsername,
-                ProxyPassword,
+                _appliedProxy.Enabled,
+                _appliedProxy.Host,
+                _appliedProxy.Port,
+                _appliedProxy.Username,
+                _appliedProxy.Password,
                 _languageChanged ? SelectedLanguage?.Code : existingSettings.Language,
                 SelectedTheme?.Code,
                 WifiOnly,
                 KeepDeviceAwake,
-                _proxyPasswordUnavailable));
+                _appliedProxy.PasswordUnavailable));
     }
 
     private async Task RefreshFileAssociationAsync()
@@ -786,7 +814,7 @@ public partial class SettingsViewModel : ObservableObject
 
     private void ClearValidationMessage()
     {
-        if (!_isApplyingNormalizedValue)
+        if (!_isApplyingNormalizedValue && IsSettingsLoaded)
         {
             ValidationMessage = null;
         }
@@ -822,7 +850,8 @@ public partial class SettingsViewModel : ObservableObject
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Fire-and-forget error: {ex}");
-            ValidationMessage = ex.Message;
+            ValidationMessage = LocalizationResourceManager.Instance["ErrorSaveSettings"];
+            AppDiagnostics.Record("Settings.Save", ex);
         }
     }
 }

@@ -1,3 +1,6 @@
+using TorrentFree.Controls;
+using TorrentFree.Models;
+
 namespace TorrentFree.Services;
 
 public static class AndroidDownloadExportService
@@ -5,7 +8,7 @@ public static class AndroidDownloadExportService
     public const string PublicDownloadsSubfolder = "TorrentFree";
 #if ANDROID
     private static readonly Lazy<DownloadExportService> Exporter = new(() => new(
-        Path.Combine(FileSystem.AppDataDirectory, "Exports"), new AndroidDownloadExportStore()));
+        Path.Combine(FileSystem.AppDataDirectory, "Exports"), new AndroidDownloadExportStore(), GetAvailableBytes));
 #endif
 
     public static string GetPublicDownloadsPath(string? childFolder = null)
@@ -44,46 +47,57 @@ public static class AndroidDownloadExportService
 #endif
     }
 
-    public static async Task<string?> ExportToPublicDownloadsAsync(string ownerId, string downloadPath, bool isDirectory)
+    public static async Task<string?> ExportToPublicDownloadsAsync(string ownerId, string downloadPath,
+        bool isDirectory, IReadOnlyList<TorrentFileChoice> choices)
     {
 #if ANDROID
-        if (string.IsNullOrWhiteSpace(downloadPath))
+        var plan = DownloadExportPlan.Create(downloadPath, isDirectory, choices);
+        var page = Shell.Current ?? throw new InvalidOperationException("No export host is available.");
+        var available = GetAvailableBytes();
+        var message = string.Format(LocalizationResourceManager.Instance["ExportConfirm"],
+            TorrentItem.FormatBytes(plan.TotalBytes), available.HasValue ? TorrentItem.FormatBytes(available.Value) : "—");
+        if (!await page.DisplayAlertAsync(LocalizationResourceManager.Instance["ExportDownload"], message,
+            LocalizationResourceManager.Instance["ExportDownload"], LocalizationResourceManager.Instance["Cancel"]))
+            throw new OperationCanceledException();
+
+        using var cancellation = new CancellationTokenSource();
+        var progressPage = new DownloadExportPage(cancellation);
+        await page.Navigation.PushModalAsync(progressPage);
+        try
         {
-            return null;
-        }
-
-        var ownerSuffix = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(ownerId)))[..12];
-        var folderName = GetSafeFolderName(Path.GetFileName(downloadPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))) + "-" + ownerSuffix;
-        if (isDirectory)
-        {
-            if (!Directory.Exists(downloadPath))
+            var ownerSuffix = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(ownerId)))[..12];
+            var folderName = GetSafeFolderName(Path.GetFileName(downloadPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))) + "-" + ownerSuffix;
+            for (var index = 0; index < plan.Files.Count; index++)
             {
-                return null;
+                cancellation.Token.ThrowIfCancellationRequested();
+                var fileNumber = index + 1;
+                var file = plan.Files[index];
+                var progress = new Progress<DownloadExportProgress>(value =>
+                {
+                    if (!cancellation.IsCancellationRequested) progressPage.Report(fileNumber, plan.Files.Count, value);
+                });
+                // File hashing and copies run off the UI thread; progress is marshalled back.
+                await Task.Run(() => Exporter.Value.ExportAsync(ownerId, file.SourcePath,
+                    BuildAndroidDownloadsRelativePath(folderName, file.RelativeDirectory), cancellation.Token, progress), cancellation.Token);
             }
-
-            foreach (var sourceFile in Directory.EnumerateFiles(downloadPath, "*", SearchOption.AllDirectories))
-            {
-                var sourceDirectory = Path.GetDirectoryName(sourceFile) ?? downloadPath;
-                var relativeDirectory = Path.GetRelativePath(downloadPath, sourceDirectory);
-                var androidRelativePath = BuildAndroidDownloadsRelativePath(folderName, relativeDirectory);
-                await Exporter.Value.ExportAsync(ownerId, sourceFile, androidRelativePath);
-            }
-
             return GetPublicDownloadsPath(folderName);
         }
-
-        if (!File.Exists(downloadPath))
-        {
-            return null;
-        }
-
-        await Exporter.Value.ExportAsync(ownerId, downloadPath, BuildAndroidDownloadsRelativePath(folderName));
-        return GetPublicDownloadsPath(folderName);
+        finally { await page.Navigation.PopModalAsync(); }
 #else
         await Task.CompletedTask;
         return null;
 #endif
     }
+
+#if ANDROID
+    private static long? GetAvailableBytes()
+    {
+        var root = Android.OS.Environment.ExternalStorageDirectory?.AbsolutePath;
+        if (string.IsNullOrWhiteSpace(root)) return null;
+        using var stats = new Android.OS.StatFs(root);
+        return stats.AvailableBytes;
+    }
+#endif
 
     public static bool TryOpenPublicDownloadsFolder(string? childFolder = null)
     {

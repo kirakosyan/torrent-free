@@ -207,7 +207,7 @@
     <value>Paramètres</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>Les modifications sont enregistrées automatiquement.</value>
+    <value>Les modifications hors de la section proxy sont enregistrées automatiquement.</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>Emplacement de téléchargement</value>
@@ -444,7 +444,7 @@
     <value>Sélectionner un fichier .torrent</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>Collez un URI magnet ou une URL, puis appuyez sur Entrée, Coller ou Parcourir.</value>
+    <value>Collez un lien magnet.</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>Lorsque cette option est activée, les téléchargements actifs apparaissent en haut.</value>
@@ -703,5 +703,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>Ouvrez la boutique pour noter l’application ou rédiger un avis.</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>Réimportez le fichier .torrent d’origine pour démarrer ce torrent privé ou non vérifié en toute sécurité.</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>Impossible de charger les paramètres. Réessayez avant de les modifier.</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>Impossible d’enregistrer les paramètres. Réessayez.</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>Saisissez un hôte proxy et un port de 1 à 65535.</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>Modifiez les paramètres du proxy, puis sélectionnez Appliquer le proxy pour enregistrer et reconnecter les transferts. Les trackers utilisent aussi le proxy.</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>Appliquer le proxy</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>Copier dans Téléchargements</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>Copier {0} dans les Téléchargements publics ? Les originaux restent dans l’application pour le partage. Espace disponible : {1}. Les copies existantes seront vérifiées. L’annulation conserve les copies terminées.</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>Copie</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>Vérification</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>L’espace libre est insuffisant pour copier ce téléchargement.</value>
   </data>
 </root>

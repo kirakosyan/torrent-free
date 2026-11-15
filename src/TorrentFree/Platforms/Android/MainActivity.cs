@@ -22,6 +22,17 @@ namespace TorrentFree;
     Categories = [Intent.CategoryDefault, Intent.CategoryBrowsable],
     DataSchemes = ["content", "file"],
     DataMimeType = "application/x-bittorrent")]
+[IntentFilter(
+    [Intent.ActionView],
+    Categories = [Intent.CategoryDefault, Intent.CategoryBrowsable],
+    DataSchemes = ["content", "file"],
+    DataMimeType = "application/octet-stream")]
+[IntentFilter(
+    [Intent.ActionView],
+    Categories = [Intent.CategoryDefault, Intent.CategoryBrowsable],
+    // Some providers omit both MIME type and a filename in the URI. The bounded
+    // torrent parser validates content before anything can be imported.
+    DataSchemes = ["content", "file"])]
 public class MainActivity : MauiAppCompatActivity
 {
     protected override void OnCreate(Bundle? savedInstanceState)
