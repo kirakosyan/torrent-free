@@ -199,7 +199,7 @@
     <value>Configurações</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>As alterações são salvas automaticamente.</value>
+    <value>As alterações fora da seção de proxy são salvas automaticamente.</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>Local de download</value>
@@ -430,7 +430,7 @@
     <value>Selecione um arquivo .torrent</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>Cole um URI ou URL magnético e pressione Enter, Colar ou Procurar.</value>
+    <value>Cole um link magnet.</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>Quando ativado, o download de itens aparece na parte superior.</value>
@@ -689,5 +689,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>Abra a loja para avaliar o aplicativo ou escrever uma resenha.</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>Importe novamente o arquivo .torrent original para iniciar com segurança este torrent privado ou não verificado.</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>Não foi possível carregar as configurações. Tente novamente antes de fazer alterações.</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>Não foi possível salvar as configurações. Tente novamente.</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>Informe um host de proxy e uma porta de 1 a 65535.</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>Edite as configurações do proxy e selecione Aplicar proxy para salvar e reconectar as transferências. Os rastreadores também usam o proxy.</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>Aplicar proxy</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>Copiar para Downloads</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>Copiar {0} para Downloads públicos? Os originais ficam no aplicativo para semeadura. Espaço disponível: {1}. As cópias existentes serão verificadas. Cancelar mantém as cópias concluídas.</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>Copiando</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>Verificando</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>Não há espaço livre suficiente para copiar este download.</value>
   </data>
 </root>

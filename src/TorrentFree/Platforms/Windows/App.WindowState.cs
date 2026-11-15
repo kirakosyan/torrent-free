@@ -15,10 +15,15 @@ public partial class App
     private bool? _lastDesktopWasMaximized;
     private Task? _desktopShutdownTask;
     private bool _desktopShutdownComplete;
+    private WinUI.WindowResponsivenessMonitor? _responsiveness;
 
     partial void ConfigurePlatformWindow(Window window)
     {
         window.Created += OnDesktopWindowCreated;
+        window.Activated += (_, _) => AppDiagnostics.State("Window.Activated");
+        window.Deactivated += (_, _) => AppDiagnostics.State("Window.Deactivated");
+        window.Resumed += (_, _) => AppDiagnostics.State($"Window.Resumed activated={window.IsActivated}");
+        window.Stopped += (_, _) => AppDiagnostics.State($"Window.Stopped activated={window.IsActivated}");
         window.Destroying += OnDesktopWindowDestroying;
     }
 
@@ -26,6 +31,7 @@ public partial class App
     {
         if (sender is not Window window) return;
         window.Created -= OnDesktopWindowCreated;
+        AppDiagnostics.State("Window.Created");
         TrackDesktopWindow(window);
     }
 
@@ -47,14 +53,15 @@ public partial class App
 
     private void TrackDesktopWindow(Window window)
     {
-        if (ReferenceEquals(_trackedDesktopWindow, window))
+        if (!ReferenceEquals(_trackedDesktopWindow, window))
         {
-            return;
+            UntrackDesktopWindow();
+            _trackedDesktopWindow = window;
         }
 
-        UntrackDesktopWindow();
-
-        _trackedDesktopWindow = window;
+        if (_responsiveness is null && window.Handler?.PlatformView is Microsoft.UI.Xaml.Window native)
+            _responsiveness = new WinUI.WindowResponsivenessMonitor(native.DispatcherQueue);
+        if (_desktopAppWindow is not null) return;
         _desktopAppWindow = TryGetDesktopAppWindow(window);
         if (_desktopAppWindow is not null)
         {
@@ -65,6 +72,8 @@ public partial class App
 
     private void UntrackDesktopWindow()
     {
+        _responsiveness?.Dispose();
+        _responsiveness = null;
         if (_desktopAppWindow is not null)
         {
             _desktopAppWindow.Changed -= OnDesktopAppWindowChanged;
@@ -154,6 +163,7 @@ public partial class App
         }
 
         window.Destroying -= OnDesktopWindowDestroying;
+        AppDiagnostics.State("Window.Destroying");
 
         if (!ReferenceEquals(_trackedDesktopWindow, window))
         {

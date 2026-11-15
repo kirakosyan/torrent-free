@@ -94,7 +94,7 @@ public sealed class TorrentServiceBehaviorTests
     }
 
     [Fact]
-    public async Task EnforceSeedingLimitsAsync_PausesTorrent_WhenGlobalRatioReached()
+    public async Task EnforceSeedingLimitsAsync_CompletesTorrent_WhenGlobalRatioReached()
     {
         var storage = new RecordingStorageService();
         await using var service = CreateService(storage);
@@ -114,10 +114,10 @@ public sealed class TorrentServiceBehaviorTests
 
         await InvokePrivateTaskAsync(service, "EnforceSeedingLimitsAsync", torrent, null);
 
-        Assert.Equal(DownloadStatus.Paused, torrent.Status);
+        Assert.Equal(DownloadStatus.Completed, torrent.Status);
         var saveSnapshot = Assert.Single(storage.SavedSnapshots);
         var persisted = Assert.Single(saveSnapshot);
-        Assert.Equal(DownloadStatus.Paused, persisted.Status);
+        Assert.Equal(DownloadStatus.Completed, persisted.Status);
     }
 
     [Fact]

@@ -199,7 +199,7 @@
     <value>Einstellungen</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>Änderungen werden automatisch gespeichert.</value>
+    <value>Änderungen außerhalb des Proxybereichs werden automatisch gespeichert.</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>Download-Speicherort</value>
@@ -430,7 +430,7 @@
     <value>Wählen Sie eine .torrent-Datei aus</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>Fügen Sie einen Magnet-URI oder eine URL ein und drücken Sie dann die Eingabetaste, Einfügen oder Durchsuchen.</value>
+    <value>Fügen Sie einen Magnetlink ein.</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>Wenn diese Option aktiviert ist, werden heruntergeladene Elemente oben angezeigt.</value>
@@ -689,5 +689,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>Öffne den Store, um die App zu bewerten oder eine Rezension zu schreiben.</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>Importieren Sie die ursprüngliche .torrent-Datei erneut, um diesen privaten oder ungeprüften Torrent sicher zu starten.</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>Die Einstellungen konnten nicht geladen werden. Versuchen Sie es erneut, bevor Sie Änderungen vornehmen.</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>Die Einstellungen konnten nicht gespeichert werden. Versuchen Sie es erneut.</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>Geben Sie einen Proxyhost und einen Port von 1 bis 65535 ein.</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>Bearbeiten Sie die Proxyeinstellungen und wählen Sie Proxy anwenden, um zu speichern und Übertragungen neu zu verbinden. Auch Tracker verwenden den Proxy.</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>Proxy anwenden</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>In Downloads kopieren</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>{0} in öffentliche Downloads kopieren? Die Originale bleiben zum Seeden in der App. Freier Speicher: {1}. Vorhandene Kopien werden geprüft. Beim Abbrechen bleiben fertige Kopien erhalten.</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>Kopieren</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>Prüfen</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>Es ist nicht genug freier Speicher vorhanden, um diesen Download zu kopieren.</value>
   </data>
 </root>

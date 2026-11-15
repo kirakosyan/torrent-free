@@ -199,7 +199,7 @@
     <value>सेटिंग्स</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>बदलाव अपने आप सहेजे जाते हैं।</value>
+    <value>प्रॉक्सी अनुभाग के बाहर के बदलाव अपने-आप सहेजे जाते हैं।</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>डाउनलोड स्थान</value>
@@ -430,7 +430,7 @@
     <value>.torrent फ़ाइल चुनें</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>magnet URI या URL चिपकाएं, फिर Enter, चिपकाएं या ब्राउज़ दबाएं।</value>
+    <value>मैग्नेट लिंक पेस्ट करें।</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>चालू होने पर सक्रिय डाउनलोड ऊपर दिखाई देते हैं।</value>
@@ -689,5 +689,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>ऐप को रेटिंग देने या समीक्षा लिखने के लिए स्टोर खोलें।</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>इस निजी या अप्रमाणित टोरेंट को सुरक्षित रूप से शुरू करने के लिए मूल .torrent फ़ाइल दोबारा आयात करें।</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>सेटिंग लोड नहीं हो सकीं। बदलाव करने से पहले दोबारा कोशिश करें।</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>सेटिंग सहेजी नहीं जा सकीं। दोबारा कोशिश करें।</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>प्रॉक्सी होस्ट और 1 से 65535 के बीच पोर्ट दर्ज करें।</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>प्रॉक्सी सेटिंग बदलें, फिर सहेजने और ट्रांसफ़र दोबारा जोड़ने के लिए प्रॉक्सी लागू करें चुनें। ट्रैकर भी प्रॉक्सी का उपयोग करते हैं।</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>प्रॉक्सी लागू करें</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>डाउनलोड में कॉपी करें</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>{0} को सार्वजनिक डाउनलोड में कॉपी करें? सीडिंग के लिए मूल फ़ाइलें ऐप में रहेंगी। उपलब्ध जगह: {1}। मौजूदा कॉपियों की जाँच की जाएगी। रद्द करने पर पूरी हो चुकी कॉपियाँ बनी रहेंगी।</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>कॉपी हो रही है</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>जाँच हो रही है</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>इस डाउनलोड को कॉपी करने के लिए पर्याप्त खाली जगह नहीं है।</value>
   </data>
 </root>

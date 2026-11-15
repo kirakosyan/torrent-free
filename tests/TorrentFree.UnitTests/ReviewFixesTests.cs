@@ -102,6 +102,7 @@ public sealed class ReviewFixesTests
     {
         await using var fixture = new CoreServiceFixture();
         var metadata = await fixture.PrepareTorrentAsync();
+        await TorrentImportService.WriteCacheAsync(metadata.CachedFilePath!, metadata.CachedContent!, TestContext.Current.CancellationToken);
         var saved = new TorrentItem
         {
             Name = "payload.bin",
@@ -121,7 +122,12 @@ public sealed class ReviewFixesTests
         Assert.Empty(fixture.Engine.Torrents);
 
         await fixture.Service.StartQueuedTorrentsAsync();
-        await CoreServiceFixture.WaitUntilAsync(() => restored.Status == DownloadStatus.Seeding);
+        try { await CoreServiceFixture.WaitUntilAsync(() => restored.Status == DownloadStatus.Seeding); }
+        catch (OperationCanceledException)
+        {
+            Assert.Fail($"Restored transfer did not seed: {restored.Status}; {restored.ErrorMessage}; " +
+                $"managers={fixture.Engine.Torrents.Count}; metadata={File.Exists(restored.CachedTorrentFilePath)}");
+        }
     }
 
     [Fact]

@@ -199,7 +199,7 @@
     <value>Beállítások</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>A változtatások automatikusan mentésre kerülnek.</value>
+    <value>A proxy részen kívüli módosítások automatikusan mentődnek.</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>Letöltés helye</value>
@@ -430,7 +430,7 @@
     <value>Válasszon ki egy .torrent fájlt</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>Illesszen be egy mágneses URI-t vagy URL-t, majd nyomja meg az Entert, a Beillesztést vagy a Tallózást.</value>
+    <value>Illesszen be egy magnet hivatkozást.</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>Ha engedélyezve van, a letöltési elemek felül jelennek meg.</value>
@@ -689,5 +689,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>Nyisd meg az áruházat az alkalmazás értékeléséhez vagy vélemény írásához.</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>Importálja újra az eredeti .torrent fájlt a privát vagy nem ellenőrzött torrent biztonságos indításához.</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>A beállításokat nem sikerült betölteni. Módosítás előtt próbálja újra.</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>A beállításokat nem sikerült menteni. Próbálja újra.</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>Adjon meg egy proxykiszolgálót és egy 1 és 65535 közötti portot.</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>Szerkessze a proxybeállításokat, majd válassza a Proxy alkalmazása gombot a mentéshez és az átvitelek újracsatlakoztatásához. A trackerek is a proxyt használják.</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>Proxy alkalmazása</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>Másolás a Letöltésekbe</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>Másolja a(z) {0} adatot a nyilvános Letöltésekbe? Az eredetik megmaradnak az alkalmazásban a megosztáshoz. Szabad hely: {1}. A meglévő másolatokat ellenőrizzük. A megszakítás megtartja a kész másolatokat.</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>Másolás</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>Ellenőrzés</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>Nincs elég szabad hely a letöltés másolásához.</value>
   </data>
 </root>

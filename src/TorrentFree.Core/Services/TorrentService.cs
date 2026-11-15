@@ -48,6 +48,9 @@ public interface ITorrentService : IDisposable, IAsyncDisposable
     /// <summary>Loads the file list. Magnets fetch metadata only, with cancellable network access.</summary>
     Task<IReadOnlyList<TorrentFileChoice>> GetTorrentFilesAsync(TorrentItem torrent, CancellationToken cancellationToken = default);
 
+    /// <summary>Builds a cancellable export plan from local metadata or completed payload files; never fetches metadata.</summary>
+    Task<DownloadExportPlan> CreateDownloadExportPlanAsync(TorrentItem torrent, CancellationToken cancellationToken = default);
+
     /// <summary>Persists and applies a nonempty selection. Active transfers resume with the new selection.</summary>
     Task SetTorrentFileSelectionAsync(TorrentItem torrent, IReadOnlyCollection<string> selectedPaths);
 
@@ -156,6 +159,7 @@ public partial class TorrentService : ITorrentService
     private bool _sleepPreventionRequested;
     private readonly AsyncKeyedLocker _torrentOperationLock = new();
     private readonly ConcurrentDictionary<string, CancellationTokenSource> _downloadTokens = new();
+    private readonly InFlightOperations<TorrentManager> _managerStops = new();
     private readonly ConcurrentDictionary<string, TorrentManager> _managers = new();
     private readonly Dictionary<string, long> _seedingSessions = new();
     private readonly ConcurrentDictionary<string, byte> _proxyRebuildPendingResumeIds = new();
@@ -260,6 +264,13 @@ public partial class TorrentService : ITorrentService
 
             foreach (var torrent in savedTorrents)
             {
+                // Preserve legacy file provenance before the restore rules clear missing paths.
+                if (!torrent.ImportedFromFile && (!string.IsNullOrEmpty(torrent.TorrentFilePath)
+                    || !string.IsNullOrEmpty(torrent.TorrentFileName)))
+                {
+                    torrent.ImportedFromFile = true;
+                    hadStateChanges = true;
+                }
                 var hadMissingTorrentFile = TorrentRestoreRules.HasMissingTorrentFile(torrent.TorrentFilePath);
                 var restoreDecision = TorrentRestoreRules.Evaluate(
                     new TorrentIdentity(torrent.Id, torrent.InfoHash, torrent.MagnetLink),
@@ -388,6 +399,8 @@ public partial class TorrentService : ITorrentService
             TorrentFilePath = metadata?.SourceFilePath,
             TorrentFileName = metadata?.SourceFileName,
             CachedTorrentFilePath = metadata?.CachedFilePath,
+            IsPrivate = metadata?.IsPrivate,
+            ImportedFromFile = metadata is not null,
             SavePath = _storageService.SupportsCustomDownloadLocations
                 ? DownloadLocationResolver.ResolveSavePath(settings, metadata?.DownloadSourcePath, fallbackDownloadPath)
                 : fallbackDownloadPath
@@ -720,14 +733,12 @@ public partial class TorrentService : ITorrentService
                         // Keep fast-resume and cached magnet metadata for the next attempt.
                         await _engine.RemoveAsync(manager, RemoveMode.KeepAllData);
                     }
+                    // Keep ownership if cleanup fails, so a retry reuses this manager.
+                    _managers.TryRemove(torrent.Id, out _);
                 }
                 catch (Exception cleanupEx)
                 {
                     System.Diagnostics.Debug.WriteLine($"Start rollback cleanup error for '{torrent.Name}' ({torrent.Id}): {cleanupEx}");
-                }
-                finally
-                {
-                    _managers.TryRemove(torrent.Id, out _);
                 }
             }
 
@@ -2569,15 +2580,38 @@ public partial class TorrentService : ITorrentService
             var ratio = torrent.UploadedSize / (double)torrent.TotalSize;
             if (ratio >= maxRatio)
             {
-                await PauseTorrentAsync(torrent);
+                await CompleteSeedingAsync(torrent);
                 return;
             }
         }
 
         if (maxMinutes > 0 && GetSeededSeconds(torrent) >= maxMinutes * 60d)
         {
-            await PauseTorrentAsync(torrent);
+            await CompleteSeedingAsync(torrent);
         }
+    }
+
+    private async Task CompleteSeedingAsync(TorrentItem torrent)
+    {
+        await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalToken))
+        {
+            if (!IsTracked(torrent) || torrent.Status != DownloadStatus.Seeding) return;
+            if (_downloadTokens.TryRemove(torrent.Id, out var monitor))
+            {
+                await monitor.CancelAsync();
+                monitor.Dispose();
+            }
+            if (_managers.TryGetValue(torrent.Id, out var manager)) await StopManagerAsync(manager);
+            await _dispatcher.InvokeAsync(() =>
+            {
+                UpdateSeedingTime(torrent, active: false);
+                torrent.Status = DownloadStatus.Completed;
+                torrent.DownloadSpeed = torrent.UploadSpeed = 0;
+            });
+            await SaveAsync();
+            UpdateBackgroundTransferState();
+        }
+        await TryStartQueuedTorrentsAsync();
     }
 
     private async Task ReconcileQueueLimitsAsync()
@@ -3287,8 +3321,14 @@ public partial class TorrentService : ITorrentService
     protected virtual async Task<TorrentManager> GetOrCreateManagerAsync(
         TorrentItem torrent, CancellationToken cancellationToken = default, bool rebuildRestart = false)
     {
+        // Removal can detach a manager before a later cleanup step throws. Retain a
+        // failed cleanup's ownership until retry, but never restart a detached manager.
+        if (_managers.TryGetValue(torrent.Id, out var detached)
+            && (detached.Engine is null || !detached.Engine.Torrents.Contains(detached)))
+            _managers.TryRemove(torrent.Id, out _);
         if (_managers.TryGetValue(torrent.Id, out var existing))
         {
+            await WaitForManagerStopAsync(existing);
             if (torrent.SelectedFilePaths is null || existing.HasMetadata)
             {
                 await ApplyFileSelectionAsync(existing, torrent.SelectedFilePaths);
@@ -3324,43 +3364,34 @@ public partial class TorrentService : ITorrentService
             MaximumUploadRate = ToRate(uploadLimit),
         }.ToSettings();
 
-        TorrentManager manager;
+        Torrent? metadata = null;
         var metadataPath = GetMetadataPath(torrent) ?? FindEngineMetadataCachePath(torrent);
         if (torrent.SelectedFilePaths is not null)
-        {
-            // Resolve metadata once before adding a payload manager. Bad local metadata can
-            // be fetched again, but an engine admission failure must not recurse via magnets.
-            var metadata = await LoadFileSelectionMetadataAsync(torrent, cancellationToken, rebuildRestart);
-            manager = await engine.AddAsync(metadata, downloadPath, torrentSettings);
-        }
+            metadata = await LoadFileSelectionMetadataAsync(torrent, cancellationToken, rebuildRestart);
         else if (metadataPath is not null)
         {
-            try
+            try { metadata = await LoadTorrentFileBoundedAsync(metadataPath, torrent); }
+            catch (Exception ex) when (ex is IOException or InvalidDataException or FormatException or UnauthorizedAccessException or TorrentException)
             {
-                var monoTorrent = await LoadTorrentFileBoundedAsync(metadataPath, torrent);
-                manager = await engine.AddAsync(monoTorrent, downloadPath, torrentSettings);
+                System.Diagnostics.Debug.WriteLine($"Failed to load .torrent metadata: {ex.Message}");
             }
-            catch (Exception ex)
+        }
+
+        TorrentManager manager;
+        if (metadata is not null)
+        {
+            if (torrent.IsPrivate != metadata.IsPrivate)
             {
-                System.Diagnostics.Debug.WriteLine($"Failed to load .torrent file: {ex.Message}. Falling back to magnet link.");
-                var magnet = MagnetLink.Parse(torrent.MagnetLink);
-                manager = await engine.AddAsync(magnet, downloadPath, torrentSettings);
-                if (!ProxyRequested)
-                {
-                    await AddPublicTrackersIfNeededAsync(manager, torrent.MagnetLink);
-                }
+                await _dispatcher.InvokeAsync(() => torrent.IsPrivate = metadata.IsPrivate);
+                await SaveAsync();
             }
+            manager = await engine.AddAsync(metadata, downloadPath, torrentSettings);
         }
         else
         {
-            var magnet = MagnetLink.Parse(torrent.MagnetLink);
-            manager = await engine.AddAsync(magnet, downloadPath, torrentSettings);
-            if (!ProxyRequested)
-            {
-                // The bootstrap trackers are all UDP, which the SOCKS5 proxy cannot tunnel;
-                // adding them in proxy mode would leak the real IP via tracker announces.
-                await AddPublicTrackersIfNeededAsync(manager, torrent.MagnetLink);
-            }
+            EnsureMagnetFallbackAllowed(torrent);
+            manager = await engine.AddAsync(MagnetLink.Parse(torrent.MagnetLink), downloadPath, torrentSettings);
+            if (!ProxyRequested) await AddPublicTrackersIfNeededAsync(manager, torrent.MagnetLink);
         }
 
         _managers[torrent.Id] = manager;
@@ -3375,17 +3406,53 @@ public partial class TorrentService : ITorrentService
         ? null
         : manager.Files.Count == 1 ? manager.Files[0].FullPath : manager.ContainingDirectory;
 
-    protected virtual Task StartManagerAsync(TorrentManager manager) => manager.StartAsync();
+    private static void EnsureMagnetFallbackAllowed(TorrentItem torrent)
+    {
+        if (torrent.IsPrivate == true || (torrent.IsPrivate is null && torrent.ImportedFromFile))
+            throw new InvalidOperationException(LocalizationResourceManager.Instance["ErrorPrivateTorrentMetadata"]);
+    }
+
+    protected virtual async Task StartManagerAsync(TorrentManager manager)
+    {
+        await WaitForManagerStopAsync(manager);
+        await manager.StartAsync();
+    }
+
+    private async Task WaitForManagerStopAsync(TorrentManager manager)
+    {
+        await _managerStops.WaitAsync(manager, _disposalToken).ConfigureAwait(false);
+        await WaitForStoppedStateAsync(manager, _disposalToken).ConfigureAwait(false);
+    }
+
+    private static async Task WaitForStoppedStateAsync(TorrentManager manager, CancellationToken cancellationToken)
+    {
+        if (manager.State != TorrentState.Stopping) return;
+        var stopped = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        void OnStateChanged(object? sender, TorrentStateChangedEventArgs args)
+        {
+            if (args.NewState != TorrentState.Stopping) stopped.TrySetResult();
+        }
+        manager.TorrentStateChanged += OnStateChanged;
+        try
+        {
+            // Subscribe before rechecking: a stop can finish between the first check and subscription.
+            if (manager.State != TorrentState.Stopping) stopped.TrySetResult();
+            await stopped.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+        }
+        finally { manager.TorrentStateChanged -= OnStateChanged; }
+    }
 
     protected virtual Task StopManagerAsync(TorrentManager manager)
-    {
-        if (!TorrentManagerStateRules.RequiresFullStop(manager.State))
+        => _managerStops.RunAsync(manager, async () =>
         {
-            return Task.CompletedTask;
-        }
+            // Engine-originated stops have no task in our registry; await their state event.
+            await WaitForStoppedStateAsync(manager, CancellationToken.None).ConfigureAwait(false);
+            if (TorrentManagerStateRules.RequiresFullStop(manager.State))
+                await StopManagerCoreAsync(manager).ConfigureAwait(false);
+        });
 
-        return manager.StopAsync(ManagerStopTimeout);
-    }
+    protected virtual Task StopManagerCoreAsync(TorrentManager manager)
+        => manager.StopAsync(ManagerStopTimeout);
 
     private Task PauseManagerAsync(TorrentManager manager)
         => TorrentManagerStateRules.CanPauseInPlace(manager.State)

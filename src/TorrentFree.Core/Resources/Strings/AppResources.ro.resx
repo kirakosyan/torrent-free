@@ -199,7 +199,7 @@
     <value>Setări</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>Modificările sunt salvate automat.</value>
+    <value>Modificările din afara secțiunii proxy sunt salvate automat.</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>Descărcați locația</value>
@@ -430,7 +430,7 @@
     <value>Selectați un fișier .torrent</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>Lipiți un URI sau o adresă URL magnet, apoi apăsați Enter, Paste sau Browse.</value>
+    <value>Lipește un link magnet.</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>Când este activată, elementele de descărcare apar în partea de sus.</value>
@@ -689,5 +689,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>Deschide magazinul pentru a evalua aplicația sau a scrie o recenzie.</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>Importă din nou fișierul .torrent original pentru a porni în siguranță acest torrent privat sau neverificat.</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>Setările nu au putut fi încărcate. Încearcă din nou înainte de a face modificări.</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>Setările nu au putut fi salvate. Încearcă din nou.</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>Introdu o gazdă proxy și un port între 1 și 65535.</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>Editează setările proxy, apoi selectează Aplică proxy pentru a salva și reconecta transferurile. Trackerele folosesc și ele proxy-ul.</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>Aplică proxy</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>Copiază în Descărcări</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>Copiezi {0} în Descărcări publice? Originalele rămân în aplicație pentru distribuire. Spațiu disponibil: {1}. Copiile existente vor fi verificate. Anularea păstrează copiile finalizate.</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>Se copiază</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>Se verifică</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>Nu există suficient spațiu liber pentru a copia această descărcare.</value>
   </data>
 </root>

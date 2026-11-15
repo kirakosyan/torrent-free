@@ -16,4 +16,14 @@
 
   <ItemGroup><ProjectReference Include="..\..\src\TorrentFree.Core\TorrentFree.Core.csproj" /></ItemGroup>
 
+  <!-- Execute the production settings logic with narrow platform adapters, without a UI runtime. -->
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <Compile Include="..\..\src\TorrentFree\ViewModels\SettingsViewModel.cs" Link="App\SettingsViewModel.cs" />
+    <Compile Include="..\..\src\TorrentFree\Services\IFileAssociationService.cs" Link="App\IFileAssociationService.cs" />
+    <Compile Include="..\..\src\TorrentFree\Services\IFolderPickerService.cs" Link="App\IFolderPickerService.cs" />
+    <Compile Include="..\..\src\TorrentFree\Services\IThemeService.cs" Link="App\IThemeService.cs" />
+    <Compile Include="..\..\src\TorrentFree\Services\ILocalizationService.cs" Link="App\ILocalizationService.cs" />
+  </ItemGroup>
+
 </Project>

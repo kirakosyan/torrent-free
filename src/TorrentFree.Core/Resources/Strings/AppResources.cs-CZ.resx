@@ -199,7 +199,7 @@
     <value>Nastavení</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>Změny se ukládají automaticky.</value>
+    <value>Změny mimo sekci proxy se ukládají automaticky.</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>Umístění ke stažení</value>
@@ -430,7 +430,7 @@
     <value>Vyberte soubor .torrent</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>Vložte magnet URI nebo URL a stiskněte Enter, Vložit nebo Procházet.</value>
+    <value>Vložte magnetický odkaz.</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>Když je tato možnost povolena, položky ke stahování se zobrazí nahoře.</value>
@@ -689,5 +689,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>Otevřete obchod a ohodnoťte aplikaci nebo napište recenzi.</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>Znovu importujte původní soubor .torrent, aby bylo možné tento soukromý nebo neověřený torrent bezpečně spustit.</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>Nastavení se nepodařilo načíst. Před provedením změn to zkuste znovu.</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>Nastavení se nepodařilo uložit. Zkuste to znovu.</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>Zadejte hostitele proxy a port od 1 do 65535.</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>Upravte nastavení proxy a zvolte Použít proxy pro uložení a opětovné připojení přenosů. Proxy používají i trackery.</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>Použít proxy</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>Kopírovat do Stažených</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>Zkopírovat {0} do veřejných Stažených souborů? Originály zůstanou v aplikaci pro sdílení. Volné místo: {1}. Existující kopie budou ověřeny. Zrušení zachová dokončené kopie.</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>Kopírování</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>Ověřování</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>Pro zkopírování tohoto stahování není dostatek volného místa.</value>
   </data>
 </root>

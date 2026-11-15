@@ -199,7 +199,7 @@
     <value>Indstillinger</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>Ændringer gemmes automatisk.</value>
+    <value>Ændringer uden for proxyafsnittet gemmes automatisk.</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>Download placering</value>
@@ -430,7 +430,7 @@
     <value>Vælg en .torrent fil</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>Indsæt en magnet-URI eller URL, og tryk derefter på Enter, Indsæt eller Gennemse.</value>
+    <value>Indsæt et magnetlink.</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>Når det er aktiveret, vises downloadelementer øverst.</value>
@@ -689,5 +689,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>Åbn butikken for at bedømme appen eller skrive en anmeldelse.</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>Importér den oprindelige .torrent-fil igen for at starte denne private eller ubekræftede torrent sikkert.</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>Indstillingerne kunne ikke indlæses. Prøv igen, før du foretager ændringer.</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>Indstillingerne kunne ikke gemmes. Prøv igen.</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>Angiv en proxyvært og en port fra 1 til 65535.</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>Redigér proxyindstillingerne, og vælg Anvend proxy for at gemme og genoprette forbindelsen. Trackere bruger også proxyen.</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>Anvend proxy</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>Kopiér til Downloads</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>Kopiér {0} til offentlige Downloads? Originalerne bliver i appen til deling. Ledig plads: {1}. Eksisterende kopier kontrolleres. Annullering bevarer færdige kopier.</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>Kopierer</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>Kontrollerer</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>Der er ikke nok ledig plads til at kopiere denne download.</value>
   </data>
 </root>

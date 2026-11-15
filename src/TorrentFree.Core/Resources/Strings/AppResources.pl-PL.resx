@@ -199,7 +199,7 @@
     <value>Ustawienia</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>Zmiany są zapisywane automatycznie.</value>
+    <value>Zmiany poza sekcją proxy są zapisywane automatycznie.</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>Pobierz lokalizację</value>
@@ -430,7 +430,7 @@
     <value>Wybierz plik .torrent</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>Wklej identyfikator URI lub adres URL magnesu, a następnie naciśnij klawisz Enter, Wklej lub Przeglądaj.</value>
+    <value>Wklej link magnet.</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>Gdy ta opcja jest włączona, pobierane elementy pojawiają się u góry.</value>
@@ -689,5 +689,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>Otwórz sklep, aby ocenić aplikację lub napisać opinię.</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>Zaimportuj ponownie oryginalny plik .torrent, aby bezpiecznie uruchomić ten prywatny lub niezweryfikowany torrent.</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>Nie udało się wczytać ustawień. Spróbuj ponownie przed wprowadzeniem zmian.</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>Nie udało się zapisać ustawień. Spróbuj ponownie.</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>Podaj host proxy i port od 1 do 65535.</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>Edytuj ustawienia proxy, a następnie wybierz Zastosuj proxy, aby zapisać i ponownie połączyć transfery. Trackery również używają proxy.</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>Zastosuj proxy</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>Kopiuj do Pobranych</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>Skopiować {0} do publicznego folderu Pobrane? Oryginały pozostaną w aplikacji do udostępniania. Wolne miejsce: {1}. Istniejące kopie zostaną zweryfikowane. Anulowanie zachowuje ukończone kopie.</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>Kopiowanie</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>Weryfikowanie</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>Za mało wolnego miejsca, aby skopiować to pobranie.</value>
   </data>
 </root>

@@ -199,7 +199,7 @@
     <value>การตั้งค่า</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>การเปลี่ยนแปลงจะถูกบันทึกโดยอัตโนมัติ</value>
+    <value>การเปลี่ยนแปลงนอกส่วนพร็อกซีจะบันทึกโดยอัตโนมัติ</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>ดาวน์โหลดตำแหน่ง</value>
@@ -430,7 +430,7 @@
     <value>เลือกไฟล์ .torrent</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>วาง URI หรือ URL แม่เหล็ก จากนั้นกด Enter วาง หรือเรียกดู</value>
+    <value>วางลิงก์ magnet</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>เมื่อเปิดใช้งาน รายการดาวน์โหลดจะปรากฏที่ด้านบน</value>
@@ -689,5 +689,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>เปิดร้านค้าเพื่อให้คะแนนแอปหรือเขียนรีวิว</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>นำเข้าไฟล์ .torrent ต้นฉบับอีกครั้งเพื่อเริ่มทอร์เรนต์ส่วนตัวหรือที่ยังไม่ผ่านการตรวจสอบนี้อย่างปลอดภัย</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>โหลดการตั้งค่าไม่ได้ โปรดลองอีกครั้งก่อนแก้ไข</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>บันทึกการตั้งค่าไม่ได้ โปรดลองอีกครั้ง</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>ป้อนโฮสต์พร็อกซีและพอร์ตตั้งแต่ 1 ถึง 65535</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>แก้ไขการตั้งค่าพร็อกซี แล้วเลือกใช้พร็อกซีเพื่อบันทึกและเชื่อมต่อการถ่ายโอนใหม่ แทร็กเกอร์จะใช้พร็อกซีด้วย</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>ใช้พร็อกซี</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>คัดลอกไปยังดาวน์โหลด</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>คัดลอก {0} ไปยังโฟลเดอร์ดาวน์โหลดสาธารณะหรือไม่? ต้นฉบับจะอยู่ในแอปเพื่อแชร์ต่อ พื้นที่ว่าง: {1} ระบบจะตรวจสอบสำเนาที่มีอยู่ การยกเลิกจะเก็บสำเนาที่เสร็จแล้วไว้</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>กำลังคัดลอก</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>กำลังตรวจสอบ</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>พื้นที่ว่างไม่เพียงพอที่จะคัดลอกการดาวน์โหลดนี้</value>
   </data>
 </root>

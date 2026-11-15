@@ -1,6 +1,7 @@
 using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using TorrentFree.ViewModels;
+using TorrentFree.Services;
 
 namespace TorrentFree;
 
@@ -29,6 +30,8 @@ public partial class SettingsPage : ContentPage
         {
             try
             {
+                vm.PropertyChanged -= OnSettingsPropertyChanged;
+                vm.PropertyChanged += OnSettingsPropertyChanged;
                 if (_settingsWindow is null && Window is { } window)
                 {
                     _settingsWindow = window;
@@ -48,6 +51,7 @@ public partial class SettingsPage : ContentPage
     protected override async void OnDisappearing()
     {
         base.OnDisappearing();
+        if (BindingContext is SettingsViewModel vm) vm.PropertyChanged -= OnSettingsPropertyChanged;
         if (_settingsWindow is { } window)
         {
             window.Stopped -= OnWindowStopped;
@@ -65,57 +69,17 @@ public partial class SettingsPage : ContentPage
         try { await vm.FlushPendingSettingsAsync(); }
         catch (Exception ex)
         {
-            vm.ValidationMessage = ex.Message;
+            vm.ValidationMessage = LocalizationResourceManager.Instance["ErrorSaveSettings"];
+            AppDiagnostics.Record("Settings.Flush", ex);
             System.Diagnostics.Debug.WriteLine($"Settings flush failed: {ex}");
         }
     }
 
-    private void OnNumericTextChanged(object? sender, TextChangedEventArgs e)
+    private void OnSettingsPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (sender is not Entry entry)
-        {
-            return;
-        }
-
-        var text = entry.Text ?? string.Empty;
-        var filtered = new string(text.Where(char.IsDigit).ToArray());
-
-        if (text != filtered)
-        {
-            entry.Text = filtered;
-        }
-    }
-
-    private void OnDecimalTextChanged(object? sender, TextChangedEventArgs e)
-    {
-        if (sender is not Entry entry)
-        {
-            return;
-        }
-
-        var text = entry.Text ?? string.Empty;
-        var result = new System.Text.StringBuilder();
-        var separatorSeen = false;
-        var decimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-
-        foreach (var ch in text)
-        {
-            if (char.IsDigit(ch))
-            {
-                result.Append(ch);
-            }
-            else if (!separatorSeen && IsDecimalSeparator(ch))
-            {
-                separatorSeen = true;
-                result.Append(decimalSeparator);
-            }
-        }
-
-        var filtered = result.ToString();
-        if (text != filtered)
-        {
-            entry.Text = filtered;
-        }
+        if (e.PropertyName == nameof(SettingsViewModel.ValidationMessage) &&
+            BindingContext is SettingsViewModel { ValidationMessage: { Length: > 0 } message })
+            SemanticScreenReader.Default.Announce(message);
     }
 
     protected override void OnPropertyChanged(string? propertyName = null)
@@ -147,7 +111,8 @@ public partial class SettingsPage : ContentPage
         catch (Exception ex)
         {
             // async void: an unhandled exception here would crash the app.
-            if (BindingContext is SettingsViewModel vm) vm.ValidationMessage = ex.Message;
+            if (BindingContext is SettingsViewModel vm) vm.ValidationMessage = LocalizationResourceManager.Instance["ErrorSaveSettings"];
+            AppDiagnostics.Record("Settings.Flush", ex);
             System.Diagnostics.Debug.WriteLine($"Settings back navigation error: {ex}");
         }
     }
@@ -192,8 +157,6 @@ public partial class SettingsPage : ContentPage
             ? FlowDirection.RightToLeft
             : FlowDirection.LeftToRight;
     }
-
-    private static bool IsDecimalSeparator(char ch) => ch is '.' or ',' or '\u066B';
 
     private static T GetRequiredService<T>() where T : notnull
     {

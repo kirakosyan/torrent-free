@@ -591,7 +591,7 @@
                                                                              ProgressColor="{StaticResource AccentColor}"
                                                                             HeightRequest="6"/>
                                                                <Label Grid.Column="1"
-                                                                      Text="{Binding Progress, StringFormat='{0:F0}%'}"
+                                                                      Text="{Binding DisplayProgress, StringFormat='{0:F0}%'}"
                                                                       FontSize="10"
                                                                       TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                                                       VerticalOptions="Center"/>
@@ -802,11 +802,11 @@
                                                  <Label Text="{helpers:Translate DownloadKBs}"
                                                         FontSize="10"
                                                         TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                                  <Entry Text="{Binding SelectedTorrent.DownloadLimitKbps}"
+                                                  <controls:NumericEntry Value="{Binding SelectedTorrent.DownloadLimitKbps}"
                                                         SemanticProperties.Description="{helpers:Translate DownloadKBs}"
                                                         SemanticProperties.Hint="{helpers:Translate GlobalHint}"
                                                         Keyboard="Numeric"
-                                                        Placeholder="{helpers:Translate GlobalHint}"/>
+                                                        Placeholder="{helpers:Translate GlobalHint}" Maximum="1000000" ShowZeroAsEmpty="True"/>
                                           </VerticalStackLayout>
 
                                           <VerticalStackLayout Grid.Row="1"
@@ -815,11 +815,11 @@
                                                  <Label Text="{helpers:Translate UploadKBs}"
                                                         FontSize="10"
                                                         TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                                  <Entry Text="{Binding SelectedTorrent.UploadLimitKbps}"
+                                                  <controls:NumericEntry Value="{Binding SelectedTorrent.UploadLimitKbps}"
                                                         SemanticProperties.Description="{helpers:Translate UploadKBs}"
                                                         SemanticProperties.Hint="{helpers:Translate GlobalHint}"
                                                         Keyboard="Numeric"
-                                                        Placeholder="{helpers:Translate GlobalHint}"/>
+                                                        Placeholder="{helpers:Translate GlobalHint}" Maximum="1000000" ShowZeroAsEmpty="True"/>
                                           </VerticalStackLayout>
 
                                           <VerticalStackLayout Grid.Row="2"
@@ -828,11 +828,11 @@
                                                  <Label Text="{helpers:Translate MaxSeedRatio}"
                                                         FontSize="10"
                                                         TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                                  <Entry Text="{Binding SelectedTorrent.MaxSeedRatio}"
+                                                  <controls:NumericEntry Value="{Binding SelectedTorrent.MaxSeedRatio}"
                                                         SemanticProperties.Description="{helpers:Translate MaxSeedRatio}"
                                                         SemanticProperties.Hint="{helpers:Translate UnlimitedHint}"
                                                         Keyboard="Numeric"
-                                                        Placeholder="{helpers:Translate GlobalHint}"/>
+                                                        Placeholder="{helpers:Translate GlobalHint}" Maximum="100" AllowDecimal="True" ShowZeroAsEmpty="True"/>
                                           </VerticalStackLayout>
 
                                           <VerticalStackLayout Grid.Row="2"
@@ -841,11 +841,11 @@
                                                  <Label Text="{helpers:Translate MaxSeedMinutes}"
                                                         FontSize="10"
                                                         TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"/>
-                                                  <Entry Text="{Binding SelectedTorrent.MaxSeedMinutes}"
+                                                  <controls:NumericEntry Value="{Binding SelectedTorrent.MaxSeedMinutes}"
                                                         SemanticProperties.Description="{helpers:Translate MaxSeedMinutes}"
                                                         SemanticProperties.Hint="{helpers:Translate UnlimitedHint}"
                                                         Keyboard="Numeric"
-                                                        Placeholder="{helpers:Translate GlobalHint}"/>
+                                                        Placeholder="{helpers:Translate GlobalHint}" Maximum="525600" ShowZeroAsEmpty="True"/>
                                           </VerticalStackLayout>
                                    </Grid>
                             </Border>

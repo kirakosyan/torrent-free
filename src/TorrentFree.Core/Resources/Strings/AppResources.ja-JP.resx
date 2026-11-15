@@ -199,7 +199,7 @@
     <value>設定</value>
   </data>
   <data name="AutoSaveNote" xml:space="preserve">
-    <value>変更は自動的に保存されます。</value>
+    <value>プロキシ以外の設定変更は自動的に保存されます。</value>
   </data>
   <data name="DownloadLocation" xml:space="preserve">
     <value>ダウンロード場所</value>
@@ -430,7 +430,7 @@
     <value>.torrent ファイルを選択します</value>
   </data>
   <data name="MagnetInputHint" xml:space="preserve">
-    <value>マグネット URI または URL を貼り付けて、Enter、貼り付け、または参照を押します。</value>
+    <value>マグネットリンクを貼り付けてください。</value>
   </data>
   <data name="DownloadingOnTopHint" xml:space="preserve">
     <value>有効にすると、ダウンロード中のアイテムが上部に表示されます。</value>
@@ -689,5 +689,38 @@
   </data>
   <data name="StoreFeedbackHint" xml:space="preserve">
     <value>ストアを開いてアプリを評価したり、レビューを書いたりできます。</value>
+  </data>
+  <data name="ErrorPrivateTorrentMetadata" xml:space="preserve">
+    <value>この非公開または未確認のトレントを安全に開始するには、元の .torrent ファイルを再度インポートしてください。</value>
+  </data>
+  <data name="ErrorLoadSettings" xml:space="preserve">
+    <value>設定を読み込めませんでした。変更する前に再試行してください。</value>
+  </data>
+  <data name="ErrorSaveSettings" xml:space="preserve">
+    <value>設定を保存できませんでした。再試行してください。</value>
+  </data>
+  <data name="ValidationProxy" xml:space="preserve">
+    <value>プロキシホストと 1～65535 のポートを入力してください。</value>
+  </data>
+  <data name="ProxyApplyHint" xml:space="preserve">
+    <value>プロキシ設定を編集し、「プロキシを適用」を選択して保存し、転送を再接続します。トラッカーもプロキシを使用します。</value>
+  </data>
+  <data name="ApplyProxy" xml:space="preserve">
+    <value>プロキシを適用</value>
+  </data>
+  <data name="ExportDownload" xml:space="preserve">
+    <value>ダウンロードにコピー</value>
+  </data>
+  <data name="ExportConfirm" xml:space="preserve">
+    <value>{0} を公開ダウンロードフォルダーにコピーしますか？元のファイルはシード用にアプリ内に残ります。空き容量：{1}。既存のコピーは検証されます。キャンセルしても完了したコピーは残ります。</value>
+  </data>
+  <data name="ExportCopying" xml:space="preserve">
+    <value>コピー中</value>
+  </data>
+  <data name="ExportVerifying" xml:space="preserve">
+    <value>検証中</value>
+  </data>
+  <data name="ErrorExportSpace" xml:space="preserve">
+    <value>このダウンロードをコピーするための空き容量が不足しています。</value>
   </data>
 </root>
