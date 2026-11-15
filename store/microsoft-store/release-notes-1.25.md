@@ -5,7 +5,7 @@ Superseded before submission by [1.25.1](release-notes-1.25.1.md) after Windows
 smoke testing found a stale file-import error message. Original packages and tag
 are retained unchanged; do not submit these superseded packages.
 Windows **1.25.0.0**, x64 and ARM64; Android **1.25**, version code **30**.
-No store submission or release tag has been pushed.
+No 1.25 store submission or v1.25 tag was pushed.
 
 ## Changes
 
@@ -46,7 +46,8 @@ the project, Windows manifest and version consistency test.
 The packages were built from clean commit `6bd2bc6f0b2650ef941484fd31e363207144b5d2` on
 `codex/prepare-1.25`, based on merged main commit
 `839cab64375df6553b1001994d690f1fcf9f7b3e`. Annotated tag **v1.25** identifies that
-exact package source. The branch, commits and tag remain **local and unpushed**.
+exact package source. This superseded tag remains **local and unpushed**; source
+history is retained on the release branch.
 This record is a documentation-only follow-up to the package source commit.
 
 - Both MSIX packages passed MakeAppx unpack, ZIP, Store identity, version,

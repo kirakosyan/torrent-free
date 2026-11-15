@@ -2,7 +2,7 @@
 
 ## Next release: 1.25.1 preparation
 
-**1.25.1 / build 31 / MSIX 1.25.1.0 (x64 and ARM64)** is being prepared locally.
+**1.25.1 / build 31 / MSIX 1.25.1.0 (x64 and ARM64)** is prepared and validated locally.
 **Not uploaded, submitted, or published.** Localized notes are in
 `release-notes-1.25.1.json`; see the [preparation record](release-notes-1.25.1.md)
 for package hashes, validation and source traceability.

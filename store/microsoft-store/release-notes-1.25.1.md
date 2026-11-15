@@ -37,6 +37,43 @@ and one new non-test torrent added during testing was retained separately from
 the smoke fixtures. Dumps and private logs remain local and are excluded from
 release bundles.
 
-Rebuilt-package validation, final 1.25.1 smoke results, source commit, artifact
-hashes and store submission status will be recorded after verification.
-ARM64 runtime and Android device flows have not been smoke-tested in this session.
+## Final package qualification
+
+Built from clean commit `22292b787563b335c301220bf98171ecdc9b4d1c`. Annotated tag **v1.25.1**
+identifies the exact package source; the superseded **v1.25** tag is unchanged.
+All **539 Release core tests** and **10 store-tool tests** passed.
+
+- Both MSIX packages passed MakeAppx unpack, identity/version/architecture,
+  24-language, activation-extension and payload-hash checks. Managed symbols are retained.
+- The Play AAB passed bundletool and signature checks. Both APKs passed v2/v3
+  signature and 16 KiB alignment checks. Package IDs, API 23 minimum/API 36 target,
+  non-debuggable manifests, code 31 and version 1.25.1 match their store variants.
+- Android signing certificate matches the previously submitted packages.
+  R8 maps are retained, the Play map matches its embedded copy, and native debug
+  symbol build IDs match every packaged library.
+- **Final Windows x64 packaged-payload smoke passed.** Cold invalid-file activation
+  reports an error; warm valid-file activation opens selection and clears that
+  error. Cancellation leaves the fixture paused. Magnet activation restores a
+  minimized window without starting a transfer. Five rapid secondary launches
+  redirect to the same process. Restart retains the paused queue, About reports
+  1.25.1 / build 31 / file 1.25.1.0, and shutdown exits cleanly.
+- No app crash event or diagnostic fault log was recorded in the final smoke run.
+  All seven real queue entries and original settings were hash-verified on restoration.
+  The temporary registration was removed; installed Store version 1.24 was preserved.
+- ARM64 runtime and Android device flows were not smoke-tested in this session.
+  The original production activation bucket remains unproven; compare post-release
+  health by version and collect managed diagnostics if it recurs.
+
+Artifacts are retained in ignored `artifacts/store-1.25.1/`. The packages are:
+
+| Package | SHA-256 |
+| --- | --- |
+| `windows/TorrentFree_1.25.1.0_x64.msix` | `2ecf48b27f3fab6050de2f39d7048e024b9545a50c30cc666e326d05135016bf` |
+| `windows/TorrentFree_1.25.1.0_arm64.msix` | `1bce8f49ae60adc88d78f731365b18fddba709057c8ff6329a02fd90ca9691b1` |
+| `android/play/com.torrentfree.app-v1.25.1-code31.aab` | `6ba1b13e4c28dd5c68e2f0f097834a81e317ab4c0207cda03376973c466c13bd` |
+| `android/galaxy/com.torrentfree.app.galaxy-v1.25.1-code31.apk` | `4f2c417cd90c5f3bcbb7bf90707e346fe9bfe85dd1561355c11d8d028a56172a` |
+| `android/huawei/com.torrentfree.app.huawei-v1.25.1-code31.apk` | `1718145b122a60878c802f748dde203ee56ebb82d379430c9773076b48620388` |
+
+## Store status
+
+Submission pending final CI verification. No 1.25.1 package has been submitted yet.

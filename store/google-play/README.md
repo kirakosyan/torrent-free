@@ -4,7 +4,7 @@ Package `com.torrentfree.app`, listed as **Torrent Client - Downloader**.
 
 ## Next release: 1.25.1 preparation
 
-**1.25.1 / code 31** is being prepared locally as a signed Play bundle.
+**1.25.1 / code 31** is prepared and validated locally as a signed Play bundle.
 **Not uploaded, submitted, or published.** The 26 localized notes are in
 `release-notes-1.25.1.txt`; see the [preparation record](../microsoft-store/release-notes-1.25.1.md)
 for package hashes, validation and source traceability.
