@@ -2,11 +2,11 @@
 
 Package `com.torrentfree.app`, listed as **Torrent Client - Downloader**.
 
-## Next release: 1.25 preparation
+## Next release: 1.25.1 preparation
 
-**1.25 / code 30** is prepared locally as a signed Play bundle.
+**1.25.1 / code 31** is being prepared locally as a signed Play bundle.
 **Not uploaded, submitted, or published.** The 26 localized notes are in
-`release-notes-1.25.txt`; see the [preparation record](../microsoft-store/release-notes-1.25.md)
+`release-notes-1.25.1.txt`; see the [preparation record](../microsoft-store/release-notes-1.25.1.md)
 for package hashes, validation and source traceability.
 
 ## Version 1.24 (last verified November 7, 2026)
@@ -73,7 +73,7 @@ also checks the length limits. The Play default language is en-GB (filled from t
 English text). Spanish is written once for `es-419` and `es-ES`; Ukrainian exists only
 on Play.
 
-`release-notes-1.25.txt` uses Play Console's multi-language format and can be pasted
+`release-notes-1.25.1.txt` uses Play Console's multi-language format and can be pasted
 into the production release notes box. The generator retains the 1.16 base listing.
 
 Translations inherit the default graphics, so only the text needs updating per language.

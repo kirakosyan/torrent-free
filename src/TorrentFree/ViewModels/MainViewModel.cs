@@ -686,6 +686,7 @@ public partial class MainViewModel : DownloadListViewModel
 
     public Task ImportTorrentFileFromPathAsync(string filePath)
     {
+        ErrorMessage = null;
         return TryAddTorrentFromFilePathAsync(filePath, notifyDuplicate: false, notifyInvalid: true);
     }
 

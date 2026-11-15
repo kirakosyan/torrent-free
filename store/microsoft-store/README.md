@@ -1,10 +1,10 @@
 # Microsoft Store listings
 
-## Next release: 1.25 preparation
+## Next release: 1.25.1 preparation
 
-**1.25 / build 30 / MSIX 1.25.0.0 (x64 and ARM64)** is prepared locally.
+**1.25.1 / build 31 / MSIX 1.25.1.0 (x64 and ARM64)** is being prepared locally.
 **Not uploaded, submitted, or published.** Localized notes are in
-`release-notes-1.25.json`; see the [preparation record](release-notes-1.25.md)
+`release-notes-1.25.1.json`; see the [preparation record](release-notes-1.25.1.md)
 for package hashes, validation and source traceability.
 
 ## Version 1.24 (last verified November 7, 2026)
@@ -82,7 +82,7 @@ Store and Play length limits and regenerates:
 - `STORE_DESCRIPTION.md` and the Google Play files under `store/google-play`
 
 The generator retains the 1.16 base listing. The current update uses
-`release-notes-1.25.json`. Start with a fresh Partner Center export and replace
+`release-notes-1.25.1.json`. Start with a fresh Partner Center export and replace
 only the `ReleaseNotes` values. Preserve the original non-asset text rows,
 including `Feature*`, `SearchTerm*`, hardware requirements and the
 `OverrideLogosForWin10` flag in the import: omitting these can clear optional

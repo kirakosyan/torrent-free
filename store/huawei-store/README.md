@@ -1,7 +1,7 @@
 # Huawei AppGallery
 
-**Next release: 1.25 / code 30**, prepared locally for ARM64 only. **Not uploaded,
-submitted, or published.** See the [1.25 preparation record](release-notes-1.25.md).
+**Next release: 1.25.1 / code 31**, prepared locally for ARM64 only. **Not uploaded,
+submitted, or published.** See the [1.25.1 preparation record](release-notes-1.25.1.md).
 
 Huawei builds use `-p:AndroidStore=Huawei -p:AppTargetFramework=net10.0-android`.
 This produces an APK with identity `com.torrentfree.app.huawei`.

@@ -1,6 +1,9 @@
 # Version 1.25 preparation record
 
 Prepared November 15, 2026 (Europe/Oslo). **Not uploaded, submitted, or published.**
+Superseded before submission by [1.25.1](release-notes-1.25.1.md) after Windows
+smoke testing found a stale file-import error message. Original packages and tag
+are retained unchanged; do not submit these superseded packages.
 Windows **1.25.0.0**, x64 and ARM64; Android **1.25**, version code **30**.
 No store submission or release tag has been pushed.
 
@@ -62,9 +65,11 @@ This record is a documentation-only follow-up to the package source commit.
 - Builds retain the existing XC0025 XAML binding warning. Windows also reports the
   optional missing `mspdbcmf.exe` tool; no `.appxsym` container was generated.
   The matching managed PDBs are provided separately.
-- **No new 1.25 installation/device smoke test was performed.** These are package
-  and source-test results, not end-to-end qualification of Store delivery, Android
-  exports/chooser/notifications, or the production Windows activation crash.
+- Subsequent x64 Windows smoke testing passed startup, settings, magnet activation,
+  file selection, pause/stop and shutdown, but found a stale import error after a
+  valid file. See the 1.25.1 record for the fix and follow-up qualification.
+  This does not establish Store delivery, Android device behavior, or a fix of
+  the original production activation crash.
 
 ## Artifact hashes
 

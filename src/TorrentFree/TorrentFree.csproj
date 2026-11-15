@@ -31,15 +31,15 @@
 		<ApplicationId>com.torrentfree.app</ApplicationId>
 
 		<!-- Versions -->
-		<AppDisplayVersion>1.25</AppDisplayVersion>
-		<AppBuildNumber>30</AppBuildNumber>
+		<AppDisplayVersion>1.25.1</AppDisplayVersion>
+		<AppBuildNumber>31</AppBuildNumber>
 		<ApplicationDisplayVersion>$(AppDisplayVersion)</ApplicationDisplayVersion>
 		<ApplicationVersion>$(AppBuildNumber)</ApplicationVersion>
 		<AndroidVersionName>$(AppDisplayVersion)</AndroidVersionName>
 		<AndroidVersionCode>$(AppBuildNumber)</AndroidVersionCode>
 		<Version>$(AppDisplayVersion).0</Version>
-		<AssemblyVersion>$(AppDisplayVersion).0.0</AssemblyVersion>
-		<FileVersion>$(AppDisplayVersion).0.0</FileVersion>
+		<AssemblyVersion>$(Version)</AssemblyVersion>
+		<FileVersion>$(Version)</FileVersion>
 		<InformationalVersion>$(AppDisplayVersion)</InformationalVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
