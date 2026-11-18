@@ -25,6 +25,7 @@ internal sealed class CoreServiceFixture : IAsyncDisposable
         Engine = new ClientEngine(new EngineSettingsBuilder
         {
             CacheDirectory = Path.Combine(Directory.Path, "engine"),
+            FastResumeMode = FastResumeMode.Accurate,
             AllowPortForwarding = false,
             AllowLocalPeerDiscovery = false,
             DhtEndPoint = null,

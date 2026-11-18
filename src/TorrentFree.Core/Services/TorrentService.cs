@@ -131,6 +131,7 @@ public interface ITorrentService : IDisposable, IAsyncDisposable
 /// </summary>
 public partial class TorrentService : ITorrentService
 {
+    private static readonly TimeSpan ManagerStartupTransitionTimeout = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan ManagerStopTimeout = TimeSpan.FromSeconds(2);
     private static readonly Uri[] PublicTrackers =
     [
@@ -3217,6 +3218,9 @@ public partial class TorrentService : ITorrentService
         var builder = new EngineSettingsBuilder
         {
             CacheDirectory = cacheDirectory,
+            // BestEffort writes the resume file in the background on the first transfer
+            // tick, racing a user's immediate stop. Accurate saves it on a clean stop.
+            FastResumeMode = FastResumeMode.Accurate,
             // UPnP/NAT-PMP opens an inbound port on the router and advertises our address.
             AllowPortForwarding = !useProxy,
             // DHT is UDP and announces our IP to the swarm; disable it (and its cache) when proxied.
@@ -3449,8 +3453,65 @@ public partial class TorrentService : ITorrentService
                 await StopManagerCoreAsync(manager).ConfigureAwait(false);
         });
 
-    protected virtual Task StopManagerCoreAsync(TorrentManager manager)
-        => manager.StopAsync(ManagerStopTimeout);
+    protected virtual async Task StopManagerCoreAsync(TorrentManager manager)
+    {
+        static bool IsHashing(TorrentState state) => state is TorrentState.Hashing or TorrentState.HashingPaused;
+        static bool IsTransferMode(TorrentState state) => state is TorrentState.Downloading or TorrentState.Seeding
+            or TorrentState.FetchingHashes or TorrentState.Error;
+
+        if (manager.State != TorrentState.Starting && !IsHashing(manager.State))
+        {
+            await manager.StopAsync(ManagerStopTimeout).ConfigureAwait(false);
+            return;
+        }
+
+        // MonoTorrent 3.0.2 returns from StartAsync before startup has finished writing
+        // fast resume data and installing its transfer mode. Observe both transitions
+        // before inspecting the state so an immediate stop cannot miss either one.
+        var leftStarting = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var enteredTransfer = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        void Observe(TorrentState state)
+        {
+            if (state != TorrentState.Starting) leftStarting.TrySetResult();
+            if (IsTransferMode(state)) enteredTransfer.TrySetResult();
+        }
+        void OnStateChanged(object? sender, TorrentStateChangedEventArgs args) => Observe(args.NewState);
+        manager.TorrentStateChanged += OnStateChanged;
+        try
+        {
+            Observe(manager.State);
+            await leftStarting.Task.WaitAsync(ManagerStartupTransitionTimeout).ConfigureAwait(false);
+            if (IsHashing(manager.State))
+            {
+                if (!manager.HashChecked)
+                {
+                    // A long-running hash must remain interruptible. If it finishes during
+                    // the stop, startup still owns its final transfer-mode transition.
+                    try
+                    {
+                        await manager.StopAsync(ManagerStopTimeout).ConfigureAwait(false);
+                    }
+                    catch (ObjectDisposedException) when (manager.HashChecked && IsTransferMode(manager.State))
+                    {
+                        // Startup replaced and disposed MonoTorrent's stopping mode.
+                    }
+                    catch (IOException ex) when (OperatingSystem.IsWindows() && manager.HashChecked
+                        && ex.HResult == unchecked((int)0x80070020))
+                    {
+                        // On Windows the two fast-resume writes can instead collide.
+                        // Only recover if there is a replacement mode to stop and persist.
+                        await enteredTransfer.Task.WaitAsync(ManagerStartupTransitionTimeout).ConfigureAwait(false);
+                        if (manager.State == TorrentState.Stopped) throw;
+                    }
+                    if (!manager.HashChecked) return;
+                }
+                await enteredTransfer.Task.WaitAsync(ManagerStartupTransitionTimeout).ConfigureAwait(false);
+            }
+            if (TorrentManagerStateRules.RequiresFullStop(manager.State))
+                await manager.StopAsync(ManagerStopTimeout).ConfigureAwait(false);
+        }
+        finally { manager.TorrentStateChanged -= OnStateChanged; }
+    }
 
     private Task PauseManagerAsync(TorrentManager manager)
         => TorrentManagerStateRules.CanPauseInPlace(manager.State)

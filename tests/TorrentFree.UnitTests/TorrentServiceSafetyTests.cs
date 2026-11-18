@@ -344,6 +344,7 @@ public sealed class TorrentServiceSafetyTests
 
         try
         {
+            Assert.Equal(MonoTorrent.Client.FastResumeMode.Accurate, engine.Settings.FastResumeMode);
             Assert.False(engine.Settings.AllowPortForwarding);
             Assert.False(engine.Settings.AllowLocalPeerDiscovery);
             Assert.Null(engine.Settings.DhtEndPoint);

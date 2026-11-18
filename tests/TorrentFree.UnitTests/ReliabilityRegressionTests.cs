@@ -251,6 +251,58 @@ public sealed class ReliabilityRegressionTests
         Assert.Empty(fixture.Engine.Torrents);
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ImmediateStop_FullyStopsPrivateTorrent_AndPersistsStoppedState(bool existingPayload)
+    {
+        await using var fixture = new CoreServiceFixture();
+        await fixture.Service.InitializeAsync();
+        var metadata = await fixture.PrepareTorrentAsync(isPrivate: true);
+        if (!existingPayload)
+            File.Delete(Path.Combine(fixture.Storage.GetDefaultDownloadPath(), "payload.bin"));
+        var item = (await fixture.Service.AddTorrentFileAsync(metadata))!;
+
+        // Cover both first-start hashing and restart with cached fast-resume data.
+        for (var start = 0; start < 3; start++)
+        {
+            await fixture.Service.StartTorrentAsync(item);
+            await fixture.Service.StopTorrentAsync(item);
+            Assert.Equal(TorrentState.Stopped, Assert.Single(fixture.Engine.Torrents).State);
+            Assert.Equal(DownloadStatus.Stopped, item.Status);
+            Assert.Equal(DownloadStatus.Stopped, Assert.Single(await fixture.Storage.LoadTorrentsAsync()).Status);
+        }
+    }
+
+    [Fact]
+    public async Task StopDuringInitialHash_DoesNotWaitForAllPieces()
+    {
+        await using var fixture = new CoreServiceFixture();
+        await fixture.Service.InitializeAsync();
+        await fixture.Engine.UpdateSettingsAsync(new EngineSettingsBuilder(fixture.Engine.Settings)
+        {
+            MaximumDiskReadRate = 16 * 1024
+        }.ToSettings());
+        var path = Path.Combine(fixture.Storage.GetDefaultDownloadPath(), "slow-hash.bin");
+        await File.WriteAllBytesAsync(path, new byte[4 * 1024 * 1024], TestContext.Current.CancellationToken);
+        var creator = new MonoTorrent.TorrentCreator(MonoTorrent.TorrentType.V1Only) { Private = true };
+        var bytes = await creator.CreateAsync(new MonoTorrent.TorrentFileSource(path), TestContext.Current.CancellationToken);
+        var metadata = await new TorrentImportService(fixture.Directory.StoragePaths, new TorrentFileParser())
+            .PrepareAsync(new TorrentPickedFile("slow-hash.torrent", null, bytes.Encode()), TestContext.Current.CancellationToken);
+        var item = (await fixture.Service.AddTorrentFileAsync(metadata))!;
+
+        await fixture.Service.StartTorrentAsync(item);
+        var manager = Assert.Single(fixture.Engine.Torrents);
+        using var deadline = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+        deadline.CancelAfter(TimeSpan.FromSeconds(10));
+        while (manager.State != TorrentState.Hashing)
+            await Task.Delay(10, deadline.Token);
+        await fixture.Service.StopTorrentAsync(item).WaitAsync(deadline.Token);
+        Assert.False(manager.HashChecked);
+        Assert.Equal(TorrentState.Stopped, manager.State);
+        Assert.Equal(DownloadStatus.Stopped, item.Status);
+    }
+
     [Fact]
     public async Task PrivateImport_StartsWithPrivateMetadata_AndCannotFallBackAfterCacheLoss()
     {
