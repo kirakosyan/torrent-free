@@ -18,8 +18,8 @@ public sealed class VersionMetadataConsistencyTests
         var csproj = XDocument.Load(csprojPath);
         var manifest = XDocument.Load(manifestPath);
 
-        Assert.Equal("1.25.1", GetProjectProperty(csproj, "AppDisplayVersion"));
-        Assert.Equal("31", GetProjectProperty(csproj, "AppBuildNumber"));
+        Assert.Equal("1.25.2", GetProjectProperty(csproj, "AppDisplayVersion"));
+        Assert.Equal("32", GetProjectProperty(csproj, "AppBuildNumber"));
         Assert.Equal("$(AppDisplayVersion)", GetProjectProperty(csproj, "ApplicationDisplayVersion"));
         Assert.Equal("$(AppBuildNumber)", GetProjectProperty(csproj, "ApplicationVersion"));
         Assert.Equal("$(AppDisplayVersion)", GetProjectProperty(csproj, "AndroidVersionName"));
@@ -43,7 +43,7 @@ public sealed class VersionMetadataConsistencyTests
         var identity = manifest.Root?.Element(manifestNs + "Identity");
 
         Assert.NotNull(identity);
-        Assert.Equal("1.25.1.0", (string?)identity!.Attribute("Version"));
+        Assert.Equal("1.25.2.0", (string?)identity!.Attribute("Version"));
     }
 
     private static string GetProjectProperty(XDocument document, string propertyName)
