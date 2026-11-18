@@ -147,6 +147,7 @@ public sealed class TorrentServiceSafetyTests
         var storage = new TestStorageService(downloadDirectory);
         await using var service = CreateService(storage);
         var torrent = CreateTorrent("metadata-owned", "family-photos", downloadDirectory, DownloadStatus.Queued);
+        torrent.CreatedPayloadPaths = ownedPaths;
         torrent.InfoHash = metadata.InfoHashes.V1?.ToHex() ?? metadata.InfoHashes.V2!.ToHex();
         torrent.MagnetLink = $"magnet:?xt=urn:btih:{torrent.InfoHash}";
         torrent.TorrentFilePath = torrentFilePath;

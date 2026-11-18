@@ -42,6 +42,11 @@ public partial class TorrentItem : ObservableObject
     public bool? IsPrivate { get; set; }
     public bool ImportedFromFile { get; set; }
 
+    // The single file or containing directory reserved before registering a payload manager.
+    public string? ReservedPayloadPath { get; set; }
+    // Only files exclusively created by TorrentFree may be deleted during removal.
+    public string[] CreatedPayloadPaths { get; set; } = [];
+
     /// <summary>
     /// Total size of the download in bytes.
     /// </summary>

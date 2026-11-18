@@ -44,6 +44,23 @@ internal sealed class CoreServiceFixture : IAsyncDisposable
             new TorrentPickedFile(name + ".torrent", providerPath, await File.ReadAllBytesAsync(torrentPath)));
     }
 
+    internal static TorrentItem CreateLocalTorrent(IStorageService storage, string name, DownloadStatus status)
+    {
+        // Provide real, local metadata for lifecycle tests that exercise manager admission.
+        var sourceRoot = Path.Combine(storage.GetAppDataPath(), "test-source");
+        System.IO.Directory.CreateDirectory(sourceRoot);
+        var source = Path.Combine(sourceRoot, name);
+        File.WriteAllText(source, name);
+        var metadataPath = source + ".torrent";
+        new TorrentCreator(TorrentType.V1Only).Create(new TorrentFileSource(source), metadataPath);
+        var hash = Torrent.Load(metadataPath).InfoHashes.V1!.ToHex();
+        return new TorrentItem
+        {
+            InfoHash = hash, MagnetLink = $"magnet:?xt=urn:btih:{hash}", CachedTorrentFilePath = metadataPath,
+            Name = name, SavePath = storage.GetDefaultDownloadPath(), Status = status
+        };
+    }
+
     public static async Task WaitUntilAsync(Func<bool> condition)
     {
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));

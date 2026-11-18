@@ -714,7 +714,8 @@ public partial class TorrentService : ITorrentService
                 && proxyRebuildToken.IsCancellationRequested;
             var metadataInterrupted = ex is MetadataPreviewInterruptedException;
             var waitingForWifi = ex is WifiUnavailableException || (metadataInterrupted && NetworkBlocked);
-            if (metadataInterrupted && !waitingForWifi && !_backgroundExecutionSuspended)
+            var manuallyInterrupted = ex is MetadataPreviewInterruptedException { Manual: true };
+            if (metadataInterrupted && !manuallyInterrupted && !waitingForWifi && !_backgroundExecutionSuspended)
                 _proxyRebuildPendingResumeIds[torrent.Id] = 0;
 
             if (_downloadTokens.TryRemove(torrent.Id, out var failedCts))
@@ -741,6 +742,10 @@ public partial class TorrentService : ITorrentService
                     System.Diagnostics.Debug.WriteLine($"Start rollback cleanup error for '{torrent.Name}' ({torrent.Id}): {cleanupEx}");
                 }
             }
+
+            // The waiting Pause, Stop or Remove owns the next state transition and
+            // starts the next queued torrent after releasing this slot.
+            if (manuallyInterrupted) return;
 
             await _dispatcher.InvokeAsync(() =>
             {
@@ -873,7 +878,7 @@ public partial class TorrentService : ITorrentService
     /// <inheritdoc />
     public async Task PauseTorrentAsync(TorrentItem torrent)
     {
-        await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalToken))
+        await using (await AcquireControlLockAsync(torrent.Id))
         {
             // A rebuild temporarily marks an active torrent Queued between teardown and
             // restart. Preserve a Pause click which lands in that narrow window.
@@ -916,7 +921,7 @@ public partial class TorrentService : ITorrentService
     /// <inheritdoc />
     public async Task StopTorrentAsync(TorrentItem torrent)
     {
-        await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalToken))
+        await using (await AcquireControlLockAsync(torrent.Id))
         {
             if (!torrent.CanStop)
             {
@@ -1165,7 +1170,7 @@ public partial class TorrentService : ITorrentService
         ArgumentNullException.ThrowIfNull(torrent);
 
         TorrentRemovalResult result;
-        await using (await _torrentOperationLock.AcquireAsync(torrent.Id, _disposalToken))
+        await using (await AcquireControlLockAsync(torrent.Id))
         {
             if (!IsTracked(torrent)) return TorrentRemovalResult.NotRemoved;
 
@@ -1238,9 +1243,10 @@ public partial class TorrentService : ITorrentService
                 if (deleteFiles)
                 {
                     filesLeftInPlace = ownedDownloadFiles.Paths.Count == 0
-                        ? MayHaveDownloadedData(torrent)
+                        ? MayHaveDownloadedData(torrent) || (torrent.CreatedPayloadPaths?.Any(File.Exists) == true)
                         : !DeleteOwnedDownloadFiles(ownedDownloadFiles, torrent.TorrentFilePath,
-                            deleteTorrentFile && !torrentFileLeftInPlace, protectedFiles);
+                            deleteTorrentFile && !torrentFileLeftInPlace, protectedFiles,
+                            (torrent.CreatedPayloadPaths ?? []).ToHashSet(GetPathComparer()));
                 }
 
                 if (!removedFromEngine)
@@ -1411,8 +1417,13 @@ public partial class TorrentService : ITorrentService
                 : Path.Combine(basePath, EscapeTorrentPath(metadata.Name));
 
             var paths = new HashSet<string>(GetPathComparer());
+            var created = (torrent.CreatedPayloadPaths ?? []).ToHashSet(GetPathComparer());
             foreach (var file in metadata.Files)
-                paths.Add(Path.Combine(containingDirectory, EscapeTorrentFilePath(file.Path)));
+            {
+                var path = Path.Combine(containingDirectory, EscapeTorrentFilePath(file.Path));
+                paths.Add(path);
+                if (created.Contains(path + ".!mt")) paths.Add(path + ".!mt");
+            }
 
             return new OwnedDownloadFiles(basePath, paths.ToArray());
         }
@@ -1513,7 +1524,7 @@ public partial class TorrentService : ITorrentService
 
     /// <returns><see langword="false"/> when an owned file remains on disk.</returns>
     private static bool DeleteOwnedDownloadFiles(OwnedDownloadFiles ownedFiles, string? torrentFilePath,
-        bool deleteTorrentFile, ProtectedDownloadFiles protectedFiles)
+        bool deleteTorrentFile, ProtectedDownloadFiles protectedFiles, HashSet<string> createdPaths)
     {
         if (string.IsNullOrWhiteSpace(ownedFiles.BaseDirectory) || ownedFiles.Paths.Count == 0)
         {
@@ -1545,7 +1556,7 @@ public partial class TorrentService : ITorrentService
                     continue;
                 }
 
-                if (protectedFiles.Contains(fullPath))
+                if (!createdPaths.Contains(fullPath) || protectedFiles.Contains(fullPath))
                 {
                     allDeleted = false;
                     continue;
@@ -3329,8 +3340,9 @@ public partial class TorrentService : ITorrentService
         if (_managers.TryGetValue(torrent.Id, out var existing))
         {
             await WaitForManagerStopAsync(existing);
-            if (torrent.SelectedFilePaths is null || existing.HasMetadata)
+            if (existing.Torrent is { } existingMetadata)
             {
+                await PreparePayloadDestinationAsync(torrent, existingMetadata, existing.Engine!.Settings.UsePartialFiles);
                 await ApplyFileSelectionAsync(existing, torrent.SelectedFilePaths);
                 return existing;
             }
@@ -3364,35 +3376,14 @@ public partial class TorrentService : ITorrentService
             MaximumUploadRate = ToRate(uploadLimit),
         }.ToSettings();
 
-        Torrent? metadata = null;
-        var metadataPath = GetMetadataPath(torrent) ?? FindEngineMetadataCachePath(torrent);
-        if (torrent.SelectedFilePaths is not null)
-            metadata = await LoadFileSelectionMetadataAsync(torrent, cancellationToken, rebuildRestart);
-        else if (metadataPath is not null)
+        var metadata = await LoadFileSelectionMetadataAsync(torrent, cancellationToken, rebuildRestart);
+        if (torrent.IsPrivate != metadata.IsPrivate)
         {
-            try { metadata = await LoadTorrentFileBoundedAsync(metadataPath, torrent); }
-            catch (Exception ex) when (ex is IOException or InvalidDataException or FormatException or UnauthorizedAccessException or TorrentException)
-            {
-                System.Diagnostics.Debug.WriteLine($"Failed to load .torrent metadata: {ex.Message}");
-            }
+            await _dispatcher.InvokeAsync(() => torrent.IsPrivate = metadata.IsPrivate);
+            await SaveAsync();
         }
-
-        TorrentManager manager;
-        if (metadata is not null)
-        {
-            if (torrent.IsPrivate != metadata.IsPrivate)
-            {
-                await _dispatcher.InvokeAsync(() => torrent.IsPrivate = metadata.IsPrivate);
-                await SaveAsync();
-            }
-            manager = await engine.AddAsync(metadata, downloadPath, torrentSettings);
-        }
-        else
-        {
-            EnsureMagnetFallbackAllowed(torrent);
-            manager = await engine.AddAsync(MagnetLink.Parse(torrent.MagnetLink), downloadPath, torrentSettings);
-            if (!ProxyRequested) await AddPublicTrackersIfNeededAsync(manager, torrent.MagnetLink);
-        }
+        await PreparePayloadDestinationAsync(torrent, metadata, engine.Settings.UsePartialFiles);
+        var manager = await engine.AddAsync(metadata, torrent.SavePath, torrentSettings);
 
         _managers[torrent.Id] = manager;
         await ApplyFileSelectionAsync(manager, torrent.SelectedFilePaths);
@@ -3458,26 +3449,6 @@ public partial class TorrentService : ITorrentService
         => TorrentManagerStateRules.CanPauseInPlace(manager.State)
             ? manager.PauseAsync()
             : StopManagerAsync(manager);
-
-    private static async Task AddPublicTrackersIfNeededAsync(TorrentManager manager, string magnetLink)
-    {
-        if (!MagnetTrackerBootstrapRules.ShouldAddPublicTrackers(magnetLink) || manager.TrackerManager.Private)
-        {
-            return;
-        }
-
-        foreach (var tracker in PublicTrackers)
-        {
-            try
-            {
-                await manager.TrackerManager.AddTrackerAsync(tracker);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Failed to add bootstrap tracker {tracker}: {ex.Message}");
-            }
-        }
-    }
 
     public void Dispose()
     {

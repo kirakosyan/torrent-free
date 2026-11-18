@@ -117,11 +117,13 @@ public sealed class ReliabilityRegressionTests
     {
         await using var fixture = new CoreServiceFixture(serviceFactory: (storage, notifications, background, time) =>
             new RegisterWithoutNetwork(storage, notifications, background, time));
+        var metadata = await fixture.PrepareTorrentAsync();
+        ((RegisterWithoutNetwork)fixture.Service).Metadata = metadata.CachedContent!;
         var cache = Path.Combine(fixture.Directory.Path, "missing.torrent");
         if (corruptCache) await File.WriteAllTextAsync(cache, "not torrent metadata", TestContext.Current.CancellationToken);
         var item = new TorrentItem
         {
-            MagnetLink = "magnet:?xt=urn:btih:0123456789abcdef0123456789abcdef01234567",
+            MagnetLink = $"magnet:?xt=urn:btih:{metadata.InfoHashHex}",
             CachedTorrentFilePath = cache, SavePath = fixture.Storage.GetDefaultDownloadPath(),
             Status = DownloadStatus.Downloading, IsPrivate = null, ImportedFromFile = false
         };
@@ -196,6 +198,9 @@ public sealed class ReliabilityRegressionTests
         IBackgroundDownloadService background, TimeProvider time)
         : TorrentService(storage, notifications, background, ImmediateDispatcher.Instance, time)
     {
+        public byte[] Metadata { get; set; } = [];
+        protected override Task<ReadOnlyMemory<byte>> DownloadFileSelectionMetadataAsync(ClientEngine engine, MonoTorrent.MagnetLink magnet, CancellationToken cancellationToken)
+            => Task.FromResult<ReadOnlyMemory<byte>>(Metadata);
         protected override Task StartManagerAsync(TorrentManager manager) => Task.CompletedTask;
     }
 

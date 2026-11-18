@@ -1,11 +1,9 @@
-using Microsoft.Maui.ApplicationModel;
 using TorrentFree.Services;
 
 namespace TorrentFree;
 
 public partial class AboutPage : ContentPage
 {
-    private static readonly Uri PatreonUri = new("https://www.patreon.com/16981794/join");
     private readonly IAppStore _appStore;
     private bool _openingLink;
     private bool _closing;
@@ -15,26 +13,29 @@ public partial class AboutPage : ContentPage
         InitializeComponent();
         _appStore = appStore;
         AboutMessageLabel.Text = aboutMessage;
+#if WINDOWS
+        AboutActions.Add(new WindowsDonationPanel(this));
+#endif
 #if !WINDOWS && !ANDROID
         FeedbackButton.IsVisible = false;
 #endif
     }
 
-    private async void OnPatreonClicked(object? sender, EventArgs e) =>
-        await OpenInBrowserAsync(PatreonUri);
+    private async void OnFeedbackClicked(object? sender, EventArgs e) =>
+        await OpenExternalActionAsync(() => _appStore.OpenReviewPageAsync(), "StoreActionError");
 
-    private async void OnFeedbackClicked(object? sender, EventArgs e)
+    internal async Task OpenExternalActionAsync(Func<Task<bool>> open, string errorResource)
     {
         if (_openingLink) return;
         _openingLink = true;
         FeedbackButton.IsEnabled = false;
         try
         {
-            if (await _appStore.OpenReviewPageAsync()) return;
+            if (await open()) return;
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Opening store feedback failed: {ex}");
+            System.Diagnostics.Debug.WriteLine($"Opening About page link failed: {ex}");
         }
         finally
         {
@@ -46,42 +47,12 @@ public partial class AboutPage : ContentPage
         {
             await DisplayAlertAsync(
                 LocalizationResourceManager.Instance["AboutTitle"],
-                LocalizationResourceManager.Instance["StoreActionError"],
+                LocalizationResourceManager.Instance[errorResource],
                 LocalizationResourceManager.Instance["OK"]);
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Showing store feedback error failed: {ex}");
-        }
-    }
-
-    private async Task OpenInBrowserAsync(Uri uri)
-    {
-        if (_openingLink) return;
-        _openingLink = true;
-        try
-        {
-            if (await Browser.Default.OpenAsync(uri, BrowserLaunchMode.External)) return;
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Opening external browser failed: {ex}");
-        }
-        finally
-        {
-            _openingLink = false;
-        }
-
-        try
-        {
-            await DisplayAlertAsync(
-                LocalizationResourceManager.Instance["AboutTitle"],
-                LocalizationResourceManager.Instance["ErrorOpenBrowser"],
-                LocalizationResourceManager.Instance["OK"]);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Showing browser error failed: {ex}");
+            System.Diagnostics.Debug.WriteLine($"Showing About page link error failed: {ex}");
         }
     }
 

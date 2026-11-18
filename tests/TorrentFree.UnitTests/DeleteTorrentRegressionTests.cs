@@ -56,8 +56,10 @@ public sealed class DeleteTorrentRegressionTests
 
         if (startTorrent)
         {
+            File.Delete(payloadPath);
             await fixture.Service.StartTorrentAsync(torrent);
-            await CoreServiceFixture.WaitUntilAsync(() => torrent.Status == DownloadStatus.Seeding);
+            await fixture.Service.StopTorrentAsync(torrent);
+            await File.WriteAllBytesAsync(payloadPath, payloadBytes, TestContext.Current.CancellationToken);
             Assert.Single(fixture.Engine.Torrents);
         }
 
@@ -69,14 +71,14 @@ public sealed class DeleteTorrentRegressionTests
         var result = new DeleteTorrentDialogResult(dialog.DeleteTorrentFile, dialog.DeleteDownloadedFiles);
         var removal = await fixture.Service.RemoveTorrentAsync(torrent, result.DeleteTorrentFile, result.DeleteDownloadedFiles);
         Assert.True(removal.Removed);
-        Assert.False(removal.DownloadedFilesLeftInPlace);
+        Assert.Equal(deleteDownloadedFiles && !startTorrent, removal.DownloadedFilesLeftInPlace);
         Assert.False(removal.TorrentFileLeftInPlace);
 
         Assert.Empty(fixture.Service.Torrents);
         Assert.Empty(fixture.Engine.Torrents);
         Assert.Empty(await fixture.Storage.LoadTorrentsAsync());
         Assert.Equal(!deleteTorrentFile, File.Exists(sourcePath));
-        Assert.Equal(!deleteDownloadedFiles, File.Exists(payloadPath));
+        Assert.Equal(!deleteDownloadedFiles || !startTorrent, File.Exists(payloadPath));
         if (!deleteTorrentFile)
             Assert.Equal(sourceBytes, await File.ReadAllBytesAsync(sourcePath, TestContext.Current.CancellationToken));
         if (!deleteDownloadedFiles)

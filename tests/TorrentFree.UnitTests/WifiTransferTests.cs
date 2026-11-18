@@ -285,21 +285,14 @@ public sealed class WifiTransferTests
         }
 
         public TorrentItem CreateItem(DownloadStatus status)
-        {
-            var hash = Guid.NewGuid().ToString("N") + "01234567";
-            return new TorrentItem
-            {
-                InfoHash = hash,
-                MagnetLink = $"magnet:?xt=urn:btih:{hash}&dn=test&tr=http%3A%2F%2F127.0.0.1%3A1%2Fannounce",
-                Status = status,
-                SavePath = Storage.GetDefaultDownloadPath()
-            };
-        }
+            => CoreServiceFixture.CreateLocalTorrent(Storage, Guid.NewGuid().ToString("N") + ".bin", status);
 
         public async Task<TorrentItem> AddAsync()
         {
-            var hash = Guid.NewGuid().ToString("N") + "01234567";
-            return (await Service.AddTorrentAsync($"magnet:?xt=urn:btih:{hash}&dn=test&tr=http%3A%2F%2F127.0.0.1%3A1%2Fannounce"))!;
+            var local = CreateItem(DownloadStatus.Queued);
+            var item = (await Service.AddTorrentAsync(local.MagnetLink))!;
+            item.CachedTorrentFilePath = local.CachedTorrentFilePath;
+            return item;
         }
 
         public async Task SetWifiAsync(bool wifi)

@@ -6,6 +6,7 @@ public partial class TorrentService
 {
     private readonly ITransferNetworkMonitor? _networkMonitor;
     private readonly SemaphoreSlim _networkPolicyLock = new(1, 1);
+    private readonly SemaphoreSlim _networkResumeLock = new(1, 1);
     private volatile bool _wifiOnly;
     private volatile bool _networkPolicyReady;
     private volatile bool _networkSuspending;
@@ -16,7 +17,7 @@ public partial class TorrentService
     public async Task UpdateWifiOnlyAsync(bool enabled)
     {
         var revision = Interlocked.Increment(ref _networkSettingsRevision);
-        await InitializeAsync();
+        if (!_networkPolicyReady) await InitializeAsync();
         if (revision != Interlocked.Read(ref _networkSettingsRevision) || _disposed) return;
         _wifiOnly = enabled;
         await ReconcileNetworkPolicyAsync();
@@ -30,6 +31,11 @@ public partial class TorrentService
 
     private async Task ReconcileNetworkPolicyAsync()
     {
+        if (NetworkBlocked)
+        {
+            lock (_engineRebuildStateGate)
+                foreach (var preview in _metadataPreviews.Values) preview.Interrupt();
+        }
         await _networkPolicyLock.WaitAsync(_disposalToken).ConfigureAwait(false);
         try
         {
@@ -61,30 +67,34 @@ public partial class TorrentService
                 }
                 await SaveAsync();
             }
-
-            if (!NetworkBlocked)
-            {
-                foreach (var torrent in GetNetworkPolicySnapshot())
-                {
-                    if (NetworkBlocked || _disposed) break;
-                    // Recheck under the torrent lock: a manual pause/stop or removal after
-                    // this snapshot must win over automatic resume.
-                    if (torrent.Status != DownloadStatus.WaitingForWifi) continue;
-                    try
-                    {
-                        await StartTorrentIfStatusAsync(torrent, DownloadStatus.WaitingForWifi);
-                    }
-                    catch (Exception ex) when (!_disposed)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Wi-Fi resume failed for '{torrent.Name}': {ex.Message}");
-                    }
-                }
-            }
         }
         finally
         {
             _networkPolicyLock.Release();
         }
+
+        if (NetworkBlocked) return;
+        // Repeated reconnects can share the completed result; a loss never waits for this lock.
+        await _networkResumeLock.WaitAsync(_disposalToken).ConfigureAwait(false);
+        try
+        {
+            foreach (var torrent in GetNetworkPolicySnapshot())
+            {
+                if (NetworkBlocked || _disposed) break;
+                // Recheck under the torrent lock: a manual pause/stop or removal after
+                // this snapshot must win over automatic resume.
+                if (torrent.Status != DownloadStatus.WaitingForWifi) continue;
+                try
+                {
+                    await StartTorrentIfStatusAsync(torrent, DownloadStatus.WaitingForWifi);
+                }
+                catch (Exception ex) when (!_disposed)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Wi-Fi resume failed for '{torrent.Name}': {ex.Message}");
+                }
+            }
+        }
+        finally { _networkResumeLock.Release(); }
     }
 
     private List<TorrentItem> GetNetworkPolicySnapshot()

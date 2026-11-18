@@ -175,15 +175,7 @@ public sealed class TorrentServiceRebuildConcurrencyTests
     private static TorrentItem CreateTorrent(
         StubStorageService storage,
         string infoHash = "0123456789abcdef0123456789abcdef01234567")
-        => new()
-        {
-            Id = Guid.NewGuid().ToString("N"),
-            Name = "Concurrency test",
-            MagnetLink = $"magnet:?xt=urn:btih:{infoHash}",
-            InfoHash = infoHash,
-            SavePath = storage.GetDefaultDownloadPath(),
-            Status = DownloadStatus.Queued
-        };
+        => CoreServiceFixture.CreateLocalTorrent(storage, infoHash + ".bin", DownloadStatus.Queued);
 
     private static Task InvokePrivateTask(object instance, string methodName)
     {

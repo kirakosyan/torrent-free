@@ -63,8 +63,9 @@ public static class AppSettingsFactory
         updated.ProxyHost = proxyHost ?? string.Empty;
         updated.ProxyPort = proxyPort is > 0 and <= 65535 ? proxyPort : 1080;
         updated.ProxyUsername = proxyUsername ?? string.Empty;
-        updated.ProxyPassword = (keepExistingPassword ? existing.ProxyPassword : proxyPassword) ?? string.Empty;
-        updated.ProxyPasswordUnavailable = keepExistingPassword && existing.ProxyPasswordUnavailable;
+        var canReusePassword = keepExistingPassword && existing.HasSameProxyEndpoint(updated);
+        updated.ProxyPassword = (canReusePassword ? existing.ProxyPassword : proxyPassword) ?? string.Empty;
+        updated.ProxyPasswordUnavailable = keepExistingPassword && (!canReusePassword || existing.ProxyPasswordUnavailable);
         updated.Language = language;
         updated.Theme = ThemeSettings.Normalize(theme);
         updated.KeepDeviceAwake = keepDeviceAwake ?? existing.KeepDeviceAwake;

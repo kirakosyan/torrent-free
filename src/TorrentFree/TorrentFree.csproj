@@ -97,6 +97,11 @@
 		<AssemblyMetadata Include="BuildNumber" Value="$(AppBuildNumber)" />
 	</ItemGroup>
 
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'windows'">
+		<MauiXaml Remove="Controls\WindowsDonationPanel.xaml" />
+		<Compile Remove="Controls\WindowsDonationPanel.xaml.cs" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#0A0E27" />

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:helpers="clr-namespace:TorrentFree.Helpers"
+             x:Class="TorrentFree.WindowsDonationPanel">
+    <Border Padding="20" StrokeThickness="0"
+            BackgroundColor="{AppThemeBinding Light=White, Dark=#1F2937}">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="12"/>
+        </Border.StrokeShape>
+        <VerticalStackLayout Spacing="14">
+            <Label Text="{helpers:Translate SupportProjectTitle, StringFormat='♥ {0}'}"
+                   FontSize="20" FontAttributes="Bold"
+                   TextColor="{AppThemeBinding Light=#B42345, Dark=#FDA4AF}"
+                   SemanticProperties.HeadingLevel="Level2"/>
+            <Label Text="{helpers:Translate SupportProjectMessage}"
+                   FontSize="14"/>
+            <Button Clicked="OnPatreonClicked" Text="{helpers:Translate SupportOnPatreon}"
+                    SemanticProperties.Hint="{helpers:Translate OpenInDefaultBrowser}"/>
+        </VerticalStackLayout>
+    </Border>
+</ContentView>

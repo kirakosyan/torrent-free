@@ -22,6 +22,27 @@ public sealed class TorrentFileSelectionTests
     }
 
     [Fact]
+    public async Task RemovingMultiFileSelection_DeletesOnlyNewSelectedFiles()
+    {
+        await using var fixture = new CoreServiceFixture();
+        var torrent = await AddMultiFileTorrentAsync(fixture);
+        var root = Path.Combine(torrent.SavePath, "File selection sample");
+        var existing = Path.Combine(root, "chapter-one.bin");
+        var missing = Path.Combine(root, "chapter-two.bin");
+        var unselected = Path.Combine(root, "cover.bin");
+        await fixture.Service.SetTorrentFileSelectionAsync(torrent, ["chapter-one.bin", "chapter-two.bin"]);
+        await fixture.Service.StartTorrentAsync(torrent);
+        Assert.Equal(missing, Assert.Single(torrent.CreatedPayloadPaths));
+        Assert.True(File.Exists(missing));
+        Assert.False(File.Exists(unselected));
+
+        var result = await fixture.Service.RemoveTorrentAsync(torrent, deleteFiles: true);
+        Assert.True(result.DownloadedFilesLeftInPlace);
+        Assert.True(File.Exists(existing));
+        Assert.False(File.Exists(missing));
+    }
+
+    [Fact]
     public async Task NarrowingCompletedSelection_KeepsCompletionAndUsesSeedCapacity()
     {
         var observer = new CompletionObserver();
@@ -224,7 +245,7 @@ public sealed class TorrentFileSelectionTests
     }
 
     [Fact]
-    public async Task PreviewDeadline_DoesNotApplyToPayloadMetadataStarts()
+    public async Task UnavailableMetadata_AlsoTimesOutDuringPayloadStartup()
     {
         var clock = new PreviewDeadlineClock();
         PreviewService? service = null;
@@ -240,12 +261,10 @@ public sealed class TorrentFileSelectionTests
         var start = service.StartTorrentAsync(torrent);
         await CoreServiceFixture.WaitUntilAsync(() => service.PreviewCalls == 2);
         clock.ExpirePreviewDeadline();
-        Assert.False(service.PreviewToken.IsCancellationRequested);
-        Assert.False(start.IsCompleted);
-        await service.PauseAllForBackgroundTimeoutAsync();
-        await start;
-        Assert.Equal(DownloadStatus.Queued, torrent.Status);
-        Assert.Null(torrent.ErrorMessage);
+        await Assert.ThrowsAsync<TimeoutException>(() => start);
+        Assert.True(service.PreviewToken.IsCancellationRequested);
+        Assert.Equal(DownloadStatus.Failed, torrent.Status);
+        Assert.Empty(fixture.Engine.Torrents);
     }
 
     private static CoreServiceFixture CreateLifecycleFixture() => new(serviceFactory: (storage, notifications, background, clock) =>
@@ -499,6 +518,37 @@ public sealed class TorrentFileSelectionTests
         Assert.Equal(DownloadStatus.Paused, torrent.Status);
     }
 
+    [Fact]
+    public async Task WifiLossDuringAutomaticReconnect_InterruptsMetadataAndClosesTheEngine()
+    {
+        var network = new SwitchableNetwork();
+        PreviewService? service = null;
+        await using var fixture = new CoreServiceFixture(serviceFactory: (storage, notifications, background, clock) =>
+            service = new PreviewService(storage, notifications, background, clock, network));
+        var torrent = await AddMultiFileTorrentAsync(fixture);
+        var files = await service!.GetTorrentFilesAsync(torrent, TestContext.Current.CancellationToken);
+        await service.SetTorrentFileSelectionAsync(torrent, [files[0].Path]);
+        File.Delete(torrent.CachedTorrentFilePath!);
+        await service.UpdateWifiOnlyAsync(true);
+        await service.StartTorrentAsync(torrent);
+        Assert.Equal(DownloadStatus.WaitingForWifi, torrent.Status);
+
+        network.Set(true);
+        await CoreServiceFixture.WaitUntilAsync(() => service.PreviewCalls == 1);
+        network.Set(false);
+        await service.UpdateWifiOnlyAsync(true).WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+        Assert.True(service.PreviewToken.IsCancellationRequested);
+        Assert.Equal(DownloadStatus.WaitingForWifi, torrent.Status);
+        Assert.Null(typeof(TorrentService).GetField("_engine", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(service));
+    }
+
+    private sealed class SwitchableNetwork : ITransferNetworkMonitor
+    {
+        public bool IsWifiConnected { get; private set; }
+        public event EventHandler? Changed;
+        public void Set(bool value) { IsWifiConnected = value; Changed?.Invoke(this, EventArgs.Empty); }
+    }
+
     private static async Task<TorrentItem> AddMultiFileTorrentAsync(CoreServiceFixture fixture)
     {
         var source = Path.Combine(fixture.Directory.Path, "source", "File selection sample");
@@ -518,9 +568,16 @@ public sealed class TorrentFileSelectionTests
         return torrent;
     }
 
-    private sealed class PreviewService(IStorageService storage, INotificationService notifications, IBackgroundDownloadService background, TimeProvider clock)
-        : TorrentService(storage, notifications, background, ImmediateDispatcher.Instance, clock)
+    private sealed class PreviewService(IStorageService storage, INotificationService notifications, IBackgroundDownloadService background, TimeProvider clock, ITransferNetworkMonitor? network = null)
+        : TorrentService(storage, notifications, background, ImmediateDispatcher.Instance, clock, networkMonitor: network)
     {
+        protected override ClientEngine CreateEngine() => new(new EngineSettingsBuilder
+        {
+            CacheDirectory = EngineCacheDirectory,
+            DhtEndPoint = null, AllowPortForwarding = false, AllowLocalPeerDiscovery = false,
+            ListenEndPoints = new Dictionary<string, System.Net.IPEndPoint>()
+        }.ToSettings());
+
         public byte[]? Metadata;
         public int PreviewCalls;
         public CancellationToken PreviewToken;

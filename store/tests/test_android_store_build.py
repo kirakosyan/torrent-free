@@ -47,6 +47,27 @@ class AndroidStoreBuildTests(unittest.TestCase):
                     minimum = json.loads(result.stdout)["Properties"]["SupportedOSPlatformVersion"]
                     self.assertEqual(minimum, "23.0")
 
+    def test_android_builds_exclude_the_donation_panel_and_its_handler(self):
+        shared_about = (PROJECT.parent / "AboutPage.xaml").read_text(encoding="utf-8")
+        windows_panel = (PROJECT.parent / "Controls/WindowsDonationPanel.xaml").read_text(encoding="utf-8")
+        for action in ("SupportOnPatreon", "OnPatreonClicked"):
+            self.assertIn(action, windows_panel)
+            self.assertNotIn(action, shared_about)
+        for store in ("Play", "Galaxy", "Huawei"):
+            with self.subTest(store=store):
+                result = subprocess.run([
+                    "dotnet", "msbuild", str(PROJECT), "-nologo", "-getItem:MauiXaml,Compile",
+                    "-p:TargetFramework=net10.0-android", "-p:AppTargetFramework=net10.0-android",
+                    f"-p:AndroidStore={store}",
+                ], cwd=ROOT, capture_output=True, text=True, timeout=90)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                items = json.loads(result.stdout)["Items"]
+                sources = {Path(item["Identity"].replace("\\", "/")).name
+                           for group in items.values() for item in group}
+                self.assertIn("AboutPage.xaml.cs", sources)
+                self.assertNotIn("WindowsDonationPanel.xaml", sources)
+                self.assertNotIn("WindowsDonationPanel.xaml.cs", sources)
+
     def test_huawei_has_only_arm64_in_debug_and_release(self):
         for configuration in ("Debug", "Release"):
             with self.subTest(configuration=configuration):

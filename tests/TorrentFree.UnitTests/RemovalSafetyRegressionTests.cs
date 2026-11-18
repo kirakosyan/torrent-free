@@ -19,6 +19,7 @@ public sealed class RemovalSafetyRegressionTests
         var sourcePath = Path.Combine(fixture.Directory.Path, "payload.bin.torrent");
         var payloadPath = Path.Combine(fixture.Storage.GetDefaultDownloadPath(), "payload.bin");
         var torrent = (await fixture.Service.AddTorrentFileAsync(metadata with { SourceFilePath = sourcePath }))!;
+        torrent.CreatedPayloadPaths = [Path.Combine(torrent.SavePath, "payload.bin")];
         await fixture.Service.StartTorrentAsync(torrent);
         await CoreServiceFixture.WaitUntilAsync(() => torrent.Status == DownloadStatus.Seeding);
         var service = (RemovalTestService)fixture.Service;
@@ -57,6 +58,7 @@ public sealed class RemovalSafetyRegressionTests
         // other torrent is hash-checking. This test exercises removal, not competing writes.
         first.Status = DownloadStatus.Paused;
         var payload = Path.Combine(first.SavePath, "payload.bin");
+        first.CreatedPayloadPaths = [payload];
         await File.WriteAllTextAsync(payload, "Different torrent with the same payload path", TestContext.Current.CancellationToken);
         var secondPath = Path.Combine(fixture.Directory.Path, "second.torrent");
         await new TorrentCreator(TorrentType.V1Only).CreateAsync(new TorrentFileSource(payload), secondPath, TestContext.Current.CancellationToken);
@@ -79,8 +81,9 @@ public sealed class RemovalSafetyRegressionTests
         Assert.Equal("Different torrent with the same payload path", await File.ReadAllTextAsync(payload, TestContext.Current.CancellationToken));
 
         var finalRemoval = await fixture.Service.RemoveTorrentAsync(second, deleteFiles: true);
-        Assert.False(finalRemoval.DownloadedFilesLeftInPlace);
-        Assert.False(File.Exists(payload));
+        // Referencing another torrent's file never transfers ownership to this entry.
+        Assert.True(finalRemoval.DownloadedFilesLeftInPlace);
+        Assert.True(File.Exists(payload));
     }
 
     [Theory]
@@ -92,6 +95,7 @@ public sealed class RemovalSafetyRegressionTests
         var metadata = await fixture.PrepareTorrentAsync();
         var sourcePath = Path.Combine(fixture.Directory.Path, "payload.bin.torrent");
         var torrent = (await fixture.Service.AddTorrentFileAsync(metadata with { SourceFilePath = sourcePath }))!;
+        torrent.CreatedPayloadPaths = [Path.Combine(torrent.SavePath, "payload.bin")];
         byte[] replacement;
         if (validReplacement)
         {
@@ -119,6 +123,7 @@ public sealed class RemovalSafetyRegressionTests
         var metadata = await fixture.PrepareTorrentAsync();
         var sourcePath = Path.Combine(fixture.Directory.Path, "payload.bin.torrent");
         var selected = (await fixture.Service.AddTorrentFileAsync(metadata with { SourceFilePath = sourcePath }))!;
+        selected.CreatedPayloadPaths = [Path.Combine(selected.SavePath, "payload.bin")];
         var other = (await fixture.Service.AddTorrentAsync("magnet:?xt=urn:btih:0123456789abcdef0123456789abcdef01234567"))!;
         Assert.Equal(selected.SavePath, other.SavePath);
         other.SavePath = fixture.Directory.Path; // Includes both the payload and source metadata.
@@ -160,6 +165,7 @@ public sealed class RemovalSafetyRegressionTests
         var metadata = await fixture.PrepareTorrentAsync();
         var sourcePath = Path.Combine(fixture.Directory.Path, "payload.bin.torrent");
         var selected = (await fixture.Service.AddTorrentFileAsync(metadata with { SourceFilePath = sourcePath }))!;
+        selected.CreatedPayloadPaths = [Path.Combine(selected.SavePath, "payload.bin")];
         Assert.Equal(restored.SavePath, selected.SavePath);
         if (startSelected)
         {
@@ -188,6 +194,7 @@ public sealed class RemovalSafetyRegressionTests
         var metadata = await fixture.PrepareTorrentAsync();
         var source = Path.Combine(fixture.Directory.Path, "payload.bin.torrent");
         var torrent = (await service.AddTorrentFileAsync(metadata with { SourceFilePath = source }))!;
+        torrent.CreatedPayloadPaths = [Path.Combine(torrent.SavePath, "payload.bin")];
         await service.StartTorrentAsync(torrent);
         await CoreServiceFixture.WaitUntilAsync(() => fixture.Engine.Torrents.Single().State == TorrentState.Seeding);
         service.FailRemove = true;
@@ -225,6 +232,7 @@ public sealed class RemovalSafetyRegressionTests
             => new RemovalTestService(storage, notifications, background, clock, observer));
         var service = (RemovalTestService)fixture.Service;
         var torrent = (await service.AddTorrentFileAsync(await fixture.PrepareTorrentAsync()))!;
+        torrent.CreatedPayloadPaths = [Path.Combine(torrent.SavePath, "payload.bin")];
         var incoming = await fixture.PrepareTorrentAsync("incoming.bin");
         await service.StartTorrentAsync(torrent);
         await CoreServiceFixture.WaitUntilAsync(() => fixture.Engine.Torrents.Single().State == TorrentState.Seeding);
@@ -260,6 +268,7 @@ public sealed class RemovalSafetyRegressionTests
         await using var fixture = CreateFixture();
         var service = (RemovalTestService)fixture.Service;
         var selected = (await service.AddTorrentFileAsync(await fixture.PrepareTorrentAsync()))!;
+        selected.CreatedPayloadPaths = [Path.Combine(selected.SavePath, "payload.bin")];
         var other = (await service.AddTorrentFileAsync(await fixture.PrepareTorrentAsync("other.bin")))!;
         selected.Status = other.Status = DownloadStatus.Paused;
         var incoming = await fixture.PrepareTorrentAsync("incoming.bin");
@@ -301,6 +310,7 @@ public sealed class RemovalSafetyRegressionTests
         var metadata = await fixture.PrepareTorrentAsync();
         var source = Path.Combine(fixture.Directory.Path, "payload.bin.torrent");
         var selected = (await service.AddTorrentFileAsync(metadata with { SourceFilePath = source }))!;
+        selected.CreatedPayloadPaths = [Path.Combine(selected.SavePath, "payload.bin")];
         var other = await AddEmptyMagnetAsync(service);
         switch (malformedProperty)
         {
@@ -330,6 +340,7 @@ public sealed class RemovalSafetyRegressionTests
         var metadata = await fixture.PrepareTorrentAsync();
         var selected = (await service.AddTorrentFileAsync(metadata with
             { SourceFilePath = Path.Combine(fixture.Directory.Path, "payload.bin.torrent") }))!;
+        selected.CreatedPayloadPaths = [Path.Combine(selected.SavePath, "payload.bin")];
         var other = (await service.AddTorrentFileAsync(await fixture.PrepareTorrentAsync("other.bin")))!;
         other.SavePath = Path.Combine(fixture.Directory.Path, "disjoint");
         other.Status = DownloadStatus.Paused;
@@ -350,6 +361,7 @@ public sealed class RemovalSafetyRegressionTests
         var metadata = await fixture.PrepareTorrentAsync();
         var source = Path.Combine(fixture.Directory.Path, "payload.bin.torrent");
         var selected = (await service.AddTorrentFileAsync(metadata with { SourceFilePath = source }))!;
+        selected.CreatedPayloadPaths = [Path.Combine(selected.SavePath, "payload.bin")];
         var other = await AddEmptyMagnetAsync(service);
         other.SavePath = fixture.Directory.Path;
         other.DownloadedSize = 10;
@@ -369,6 +381,7 @@ public sealed class RemovalSafetyRegressionTests
         var metadata = await fixture.PrepareTorrentAsync();
         var source = Path.Combine(fixture.Directory.Path, "payload.bin.torrent");
         var selected = (await service.AddTorrentFileAsync(metadata with { SourceFilePath = source }))!;
+        selected.CreatedPayloadPaths = [Path.Combine(selected.SavePath, "payload.bin")];
         var otherMetadataPath = Path.Combine(fixture.Directory.Path, "owner.torrent");
         await new TorrentCreator(TorrentType.V1Only).CreateAsync(new TorrentFileSource(source), otherMetadataPath, TestContext.Current.CancellationToken);
         var otherMetadata = await new TorrentImportService(fixture.Directory.StoragePaths, new TorrentFileParser()).PrepareAsync(
@@ -393,6 +406,7 @@ public sealed class RemovalSafetyRegressionTests
             => new RemovalTestService(delayedStorage = new BlockingSaveStorage(storage), notifications, background, clock));
         var service = fixture.Service;
         var selected = (await service.AddTorrentFileAsync(await fixture.PrepareTorrentAsync()))!;
+        selected.CreatedPayloadPaths = [Path.Combine(selected.SavePath, "payload.bin")];
         var incoming = await fixture.PrepareTorrentAsync("incoming.bin");
         service.Torrents.CollectionChanged += (_, _) =>
         {
@@ -426,6 +440,7 @@ public sealed class RemovalSafetyRegressionTests
         var metadata = await fixture.PrepareTorrentAsync();
         var source = Path.Combine(fixture.Directory.Path, "payload.bin.torrent");
         var selected = (await fixture.Service.AddTorrentFileAsync(metadata with { SourceFilePath = source }))!;
+        selected.CreatedPayloadPaths = [Path.Combine(selected.SavePath, "payload.bin")];
         selected.TorrentFilePath = new Uri(source).AbsoluteUri;
         var other = await AddEmptyMagnetAsync(fixture.Service);
         other.TorrentFilePath = shared ? new Uri(source).AbsoluteUri : "content://provider/document/source.torrent";
@@ -436,6 +451,95 @@ public sealed class RemovalSafetyRegressionTests
         Assert.Equal(shared, File.Exists(source));
         Assert.False(result.DownloadedFilesLeftInPlace);
         Assert.False(File.Exists(Path.Combine(selected.SavePath, "payload.bin")));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task PreExistingPayload_IsPreservedAcrossRestart(bool startBeforeRemoval)
+    {
+        await using var fixture = new CoreServiceFixture();
+        var metadata = await fixture.PrepareTorrentAsync();
+        var torrent = (await fixture.Service.AddTorrentFileAsync(metadata, startPaused: true))!;
+        if (startBeforeRemoval)
+        {
+            await fixture.Service.StartTorrentAsync(torrent);
+            await CoreServiceFixture.WaitUntilAsync(() => torrent.Status == DownloadStatus.Seeding);
+        }
+        var path = Path.Combine(torrent.SavePath, "payload.bin");
+        var original = await File.ReadAllBytesAsync(path, TestContext.Current.CancellationToken);
+        await fixture.Service.DisposeAsync();
+
+        using var storage = new StorageService(fixture.Directory.StoragePaths);
+        var restored = Assert.Single(await storage.LoadTorrentsAsync());
+        await using var reopened = new TorrentService(storage, fixture.Notifications, new BackgroundDownloadStub(),
+            ImmediateDispatcher.Instance);
+        await reopened.InitializeAsync();
+        var removal = await reopened.RemoveTorrentAsync(Assert.Single(reopened.Torrents), deleteFiles: true);
+        Assert.True(removal.DownloadedFilesLeftInPlace);
+        Assert.Empty(restored.CreatedPayloadPaths);
+        Assert.Equal(original, await File.ReadAllBytesAsync(path, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task CreatedPayload_CanBeRemovedAfterRestart()
+    {
+        await using var fixture = new CoreServiceFixture();
+        var metadata = await fixture.PrepareTorrentAsync();
+        var torrent = (await fixture.Service.AddTorrentFileAsync(metadata, startPaused: true))!;
+        var path = Path.Combine(torrent.SavePath, "payload.bin");
+        File.Delete(path);
+        await fixture.Service.StartTorrentAsync(torrent);
+        await fixture.Service.StopTorrentAsync(torrent);
+        await fixture.Service.DisposeAsync();
+
+        using var storage = new StorageService(fixture.Directory.StoragePaths);
+        await using var reopened = new TorrentService(storage, fixture.Notifications, new BackgroundDownloadStub(),
+            ImmediateDispatcher.Instance);
+        await reopened.InitializeAsync();
+        var restored = Assert.Single(reopened.Torrents);
+        Assert.Equal(path, Assert.Single(restored.CreatedPayloadPaths));
+        Assert.True(File.Exists(path));
+        var removal = await reopened.RemoveTorrentAsync(restored, deleteFiles: true);
+        Assert.False(removal.DownloadedFilesLeftInPlace);
+        Assert.False(File.Exists(path));
+    }
+
+    [Fact]
+    public async Task ConcurrentTorrentsWithSameFilename_GetSeparatePersistedDestinations()
+    {
+        await using var fixture = new CoreServiceFixture();
+        var metadata = await fixture.PrepareTorrentAsync();
+        var first = (await fixture.Service.AddTorrentFileAsync(metadata, startPaused: true))!;
+        var path = Path.Combine(first.SavePath, "payload.bin");
+        await File.WriteAllTextAsync(path, "a different release", TestContext.Current.CancellationToken);
+        var secondMetadataPath = Path.Combine(fixture.Directory.Path, "release.torrent");
+        await new TorrentCreator(TorrentType.V1Only).CreateAsync(new TorrentFileSource(path), secondMetadataPath, TestContext.Current.CancellationToken);
+        var secondMetadata = await new TorrentImportService(fixture.Directory.StoragePaths, new TorrentFileParser())
+            .PrepareAsync(new TorrentPickedFile("release.torrent", null,
+                await File.ReadAllBytesAsync(secondMetadataPath, TestContext.Current.CancellationToken)), TestContext.Current.CancellationToken);
+        var second = (await fixture.Service.AddTorrentFileAsync(secondMetadata, startPaused: true))!;
+        File.Delete(path);
+
+        await Task.WhenAll(fixture.Service.StartTorrentAsync(first), fixture.Service.StartTorrentAsync(second));
+        var destinations = fixture.Engine.Torrents.Select(manager => Assert.Single(manager.Files).FullPath).ToHashSet();
+        Assert.Equal(2, destinations.Count);
+        using var storage = new StorageService(fixture.Directory.StoragePaths);
+        foreach (var saved in await storage.LoadTorrentsAsync())
+        {
+            Assert.Contains(Assert.Single(saved.CreatedPayloadPaths), destinations);
+            Assert.Contains(saved.ReservedPayloadPath!, destinations);
+        }
+        var retained = Assert.Single(second.CreatedPayloadPaths);
+        Assert.True((await fixture.Service.RemoveTorrentAsync(first, deleteFiles: true)).Removed);
+        Assert.True(File.Exists(retained));
+        Assert.False(File.Exists(Assert.Single(first.CreatedPayloadPaths)));
+    }
+
+    private sealed class BackgroundDownloadStub : IBackgroundDownloadService
+    {
+        public bool Start() => true;
+        public void Stop() { }
     }
 
     private static CoreServiceFixture CreateFixture() => new(serviceFactory: (storage, notifications, background, clock)
