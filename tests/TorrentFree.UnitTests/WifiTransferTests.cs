@@ -117,6 +117,7 @@ public sealed class WifiTransferTests
         Assert.Equal(DownloadStatus.Downloading, first.Status);
         Assert.Equal(DownloadStatus.Queued, second.Status);
         Assert.Equal(1, fixture.Service.Starts);
+        await CoreServiceFixture.WaitUntilAsync(() => fixture.Service.CurrentEngine!.Torrents.Single().State == TorrentState.Downloading);
         await fixture.Service.PauseTorrentAsync(first);
         Assert.Equal(DownloadStatus.Downloading, second.Status);
         Assert.Equal(2, fixture.Service.Starts);
@@ -147,6 +148,7 @@ public sealed class WifiTransferTests
         await fixture.Storage.LoadTorrentsAsync();
         await fixture.Storage.SaveTorrentsAsync([waiting, paused]);
         await fixture.Service.InitializeAsync();
+        await CoreServiceFixture.WaitUntilAsync(() => fixture.Service.Starts == 1);
         Assert.Equal(DownloadStatus.Downloading, fixture.Service.Torrents.Single(t => t.Id == waiting.Id).Status);
         Assert.Equal(DownloadStatus.Paused, fixture.Service.Torrents.Single(t => t.Id == paused.Id).Status);
         Assert.Equal(1, fixture.Service.Starts);

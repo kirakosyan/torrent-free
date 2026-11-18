@@ -24,6 +24,7 @@ public sealed class ReviewFixesTests
         fixture.Service.UpdateQueueLimits(1, 1);
         var hash = Guid.NewGuid().ToString("N") + "01234567";
         var torrent = (await fixture.Service.AddTorrentAsync($"magnet:?xt=urn:btih:{hash}&dn=pending&tr={UnreachableTracker}", startPaused: true))!;
+        torrent.SelectedFilePaths = ["pending.bin"];
         var queued = (await fixture.Service.AddTorrentFileAsync(await fixture.PrepareTorrentAsync("next.bin"), startPaused: true))!;
         var start = fixture.Service.StartTorrentAsync(torrent);
         await entered.Task.WaitAsync(TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken);
@@ -318,7 +319,7 @@ public sealed class ReviewFixesTests
         Assert.True(page.ProxyPasswordUnavailable);
         Assert.Equal(string.Empty, page.ProxyPassword);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+        await Assert.ThrowsAsync<ProxyPasswordRequiredException>(() =>
             SaveFromSettingsPageAsync(storage, page.ProxyPassword, proxyPasswordUnavailable: true, proxyHost: "different.example"));
         Assert.Equal(string.Empty, (await storage.LoadSettingsAsync()).ProxyHost);
 

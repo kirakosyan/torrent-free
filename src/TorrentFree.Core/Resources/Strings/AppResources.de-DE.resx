@@ -266,7 +266,7 @@
     <value>Torrent entfernen</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>Optional können Sie zugehörige Dateien löschen:</value>
+    <value>Nur Dateien, deren Erstellung die App erfasst hat, können gelöscht werden. Vorhandene Dateien und Downloads aus älteren Versionen müssen gegebenenfalls manuell gelöscht werden.</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>Löschen Sie die Datei .torrent von der Festplatte</value>
@@ -723,4 +723,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>Es ist nicht genug freier Speicher vorhanden, um diesen Download zu kopieren.</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>Ein anderer Torrent verwendet dieses Ziel. Wähle einen anderen Downloadordner.</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>Dieser Torrent enthält einen unsicheren Dateipfad oder Link.</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>Gib das Proxy-Passwort in den Einstellungen erneut ein.</value></data>
 </root>

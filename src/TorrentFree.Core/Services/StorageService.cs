@@ -25,6 +25,7 @@ public interface IStorageService
 /// </remarks>
 public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = null) : IStorageService, IDisposable
 {
+    private const string ReentryRequired = "reentry-required";
     internal const string ProxyPasswordSecretKey = "proxy-password";
 
     private readonly string _dataPath = Path.Combine(paths.AppDataDirectory, "torrents.json");
@@ -78,6 +79,7 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
         {
             var data = await GetDataAsync().ConfigureAwait(false);
             var settings = (data.Settings ?? new AppSettings()).Clone();
+            settings.ProxyPasswordUnavailable = data.ProxyCredentialId == ReentryRequired;
             if (secrets is null)
             {
                 return settings;
@@ -127,7 +129,7 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
             {
                 var sameEndpoint = data.Settings?.HasSameProxyEndpoint(settings) == true;
                 if (passwordUnknown && !sameEndpoint)
-                    throw new InvalidOperationException("Re-enter the proxy password before changing its endpoint.");
+                    throw new ProxyPasswordRequiredException();
 
                 if (!passwordUnknown)
                 {
@@ -192,7 +194,7 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
     private static string? GetSecretKey(string? id) => id switch
     {
         null => ProxyPasswordSecretKey,
-        "" => null,
+        "" or ReentryRequired => null,
         _ when Guid.TryParseExact(id, "N", out _) => ProxyPasswordSecretKey + "-" + id,
         _ => throw new JsonException("Invalid proxy credential reference.")
     };
@@ -259,7 +261,7 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
 
             var corruptPath = _dataPath + $".corrupt-{Guid.NewGuid():N}";
             File.Copy(_dataPath, corruptPath);
-            await RestoreStateAsync(recovered, backupJson, overwrite: true).ConfigureAwait(false);
+            await RestoreStateAsync(recovered, backupJson, overwrite: true, fromBackup: true).ConfigureAwait(false);
             return recovered;
         }
     }
@@ -293,7 +295,7 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
                 continue;
             }
 
-            await RestoreStateAsync(recovered, json, overwrite: false).ConfigureAwait(false);
+            await RestoreStateAsync(recovered, json, overwrite: false, fromBackup: candidate.EndsWith(".bak", StringComparison.Ordinal)).ConfigureAwait(false);
             return recovered;
         }
 
@@ -310,13 +312,15 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
         return TorrentStorageData.Empty();
     }
 
-    private async Task RestoreStateAsync(TorrentStorageData recovered, string json, bool overwrite)
+    private async Task RestoreStateAsync(TorrentStorageData recovered, string json, bool overwrite, bool fromBackup)
     {
         // Older backups had no binding to the shared secure-store key. It may now hold a
         // different endpoint's password. Only a password in the snapshot itself can migrate.
-        if (secrets is not null && recovered.ProxyCredentialId is null && string.IsNullOrEmpty(recovered.Settings?.ProxyPassword))
+        if (fromBackup && secrets is not null && recovered.ProxyCredentialId is null && string.IsNullOrEmpty(recovered.Settings?.ProxyPassword))
         {
-            recovered.ProxyCredentialId = string.Empty;
+            var (readable, legacyPassword) = await TryGetSecretAsync(ProxyPasswordSecretKey).ConfigureAwait(false);
+            recovered.ProxyCredentialId = (!readable || !string.IsNullOrEmpty(legacyPassword)) &&
+                !string.IsNullOrWhiteSpace(recovered.Settings?.ProxyHost) ? ReentryRequired : string.Empty;
             json = JsonSerializer.Serialize(recovered, _jsonOptions);
         }
         var recoveryPath = _dataPath + ".recovery.tmp";
@@ -418,3 +422,5 @@ internal sealed class TorrentStorageData
     public List<TorrentItem>? Torrents { get; set; } = [];
     public AppSettings? Settings { get; set; } = new();
 }
+
+internal sealed class ProxyPasswordRequiredException() : InvalidOperationException(LocalizationResourceManager.Instance["ProxyPasswordReentry"]);

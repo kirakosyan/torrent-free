@@ -248,12 +248,14 @@ public sealed class StorageServiceTests
         Assert.Equal("first", restored.ProxyPassword);
     }
 
-    [Fact]
-    public async Task LegacyBackupRecovery_RequiresReentryOfAnUnboundProxyPassword()
+    [Theory]
+    [InlineData(".bak", true)]
+    [InlineData(".tmp", false)]
+    public async Task LegacyRecovery_RequestsReentryOnlyForUnboundBackups(string suffix, bool reentry)
     {
         using var directory = new CoreTestDirectory();
         var path = Path.Combine(directory.Path, "torrents.json");
-        await File.WriteAllTextAsync(path + ".bak", """{"settings":{"proxyEnabled":true,"proxyHost":"previous.example","proxyUsername":"old"}}""",
+        await File.WriteAllTextAsync(path + suffix, """{"settings":{"proxyEnabled":true,"proxyHost":"previous.example","proxyUsername":"old"}}""",
             TestContext.Current.CancellationToken);
         var secrets = new CountingSecretStore();
         await secrets.SetAsync(StorageService.ProxyPasswordSecretKey, "different-provider-password");
@@ -261,10 +263,11 @@ public sealed class StorageServiceTests
         {
             var restored = await storage.LoadSettingsAsync();
             Assert.Equal("previous.example", restored.ProxyHost);
-            Assert.Empty(restored.ProxyPassword);
+            Assert.Equal(reentry, restored.ProxyPasswordUnavailable);
+            Assert.Equal(reentry ? string.Empty : "different-provider-password", restored.ProxyPassword);
         }
         using var reopened = new StorageService(directory.StoragePaths, secrets);
-        Assert.Empty((await reopened.LoadSettingsAsync()).ProxyPassword);
+        Assert.Equal(reentry, (await reopened.LoadSettingsAsync()).ProxyPasswordUnavailable);
     }
 
     [Fact]

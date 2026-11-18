@@ -58,8 +58,8 @@ public sealed class DeleteTorrentRegressionTests
         {
             File.Delete(payloadPath);
             await fixture.Service.StartTorrentAsync(torrent);
+            await fixture.WriteBlockAsync(torrent, 0, payloadBytes);
             await fixture.Service.StopTorrentAsync(torrent);
-            await File.WriteAllBytesAsync(payloadPath, payloadBytes, TestContext.Current.CancellationToken);
             Assert.Single(fixture.Engine.Torrents);
         }
 

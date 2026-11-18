@@ -266,7 +266,7 @@
     <value>Fjern torrent</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>Slett eventuelt tilknyttede filer:</value>
+    <value>Bare filer som appen har registrert at den selv har opprettet, kan slettes. Eksisterende filer og nedlastinger fra eldre versjoner må kanskje slettes manuelt.</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>Slett .torrent fil fra disken</value>
@@ -723,4 +723,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>Det er ikke nok ledig plass til å kopiere denne nedlastingen.</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>En annen torrent bruker denne plasseringen. Velg en annen nedlastingsmappe.</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>Torrenten inneholder en usikker filbane eller lenke.</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>Skriv inn passordet til mellomtjeneren på nytt i innstillingene.</value></data>
 </root>

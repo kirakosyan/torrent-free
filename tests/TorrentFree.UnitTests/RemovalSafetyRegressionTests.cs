@@ -482,6 +482,52 @@ public sealed class RemovalSafetyRegressionTests
     }
 
     [Fact]
+    public async Task MissingSeedFile_DropsFastResumeAndRedownloads()
+    {
+        await using var fixture = new CoreServiceFixture();
+        var item = (await fixture.Service.AddTorrentFileAsync(await fixture.PrepareTorrentAsync(), startPaused: true))!;
+        await fixture.Service.StartTorrentAsync(item);
+        var manager = Assert.Single(fixture.Engine.Torrents);
+        await CoreServiceFixture.WaitUntilAsync(() => manager.State == TorrentState.Seeding);
+        await fixture.Service.StopTorrentAsync(item);
+        var path = Assert.Single(manager.Files).FullPath;
+        File.Delete(path);
+        await fixture.Service.StartTorrentAsync(item);
+        await CoreServiceFixture.WaitUntilAsync(() => manager.State == TorrentState.Downloading && manager.Bitfield.AllFalse);
+        Assert.False(File.Exists(path));
+        Assert.Empty(item.CreatedPayloadPaths);
+    }
+
+    [Fact]
+    public async Task LegacyDownloadThroughDirectoryAlias_ReservesItsMetadataDestination()
+    {
+        await using var fixture = new CoreServiceFixture();
+        var legacy = (await fixture.Service.AddTorrentFileAsync(await fixture.PrepareTorrentAsync(), startPaused: true))!;
+        var root = legacy.SavePath;
+        var alias = Path.Combine(fixture.Directory.Path, "alias");
+        try { Directory.CreateSymbolicLink(alias, root); }
+        catch (Exception ex) when (OperatingSystem.IsWindows() && ex is IOException or UnauthorizedAccessException)
+        { Assert.Skip("Creating a directory symlink requires Windows Developer Mode or the symlink privilege."); }
+        try
+        {
+            legacy.SavePath = alias;
+            legacy.Name = "old display title";
+            legacy.Progress = 50;
+            var path = Path.Combine(root, "payload.bin");
+            await File.WriteAllTextAsync(path, "different release", TestContext.Current.CancellationToken);
+            var metadataPath = Path.Combine(fixture.Directory.Path, "second.torrent");
+            await new TorrentCreator(TorrentType.V1Only).CreateAsync(new TorrentFileSource(path), metadataPath, TestContext.Current.CancellationToken);
+            var metadata = await new TorrentImportService(fixture.Directory.StoragePaths, new TorrentFileParser())
+                .PrepareAsync(new TorrentPickedFile("second.torrent", null, await File.ReadAllBytesAsync(metadataPath, TestContext.Current.CancellationToken)), TestContext.Current.CancellationToken);
+            var other = (await fixture.Service.AddTorrentFileAsync(metadata, startPaused: true))!;
+            await fixture.Service.StartTorrentAsync(other);
+            Assert.NotEqual(path, Assert.Single(Assert.Single(fixture.Engine.Torrents).Files).FullPath);
+            Assert.Equal("different release", await File.ReadAllTextAsync(path, TestContext.Current.CancellationToken));
+        }
+        finally { Directory.Delete(alias); }
+    }
+
+    [Fact]
     public async Task CreatedPayload_CanBeRemovedAfterRestart()
     {
         await using var fixture = new CoreServiceFixture();
@@ -490,6 +536,8 @@ public sealed class RemovalSafetyRegressionTests
         var path = Path.Combine(torrent.SavePath, "payload.bin");
         File.Delete(path);
         await fixture.Service.StartTorrentAsync(torrent);
+        Assert.False(File.Exists(path));
+        await fixture.WriteBlockAsync(torrent, 0, [1]);
         await fixture.Service.StopTorrentAsync(torrent);
         await fixture.Service.DisposeAsync();
 
@@ -524,6 +572,11 @@ public sealed class RemovalSafetyRegressionTests
         await Task.WhenAll(fixture.Service.StartTorrentAsync(first), fixture.Service.StartTorrentAsync(second));
         var destinations = fixture.Engine.Torrents.Select(manager => Assert.Single(manager.Files).FullPath).ToHashSet();
         Assert.Equal(2, destinations.Count);
+        Assert.All(destinations, p => Assert.False(File.Exists(p)));
+        await fixture.WriteBlockAsync(first, 0, [1]);
+        await fixture.WriteBlockAsync(second, 0, [2]);
+        await fixture.Service.StopTorrentAsync(first);
+        await fixture.Service.StopTorrentAsync(second);
         using var storage = new StorageService(fixture.Directory.StoragePaths);
         foreach (var saved in await storage.LoadTorrentsAsync())
         {

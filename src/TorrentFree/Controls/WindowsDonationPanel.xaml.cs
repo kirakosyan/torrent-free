@@ -11,6 +11,6 @@ public partial class WindowsDonationPanel : ContentView
     }
 
     private async void OnPatreonClicked(object? sender, EventArgs e) =>
-        await _host.OpenExternalActionAsync(() => Browser.Default.OpenAsync(
+        await _host.OpenExternalActionAsync(DonateButton, () => Browser.Default.OpenAsync(
             new Uri("https://www.patreon.com/16981794/join"), BrowserLaunchMode.External), "ErrorOpenBrowser");
 }

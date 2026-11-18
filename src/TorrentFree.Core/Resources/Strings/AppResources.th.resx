@@ -266,7 +266,7 @@
     <value>ลบทอร์เรนต์</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>เลือกที่จะลบไฟล์ที่เกี่ยวข้อง:</value>
+    <value>ลบได้เฉพาะไฟล์ที่แอปบันทึกไว้ว่าสร้างขึ้นเอง ไฟล์ที่มีอยู่ก่อนและไฟล์ที่ดาวน์โหลดด้วยเวอร์ชันเก่าอาจต้องลบด้วยตนเอง</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>ลบไฟล์ .torrent ออกจากดิสก์</value>
@@ -723,4 +723,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>พื้นที่ว่างไม่เพียงพอที่จะคัดลอกการดาวน์โหลดนี้</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>ทอร์เรนต์อื่นใช้ตำแหน่งนี้อยู่ โปรดเลือกโฟลเดอร์ดาวน์โหลดอื่น</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>ทอร์เรนต์นี้มีเส้นทางไฟล์หรือลิงก์ที่ไม่ปลอดภัย</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>ป้อนรหัสผ่านพร็อกซีอีกครั้งในการตั้งค่า</value></data>
 </root>

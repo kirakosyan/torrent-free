@@ -5,73 +5,112 @@ namespace TorrentFree.Services;
 
 public partial class TorrentService
 {
-    private async Task PreparePayloadDestinationAsync(TorrentItem torrent, Torrent metadata, bool usePartialFiles)
+    private sealed record PayloadLayout(string Destination, string Directory)
     {
+        public static PayloadLayout From(string root, Torrent metadata)
+        {
+            var single = metadata.Files.Count == 1;
+            var destination = Path.GetFullPath(Path.Combine(root,
+                single ? EscapeTorrentFilePath(metadata.Files[0].Path) : EscapeTorrentPath(metadata.Name)));
+            if (!PathGuard.IsPathWithinDirectory(destination, root)) throw DestinationError("ErrorPayloadPath");
+            return new(destination, single ? root : destination);
+        }
+
+        public string FilePath(ITorrentFile file)
+        {
+            var path = Path.GetFullPath(Path.Combine(Directory, EscapeTorrentFilePath(file.Path)));
+            if (!PathGuard.IsPathWithinDirectory(path, Directory)) throw DestinationError("ErrorPayloadPath");
+            return path;
+        }
+    }
+
+    private static IOException DestinationError(string key) => new(LocalizationResourceManager.Instance[key]);
+
+    private async Task ReservePayloadDestinationAsync(TorrentItem torrent, Torrent? metadata)
+    {
+        var root = ResolveDownloadRoot(new DirectoryInfo(torrent.SavePath));
+        var dedicated = PathsEqual(torrent.ReservedPayloadPath, root);
+        if (metadata is null && !dedicated) root = Path.Combine(root, "TorrentFree-" + Guid.NewGuid().ToString("N"));
+        var destination = metadata is null || dedicated ? root : PayloadLayout.From(root, metadata).Destination;
+        // Legacy records can refer to a different alias for this volume. Compute their actual
+        // layout outside the gate. New reservations are always rechecked inside the gate.
+        TorrentItem[] legacy;
+        lock (_torrentsLock)
+            legacy = Torrents.Where(t => t != torrent && t.ReservedPayloadPath is null && MayHaveDownloadedData(t)).ToArray();
+        var legacyPaths = new Dictionary<TorrentItem, string[]>();
+        foreach (var other in legacy)
+            legacyPaths[other] = await GetLegacyDestinationsAsync(other).ConfigureAwait(false);
+
+        bool changed;
         await _payloadOwnershipLock.WaitAsync(_disposalToken).ConfigureAwait(false);
         try
         {
-            var root = ResolveDownloadRoot(new DirectoryInfo(torrent.SavePath));
-            var single = metadata.Files.Count == 1;
-            var member = single ? EscapeTorrentFilePath(metadata.Files[0].Path) : EscapeTorrentPath(metadata.Name);
-            var checkedDirectories = new HashSet<string>(GetPathComparer()) { root };
-            var destination = GetPayloadPath(root, member, checkedDirectories);
-            string[] otherDestinations;
+            string[] others;
             lock (_torrentsLock)
-                otherDestinations = Torrents.Where(t => t != torrent)
-                    .Select(t => t.ReservedPayloadPath ?? (MayHaveDownloadedData(t) ? t.DownloadedFilePath : null))
-                    .OfType<string>().ToArray();
-
-            if (otherDestinations.Any(other => PayloadPathsOverlap(destination, other)))
+                others = Torrents.Where(t => t != torrent)
+                    .SelectMany(t => t.ReservedPayloadPath is { } path ? new[] { path } : legacyPaths.GetValueOrDefault(t, []))
+                    .ToArray();
+            if (others.Any(path => PayloadPathsOverlap(destination, path)))
             {
                 if (torrent.ReservedPayloadPath is not null || MayHaveDownloadedData(torrent))
-                    throw new IOException("Another torrent uses this download location. Keep one transfer here and reimport the other into a different folder.");
-                // Use a fresh subdirectory of the user's selected folder for the conflicting import.
+                    throw DestinationError("ErrorPayloadConflict");
                 root = Path.Combine(root, "TorrentFree-" + Guid.NewGuid().ToString("N"));
-                destination = GetPayloadPath(root, member, checkedDirectories);
-                if (otherDestinations.Any(other => PayloadPathsOverlap(destination, other)))
-                    throw new IOException("The selected download folder belongs to another torrent.");
+                destination = metadata is null ? root : PayloadLayout.From(root, metadata).Destination;
+                if (others.Any(path => PayloadPathsOverlap(destination, path))) throw DestinationError("ErrorPayloadConflict");
             }
-
-            var created = (torrent.CreatedPayloadPaths ?? []).ToHashSet(GetPathComparer());
-            var selected = torrent.SelectedFilePaths?.ToHashSet(StringComparer.Ordinal);
-            // MonoTorrent sets up paths (including legacy partial-file renames) when AddAsync
-            // registers the manager. Validate every member before allowing that call.
-            var files = metadata.Files.Select(file => (
-                Path: single ? destination : GetPayloadPath(destination, EscapeTorrentFilePath(file.Path), checkedDirectories),
-                Selected: selected is null || selected.Contains(NormalizeFilePath(file.Path)))).ToArray();
-            var changed = torrent.ReservedPayloadPath != destination;
-            try
-            {
-                foreach (var file in files)
+            changed = torrent.SavePath != root || torrent.ReservedPayloadPath != destination;
+            if (changed)
+                await _dispatcher.InvokeAsync(() =>
                 {
-                    _disposalToken.ThrowIfCancellationRequested();
-                    if (!file.Selected || File.Exists(file.Path) || File.Exists(file.Path + ".!mt")) continue;
-                    var path = usePartialFiles ? file.Path + ".!mt" : file.Path;
-                    Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-                    try { using var owned = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None); }
-                    catch (IOException) when (File.Exists(path)) { continue; }
-                    // MonoTorrent moves its partial file to the final name on completion.
-                    created.Add(path);
-                    created.Add(file.Path);
-                    changed = true;
-                }
-            }
-            finally
-            {
-                // A later member may fail. Keep the files already created removable on retry.
-                if (changed)
-                {
-                    await _dispatcher.InvokeAsync(() =>
-                    {
-                        torrent.SavePath = root;
-                        torrent.ReservedPayloadPath = destination;
-                        torrent.CreatedPayloadPaths = created.ToArray();
-                    });
-                    await SaveAsync().ConfigureAwait(false);
-                }
-            }
+                    torrent.SavePath = root;
+                    torrent.ReservedPayloadPath = destination;
+                });
         }
         finally { _payloadOwnershipLock.Release(); }
+
+        // AddAsync can rename partial files while installing metadata. Check its entire layout
+        // before registration, outside the shared reservation lock.
+        if (metadata is not null)
+        {
+            var layout = PayloadLayout.From(root, metadata);
+            var checkedDirectories = new HashSet<string>(GetPathComparer()) { root };
+            foreach (var file in metadata.Files)
+            {
+                _disposalToken.ThrowIfCancellationRequested();
+                ValidatePayloadPath(root, layout.FilePath(file), checkedDirectories);
+            }
+        }
+        else Directory.CreateDirectory(root);
+        if (changed) await SaveAsync().ConfigureAwait(false);
+    }
+
+    private async Task<string[]> GetLegacyDestinationsAsync(TorrentItem torrent)
+    {
+        var savedRoot = string.IsNullOrWhiteSpace(torrent.SavePath) ? _storageService.GetDefaultDownloadPath() : torrent.SavePath;
+        var root = ResolveDownloadRoot(new DirectoryInfo(savedRoot));
+        if (torrent.ResolvedDownloadPath is { } resolved && PathGuard.IsPathWithinDirectory(resolved, savedRoot))
+            return [Path.GetFullPath(Path.Combine(root, Path.GetRelativePath(savedRoot, resolved)))];
+        if ((GetMetadataPath(torrent) ?? FindEngineMetadataCachePath(torrent)) is { } path)
+        {
+            try { return [PayloadLayout.From(root, await LoadTorrentFileBoundedAsync(path, torrent)).Destination]; }
+            catch (Exception ex) when (ex is IOException or FormatException or InvalidDataException or TorrentException or UnauthorizedAccessException)
+            { System.Diagnostics.Debug.WriteLine($"Legacy destination metadata unavailable: {ex.Message}"); }
+        }
+        // With no file list, protect both the possible single-file and multi-file spellings.
+        if (string.IsNullOrWhiteSpace(torrent.Name)) return [root];
+        return [Path.Combine(root, EscapeTorrentFilePath(torrent.Name)), Path.Combine(root, EscapeTorrentPath(torrent.Name))];
+    }
+
+    internal MonoTorrent.PieceWriter.IPieceWriter CreatePayloadWriter(int maxOpenFiles) =>
+        new PayloadPieceWriter(maxOpenFiles, FindPayloadOwner, () => _pendingSave = true);
+
+    private TorrentItem FindPayloadOwner(string path)
+    {
+        lock (_torrentsLock)
+            return Torrents.FirstOrDefault(t => t.ReservedPayloadPath is { } dest
+                && (GetPathComparer().Equals(path, dest) || GetPathComparer().Equals(path, dest + ".!mt")
+                    || PathGuard.IsPathWithinDirectory(path, dest)))
+                ?? throw DestinationError("ErrorPayloadPath");
     }
 
     // The chosen root can legitimately be an alias (including the OS's app-data directory).
@@ -93,18 +132,16 @@ public partial class TorrentService
         return resolved;
     }
 
-    private static string GetPayloadPath(string root, string relative, HashSet<string> checkedDirectories)
+    internal static void ValidatePayloadPath(string root, string path, HashSet<string> checkedDirectories)
     {
-        var path = Path.GetFullPath(Path.Combine(root, relative));
         if (!PathGuard.IsPathWithinDirectory(path, root))
-            throw new IOException("A torrent file is outside its download folder.");
+            throw DestinationError("ErrorPayloadPath");
         for (var directory = Path.GetDirectoryName(path); directory is not null && checkedDirectories.Add(directory);
             directory = Path.GetDirectoryName(directory))
             if (new DirectoryInfo(directory).LinkTarget is not null)
-                throw new IOException("Torrent downloads cannot follow a directory link.");
+                throw DestinationError("ErrorPayloadPath");
         if (new FileInfo(path).LinkTarget is not null || new FileInfo(path + ".!mt").LinkTarget is not null)
-            throw new IOException("Torrent downloads cannot follow a file link.");
-        return path;
+            throw DestinationError("ErrorPayloadPath");
     }
 
     private static bool PayloadPathsOverlap(string left, string right)

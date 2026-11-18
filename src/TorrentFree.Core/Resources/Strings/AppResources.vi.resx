@@ -266,7 +266,7 @@
     <value>Xóa torrent</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>Tùy chọn xóa các tập tin liên quan:</value>
+    <value>Chỉ có thể xóa các tệp mà ứng dụng đã ghi nhận là do ứng dụng tạo. Bạn có thể cần xóa thủ công các tệp có sẵn và các tệp tải xuống từ phiên bản cũ.</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>Xóa tệp .torrent khỏi đĩa</value>
@@ -723,4 +723,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>Không đủ dung lượng trống để sao chép nội dung tải xuống này.</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>Một torrent khác đang dùng vị trí này. Hãy chọn thư mục tải xuống khác.</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>Torrent này chứa đường dẫn tệp hoặc liên kết không an toàn.</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>Nhập lại mật khẩu proxy trong phần cài đặt.</value></data>
 </root>

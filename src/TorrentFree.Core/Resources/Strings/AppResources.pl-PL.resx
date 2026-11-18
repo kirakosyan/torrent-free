@@ -266,7 +266,7 @@
     <value>Usuń torrenta</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>Opcjonalnie usuń powiązane pliki:</value>
+    <value>Można usunąć tylko pliki, których utworzenie aplikacja zarejestrowała. Istniejące pliki i pliki pobrane w starszych wersjach mogą wymagać ręcznego usunięcia.</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>Usuń plik .torrent z dysku</value>
@@ -723,4 +723,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>Za mało wolnego miejsca, aby skopiować to pobranie.</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>Inny torrent używa tej lokalizacji. Wybierz inny folder pobierania.</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>Torrent zawiera niebezpieczną ścieżkę pliku lub odnośnik.</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>Wpisz ponownie hasło serwera proxy w ustawieniach.</value></data>
 </root>

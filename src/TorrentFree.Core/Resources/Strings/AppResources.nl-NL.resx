@@ -266,7 +266,7 @@
     <value>Torrent verwijderen</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>Verwijder eventueel bijbehorende bestanden:</value>
+    <value>Alleen bestanden waarvan de app heeft vastgelegd dat ze door de app zijn gemaakt, kunnen worden verwijderd. Bestaande bestanden en downloads uit oudere versies moeten mogelijk handmatig worden verwijderd.</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>Verwijder het .torrent bestand van schijf</value>
@@ -723,4 +723,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>Er is onvoldoende vrije ruimte om deze download te kopiëren.</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>Een andere torrent gebruikt deze locatie. Kies een andere downloadmap.</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>Deze torrent bevat een onveilig bestandspad of een onveilige koppeling.</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>Voer het proxywachtwoord opnieuw in bij Instellingen.</value></data>
 </root>

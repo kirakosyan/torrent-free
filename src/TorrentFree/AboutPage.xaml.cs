@@ -22,13 +22,13 @@ public partial class AboutPage : ContentPage
     }
 
     private async void OnFeedbackClicked(object? sender, EventArgs e) =>
-        await OpenExternalActionAsync(() => _appStore.OpenReviewPageAsync(), "StoreActionError");
+        await OpenExternalActionAsync(FeedbackButton, () => _appStore.OpenReviewPageAsync(), "StoreActionError");
 
-    internal async Task OpenExternalActionAsync(Func<Task<bool>> open, string errorResource)
+    internal async Task OpenExternalActionAsync(Button button, Func<Task<bool>> open, string errorResource)
     {
         if (_openingLink) return;
         _openingLink = true;
-        FeedbackButton.IsEnabled = false;
+        button.IsEnabled = false;
         try
         {
             if (await open()) return;
@@ -40,7 +40,7 @@ public partial class AboutPage : ContentPage
         finally
         {
             _openingLink = false;
-            FeedbackButton.IsEnabled = true;
+            button.IsEnabled = true;
         }
 
         try

@@ -266,7 +266,7 @@
     <value>Hapus torrent</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>Secara opsional, hapus file terkait:</value>
+    <value>Hanya berkas yang tercatat dibuat oleh aplikasi yang dapat dihapus. Berkas yang sudah ada dan unduhan dari versi lama mungkin perlu dihapus secara manual.</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>Hapus file .torrent dari disk</value>
@@ -723,4 +723,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>Ruang kosong tidak cukup untuk menyalin unduhan ini.</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>Torrent lain menggunakan lokasi ini. Pilih folder unduhan lain.</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>Torrent ini berisi jalur berkas atau tautan yang tidak aman.</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>Masukkan kembali kata sandi proksi di Pengaturan.</value></data>
 </root>

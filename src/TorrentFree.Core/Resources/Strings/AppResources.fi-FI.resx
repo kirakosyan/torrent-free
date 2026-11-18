@@ -266,7 +266,7 @@
     <value>Poista torrent</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>Valinnaisesti poista liittyvät tiedostot:</value>
+    <value>Sovellus voi poistaa vain tiedostot, joiden luomisen se on kirjannut. Aiemmat tiedostot ja vanhempien versioiden lataukset on ehkä poistettava käsin.</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>Poista .torrent-tiedosto levyltä</value>
@@ -723,4 +723,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>Vapaata tilaa ei ole riittävästi tämän latauksen kopioimiseen.</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>Toinen torrent käyttää tätä kohdetta. Valitse toinen latauskansio.</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>Torrent sisältää turvattoman tiedostopolun tai linkin.</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>Anna välityspalvelimen salasana uudelleen asetuksissa.</value></data>
 </root>

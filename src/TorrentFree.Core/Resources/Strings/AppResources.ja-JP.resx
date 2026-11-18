@@ -266,7 +266,7 @@
     <value>トレントを削除する</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>必要に応じて、関連ファイルを削除します。</value>
+    <value>アプリが作成した記録のあるファイルのみ削除できます。既存のファイルや旧バージョンでダウンロードしたファイルは、手動での削除が必要な場合があります。</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>.torrent ファイルをディスクから削除します</value>
@@ -723,4 +723,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>このダウンロードをコピーするための空き容量が不足しています。</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>別のトレントがこの保存先を使用しています。別のダウンロードフォルダーを選んでください。</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>このトレントには安全でないファイルパスまたはリンクが含まれています。</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>設定でプロキシのパスワードを再入力してください。</value></data>
 </root>

@@ -266,7 +266,7 @@
     <value>删除种子</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>（可选）删除关联文件：</value>
+    <value>只能删除应用有创建记录的文件。已有文件和旧版本的下载可能需要手动删除。</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>从磁盘删除 .torrent 文件</value>
@@ -723,4 +723,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>可用空间不足，无法复制此下载。</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>其他种子正在使用此位置。请选择其他下载文件夹。</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>此种子包含不安全的文件路径或链接。</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>请在设置中重新输入代理密码。</value></data>
 </root>

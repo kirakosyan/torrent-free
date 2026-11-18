@@ -98,6 +98,12 @@ public partial class TorrentService
 
     private async Task<Torrent> LoadFileSelectionMetadataAsync(TorrentItem torrent, CancellationToken cancellationToken, bool rebuildRestart = false)
     {
+        return await TryLoadLocalMetadataAsync(torrent)
+            ?? await FetchFileSelectionMetadataAsync(torrent, cancellationToken, rebuildRestart);
+    }
+
+    private async Task<Torrent?> TryLoadLocalMetadataAsync(TorrentItem torrent)
+    {
         if (_managers.TryGetValue(torrent.Id, out var current) && current.Torrent is { } existing)
             return existing;
         var path = GetMetadataPath(torrent) ?? FindEngineMetadataCachePath(torrent);
@@ -110,9 +116,22 @@ public partial class TorrentService
             }
         }
 
+        return null;
+    }
+
+    private MagnetLink GetDiscoveryMagnet(TorrentItem torrent)
+    {
+        var magnet = MagnetLink.Parse(torrent.MagnetLink);
+        return !ProxyRequested && MagnetTrackerBootstrapRules.ShouldAddPublicTrackers(torrent.MagnetLink)
+            ? new MagnetLink(magnet.InfoHashes, magnet.Name, PublicTrackers.Select(uri => uri.AbsoluteUri).ToArray())
+            : magnet;
+    }
+
+    private async Task<Torrent> FetchFileSelectionMetadataAsync(TorrentItem torrent, CancellationToken cancellationToken, bool rebuildRestart)
+    {
         EnsureMagnetFallbackAllowed(torrent);
-        using var deadline = new CancellationTokenSource(TimeSpan.FromMinutes(1), _timeProvider);
-        using var preview = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposalToken, deadline.Token);
+        _managers.TryGetValue(torrent.Id, out var current);
+        using var preview = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposalToken);
         var session = new MetadataPreview(preview);
         lock (_engineRebuildStateGate)
         {
@@ -142,10 +161,7 @@ public partial class TorrentService
                 }
             }
 
-            var magnet = MagnetLink.Parse(torrent.MagnetLink);
-            if (!ProxyRequested && MagnetTrackerBootstrapRules.ShouldAddPublicTrackers(torrent.MagnetLink))
-                magnet = new MagnetLink(magnet.InfoHashes, magnet.Name, PublicTrackers.Select(uri => uri.AbsoluteUri).ToArray());
-
+            var magnet = GetDiscoveryMagnet(torrent);
             var metadataEngine = await EnsureEngineAsync();
             ThrowIfNetworkBlocked();
             preview.Token.ThrowIfCancellationRequested();
@@ -173,10 +189,6 @@ public partial class TorrentService
         {
             throw new MetadataPreviewInterruptedException(session.Manual);
         }
-        catch (OperationCanceledException) when (deadline.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
-        {
-            throw new TimeoutException("Timed out waiting for torrent metadata. Try starting the transfer again.");
-        }
         finally
         {
             lock (_engineRebuildStateGate)
@@ -191,6 +203,8 @@ public partial class TorrentService
     public async Task SetTorrentFileSelectionAsync(TorrentItem torrent, IReadOnlyCollection<string> selectedPaths)
     {
         ArgumentNullException.ThrowIfNull(selectedPaths);
+        using var deadline = new CancellationTokenSource(TimeSpan.FromMinutes(1), _timeProvider);
+        using var lookup = CancellationTokenSource.CreateLinkedTokenSource(_disposalToken, deadline.Token);
         var requested = selectedPaths.Select(NormalizeFilePath).ToHashSet(StringComparer.Ordinal);
         if (requested.Count == 0) throw new ArgumentException("Choose at least one file.", nameof(selectedPaths));
         var resume = false;
@@ -202,7 +216,7 @@ public partial class TorrentService
             if (!TryEnterStart(out _)) continue;
             try
             {
-                var metadata = await LoadFileSelectionMetadataAsync(torrent, _disposalToken);
+                var metadata = await LoadFileSelectionMetadataAsync(torrent, lookup.Token);
                 var known = metadata.Files.Select(file => NormalizeFilePath(file.Path)).ToHashSet(StringComparer.Ordinal);
                 if (!requested.IsSubsetOf(known)) throw new ArgumentException("The selection contains unknown files.", nameof(selectedPaths));
                 var previous = torrent.SelectedFilePaths;

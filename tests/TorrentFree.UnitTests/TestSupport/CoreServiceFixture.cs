@@ -30,8 +30,18 @@ internal sealed class CoreServiceFixture : IAsyncDisposable
             DhtEndPoint = null,
             AutoSaveLoadDhtCache = false,
             ListenEndPoints = new Dictionary<string, System.Net.IPEndPoint>()
-        }.ToSettings());
+        }.ToSettings(), Factories.Default.WithPieceWriterCreator(Service.CreatePayloadWriter));
         typeof(TorrentService).GetField("_engine", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(Service, Engine);
+    }
+
+    // Feed a peer block through MonoTorrent's actual disk cache and piece writer offline.
+    public async Task WriteBlockAsync(TorrentItem torrent, int piece, byte[] bytes)
+    {
+        var manager = Engine.Torrents.Single(m => string.Equals(m.InfoHashes.V1OrV2.ToHex(), torrent.InfoHash, StringComparison.OrdinalIgnoreCase));
+        var write = typeof(DiskManager).GetMethod("WriteAsync", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        await (ReusableTasks.ReusableTask)write.Invoke(Engine.DiskManager,
+            [manager, new BlockInfo(piece, 0, bytes.Length), bytes.AsMemory()])!;
+        await Engine.DiskManager.FlushAsync(manager);
     }
 
     public async Task<TorrentMetadata> PrepareTorrentAsync(string name = "payload.bin", string? providerPath = "content://test.provider/document/1", bool isPrivate = false)

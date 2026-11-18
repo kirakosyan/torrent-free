@@ -15,7 +15,7 @@
                    SemanticProperties.HeadingLevel="Level2"/>
             <Label Text="{helpers:Translate SupportProjectMessage}"
                    FontSize="14"/>
-            <Button Clicked="OnPatreonClicked" Text="{helpers:Translate SupportOnPatreon}"
+            <Button x:Name="DonateButton" Clicked="OnPatreonClicked" Text="{helpers:Translate SupportOnPatreon}"
                     SemanticProperties.Hint="{helpers:Translate OpenInDefaultBrowser}"/>
         </VerticalStackLayout>
     </Border>

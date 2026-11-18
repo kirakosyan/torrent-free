@@ -266,7 +266,7 @@
     <value>Torrenti kaldır</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>İsterseniz ilişkili dosyaları silin:</value>
+    <value>Yalnızca uygulamanın oluşturduğunu kaydettiği dosyalar silinebilir. Mevcut dosyaları ve eski sürümlerde indirilenleri elle silmeniz gerekebilir.</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>.torrent dosyasını diskten sil</value>
@@ -723,4 +723,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>Bu indirmeyi kopyalamak için yeterli boş alan yok.</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>Bu konumu başka bir torrent kullanıyor. Farklı bir indirme klasörü seçin.</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>Bu torrent güvenli olmayan bir dosya yolu veya bağlantı içeriyor.</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>Ayarlarda vekil sunucu parolasını yeniden girin.</value></data>
 </root>

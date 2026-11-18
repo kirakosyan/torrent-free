@@ -266,7 +266,7 @@
     <value>Eliminați torrent</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>Ștergeți opțional fișierele asociate:</value>
+    <value>Se pot șterge doar fișierele pe care aplicația a înregistrat că le-a creat. Fișierele existente și cele descărcate cu versiuni anterioare pot necesita ștergere manuală.</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>Ștergeți fișierul .torrent de pe disc</value>
@@ -723,4 +723,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>Nu există suficient spațiu liber pentru a copia această descărcare.</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>Un alt torrent folosește această destinație. Alegeți alt dosar pentru descărcări.</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>Torrentul conține o cale de fișier sau o legătură nesigură.</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>Introduceți din nou parola proxy în setări.</value></data>
 </root>

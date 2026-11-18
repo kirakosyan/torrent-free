@@ -21,25 +21,32 @@ public sealed class TorrentFileSelectionTests
         Assert.Equal(["one.bin"], picker.SelectedPaths);
     }
 
-    [Fact]
-    public async Task RemovingMultiFileSelection_DeletesOnlyNewSelectedFiles()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task RemovingMultiFileSelection_DeletesOnlyFilesWrittenByTheEngine(bool sharedPiece)
     {
         await using var fixture = new CoreServiceFixture();
-        var torrent = await AddMultiFileTorrentAsync(fixture);
+        var torrent = await AddMultiFileTorrentAsync(fixture, sharedPiece);
         var root = Path.Combine(torrent.SavePath, "File selection sample");
         var existing = Path.Combine(root, "chapter-one.bin");
         var missing = Path.Combine(root, "chapter-two.bin");
         var unselected = Path.Combine(root, "cover.bin");
         await fixture.Service.SetTorrentFileSelectionAsync(torrent, ["chapter-one.bin", "chapter-two.bin"]);
         await fixture.Service.StartTorrentAsync(torrent);
-        Assert.Equal(missing, Assert.Single(torrent.CreatedPayloadPaths));
+        Assert.Empty(torrent.CreatedPayloadPaths);
+        Assert.False(File.Exists(missing));
+        await fixture.WriteBlockAsync(torrent, 3, new byte[16384]);
+        Assert.Contains(missing, torrent.CreatedPayloadPaths);
+        Assert.Equal(sharedPiece, torrent.CreatedPayloadPaths.Contains(unselected));
         Assert.True(File.Exists(missing));
-        Assert.False(File.Exists(unselected));
+        Assert.Equal(sharedPiece, File.Exists(unselected));
 
         var result = await fixture.Service.RemoveTorrentAsync(torrent, deleteFiles: true);
         Assert.True(result.DownloadedFilesLeftInPlace);
         Assert.True(File.Exists(existing));
         Assert.False(File.Exists(missing));
+        Assert.False(File.Exists(unselected));
     }
 
     [Fact]
@@ -245,7 +252,7 @@ public sealed class TorrentFileSelectionTests
     }
 
     [Fact]
-    public async Task UnavailableMetadata_AlsoTimesOutDuringPayloadStartup()
+    public async Task PickerDeadline_DoesNotExpireSelectedTransferDiscovery()
     {
         var clock = new PreviewDeadlineClock();
         PreviewService? service = null;
@@ -261,9 +268,11 @@ public sealed class TorrentFileSelectionTests
         var start = service.StartTorrentAsync(torrent);
         await CoreServiceFixture.WaitUntilAsync(() => service.PreviewCalls == 2);
         clock.ExpirePreviewDeadline();
-        await Assert.ThrowsAsync<TimeoutException>(() => start);
-        Assert.True(service.PreviewToken.IsCancellationRequested);
-        Assert.Equal(DownloadStatus.Failed, torrent.Status);
+        Assert.False(service.PreviewToken.IsCancellationRequested);
+        Assert.False(start.IsCompleted);
+        await service.PauseTorrentAsync(torrent);
+        await start.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+        Assert.Equal(DownloadStatus.Paused, torrent.Status);
         Assert.Empty(fixture.Engine.Torrents);
     }
 
@@ -519,6 +528,51 @@ public sealed class TorrentFileSelectionTests
     }
 
     [Fact]
+    public async Task InitializeAndImport_CompleteWhileRestoredSelectionSearchesForMetadata()
+    {
+        var network = new SwitchableNetwork();
+        network.Set(true);
+        PreviewService? service = null;
+        await using var fixture = new CoreServiceFixture(serviceFactory: (storage, notifications, background, clock) =>
+            service = new PreviewService(storage, notifications, background, clock, network));
+        await fixture.Storage.LoadTorrentsAsync();
+        await fixture.Storage.SaveSettingsAsync(new AppSettings { WifiOnly = true });
+        var hash = "0123456789abcdef0123456789abcdef01234567";
+        await fixture.Storage.SaveTorrentsAsync([new TorrentItem
+        {
+            Name = "waiting", InfoHash = hash, MagnetLink = $"magnet:?xt=urn:btih:{hash}",
+            SelectedFilePaths = ["one.bin"], SavePath = fixture.Storage.GetDefaultDownloadPath(), Status = DownloadStatus.WaitingForWifi
+        }]);
+        await service!.InitializeAsync().WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+        await CoreServiceFixture.WaitUntilAsync(() => service.PreviewCalls == 1);
+        var imported = await service.AddTorrentFileAsync(await fixture.PrepareTorrentAsync(), startPaused: true)
+            .WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+        Assert.NotNull(imported);
+        network.Set(false);
+        await CoreServiceFixture.WaitUntilAsync(() => service.PreviewToken.IsCancellationRequested);
+    }
+
+    [Fact]
+    public async Task FreshMagnet_UsesOneManagerAndKeepsSearching()
+    {
+        var clock = new PreviewDeadlineClock();
+        PreviewService? service = null;
+        await using var fixture = new CoreServiceFixture(serviceFactory: (storage, notifications, background, _) =>
+            service = new PreviewService(storage, notifications, background, clock));
+        var item = (await service!.AddTorrentAsync("magnet:?xt=urn:btih:0123456789abcdef0123456789abcdef01234567&tr=http%3A%2F%2F127.0.0.1%3A1%2Fannounce", startPaused: true))!;
+        await service.StartTorrentAsync(item).WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+        var manager = Assert.Single(fixture.Engine.Torrents);
+        clock.ExpirePreviewDeadline();
+        Assert.Equal(TorrentState.Metadata, manager.State);
+        Assert.Equal(item.SavePath, item.ReservedPayloadPath);
+        Assert.Empty(Directory.EnumerateFileSystemEntries(item.SavePath));
+        Assert.Equal(0, service.PreviewCalls);
+        await service.StopTorrentAsync(item);
+        await service.StartTorrentAsync(item);
+        Assert.Same(manager, Assert.Single(fixture.Engine.Torrents));
+    }
+
+    [Fact]
     public async Task WifiLossDuringAutomaticReconnect_InterruptsMetadataAndClosesTheEngine()
     {
         var network = new SwitchableNetwork();
@@ -549,13 +603,13 @@ public sealed class TorrentFileSelectionTests
         public void Set(bool value) { IsWifiConnected = value; Changed?.Invoke(this, EventArgs.Empty); }
     }
 
-    private static async Task<TorrentItem> AddMultiFileTorrentAsync(CoreServiceFixture fixture)
+    private static async Task<TorrentItem> AddMultiFileTorrentAsync(CoreServiceFixture fixture, bool sharedPiece = false)
     {
         var source = Path.Combine(fixture.Directory.Path, "source", "File selection sample");
         Directory.CreateDirectory(source);
         // Piece-aligned lengths make it possible to complete one file without its neighbour.
         await File.WriteAllBytesAsync(Path.Combine(source, "chapter-one.bin"), new byte[32768], TestContext.Current.CancellationToken);
-        await File.WriteAllBytesAsync(Path.Combine(source, "chapter-two.bin"), new byte[32768], TestContext.Current.CancellationToken);
+        await File.WriteAllBytesAsync(Path.Combine(source, "chapter-two.bin"), new byte[sharedPiece ? 32767 : 32768], TestContext.Current.CancellationToken);
         await File.WriteAllBytesAsync(Path.Combine(source, "cover.bin"), new byte[32768], TestContext.Current.CancellationToken);
         var path = Path.Combine(fixture.Directory.Path, "selection.torrent");
         await new TorrentCreator(TorrentType.V1Only) { PieceLength = 16384 }.CreateAsync(new TorrentFileSource(source), path);

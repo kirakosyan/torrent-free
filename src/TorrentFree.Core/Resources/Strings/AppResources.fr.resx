@@ -275,7 +275,7 @@
     <value>Supprimer le torrent</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>Supprimer éventuellement les fichiers associés :</value>
+    <value>Seuls les fichiers dont l’application a enregistré la création peuvent être supprimés. Les fichiers préexistants et les téléchargements des anciennes versions peuvent nécessiter une suppression manuelle.</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>Supprimer le fichier .torrent du disque</value>
@@ -737,4 +737,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>L’espace libre est insuffisant pour copier ce téléchargement.</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>Un autre torrent utilise cette destination. Choisissez un autre dossier de téléchargement.</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>Ce torrent contient un chemin de fichier ou un lien non sécurisé.</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>Saisissez à nouveau le mot de passe du proxy dans les paramètres.</value></data>
 </root>

@@ -266,7 +266,7 @@
     <value>Odebrat torrent</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>Volitelně smažte přidružené soubory:</value>
+    <value>Smazat lze pouze soubory, u kterých aplikace zaznamenala jejich vytvoření. Existující soubory a soubory stažené staršími verzemi může být nutné smazat ručně.</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>Smažte soubor .torrent z disku</value>
@@ -723,4 +723,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>Pro zkopírování tohoto stahování není dostatek volného místa.</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>Toto umístění používá jiný torrent. Vyberte jinou složku pro stahování.</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>Torrent obsahuje nebezpečnou cestu k souboru nebo odkaz.</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>V nastavení znovu zadejte heslo k proxy.</value></data>
 </root>
