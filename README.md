@@ -42,12 +42,12 @@ Thank you! Torrent Free remains free to use, and donations are entirely optional
 
 ### Version 1.25.2
 
-Submitted November 18, 2026 after the packaged Windows x64 smoke test passed.
+Held on November 18, 2026. The packaged x64 smoke test passed, but a separate immediate-stop test failed in Ubuntu CI and reproduced on Windows. Both submissions were withdrawn before publication.
 
 | Store | Package | Verified status |
 | --- | --- | --- |
-| Microsoft Store | 1.25.2.0, x64 and ARM64 | Submission 23 in certification. Publication starts after approval. |
-| Google Play | 1.25.2, code 32 | Production release 15, submission 25 in review. Full rollout to all targeted countries after approval. |
+| Microsoft Store | 1.25.2.0, x64 and ARM64 | Submission 23 returned to draft. |
+| Google Play | 1.25.2, code 32 | Production release 15, submission 25 removed from review. The rollout is pending and unsent. |
 
 Removing a torrent protects existing files. Downloads avoid overlapping destinations and recover more reliably after interruptions. Proxy passwords are bound to the configured server. The donation option appears in About on Windows only. [Release notes and package hashes](store/microsoft-store/release-notes-1.25.2.md)
 

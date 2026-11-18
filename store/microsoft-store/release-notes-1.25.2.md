@@ -25,9 +25,15 @@ Both MSIX packages passed MakeAppx, manifest, architecture and payload checks. T
 
 | Store | Submission | Status |
 | --- | --- | --- |
-| Microsoft Store | 23 (`1152921505702441783`) | In certification. Partner Center will publish after approval. |
-| Google Play | 25, production release 15 | In review. Submitted at 19:13 Europe/Oslo for a 100% rollout in all targeted countries with managed publishing off. |
+| Microsoft Store | 23 (`1152921505702441783`) | Certification canceled. Partner Center confirmed **In draft**. |
+| Google Play | 25, production release 15 | Submitted at 19:13 Europe/Oslo. Subsequently removed from review. Play Console confirmed the rollout is back under **Changes not yet submitted for review**. |
 
 Microsoft accepted both packages. It flagged toast activation as unsupported on Xbox, which is excluded from the submission. Comparing all 454 rows of the before and after listing exports confirmed that only the release notes changed across 31 locale columns covering 24 languages.
 
-Google accepted the signed bundle, R8 mapping, native debug symbols and release notes for 26 languages. The Android donation removal addresses the existing Payments policy notice. Play allowed submission with the app-level trader-status declaration deferred. Google determines whether the update resolves the notice during review.
+Google accepted the signed bundle, R8 mapping, native debug symbols and release notes for 26 languages. The Android donation removal addresses the existing Payments policy notice. Play allowed submission with the app-level trader-status declaration deferred. Google has yet to verify that the update resolves the notice.
+
+## Publication hold
+
+The six CI jobs on the tagged release source passed. In a later run on the documentation-only commit, the Ubuntu core suite failed in `PrivateImport_StartsWithPrivateMetadata_AndCannotFallBackAfterCacheLoss`. Starting a private torrent and immediately stopping it raised `ObjectDisposedException` in `MonoTorrent.Client.TorrentManager.StopAsync`. Running the same test separately on Windows reproduced the exception. The packaged smoke test had paused the torrent after it reached seeding. The same isolated test also failed on the seventh Windows run against the previous release tag v1.25.1, confirming that the issue predates these fixes.
+
+Both 1.25.2 submissions were withdrawn before publication. The last verified live release in both stores is 1.25.1.

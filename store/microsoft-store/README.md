@@ -2,7 +2,7 @@
 
 ## Version 1.25.2
 
-Submission **23** (`1152921505702441783`) entered **certification** on November 18, 2026. MSIX **1.25.2.0** targets x64 and ARM64. Partner Center is configured to publish after certification. The final export matched the new release notes in all 31 locale columns, with every other field identical. [Release record](release-notes-1.25.2.md)
+Submission **23** (`1152921505702441783`) entered **certification** on November 18, 2026. MSIX **1.25.2.0** targets x64 and ARM64. Certification was canceled after an immediate-stop failure reproduced on Windows. Partner Center showed **In draft** for submission 23 and submission 22 remained live. The final export matched the new release notes in all 31 locale columns, with every other field identical. [Release record](release-notes-1.25.2.md)
 
 ## Version 1.25.1 (submitted November 15, 2026)
 
