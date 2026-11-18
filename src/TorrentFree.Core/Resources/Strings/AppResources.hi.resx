@@ -266,7 +266,7 @@
     <value>टोरेंट हटाएँ</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>वैकल्पिक रूप से संबंधित फाइलें हटाएँ:</value>
+    <value>सिर्फ़ वही फ़ाइलें हटाई जा सकती हैं जिन्हें बनाने का रिकॉर्ड ऐप के पास है। पहले से मौजूद फ़ाइलों और पुराने संस्करणों के डाउनलोड को हाथ से हटाना पड़ सकता है।</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>डिस्क से .torrent फाइल हटाएँ</value>
@@ -723,4 +723,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>इस डाउनलोड को कॉपी करने के लिए पर्याप्त खाली जगह नहीं है।</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>कोई अन्य टोरेंट इस स्थान का उपयोग कर रहा है। कोई दूसरा डाउनलोड फ़ोल्डर चुनें।</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>इस टोरेंट में असुरक्षित फ़ाइल पथ या लिंक है।</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>सेटिंग में प्रॉक्सी का पासवर्ड फिर से दर्ज करें।</value></data>
 </root>

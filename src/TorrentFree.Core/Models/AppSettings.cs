@@ -85,6 +85,10 @@ public class AppSettings
     /// </summary>
     public string ProxyPassword { get; set; } = string.Empty;
 
+    internal bool HasSameProxyEndpoint(AppSettings other) =>
+        string.Equals(ProxyHost?.Trim(), other.ProxyHost?.Trim(), StringComparison.OrdinalIgnoreCase)
+        && ProxyPort == other.ProxyPort && ProxyUsername == other.ProxyUsername;
+
     /// <summary>
     /// Set when secure storage could not return the proxy password on load. An empty
     /// <see cref="ProxyPassword"/> then means "unknown", not "no password", and saving these

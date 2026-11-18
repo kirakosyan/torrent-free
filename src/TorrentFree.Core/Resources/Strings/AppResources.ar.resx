@@ -257,7 +257,7 @@
     <value>إزالة التورنت</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>احذف الملفات المرتبطة اختياريًا:</value>
+    <value>يمكن حذف الملفات التي سجّل التطبيق أنه أنشأها فقط. قد يلزم حذف الملفات الموجودة وتنزيلات الإصدارات السابقة يدويًا.</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>حذف ملف .torrent من القرص</value>
@@ -709,4 +709,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>لا توجد مساحة خالية كافية لنسخ هذا التنزيل.</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>يستخدم تورنت آخر هذا المسار. اختر مجلد تنزيل آخر.</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>يحتوي التورنت على مسار ملف أو رابط غير آمن.</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>أعد إدخال كلمة مرور الوكيل في الإعدادات.</value></data>
 </root>

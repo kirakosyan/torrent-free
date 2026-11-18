@@ -17,29 +17,12 @@
                     Clicked="OnCloseClicked" VerticalOptions="Center"/>
         </Grid>
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Spacing="20">
+            <VerticalStackLayout x:Name="AboutActions" Spacing="20">
                 <Label x:Name="AboutMessageLabel" FontSize="14"/>
                 <Button x:Name="FeedbackButton"
                         Text="{helpers:Translate StoreFeedbackAction}"
                         SemanticProperties.Hint="{helpers:Translate StoreFeedbackHint}"
                         Clicked="OnFeedbackClicked"/>
-                <Border Padding="20" StrokeThickness="0"
-                        BackgroundColor="{AppThemeBinding Light=White, Dark=#1F2937}">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12"/>
-                    </Border.StrokeShape>
-                    <VerticalStackLayout Spacing="14">
-                        <Label Text="{helpers:Translate SupportProjectTitle, StringFormat='♥ {0}'}"
-                               FontSize="20" FontAttributes="Bold"
-                               TextColor="{AppThemeBinding Light=#B42345, Dark=#FDA4AF}"
-                               SemanticProperties.HeadingLevel="Level2"/>
-                        <Label Text="{helpers:Translate SupportProjectMessage}"
-                               FontSize="14"/>
-                        <Button Text="{helpers:Translate SupportOnPatreon}"
-                                SemanticProperties.Hint="{helpers:Translate OpenInDefaultBrowser}"
-                                Clicked="OnPatreonClicked"/>
-                    </VerticalStackLayout>
-                </Border>
             </VerticalStackLayout>
         </ScrollView>
     </Grid>

@@ -10,6 +10,27 @@ namespace TorrentFree.UnitTests;
 public sealed class SettingsViewModelTests
 {
     [Fact]
+    public async Task UnavailableProxyPassword_ShowsReentryMessageOnLoadAndEndpointChange()
+    {
+        var storage = new SettingsStorage { Value = new AppSettings
+        {
+            ProxyEnabled = true, ProxyHost = "proxy.example", ProxyUsername = "user", ProxyPasswordUnavailable = true
+        } };
+        var vm = Create(storage, new Transfers());
+        await vm.InitializeCommand.ExecuteAsync(null);
+        var message = LocalizationResourceManager.Instance["ProxyPasswordReentry"];
+        Assert.Equal(message, vm.ValidationMessage);
+        vm.ProxyPort = 1081;
+        await vm.ApplyProxyCommand.ExecuteAsync(null);
+        Assert.Equal(message, vm.ValidationMessage);
+        Assert.Equal(1080, storage.Value.ProxyPort);
+        vm.ProxyPassword = "replacement";
+        await vm.ApplyProxyCommand.ExecuteAsync(null);
+        Assert.Null(vm.ValidationMessage);
+        Assert.Equal(1081, storage.Value.ProxyPort);
+    }
+
+    [Fact]
     public async Task ProxyDraft_SurvivesReopeningAndFailedReloadWithoutBeingApplied()
     {
         var storage = new SettingsStorage();
@@ -129,6 +150,7 @@ public sealed class SettingsViewModelTests
         public Task SaveSettingsAsync(AppSettings settings)
         {
             if (FailSave) throw new IOException("private path and raw detail");
+            if (settings.ProxyPasswordUnavailable && !Value.HasSameProxyEndpoint(settings)) throw new ProxyPasswordRequiredException();
             Value = settings.Clone(); Saves++; return Task.CompletedTask;
         }
         public Task<List<TorrentItem>> LoadTorrentsAsync() => Task.FromResult(new List<TorrentItem>());

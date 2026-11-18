@@ -275,7 +275,7 @@
     <value>Удалить торрент</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>При необходимости удалить связанные файлы:</value>
+    <value>Можно удалить только файлы, создание которых зарегистрировало приложение. Уже существующие файлы и загрузки из прежних версий может потребоваться удалить вручную.</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>Удалить .torrent файл с диска</value>
@@ -737,4 +737,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>Недостаточно свободного места для копирования этой загрузки.</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>Это расположение использует другой торрент. Выберите другую папку загрузки.</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>Торрент содержит небезопасный путь к файлу или ссылку.</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>Введите пароль прокси-сервера ещё раз в настройках.</value></data>
 </root>

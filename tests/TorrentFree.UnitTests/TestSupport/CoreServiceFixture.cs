@@ -30,8 +30,18 @@ internal sealed class CoreServiceFixture : IAsyncDisposable
             DhtEndPoint = null,
             AutoSaveLoadDhtCache = false,
             ListenEndPoints = new Dictionary<string, System.Net.IPEndPoint>()
-        }.ToSettings());
+        }.ToSettings(), Factories.Default.WithPieceWriterCreator(Service.CreatePayloadWriter));
         typeof(TorrentService).GetField("_engine", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(Service, Engine);
+    }
+
+    // Feed a peer block through MonoTorrent's actual disk cache and piece writer offline.
+    public async Task WriteBlockAsync(TorrentItem torrent, int piece, byte[] bytes)
+    {
+        var manager = Engine.Torrents.Single(m => string.Equals(m.InfoHashes.V1OrV2.ToHex(), torrent.InfoHash, StringComparison.OrdinalIgnoreCase));
+        var write = typeof(DiskManager).GetMethod("WriteAsync", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        await (ReusableTasks.ReusableTask)write.Invoke(Engine.DiskManager,
+            [manager, new BlockInfo(piece, 0, bytes.Length), bytes.AsMemory()])!;
+        await Engine.DiskManager.FlushAsync(manager);
     }
 
     public async Task<TorrentMetadata> PrepareTorrentAsync(string name = "payload.bin", string? providerPath = "content://test.provider/document/1", bool isPrivate = false)
@@ -42,6 +52,23 @@ internal sealed class CoreServiceFixture : IAsyncDisposable
         await new TorrentCreator(TorrentType.V1Only) { Private = isPrivate }.CreateAsync(new TorrentFileSource(source), torrentPath);
         return await new TorrentImportService(Directory.StoragePaths, new TorrentFileParser()).PrepareAsync(
             new TorrentPickedFile(name + ".torrent", providerPath, await File.ReadAllBytesAsync(torrentPath)));
+    }
+
+    internal static TorrentItem CreateLocalTorrent(IStorageService storage, string name, DownloadStatus status)
+    {
+        // Provide real, local metadata for lifecycle tests that exercise manager admission.
+        var sourceRoot = Path.Combine(storage.GetAppDataPath(), "test-source");
+        System.IO.Directory.CreateDirectory(sourceRoot);
+        var source = Path.Combine(sourceRoot, name);
+        File.WriteAllText(source, name);
+        var metadataPath = source + ".torrent";
+        new TorrentCreator(TorrentType.V1Only).Create(new TorrentFileSource(source), metadataPath);
+        var hash = Torrent.Load(metadataPath).InfoHashes.V1!.ToHex();
+        return new TorrentItem
+        {
+            InfoHash = hash, MagnetLink = $"magnet:?xt=urn:btih:{hash}", CachedTorrentFilePath = metadataPath,
+            Name = name, SavePath = storage.GetDefaultDownloadPath(), Status = status
+        };
     }
 
     public static async Task WaitUntilAsync(Func<bool> condition)

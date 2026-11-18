@@ -117,6 +117,7 @@ public sealed class WifiTransferTests
         Assert.Equal(DownloadStatus.Downloading, first.Status);
         Assert.Equal(DownloadStatus.Queued, second.Status);
         Assert.Equal(1, fixture.Service.Starts);
+        await CoreServiceFixture.WaitUntilAsync(() => fixture.Service.CurrentEngine!.Torrents.Single().State == TorrentState.Downloading);
         await fixture.Service.PauseTorrentAsync(first);
         Assert.Equal(DownloadStatus.Downloading, second.Status);
         Assert.Equal(2, fixture.Service.Starts);
@@ -147,6 +148,7 @@ public sealed class WifiTransferTests
         await fixture.Storage.LoadTorrentsAsync();
         await fixture.Storage.SaveTorrentsAsync([waiting, paused]);
         await fixture.Service.InitializeAsync();
+        await CoreServiceFixture.WaitUntilAsync(() => fixture.Service.Starts == 1);
         Assert.Equal(DownloadStatus.Downloading, fixture.Service.Torrents.Single(t => t.Id == waiting.Id).Status);
         Assert.Equal(DownloadStatus.Paused, fixture.Service.Torrents.Single(t => t.Id == paused.Id).Status);
         Assert.Equal(1, fixture.Service.Starts);
@@ -285,21 +287,14 @@ public sealed class WifiTransferTests
         }
 
         public TorrentItem CreateItem(DownloadStatus status)
-        {
-            var hash = Guid.NewGuid().ToString("N") + "01234567";
-            return new TorrentItem
-            {
-                InfoHash = hash,
-                MagnetLink = $"magnet:?xt=urn:btih:{hash}&dn=test&tr=http%3A%2F%2F127.0.0.1%3A1%2Fannounce",
-                Status = status,
-                SavePath = Storage.GetDefaultDownloadPath()
-            };
-        }
+            => CoreServiceFixture.CreateLocalTorrent(Storage, Guid.NewGuid().ToString("N") + ".bin", status);
 
         public async Task<TorrentItem> AddAsync()
         {
-            var hash = Guid.NewGuid().ToString("N") + "01234567";
-            return (await Service.AddTorrentAsync($"magnet:?xt=urn:btih:{hash}&dn=test&tr=http%3A%2F%2F127.0.0.1%3A1%2Fannounce"))!;
+            var local = CreateItem(DownloadStatus.Queued);
+            var item = (await Service.AddTorrentAsync(local.MagnetLink))!;
+            item.CachedTorrentFilePath = local.CachedTorrentFilePath;
+            return item;
         }
 
         public async Task SetWifiAsync(bool wifi)

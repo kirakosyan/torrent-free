@@ -25,6 +25,7 @@ public interface IStorageService
 /// </remarks>
 public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = null) : IStorageService, IDisposable
 {
+    private const string ReentryRequired = "reentry-required";
     internal const string ProxyPasswordSecretKey = "proxy-password";
 
     private readonly string _dataPath = Path.Combine(paths.AppDataDirectory, "torrents.json");
@@ -37,7 +38,7 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
     private readonly SemaphoreSlim _saveLock = new(1, 1);
     private bool _torrentsLoaded;
     private TorrentStorageData? _cachedData;
-    private bool _secretValueKnown;
+    private string? _knownSecretKey;
     private string? _lastSecretValue;
 
     public async Task<List<TorrentItem>> LoadTorrentsAsync()
@@ -78,26 +79,34 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
         {
             var data = await GetDataAsync().ConfigureAwait(false);
             var settings = (data.Settings ?? new AppSettings()).Clone();
+            settings.ProxyPasswordUnavailable = data.ProxyCredentialId == ReentryRequired;
             if (secrets is null)
             {
                 return settings;
             }
 
-            if (!string.IsNullOrEmpty(settings.ProxyPassword))
+            var key = GetSecretKey(data.ProxyCredentialId);
+            if (string.IsNullOrEmpty(settings.ProxyPassword) && key is not null)
             {
-                // A plaintext password from an older version (or a previous secret-store
-                // failure). Move it out of the state file once the secret store accepts it.
-                if (await TrySetSecretAsync(settings.ProxyPassword).ConfigureAwait(false))
-                {
-                    await RemovePlaintextPasswordAsync(data).ConfigureAwait(false);
-                }
-
-                return settings;
+                var (readSucceeded, password) = await TryGetSecretAsync(key).ConfigureAwait(false);
+                settings.ProxyPassword = password ?? string.Empty;
+                settings.ProxyPasswordUnavailable = !readSucceeded || (data.ProxyCredentialId is not null && string.IsNullOrEmpty(password));
             }
 
-            var (readSucceeded, password) = await TryGetSecretAsync().ConfigureAwait(false);
-            settings.ProxyPassword = password ?? string.Empty;
-            settings.ProxyPasswordUnavailable = !readSucceeded;
+            // Bind legacy credentials to this settings snapshot before the endpoint can change.
+            if (!string.IsNullOrEmpty(settings.ProxyPassword)
+                && (data.ProxyCredentialId is null || !string.IsNullOrEmpty(data.Settings?.ProxyPassword)))
+            {
+                var id = Guid.NewGuid().ToString("N");
+                if (await TrySetSecretAsync(GetSecretKey(id)!, settings.ProxyPassword).ConfigureAwait(false))
+                {
+                    var scrubbed = settings.Clone();
+                    scrubbed.ProxyPassword = string.Empty;
+                    data.Settings = scrubbed;
+                    await WriteDataAsync(data, id).ConfigureAwait(false);
+                    await WriteDataAsync(data).ConfigureAwait(false);
+                }
+            }
             return settings;
         }
         finally { _saveLock.Release(); }
@@ -115,14 +124,30 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
             // An empty password that could not be read is unknown, not cleared: writing it would
             // turn a transient secure-storage error into a deleted credential.
             var passwordUnknown = settings.ProxyPasswordUnavailable && string.IsNullOrEmpty(settings.ProxyPassword);
-            if (secrets is not null
-                && (passwordUnknown || await TrySetSecretAsync(settings.ProxyPassword).ConfigureAwait(false)))
+            var id = data.ProxyCredentialId;
+            if (secrets is not null)
             {
-                stored.ProxyPassword = string.Empty;
+                var sameEndpoint = data.Settings?.HasSameProxyEndpoint(settings) == true;
+                if (passwordUnknown && !sameEndpoint)
+                    throw new ProxyPasswordRequiredException();
+
+                if (!passwordUnknown)
+                {
+                    if (string.IsNullOrEmpty(settings.ProxyPassword))
+                        id = string.Empty;
+                    else if (!sameEndpoint || id is null || _knownSecretKey != GetSecretKey(id)
+                        || !string.Equals(_lastSecretValue, settings.ProxyPassword, StringComparison.Ordinal))
+                    {
+                        id = Guid.NewGuid().ToString("N");
+                        if (!await TrySetSecretAsync(GetSecretKey(id)!, settings.ProxyPassword).ConfigureAwait(false))
+                            id = string.Empty; // Preserve the existing plaintext fallback in this same snapshot.
+                    }
+                }
+                if (!string.IsNullOrEmpty(id) || passwordUnknown) stored.ProxyPassword = string.Empty;
             }
 
             data.Settings = stored;
-            await WriteDataAsync(data).ConfigureAwait(false);
+            await WriteDataAsync(data, id).ConfigureAwait(false);
         }
         finally { _saveLock.Release(); }
     }
@@ -166,51 +191,44 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
         return data;
     }
 
-    private async Task RemovePlaintextPasswordAsync(TorrentStorageData data)
+    private static string? GetSecretKey(string? id) => id switch
     {
-        var scrubbed = (data.Settings ?? new AppSettings()).Clone();
-        scrubbed.ProxyPassword = string.Empty;
-        data.Settings = scrubbed;
-        // Write twice: the first write moves the plaintext state into the backup file, and
-        // the second replaces that backup with the scrubbed state.
-        await WriteDataAsync(data).ConfigureAwait(false);
-        await WriteDataAsync(data).ConfigureAwait(false);
-    }
+        null => ProxyPasswordSecretKey,
+        "" or ReentryRequired => null,
+        _ when Guid.TryParseExact(id, "N", out _) => ProxyPasswordSecretKey + "-" + id,
+        _ => throw new JsonException("Invalid proxy credential reference.")
+    };
 
-    private async Task<(bool Succeeded, string? Value)> TryGetSecretAsync()
+    private async Task<(bool Succeeded, string? Value)> TryGetSecretAsync(string key)
     {
         try
         {
-            var value = await secrets!.GetAsync(ProxyPasswordSecretKey).ConfigureAwait(false);
+            var value = await secrets!.GetAsync(key).ConfigureAwait(false);
             _lastSecretValue = string.IsNullOrEmpty(value) ? null : value;
-            _secretValueKnown = true;
+            _knownSecretKey = key;
             return (true, value);
         }
         catch (Exception ex)
         {
-            _secretValueKnown = false;
+            _knownSecretKey = null;
             // Fail closed: a missing password makes the proxy reject the connection.
             System.Diagnostics.Debug.WriteLine($"Secret store read failed: {ex.Message}");
             return (false, null);
         }
     }
 
-    private async Task<bool> TrySetSecretAsync(string? value)
+    private async Task<bool> TrySetSecretAsync(string key, string? value)
     {
-        value = string.IsNullOrEmpty(value) ? null : value;
-        if (_secretValueKnown && string.Equals(value, _lastSecretValue, StringComparison.Ordinal))
-            return true;
-
         try
         {
-            await secrets!.SetAsync(ProxyPasswordSecretKey, value).ConfigureAwait(false);
+            await secrets!.SetAsync(key, value).ConfigureAwait(false);
             _lastSecretValue = value;
-            _secretValueKnown = true;
+            _knownSecretKey = key;
             return true;
         }
         catch (Exception ex)
         {
-            _secretValueKnown = false;
+            _knownSecretKey = null;
             // Keep the proxy usable on devices whose secure storage is broken; the password
             // then stays in the state file, as it did before secure storage was introduced.
             System.Diagnostics.Debug.WriteLine($"Secret store write failed: {ex.Message}");
@@ -223,7 +241,7 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
         string json;
         try { json = await File.ReadAllTextAsync(_dataPath).ConfigureAwait(false); }
         catch (FileNotFoundException) { return await RecoverMissingStateAsync().ConfigureAwait(false); }
-        catch (DirectoryNotFoundException) { return new(); }
+        catch (DirectoryNotFoundException) { return TorrentStorageData.Empty(); }
         try { return DeserializeData(json); }
         catch (JsonException)
         {
@@ -243,13 +261,7 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
 
             var corruptPath = _dataPath + $".corrupt-{Guid.NewGuid():N}";
             File.Copy(_dataPath, corruptPath);
-            var recoveryPath = _dataPath + ".recovery.tmp";
-            try
-            {
-                await File.WriteAllTextAsync(recoveryPath, backupJson).ConfigureAwait(false);
-                File.Move(recoveryPath, _dataPath, overwrite: true);
-            }
-            finally { TryDeleteTemporaryFile(recoveryPath); }
+            await RestoreStateAsync(recovered, backupJson, overwrite: true, fromBackup: true).ConfigureAwait(false);
             return recovered;
         }
     }
@@ -283,13 +295,7 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
                 continue;
             }
 
-            var recoveryPath = _dataPath + ".recovery.tmp";
-            try
-            {
-                await File.WriteAllTextAsync(recoveryPath, json).ConfigureAwait(false);
-                File.Move(recoveryPath, _dataPath, overwrite: false);
-            }
-            finally { TryDeleteTemporaryFile(recoveryPath); }
+            await RestoreStateAsync(recovered, json, overwrite: false, fromBackup: candidate.EndsWith(".bak", StringComparison.Ordinal)).ConfigureAwait(false);
             return recovered;
         }
 
@@ -303,23 +309,53 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
             // evidence before allowing a fresh state to replace that temporary file.
             File.Move(_dataPath + ".tmp", _dataPath + $".corrupt-{Guid.NewGuid():N}");
         }
-        return new();
+        return TorrentStorageData.Empty();
     }
 
-    private TorrentStorageData DeserializeData(string json) =>
-        JsonSerializer.Deserialize<TorrentStorageData>(json, _jsonOptions)
-        ?? throw new JsonException("The saved application state is null.");
-
-    private async Task WriteDataAsync(TorrentStorageData data)
+    private async Task RestoreStateAsync(TorrentStorageData recovered, string json, bool overwrite, bool fromBackup)
     {
+        // Older backups had no binding to the shared secure-store key. It may now hold a
+        // different endpoint's password. Only a password in the snapshot itself can migrate.
+        if (fromBackup && secrets is not null && recovered.ProxyCredentialId is null && string.IsNullOrEmpty(recovered.Settings?.ProxyPassword))
+        {
+            var (readable, legacyPassword) = await TryGetSecretAsync(ProxyPasswordSecretKey).ConfigureAwait(false);
+            recovered.ProxyCredentialId = (!readable || !string.IsNullOrEmpty(legacyPassword)) &&
+                !string.IsNullOrWhiteSpace(recovered.Settings?.ProxyHost) ? ReentryRequired : string.Empty;
+            json = JsonSerializer.Serialize(recovered, _jsonOptions);
+        }
+        var recoveryPath = _dataPath + ".recovery.tmp";
+        try
+        {
+            await File.WriteAllTextAsync(recoveryPath, json).ConfigureAwait(false);
+            File.Move(recoveryPath, _dataPath, overwrite);
+        }
+        finally { TryDeleteTemporaryFile(recoveryPath); }
+    }
+
+    private TorrentStorageData DeserializeData(string json)
+    {
+        var data = JsonSerializer.Deserialize<TorrentStorageData>(json, _jsonOptions)
+            ?? throw new JsonException("The saved application state is null.");
+        _ = GetSecretKey(data.ProxyCredentialId);
+        _ = GetSecretKey(data.BackupProxyCredentialId);
+        return data;
+    }
+
+    private Task WriteDataAsync(TorrentStorageData data) => WriteDataAsync(data, data.ProxyCredentialId);
+
+    private async Task WriteDataAsync(TorrentStorageData data, string? credentialId)
+    {
+        var retiredId = data.BackupProxyCredentialId;
+        data.BackupProxyCredentialId = data.ProxyCredentialId;
+        data.ProxyCredentialId = credentialId;
         data.Version = "1.0";
         data.LastUpdated = DateTime.UtcNow;
-        var json = JsonSerializer.Serialize(data, _jsonOptions);
-        Directory.CreateDirectory(paths.AppDataDirectory);
         var tempPath = _dataPath + ".tmp";
         var deleteTemp = true;
         try
         {
+            var json = JsonSerializer.Serialize(data, _jsonOptions);
+            Directory.CreateDirectory(paths.AppDataDirectory);
             await File.WriteAllTextAsync(tempPath, json).ConfigureAwait(false);
             // Rotate by rename instead of copying the previous file into the backup: one write
             // per save instead of two. RecoverMissingStateAsync covers a stop between renames.
@@ -336,6 +372,8 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
         {
             // Re-read the file next time rather than trusting state which was not written.
             _cachedData = null;
+            if (deleteTemp && !string.IsNullOrEmpty(credentialId) && credentialId != data.BackupProxyCredentialId)
+                await TryDeleteSecretAsync(GetSecretKey(credentialId)!).ConfigureAwait(false);
             throw;
         }
         finally
@@ -344,6 +382,22 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
             {
                 TryDeleteTemporaryFile(tempPath);
             }
+        }
+
+        // The old backup has now been rotated away. Keep secrets needed by either recoverable file.
+        if (secrets is not null && retiredId != data.ProxyCredentialId && retiredId != data.BackupProxyCredentialId
+            && GetSecretKey(retiredId) is { } retiredKey)
+            await TryDeleteSecretAsync(retiredKey).ConfigureAwait(false);
+    }
+
+    private async Task TryDeleteSecretAsync(string key)
+    {
+        try { await secrets!.SetAsync(key, null).ConfigureAwait(false); }
+        catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Could not remove retired proxy credential: {ex.Message}"); }
+        if (_knownSecretKey == key)
+        {
+            _knownSecretKey = null;
+            _lastSecretValue = null;
         }
     }
 
@@ -358,8 +412,15 @@ public sealed class StorageService(StoragePaths paths, ISecretStore? secrets = n
 
 internal sealed class TorrentStorageData
 {
+    public static TorrentStorageData Empty() => new() { ProxyCredentialId = string.Empty, BackupProxyCredentialId = string.Empty };
+
+    // null identifies the legacy shared secret. An empty reference means no secure credential.
+    public string? ProxyCredentialId { get; set; }
+    public string? BackupProxyCredentialId { get; set; }
     public string Version { get; set; } = "1.0";
     public DateTime LastUpdated { get; set; }
     public List<TorrentItem>? Torrents { get; set; } = [];
     public AppSettings? Settings { get; set; } = new();
 }
+
+internal sealed class ProxyPasswordRequiredException() : InvalidOperationException(LocalizationResourceManager.Instance["ProxyPasswordReentry"]);

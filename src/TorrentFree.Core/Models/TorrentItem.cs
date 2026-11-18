@@ -42,6 +42,27 @@ public partial class TorrentItem : ObservableObject
     public bool? IsPrivate { get; set; }
     public bool ImportedFromFile { get; set; }
 
+    // The single file or containing directory reserved before registering a payload manager.
+    public string? ReservedPayloadPath { get; set; }
+    // Only files exclusively created by TorrentFree may be deleted during removal.
+    private readonly HashSet<string> _createdPayloadPaths = new(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+    public string[] CreatedPayloadPaths
+    {
+        get { lock (_createdPayloadPaths) return [.. _createdPayloadPaths]; }
+        set { lock (_createdPayloadPaths) { _createdPayloadPaths.Clear(); _createdPayloadPaths.UnionWith(value ?? []); } }
+    }
+
+    internal void RecordCreatedPayload(string path)
+    {
+        lock (_createdPayloadPaths) _createdPayloadPaths.Add(path);
+    }
+
+    internal void MoveCreatedPayload(string oldPath, string newPath)
+    {
+        lock (_createdPayloadPaths)
+            if (_createdPayloadPaths.Remove(oldPath)) _createdPayloadPaths.Add(newPath);
+    }
+
     /// <summary>
     /// Total size of the download in bytes.
     /// </summary>

@@ -9,14 +9,34 @@ public partial class TorrentService
 {
     // Access to registration/disposal is serialized with the engine rebuild barrier.
     private readonly ConcurrentDictionary<string, MetadataPreview> _metadataPreviews = new();
+    private readonly Dictionary<string, int> _pendingControlActions = new();
 
     private sealed class MetadataPreview(CancellationTokenSource cancellation)
     {
         public bool Interrupted { get; private set; }
-        public void Interrupt() { Interrupted = true; cancellation.Cancel(); }
+        public bool Manual { get; private set; }
+        public void Interrupt(bool manual = false) { Interrupted = true; Manual |= manual; cancellation.Cancel(); }
     }
 
-    private sealed class MetadataPreviewInterruptedException : OperationCanceledException;
+    private sealed class MetadataPreviewInterruptedException(bool manual = false) : OperationCanceledException
+    {
+        public bool Manual { get; } = manual;
+    }
+
+    private async ValueTask<AsyncKeyedLocker.Releaser> AcquireControlLockAsync(string id)
+    {
+        lock (_engineRebuildStateGate)
+        {
+            _pendingControlActions[id] = _pendingControlActions.GetValueOrDefault(id) + 1;
+            if (_metadataPreviews.TryGetValue(id, out var session)) session.Interrupt(manual: true);
+        }
+        try { return await _torrentOperationLock.AcquireAsync(id, _disposalToken); }
+        finally
+        {
+            lock (_engineRebuildStateGate)
+                if (--_pendingControlActions[id] == 0) _pendingControlActions.Remove(id);
+        }
+    }
 
     public async Task<DownloadExportPlan> CreateDownloadExportPlanAsync(TorrentItem torrent, CancellationToken cancellationToken = default)
     {
@@ -78,6 +98,12 @@ public partial class TorrentService
 
     private async Task<Torrent> LoadFileSelectionMetadataAsync(TorrentItem torrent, CancellationToken cancellationToken, bool rebuildRestart = false)
     {
+        return await TryLoadLocalMetadataAsync(torrent)
+            ?? await FetchFileSelectionMetadataAsync(torrent, cancellationToken, rebuildRestart);
+    }
+
+    private async Task<Torrent?> TryLoadLocalMetadataAsync(TorrentItem torrent)
+    {
         if (_managers.TryGetValue(torrent.Id, out var current) && current.Torrent is { } existing)
             return existing;
         var path = GetMetadataPath(torrent) ?? FindEngineMetadataCachePath(torrent);
@@ -90,11 +116,26 @@ public partial class TorrentService
             }
         }
 
+        return null;
+    }
+
+    private MagnetLink GetDiscoveryMagnet(TorrentItem torrent)
+    {
+        var magnet = MagnetLink.Parse(torrent.MagnetLink);
+        return !ProxyRequested && MagnetTrackerBootstrapRules.ShouldAddPublicTrackers(torrent.MagnetLink)
+            ? new MagnetLink(magnet.InfoHashes, magnet.Name, PublicTrackers.Select(uri => uri.AbsoluteUri).ToArray())
+            : magnet;
+    }
+
+    private async Task<Torrent> FetchFileSelectionMetadataAsync(TorrentItem torrent, CancellationToken cancellationToken, bool rebuildRestart)
+    {
         EnsureMagnetFallbackAllowed(torrent);
+        _managers.TryGetValue(torrent.Id, out var current);
         using var preview = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposalToken);
         var session = new MetadataPreview(preview);
         lock (_engineRebuildStateGate)
         {
+            if (_pendingControlActions.ContainsKey(torrent.Id)) throw new MetadataPreviewInterruptedException(manual: true);
             if (_activeEngineRebuild is not null && !rebuildRestart) throw new MetadataPreviewInterruptedException();
             _metadataPreviews[torrent.Id] = session;
         }
@@ -120,24 +161,24 @@ public partial class TorrentService
                 }
             }
 
-            var magnet = MagnetLink.Parse(torrent.MagnetLink);
-            if (!ProxyRequested && MagnetTrackerBootstrapRules.ShouldAddPublicTrackers(torrent.MagnetLink))
-                magnet = new MagnetLink(magnet.InfoHashes, magnet.Name, PublicTrackers.Select(uri => uri.AbsoluteUri).ToArray());
-
+            var magnet = GetDiscoveryMagnet(torrent);
             var metadataEngine = await EnsureEngineAsync();
             ThrowIfNetworkBlocked();
             preview.Token.ThrowIfCancellationRequested();
             var content = await DownloadFileSelectionMetadataAsync(metadataEngine, magnet, preview.Token);
+            preview.Token.ThrowIfCancellationRequested();
             _ = new TorrentFileParser().Parse(content.ToArray());
             var metadata = await Torrent.LoadAsync(content.ToArray().AsMemory());
             if (!TorrentIdentityMatches(torrent, metadata.InfoHashes))
                 throw new InvalidDataException("The metadata does not match this torrent.");
 
-            var cachePath = TorrentImportService.GetCachePath(_storageService.GetAppDataPath(), torrent.InfoHash);
+            var hash = string.IsNullOrEmpty(torrent.InfoHash) ? metadata.InfoHashes.V1OrV2.ToHex() : torrent.InfoHash;
+            var cachePath = TorrentImportService.GetCachePath(_storageService.GetAppDataPath(), hash);
             await using (await TorrentImportService.LockCacheAsync(cachePath, preview.Token))
                 await TorrentImportService.WriteCacheAsync(cachePath, content.ToArray(), preview.Token);
             await _dispatcher.InvokeAsync(() =>
             {
+                torrent.InfoHash = hash;
                 torrent.CachedTorrentFilePath = cachePath;
                 torrent.IsPrivate = metadata.IsPrivate;
             });
@@ -146,7 +187,7 @@ public partial class TorrentService
         }
         catch (OperationCanceledException) when (session.Interrupted)
         {
-            throw new MetadataPreviewInterruptedException();
+            throw new MetadataPreviewInterruptedException(session.Manual);
         }
         finally
         {
@@ -162,6 +203,8 @@ public partial class TorrentService
     public async Task SetTorrentFileSelectionAsync(TorrentItem torrent, IReadOnlyCollection<string> selectedPaths)
     {
         ArgumentNullException.ThrowIfNull(selectedPaths);
+        using var deadline = new CancellationTokenSource(TimeSpan.FromMinutes(1), _timeProvider);
+        using var lookup = CancellationTokenSource.CreateLinkedTokenSource(_disposalToken, deadline.Token);
         var requested = selectedPaths.Select(NormalizeFilePath).ToHashSet(StringComparer.Ordinal);
         if (requested.Count == 0) throw new ArgumentException("Choose at least one file.", nameof(selectedPaths));
         var resume = false;
@@ -173,7 +216,7 @@ public partial class TorrentService
             if (!TryEnterStart(out _)) continue;
             try
             {
-                var metadata = await LoadFileSelectionMetadataAsync(torrent, _disposalToken);
+                var metadata = await LoadFileSelectionMetadataAsync(torrent, lookup.Token);
                 var known = metadata.Files.Select(file => NormalizeFilePath(file.Path)).ToHashSet(StringComparer.Ordinal);
                 if (!requested.IsSubsetOf(known)) throw new ArgumentException("The selection contains unknown files.", nameof(selectedPaths));
                 var previous = torrent.SelectedFilePaths;

@@ -12,23 +12,46 @@ public sealed class ReviewFixesTests
 {
     private const string UnreachableTracker = "http%3A%2F%2F127.0.0.1%3A1%2Fannounce";
 
-    [Fact]
-    public async Task PauseWhileFetchingMetadata_StopsManagerSoItCannotStartDownloadingLater()
+    [Theory]
+    [InlineData("pause")]
+    [InlineData("stop")]
+    [InlineData("remove")]
+    public async Task ManualActionWhileFetchingMetadata_InterruptsStart(string action)
     {
-        await using var fixture = new CoreServiceFixture();
-        await fixture.Service.InitializeAsync();
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using var fixture = new CoreServiceFixture(serviceFactory: (storage, notifications, background, clock) =>
+            new MetadataOnlyService(storage, notifications, background, clock, entered));
+        fixture.Service.UpdateQueueLimits(1, 1);
         var hash = Guid.NewGuid().ToString("N") + "01234567";
-        var torrent = (await fixture.Service.AddTorrentAsync($"magnet:?xt=urn:btih:{hash}&dn=pending&tr={UnreachableTracker}"))!;
-        await fixture.Service.StartTorrentAsync(torrent);
-        var manager = Assert.Single(fixture.Engine.Torrents);
-        await CoreServiceFixture.WaitUntilAsync(() => manager.State == TorrentState.Metadata);
+        var torrent = (await fixture.Service.AddTorrentAsync($"magnet:?xt=urn:btih:{hash}&dn=pending&tr={UnreachableTracker}", startPaused: true))!;
+        torrent.SelectedFilePaths = ["pending.bin"];
+        var queued = (await fixture.Service.AddTorrentFileAsync(await fixture.PrepareTorrentAsync("next.bin"), startPaused: true))!;
+        var start = fixture.Service.StartTorrentAsync(torrent);
+        await entered.Task.WaitAsync(TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken);
+        await fixture.Service.StartTorrentAsync(queued);
+        Assert.Equal(DownloadStatus.Queued, queued.Status);
+        Task control = action switch
+        {
+            "pause" => fixture.Service.PauseTorrentAsync(torrent),
+            "stop" => fixture.Service.StopTorrentAsync(torrent),
+            _ => fixture.Service.RemoveTorrentAsync(torrent)
+        };
+        await Task.WhenAll(start, control).WaitAsync(TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken);
+        if (action == "remove") Assert.DoesNotContain(torrent, fixture.Service.Torrents);
+        else Assert.Equal(action == "pause" ? DownloadStatus.Paused : DownloadStatus.Stopped, torrent.Status);
+        Assert.Equal(queued.InfoHash, Assert.Single(fixture.Engine.Torrents).InfoHashes.V1OrV2.ToHex(), ignoreCase: true);
+    }
 
-        await fixture.Service.PauseTorrentAsync(torrent);
-
-        // MonoTorrent ignores PauseAsync in metadata mode and would start the download itself
-        // once metadata arrived, while the item showed Paused.
-        Assert.Equal(DownloadStatus.Paused, torrent.Status);
-        Assert.Equal(TorrentState.Stopped, manager.State);
+    private sealed class MetadataOnlyService(IStorageService storage, INotificationService notifications,
+        IBackgroundDownloadService background, TimeProvider clock, TaskCompletionSource entered)
+        : TorrentService(storage, notifications, background, ImmediateDispatcher.Instance, clock)
+    {
+        protected override async Task<ReadOnlyMemory<byte>> DownloadFileSelectionMetadataAsync(ClientEngine engine, MagnetLink magnet, CancellationToken cancellationToken)
+        {
+            entered.TrySetResult();
+            await Task.Delay(Timeout.Infinite, cancellationToken);
+            return ReadOnlyMemory<byte>.Empty;
+        }
     }
 
     [Fact]
@@ -225,7 +248,7 @@ public sealed class ReviewFixesTests
 
         using var storage = new StorageService(directory.StoragePaths, secrets);
         Assert.Equal("hunter2", (await storage.LoadSettingsAsync()).ProxyPassword);
-        Assert.Equal("hunter2", secrets.Values[StorageService.ProxyPasswordSecretKey]);
+        Assert.Equal("hunter2", Assert.Single(secrets.Values).Value);
         foreach (var file in Directory.GetFiles(directory.Path, "torrents.json*"))
         {
             Assert.DoesNotContain("hunter2", await File.ReadAllTextAsync(file, TestContext.Current.CancellationToken));
@@ -250,8 +273,10 @@ public sealed class ReviewFixesTests
         Assert.Equal("secret", (await storage.LoadSettingsAsync()).ProxyPassword);
 
         await storage.SaveSettingsAsync(new AppSettings { ProxyUsername = "user" });
-        Assert.False(secrets.Values.ContainsKey(StorageService.ProxyPasswordSecretKey));
         Assert.Equal(string.Empty, (await storage.LoadSettingsAsync()).ProxyPassword);
+        Assert.Equal("secret", Assert.Single(secrets.Values).Value); // backup still references it
+        await storage.UpdateDesktopWindowStateAsync(true);
+        Assert.Empty(secrets.Values);
     }
 
     [Fact]
@@ -294,14 +319,18 @@ public sealed class ReviewFixesTests
         Assert.True(page.ProxyPasswordUnavailable);
         Assert.Equal(string.Empty, page.ProxyPassword);
 
+        await Assert.ThrowsAsync<ProxyPasswordRequiredException>(() =>
+            SaveFromSettingsPageAsync(storage, page.ProxyPassword, proxyPasswordUnavailable: true, proxyHost: "different.example"));
+        Assert.Equal(string.Empty, (await storage.LoadSettingsAsync()).ProxyHost);
+
         // Secure storage works again by the time the page saves an unrelated change.
         var saved = await SaveFromSettingsPageAsync(storage, page.ProxyPassword, proxyPasswordUnavailable: true);
         Assert.Equal("secret", saved.ProxyPassword);
-        Assert.Equal("secret", secrets.Values[StorageService.ProxyPasswordSecretKey]);
+        Assert.Equal("secret", Assert.Single(secrets.Values).Value);
 
         // Once the user has edited the field, an empty password is a deliberate removal.
         await SaveFromSettingsPageAsync(storage, string.Empty, proxyPasswordUnavailable: false);
-        Assert.False(secrets.Values.ContainsKey(StorageService.ProxyPasswordSecretKey));
+        Assert.Equal(string.Empty, (await storage.LoadSettingsAsync()).ProxyPassword);
     }
 
     [Fact]
@@ -396,6 +425,7 @@ public sealed class ReviewFixesTests
             InfoHash = hash,
             MagnetLink = $"magnet:?xt=urn:btih:{hash}",
             SavePath = downloads,
+            CreatedPayloadPaths = [payloadPath],
             Progress = 100,
             Status = DownloadStatus.Queued
         };
@@ -417,11 +447,11 @@ public sealed class ReviewFixesTests
         };
     }
 
-    private static Task<AppSettings> SaveFromSettingsPageAsync(StorageService storage, string proxyPassword, bool proxyPasswordUnavailable)
+    private static Task<AppSettings> SaveFromSettingsPageAsync(StorageService storage, string proxyPassword, bool proxyPasswordUnavailable, string? proxyHost = null)
         => AppSettingsPersistence.MergeAndSaveAsync(storage, existing => AppSettingsFactory.CreateForSettingsPage(
             existing, existing.GlobalDownloadLimitKbps, existing.GlobalUploadLimitKbps, existing.MaxActiveDownloads,
             existing.MaxActiveSeeds, existing.GlobalMaxSeedRatio, existing.GlobalMaxSeedMinutes,
-            existing.DownloadToTorrentFolder, existing.SpecificDownloadFolder, existing.ProxyEnabled, existing.ProxyHost,
+            existing.DownloadToTorrentFolder, existing.SpecificDownloadFolder, existing.ProxyEnabled, proxyHost ?? existing.ProxyHost,
             existing.ProxyPort, existing.ProxyUsername, proxyPassword, existing.Language, existing.Theme,
             proxyPasswordUnavailable: proxyPasswordUnavailable));
 

@@ -266,7 +266,7 @@
     <value>Torrent eltávolítása</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>Opcionálisan törölje a kapcsolódó fájlokat:</value>
+    <value>Csak azok a fájlok törölhetők, amelyek létrehozását az alkalmazás rögzítette. A meglévő fájlokat és a korábbi verziók letöltéseit esetleg kézzel kell törölni.</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>Törölje a .torrent fájlt a lemezről</value>
@@ -723,4 +723,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>Nincs elég szabad hely a letöltés másolásához.</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>Ezt a célhelyet egy másik torrent használja. Válasszon másik letöltési mappát.</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>A torrent nem biztonságos fájlelérési utat vagy hivatkozást tartalmaz.</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>Adja meg újra a proxy jelszavát a beállításokban.</value></data>
 </root>

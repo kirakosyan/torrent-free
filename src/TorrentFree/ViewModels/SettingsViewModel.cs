@@ -375,6 +375,7 @@ public partial class SettingsViewModel : ObservableObject
             _isLoadingSettings = false;
         }
 
+        if (_proxyPasswordUnavailable) ValidationMessage = LocalizationResourceManager.Instance["ProxyPasswordReentry"];
         ApplySettingsToService();
     }
 
@@ -566,7 +567,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             _appliedProxy = previous;
             HasProxyChanges = ProxyDraft != _appliedProxy;
-            ValidationMessage = LocalizationResourceManager.Instance["ErrorSaveSettings"];
+            ValidationMessage = LocalizationResourceManager.Instance[ex is ProxyPasswordRequiredException ? "ProxyPasswordReentry" : "ErrorSaveSettings"];
             AppDiagnostics.Record("Settings.Proxy", ex);
         }
     }

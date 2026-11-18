@@ -266,7 +266,7 @@
     <value>Rimuovi torrent</value>
   </data>
   <data name="DeleteFilesOptional" xml:space="preserve">
-    <value>Facoltativamente elimina i file associati:</value>
+    <value>Si possono eliminare solo i file di cui l’app ha registrato la creazione. Potrebbe essere necessario eliminare manualmente i file preesistenti e i download delle versioni precedenti.</value>
   </data>
   <data name="DeleteTorrentFile" xml:space="preserve">
     <value>Elimina il file .torrent dal disco</value>
@@ -723,4 +723,7 @@
   <data name="ErrorExportSpace" xml:space="preserve">
     <value>Spazio libero insufficiente per copiare questo download.</value>
   </data>
+  <data name="ErrorPayloadConflict" xml:space="preserve"><value>Un altro torrent usa questa destinazione. Scegli un’altra cartella di download.</value></data>
+  <data name="ErrorPayloadPath" xml:space="preserve"><value>Il torrent contiene un percorso o un collegamento non sicuro.</value></data>
+  <data name="ProxyPasswordReentry" xml:space="preserve"><value>Inserisci di nuovo la password del proxy nelle impostazioni.</value></data>
 </root>

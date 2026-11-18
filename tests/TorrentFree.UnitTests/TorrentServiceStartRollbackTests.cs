@@ -12,19 +12,13 @@ public sealed class TorrentServiceStartRollbackTests
     [InlineData(false)]
     public async Task ShutdownDuringStart_PreservesResumableState(bool failDuringManagerCreation)
     {
-        var storage = new RecordingStorageService();
+        using var storage = new RecordingStorageService();
         await using var service = new InterruptedStartTorrentService(storage, failDuringManagerCreation);
-        var torrent = new TorrentItem
-        {
-            Name = "Interrupted start",
-            MagnetLink = "magnet:?xt=urn:btih:0123456789abcdef0123456789abcdef01234567",
-            SavePath = storage.GetDefaultDownloadPath(),
-            Status = DownloadStatus.Queued
-        };
+        var torrent = CoreServiceFixture.CreateLocalTorrent(storage, "interrupted-start.bin", DownloadStatus.Queued);
         service.Torrents.Add(torrent);
 
         var startTask = service.StartTorrentAsync(torrent);
-        await service.StartBlocked.Task.WaitAsync(TestContext.Current.CancellationToken);
+        await service.StartBlocked.Task.WaitAsync(TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken);
         await service.DisposeAsync();
         service.ReleaseStart.TrySetResult();
 
@@ -43,19 +37,13 @@ public sealed class TorrentServiceStartRollbackTests
     [Fact]
     public async Task ShutdownDuringStartRollback_PreservesResumableState()
     {
-        var storage = new RecordingStorageService();
+        using var storage = new RecordingStorageService();
         await using var service = new InterruptedRollbackTorrentService(storage);
-        var torrent = new TorrentItem
-        {
-            Name = "Interrupted rollback",
-            MagnetLink = "magnet:?xt=urn:btih:0123456789abcdef0123456789abcdef01234567",
-            SavePath = storage.GetDefaultDownloadPath(),
-            Status = DownloadStatus.Queued
-        };
+        var torrent = CoreServiceFixture.CreateLocalTorrent(storage, "interrupted-rollback.bin", DownloadStatus.Queued);
         service.Torrents.Add(torrent);
 
         var startTask = service.StartTorrentAsync(torrent);
-        await service.RollbackBlocked.Task.WaitAsync(TestContext.Current.CancellationToken);
+        await service.RollbackBlocked.Task.WaitAsync(TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken);
         await service.DisposeAsync();
         service.ReleaseRollback.TrySetResult();
 
@@ -70,7 +58,7 @@ public sealed class TorrentServiceStartRollbackTests
     [Fact]
     public async Task StartTorrentAsync_MarksTorrentFailedAndStopsBackgroundService_WhenManagerCreationThrows()
     {
-        var storage = new RecordingStorageService();
+        using var storage = new RecordingStorageService();
         var notifications = new StubNotificationService();
         var background = new RecordingBackgroundDownloadService();
         await using var service = new ThrowingTorrentService(
@@ -165,8 +153,9 @@ public sealed class TorrentServiceStartRollbackTests
         }
     }
 
-    private sealed class RecordingStorageService : IStorageService
+    private sealed class RecordingStorageService : IStorageService, IDisposable
     {
+        private readonly CoreTestDirectory _directory = new();
         public List<List<TorrentSnapshot>> SavedSnapshots { get; } = [];
 
         public Task<List<TorrentItem>> LoadTorrentsAsync() => Task.FromResult(new List<TorrentItem>());
@@ -184,14 +173,9 @@ public sealed class TorrentServiceStartRollbackTests
 
         public Task UpdateDesktopWindowStateAsync(bool? desktopWasMaximized) => Task.CompletedTask;
 
-        public string GetAppDataPath() => GetDefaultDownloadPath();
-
-        public string GetDefaultDownloadPath()
-        {
-            var path = Path.Combine(Path.GetTempPath(), "torrent-free-tests", Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(path);
-            return path;
-        }
+        public string GetAppDataPath() => _directory.Path;
+        public string GetDefaultDownloadPath() => _directory.StoragePaths.DownloadDirectory;
+        public void Dispose() => _directory.Dispose();
     }
 
     private sealed class StubNotificationService : INotificationService

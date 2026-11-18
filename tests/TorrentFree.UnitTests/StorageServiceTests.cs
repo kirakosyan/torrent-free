@@ -98,8 +98,8 @@ public sealed class StorageServiceTests
         settings.ProxyPassword = string.Empty;
         await storage.SaveSettingsAsync(settings);
         await storage.SaveSettingsAsync(settings);
-        Assert.Equal(3, secrets.Writes);
-        Assert.Null(secrets.Value);
+        Assert.Equal(4, secrets.Writes);
+        Assert.Empty(secrets.Values);
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public sealed class StorageServiceTests
         await storage.SaveSettingsAsync(settings);
         await storage.SaveSettingsAsync(settings);
         Assert.Equal(2, secrets.Writes);
-        Assert.Equal(settings.ProxyPassword, secrets.Value);
+        Assert.Equal(settings.ProxyPassword, Assert.Single(secrets.Values).Value);
         Assert.DoesNotContain(settings.ProxyPassword,
             await File.ReadAllTextAsync(Path.Combine(directory.Path, "torrents.json"), TestContext.Current.CancellationToken));
     }
@@ -212,12 +212,90 @@ public sealed class StorageServiceTests
         await storage.SaveTorrentsAsync([torrent]);
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task InterruptedProxyChange_AndBackupRecovery_KeepThePasswordWithItsEndpoint(bool failWrite)
+    {
+        using var directory = new CoreTestDirectory();
+        var path = Path.Combine(directory.Path, "torrents.json");
+        var secrets = new CountingSecretStore();
+        var first = new AppSettings { ProxyEnabled = true, ProxyHost = "a.example", ProxyUsername = "one", ProxyPassword = "first" };
+        var second = new AppSettings { ProxyEnabled = true, ProxyHost = "b.example", ProxyUsername = "two", ProxyPassword = "second" };
+        using (var writer = new StorageService(directory.StoragePaths, secrets))
+        {
+            await writer.SaveSettingsAsync(first);
+            if (failWrite)
+            {
+                // Deterministic across filesystems: the temporary file cannot replace a directory.
+                Directory.CreateDirectory(path + ".tmp");
+                await Assert.ThrowsAnyAsync<UnauthorizedAccessException>(() => writer.SaveSettingsAsync(second));
+                Directory.Delete(path + ".tmp");
+                Assert.Equal("first", Assert.Single(secrets.Values).Value);
+            }
+            else
+            {
+                await writer.SaveSettingsAsync(second);
+                Assert.Equal("second", (await writer.LoadSettingsAsync()).ProxyPassword);
+                await File.WriteAllTextAsync(path, "{broken", TestContext.Current.CancellationToken);
+            }
+        }
+
+        using var reopened = new StorageService(directory.StoragePaths, secrets);
+        var restored = await reopened.LoadSettingsAsync();
+        Assert.Equal("a.example", restored.ProxyHost);
+        Assert.Equal("one", restored.ProxyUsername);
+        Assert.Equal("first", restored.ProxyPassword);
+    }
+
+    [Theory]
+    [InlineData(".bak", true)]
+    [InlineData(".tmp", false)]
+    public async Task LegacyRecovery_RequestsReentryOnlyForUnboundBackups(string suffix, bool reentry)
+    {
+        using var directory = new CoreTestDirectory();
+        var path = Path.Combine(directory.Path, "torrents.json");
+        await File.WriteAllTextAsync(path + suffix, """{"settings":{"proxyEnabled":true,"proxyHost":"previous.example","proxyUsername":"old"}}""",
+            TestContext.Current.CancellationToken);
+        var secrets = new CountingSecretStore();
+        await secrets.SetAsync(StorageService.ProxyPasswordSecretKey, "different-provider-password");
+        using (var storage = new StorageService(directory.StoragePaths, secrets))
+        {
+            var restored = await storage.LoadSettingsAsync();
+            Assert.Equal("previous.example", restored.ProxyHost);
+            Assert.Equal(reentry, restored.ProxyPasswordUnavailable);
+            Assert.Equal(reentry ? string.Empty : "different-provider-password", restored.ProxyPassword);
+        }
+        using var reopened = new StorageService(directory.StoragePaths, secrets);
+        Assert.Equal(reentry, (await reopened.LoadSettingsAsync()).ProxyPasswordUnavailable);
+    }
+
+    [Fact]
+    public async Task LegacySecurePassword_MigratesBeforeSwitchingEndpoints()
+    {
+        using var directory = new CoreTestDirectory();
+        var path = Path.Combine(directory.Path, "torrents.json");
+        await File.WriteAllTextAsync(path, """{"settings":{"proxyHost":"legacy.example","proxyUsername":"old"}}""",
+            TestContext.Current.CancellationToken);
+        var secrets = new CountingSecretStore();
+        await secrets.SetAsync(StorageService.ProxyPasswordSecretKey, "legacy");
+        using var storage = new StorageService(directory.StoragePaths, secrets);
+        Assert.Equal("legacy", (await storage.LoadSettingsAsync()).ProxyPassword);
+        Assert.False(secrets.Values.ContainsKey(StorageService.ProxyPasswordSecretKey));
+        await storage.SaveSettingsAsync(new AppSettings { ProxyHost = "new.example", ProxyPassword = "new" });
+        File.Delete(path);
+        using var reopened = new StorageService(directory.StoragePaths, secrets);
+        var recovered = await reopened.LoadSettingsAsync();
+        Assert.Equal("legacy.example", recovered.ProxyHost);
+        Assert.Equal("legacy", recovered.ProxyPassword);
+    }
+
     private sealed class CountingSecretStore : ISecretStore
     {
         public int Writes { get; private set; }
-        public string? Value { get; private set; }
+        public Dictionary<string, string> Values { get; } = [];
         public bool FailNextWrite { get; set; }
-        public Task<string?> GetAsync(string key) => Task.FromResult(Value);
+        public Task<string?> GetAsync(string key) => Task.FromResult(Values.GetValueOrDefault(key));
         public Task SetAsync(string key, string? value)
         {
             Writes++;
@@ -226,7 +304,8 @@ public sealed class StorageServiceTests
                 FailNextWrite = false;
                 throw new IOException("Injected secret write failure");
             }
-            Value = value;
+            if (value is null) Values.Remove(key);
+            else Values[key] = value;
             return Task.CompletedTask;
         }
     }
