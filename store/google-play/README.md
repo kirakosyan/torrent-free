@@ -2,9 +2,13 @@
 
 Package `com.torrentfree.app`, listed as **Torrent Client - Downloader**.
 
+## Version 1.25.3
+
+Production submission **26** entered review November 18, 2026 at **20:22 Europe/Oslo**. Version **1.25.3** (code **33**) is set to roll out to 100% in all targeted countries after approval. Managed publishing is off. Play accepted release notes in 26 languages, the embedded R8 map and the matching native debug symbols. The app-level trader-status declaration remains outstanding. [Localized release notes](release-notes-1.25.3.txt) · [Package qualification](../microsoft-store/release-notes-1.25.3.md)
+
 ## Version 1.25.2
 
-Production release **15**, version **1.25.2** (code **32**), was submitted on November 18, 2026 at 19:13 Europe/Oslo as **submission 25**. The production change was subsequently **removed from review** after the immediate-stop failure reproduced on Windows. Play Console lists the rollout under changes not yet submitted for review. Version 1.25.1 remains the latest production release. The bundle includes the R8 map and has matching native debug symbols attached. Play accepted release notes in 26 languages.
+Production release **15**, version **1.25.2** (code **32**), was submitted on November 18, 2026 at 19:13 Europe/Oslo as **submission 25**. The production change was removed from review after the immediate-stop failure reproduced on Windows. The held release was discarded before submitting 1.25.3. The bundle includes the R8 map and has matching native debug symbols attached. Play accepted release notes in 26 languages.
 
 This update removes Android donations to address the Payments policy notice. The app-level trader-status declaration remains outstanding. Play allowed the release to proceed through its deferral option. [Localized release notes](release-notes-1.25.2.txt) · [Package verification](../microsoft-store/release-notes-1.25.2.md)
 

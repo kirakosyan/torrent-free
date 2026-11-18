@@ -40,14 +40,23 @@ Thank you! Torrent Free remains free to use, and donations are entirely optional
 
 ## 📝 Release Overview
 
+### Version 1.25.3
+
+Submitted November 18, 2026. Stopping a torrent immediately after a start or restart now takes effect and survives reopening the app. This release includes the file-protection, recovery and proxy-credential fixes from 1.25.2. The donation option appears only on Windows. [Release notes, qualification and package hashes](store/microsoft-store/release-notes-1.25.3.md)
+
+| Store | Package | Verified status at submission |
+| --- | --- | --- |
+| Microsoft Store | 1.25.3.0, x64 and ARM64 | Submission 23 in certification. Automatic publication enabled. |
+| Google Play | 1.25.3, code 33 | Production submission 26 in review for a 100% rollout. Managed publishing is off. |
+
 ### Version 1.25.2
 
 Held on November 18, 2026. The packaged x64 smoke test passed, but a separate immediate-stop test failed in Ubuntu CI and reproduced on Windows. Both submissions were withdrawn before publication.
 
 | Store | Package | Verified status |
 | --- | --- | --- |
-| Microsoft Store | 1.25.2.0, x64 and ARM64 | Submission 23 returned to draft. |
-| Google Play | 1.25.2, code 32 | Production release 15, submission 25 removed from review. The rollout is pending and unsent. |
+| Microsoft Store | 1.25.2.0, x64 and ARM64 | Withdrawn. Both packages were replaced by 1.25.3.0 in submission 23. |
+| Google Play | 1.25.2, code 32 | Submission 25 canceled and the held production release discarded. |
 
 Removing a torrent protects existing files. Downloads avoid overlapping destinations and recover more reliably after interruptions. Proxy passwords are bound to the configured server. The donation option appears in About on Windows only. [Release notes and package hashes](store/microsoft-store/release-notes-1.25.2.md)
 
