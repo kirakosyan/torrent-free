@@ -20,7 +20,10 @@ public sealed class MonitorQueueRegressionTests
 
         await CoreServiceFixture.WaitUntilAsync(() => active.Status == DownloadStatus.Completed);
         await CoreServiceFixture.WaitUntilAsync(() => queued.Status == DownloadStatus.Seeding);
-        Assert.Equal(2, fixture.Engine.Torrents.Count);
+        // Admission updates the item before the engine registers and starts its manager.
+        await CoreServiceFixture.WaitUntilAsync(() => fixture.Engine.Torrents.Count == 2);
+        var resumed = Assert.Single(fixture.Engine.Torrents, torrent => torrent != manager);
+        await CoreServiceFixture.WaitUntilAsync(() => resumed.State == TorrentState.Seeding);
     }
 
     [Theory]
