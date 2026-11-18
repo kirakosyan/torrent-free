@@ -40,14 +40,27 @@ Thank you! Torrent Free remains free to use, and donations are entirely optional
 
 ## 📝 Release Overview
 
+### Version 1.25.2
+
+Submitted November 18, 2026 after the packaged Windows x64 smoke test passed.
+
+| Store | Package | Verified status |
+| --- | --- | --- |
+| Microsoft Store | 1.25.2.0, x64 and ARM64 | Submission 23 in certification. Publication starts after approval. |
+| Google Play | 1.25.2, code 32 | Production release 15, submission 25 in review. Full rollout to all targeted countries after approval. |
+
+Removing a torrent protects existing files. Downloads avoid overlapping destinations and recover more reliably after interruptions. Proxy passwords are bound to the configured server. The donation option appears in About on Windows only. [Release notes and package hashes](store/microsoft-store/release-notes-1.25.2.md)
+
+### Version 1.25.1
+
 Version **1.25.1** (Android code **31**, Windows **1.25.1.0** for x64 and ARM64)
 was submitted on **November 15, 2026** after Windows x64 smoke testing and all
-six main CI jobs passed. **1.25.1 is not yet live.**
+six main CI jobs passed. On November 18, Microsoft showed submission 22 live and Google Play listed 1.25.1 as its latest production release.
 
 | Store | Verified status | Release scope |
 | --- | --- | --- |
-| Microsoft Store | **In certification**, submission **22** | x64 and ARM64; publish after approval |
-| Google Play | **In review**, submission **24** | Code 31; full rollout across the existing 178 countries/regions; managed publishing off |
+| Microsoft Store | **Live**, submission **22** | x64 and ARM64 |
+| Google Play | **In production**, submission **24** | Code 31, full rollout across the existing 178 countries/regions |
 | Huawei AppGallery | **Reviewing**, version record **2084573205246301376** | Code 31, ARM64; existing 198 countries/regions; publish after approval |
 | Samsung Galaxy Store | **Not submitted** | Skipped at the owner's request; this app is not available there yet |
 
@@ -70,7 +83,7 @@ saved download recovery, queue handling, and completion notification navigation.
 
 Submitted on **November 7, 2026**. Microsoft Store submission **21** and Google
 Play submission **23** are now **live**. Play Console reports publication on
-**November 10, 2026**. They remain the current live releases while 1.25.1 is reviewed.
+**November 10, 2026**. Version 1.25.1 subsequently reached both stores.
 See the [1.24 release record](store/microsoft-store/release-notes-1.24.md).
 
 ### Version 1.23

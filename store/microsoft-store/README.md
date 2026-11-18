@@ -1,9 +1,13 @@
 # Microsoft Store listings
 
+## Version 1.25.2
+
+Submission **23** (`1152921505702441783`) entered **certification** on November 18, 2026. MSIX **1.25.2.0** targets x64 and ARM64. Partner Center is configured to publish after certification. The final export matched the new release notes in all 31 locale columns, with every other field identical. [Release record](release-notes-1.25.2.md)
+
 ## Version 1.25.1 (submitted November 15, 2026)
 
-**1.25.1 / build 31 / MSIX 1.25.1.0 (x64 and ARM64)** is **In certification** as
-submission **22** (`1152921505702410872`), with publication after approval.
+**1.25.1 / build 31 / MSIX 1.25.1.0 (x64 and ARM64)** reached the Store as
+submission **22** (`1152921505702410872`), verified November 18.
 Both packages validated. Export comparison verified only release notes changed
 across 24 languages (31 populated locale columns); all other text and assets were
 preserved. Localized notes are in `release-notes-1.25.1.json`; see the
